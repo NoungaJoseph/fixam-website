@@ -518,14 +518,12 @@
 
 @media (max-width: 900px) {
   .sticky-card {
-    height: auto;
-    padding: 2.5rem;
-    position: relative; /* Disable sticky on small screens if it breaks flow */
-    top: auto !important;
+    height: 480px;
+    padding: 1.5rem;
   }
   .sticky-card-content {
     flex-direction: column;
-    gap: 3rem;
+    gap: 1.5rem;
   }
   .sticky-card-image {
     width: 100%;
