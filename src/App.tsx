@@ -1,41 +1,28 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import Login from './pages/Auth/Login'
+import Register from './pages/Auth/Register'
+import ForgotPassword from './pages/Auth/ForgotPassword'
+import OTPVerification from './pages/Auth/OTPVerification'
 import './App.css'
+import './marketplace.css'
 
-type Page = 'home' | 'services' | 'about' | 'login' | 'dashboard'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide'
 
-type IconName =
-  | 'appliance'
-  | 'bell'
-  | 'briefcase'
-  | 'calendar'
-  | 'chat'
-  | 'check'
-  | 'cleaning'
-  | 'delivery'
-  | 'electrical'
-  | 'filter'
-  | 'home'
-  | 'location'
-  | 'menu'
-  | 'message'
-  | 'painting'
-  | 'plumbing'
-  | 'search'
-  | 'shield'
-  | 'star'
-  | 'user'
-  | 'wallet'
-  | 'wrench'
+export type IconName =
+  | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
+  | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
+  | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench'
 
-const asset = (fileName: string) => `/assets/${fileName}`
+export const asset = (fileName: string) => `/assets/${fileName}`
 
-const images = {
+export const images = {
   landingHero: asset('landing-hero-composite.png'),
   heroProfessional: asset('hero-professional.png'),
   appHomeScreen: asset('app-home-screen.png'),
-  servicePlumber: asset('service-plumber.jpg'),
-  serviceCleaner: asset('service-cleaner.jpg'),
-  serviceElectrician: asset('service-electrician.jpg'),
+  servicePlumber: asset('plumbing.jpg'),
+  serviceCleaner: asset('cleaning.jpg'),
+  serviceElectrician: asset('electrical.jpg'),
   proJeff: asset('pro-jeff-thomson.jpg'),
   proSamuel: asset('pro-samuel-bright.jpg'),
   proMary: asset('pro-mary-clean.jpg'),
@@ -48,25 +35,20 @@ const images = {
   taskCleaning: asset('task-cleaning.jpg'),
 } as const
 
-const navItems: { label: string; page: Page }[] = [
-  { label: 'Home', page: 'home' },
-  { label: 'How It Works', page: 'home' },
-  { label: 'Services', page: 'services' },
-  { label: 'For Providers', page: 'home' },
-  { label: 'Pricing', page: 'home' },
-  { label: 'Blog', page: 'home' },
-  { label: 'Contact Us', page: 'home' },
-]
-
 const services = [
-  { title: 'Plumbing', desc: 'Fix leaks, pipes, water heaters & more', count: 256, icon: 'plumbing' as IconName, color: 'blue' },
-  { title: 'Electrical', desc: 'Wiring, lighting, outlets, fans & more', count: 198, icon: 'electrical' as IconName, color: 'green' },
-  { title: 'Cleaning', desc: 'Home, office, deep cleaning & more', count: 342, icon: 'cleaning' as IconName, color: 'purple' },
-  { title: 'Painting', desc: 'Walls, doors, rooms & custom paint', count: 158, icon: 'painting' as IconName, color: 'orange' },
-  { title: 'Carpentry', desc: 'Furniture, doors, shelves & woodwork', count: 124, icon: 'wrench' as IconName, color: 'brown' },
-  { title: 'Appliance Repair', desc: 'Washing machines, ACs, fridges & more', count: 110, icon: 'appliance' as IconName, color: 'blue' },
-  { title: 'Home Care', desc: 'General home maintenance & repairs', count: 98, icon: 'home' as IconName, color: 'green' },
-  { title: 'Delivery', desc: 'Parcel, food & document delivery', count: 210, icon: 'delivery' as IconName, color: 'pink' },
+  { id: 'plumbing', title: 'Plumbing', icon: 'plumbing' as IconName, color: 'blue', image: asset('plumbing.jpg') },
+  { id: 'electrical', title: 'Electrical', icon: 'electrical' as IconName, color: 'green', image: asset('electrical.jpg') },
+  { id: 'cleaning', title: 'Cleaning', icon: 'cleaning' as IconName, color: 'purple', image: asset('cleaning.jpg') },
+  { id: 'painting', title: 'Painting', icon: 'painting' as IconName, color: 'orange', image: asset('painting.jpg') },
+  { id: 'carpentry', title: 'Carpentry', icon: 'wrench' as IconName, color: 'brown', image: asset('carpentry.jpg') },
+  { id: 'appliance', title: 'Appliance Repair', icon: 'appliance' as IconName, color: 'blue', image: asset('appliance-repair.jpg') },
+  { id: 'delivery', title: 'Delivery', icon: 'delivery' as IconName, color: 'pink', image: asset('delivery-service.jpg') },
+  { id: 'barber', title: 'Barber', icon: 'user' as IconName, color: 'green', image: asset('barber.jpg') },
+  { id: 'beauty', title: 'Beauty', icon: 'star' as IconName, color: 'purple', image: asset('beauty.jpg') },
+  { id: 'makeup', title: 'Makeup Artist', icon: 'star' as IconName, color: 'pink', image: asset('makeup-artist.jpg') },
+  { id: 'tailoring', title: 'Tailoring', icon: 'wrench' as IconName, color: 'brown', image: asset('tailoring.jpg') },
+  { id: 'tiling', title: 'Tiling', icon: 'home' as IconName, color: 'blue', image: asset('tiling.jpg') },
+  { id: 'cctv', title: 'CCTV Installation', icon: 'shield' as IconName, color: 'orange', image: asset('cctv-installation.jpg') },
 ]
 
 const pros = [
@@ -97,11 +79,18 @@ function App() {
         <Dashboard onNavigate={setPage} />
       ) : page === 'login' ? (
         <Login onNavigate={setPage} />
+      ) : page === 'register' ? (
+        <Register onNavigate={setPage} />
+      ) : page === 'forgot_password' ? (
+        <ForgotPassword onNavigate={setPage} />
+      ) : page === 'otp' ? (
+        <OTPVerification onNavigate={setPage} />
       ) : (
         <>
           <Header page={page} onNavigate={setPage} />
           <main>
-            {page === 'services' && <Services />}
+            {page === 'services' && <Services onNavigate={setPage} />}
+            {page === 'guide' && <Guide onNavigate={setPage} />}
             {page === 'about' && <About onNavigate={setPage} />}
             {page === 'home' && <Home onNavigate={setPage} />}
           </main>
@@ -111,320 +100,213 @@ function App() {
   )
 }
 
-function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
+function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation();
+
   return (
-    <header className={page === 'home' ? 'site-header landing-header' : 'site-header'}>
-      <button className="brand brand-button" onClick={() => onNavigate('home')} aria-label="Go to homepage">
-        <Logo />
-      </button>
-      <nav>
-        {navItems.map((item) => (
-          <button
-            className={(page === 'home' && item.label === 'Home') || (page === 'services' && item.label === 'Services') ? 'nav-link active' : 'nav-link'}
-            key={item.label}
-            onClick={() => onNavigate(item.page)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </nav>
-      <div className="header-actions">
-        <button className="theme-toggle" aria-label="Theme toggle">
-          <span />
-        </button>
-        <button className="outline-button" onClick={() => onNavigate('login')}>
-          Log In
-        </button>
-        <button className="primary-button" onClick={() => onNavigate('login')}>
-          Sign Up
-        </button>
+    <div className="services-page">
+      <div className="services-hero">
+        <h1>{t('nav.explore') || 'Explore Professional Services'}</h1>
+        <p>Find the perfect professional for your next project, right when you need them.</p>
       </div>
-    </header>
-  )
-}
-
-function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
-  return (
-    <div className="landing-page">
-      <section className="hero section-grid">
-        <div className="hero-copy reveal">
-          <span className="pill">Trusted Home Services Platform</span>
-          <h1>
-            Get Things Done. <span>The Right Way.</span>
-          </h1>
-          <p>Post tasks, connect with verified professionals, and get quality work done fast, safe, and hassle-free.</p>
-          <div className="button-row">
-            <button className="primary-button large">+ Post a Task</button>
-            <button className="outline-button large" onClick={() => onNavigate('services')}>
-              Find a Professional
-            </button>
-          </div>
-          <div className="trust-row">
-            <SmallTrust icon="shield" label="Verified Professionals" />
-            <SmallTrust icon="wallet" label="Secure Payments" />
-            <SmallTrust icon="check" label="Satisfaction Guaranteed" />
-          </div>
-        </div>
-        <HeroSingleImage />
-      </section>
-
-      <section className="section">
-        <SectionTitle title="Popular Services" caption="Find help for almost anything at home or office." />
-        <div className="service-strip">
-          {services.slice(0, 6).map((service) => (
-            <ServiceMini key={service.title} {...service} />
-          ))}
-        </div>
-      </section>
-
-      <section className="section">
-        <SectionTitle title="How Fixam Works" caption="Simple steps to get your task done." />
-        <div className="steps">
-          {[
-            ['Post a Task', 'Tell us what you need done in minutes.', 'home'],
-            ['Get Proposals', 'Receive offers from verified professionals.', 'briefcase'],
-            ['Choose & Book', 'Select the best pro and book with confidence.', 'location'],
-            ['Get It Done', 'Relax while the job gets done right.', 'wrench'],
-          ].map(([title, desc, icon]) => (
-            <div className="step" key={title}>
-              <Icon name={icon as IconName} />
-              <h3>{title}</h3>
-              <p>{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <StatsBand />
-
-      <section className="section">
-        <SectionTitle title="Top Rated Professionals" caption="Hire trusted experts in your area." />
-        <div className="pro-grid">
-          {pros.map((pro) => (
-            <ProCard key={pro.name} pro={pro} />
-          ))}
-        </div>
-        <div className="center-actions">
-          <button className="outline-button">View All Professionals</button>
-        </div>
-      </section>
-
-      <section className="section">
-        <SectionTitle title="What Our Customers Say" caption="Real people. Real stories." />
-        <div className="testimonial-grid">
-          {['Fixam made it so easy to find a professional plumber. He came on time and did an excellent job!', 'I love how quick I get responses when I post a task. Very reliable and trustworthy platform.', 'The cleaner I hired did an amazing job. My house has never looked better!'].map((quote, index) => (
-            <article className="testimonial" key={quote}>
-              <span className="quote-mark">“</span>
-              <p>{quote}</p>
-              <strong>{['Maria Sanchez', 'David N.', 'Amina K.'][index]}</strong>
-              <span className="stars">★★★★★</span>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <CtaBand onNavigate={onNavigate} />
-
-      <section className="section">
-        <SectionTitle title="Tips & Resources" caption="Helpful tips to maintain your home and save more." />
-        <div className="blog-grid">
-          {blogPosts.map((post) => (
-            <article className="blog-card" key={post.title}>
-              <ImageSlot src={post.image} alt="" label={post.tag} />
-              <div>
-                <span>{post.tag}</span>
-                <h3>{post.title}</h3>
-                <p>May 10, 2026 • 5 min read</p>
+      <section className="section services-grid-section">
+        <div className="categories-grid">
+          {services.map((service) => (
+            <button className="category-card-large" key={service.id} onClick={() => onNavigate('login')}>
+              <img src={service.image} alt={t(`categories.${service.id}`) || service.title} />
+              <div className="category-card-overlay">
+                <h3>{t(`categories.${service.id}`) || service.title}</h3>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </section>
-
-      <AppTrust />
-      <Footer />
+      <Footer onNavigate={onNavigate} />
     </div>
   )
 }
 
-function Services() {
+function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
+  const { t, i18n } = useTranslation();
+
   return (
-    <>
-      <section className="services-hero section-grid">
-        <div className="hero-copy reveal">
-          <span className="pill">All Services</span>
-          <h1>
-            Explore Services. <span>Hire Trusted Professionals.</span>
-          </h1>
-          <p>Find the right expert for your home, office, or business needs. Quality work, on time, every time.</p>
-        </div>
-        <HeroCollage compact />
-      </section>
-      <section className="service-browser">
-        <div className="search-panel">
-          <label>
-            <Icon name="search" />
-            <input placeholder="Search services (e.g. plumbing, cleaning, electrician)..." />
-          </label>
-          <button className="select-button">
-            <Icon name="location" /> All Locations
-          </button>
-          <button className="select-button">
-            <Icon name="filter" /> Sort by
-          </button>
-          <button className="select-button">
-            <Icon name="menu" /> Filters
+    <div className="header-wrapper">
+      <header className="site-header">
+        <div className="header-left">
+          <button className="brand brand-button" onClick={() => onNavigate('home')} aria-label="Go to homepage">
+            <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
           </button>
         </div>
-        <div className="browser-layout">
-          <aside className="category-panel">
-            <h2>Categories</h2>
-            {services.map((service, index) => (
-              <button className={index === 0 ? 'category active' : 'category'} key={service.title}>
-                <Icon name={service.icon} />
-                {service.title}
-                <span>({index === 0 ? 48 : index + 3})</span>
-              </button>
-            ))}
-            <div className="safety-box">
-              <Icon name="shield" />
-              <strong>All professionals are verified and trusted.</strong>
-              <p>Your safety is our priority.</p>
-            </div>
-          </aside>
-          <div className="service-results">
-            <div className="results-head">
-              <h2>48 Services Found</h2>
-              <span>View as: ▦ ☰</span>
-            </div>
-            <div className="service-card-grid">
-              {services.map((service) => (
-                <ServiceCard key={service.title} {...service} />
-              ))}
-            </div>
-            <FeatureRow />
+        <nav className="main-nav">
+          <button className="nav-link" onClick={() => onNavigate('services')}>{t('nav.explore')}</button>
+          <button className="nav-link" onClick={() => onNavigate('guide')}>{t('nav.guide')}</button>
+          <button className="nav-link" onClick={() => onNavigate('about')}>{t('nav.about')}</button>
+          <div className="language-dropdown">
+            <select 
+              value={i18n.language} 
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              className="nav-link"
+              style={{ background: 'transparent', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+            >
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
+          <button className="nav-link" onClick={() => onNavigate('login')}>{t('nav.signin')}</button>
+          <button className="primary-button" onClick={() => onNavigate('login')}>{t('nav.join')}</button>
+        </nav>
+      </header>
+    </div>
+  )
+}
+
+function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation()
+
+  return (
+    <div className="landing-page">
+      <section className="hero-video-section">
+        <div className="hero-video-container">
+          <video autoPlay muted loop playsInline className="hero-bg-video">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-video-overlay"></div>
+          <div className="hero-copy video-copy reveal">
+            <h1 className="hero-title">
+              {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
+            </h1>
           </div>
         </div>
-        <CtaBand />
       </section>
-    </>
+
+      <section className="section full-width-section">
+        <SectionTitle title={t('categories.title')} caption={t('categories.subtitle')} />
+        <div className="category-scroll-wrapper">
+          <div className="category-scroll-container marquee">
+            {[...services, ...services].map((service, index) => (
+              <button className="category-card-large" key={`${service.id}-${index}`} onClick={() => onNavigate('login')}>
+                <img src={service.image} alt={t(`categories.${service.id}`) || service.title} />
+                <div className="category-card-overlay">
+                  <h3>{t(`categories.${service.id}`) || service.title}</h3>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sticky-cards-section">
+        <div className="sticky-cards-header">
+          <SectionTitle title={t('how_it_works.title')} caption={t('how_it_works.subtitle')} />
+        </div>
+        <div className="sticky-cards-container">
+          {[
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.taskCleaning, color: '#f0fdf4' },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.heroProfessional, color: '#eff6ff' },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.taskElectrical, color: '#faf5ff' },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.taskPlumbing, color: '#fffbeb' },
+          ].map((card, index) => (
+            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.color }}>
+              <div className="sticky-card-content">
+                <div className="sticky-card-text">
+                  <span className="step-number">0{index + 1}</span>
+                  <h3>{card.title}</h3>
+                  <p>{card.desc}</p>
+                </div>
+                <div className="sticky-card-image">
+                  <img src={card.image} alt={card.title} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section">
+        <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
+        <div className="pro-grid">
+          {pros.map((pro) => (
+            <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
+          ))}
+        </div>
+        <div className="center-actions">
+          <button className="outline-button" onClick={() => onNavigate('login')}>{t('pros.view_all')}</button>
+        </div>
+      </section>
+
+      <Footer onNavigate={onNavigate} />
+    </div>
   )
 }
 
 function About({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation();
+  
   return (
-    <>
-      <section className="about-hero section-grid">
-        <div className="hero-copy reveal">
-          <span className="pill">About Fixam</span>
-          <h1>
-            We’re on a mission to <span>make life easier.</span>
-          </h1>
-          <p>Fixam connects you with trusted, verified professionals who get the job done right the first time.</p>
-          <div className="about-points">
-            <SmallTrust icon="shield" label="Verified Professionals" text="All pros are carefully vetted for your safety and peace of mind." />
-            <SmallTrust icon="check" label="Quality & Trust" text="We’re committed to delivering the best service experience." />
-          </div>
-        </div>
-        <HeroCollage compact />
+    <div className="about-page">
+      <div className="services-hero">
+        <h1>{t('nav.about') || 'About Us'}</h1>
+        <p>Fixam connects you with trusted, verified professionals who get the job done right the first time.</p>
+      </div>
+      <section className="section about-points" style={{ padding: '6rem 2rem', maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>Our Mission</h2>
+        <p style={{ fontSize: '1.25rem', color: 'var(--muted)', lineHeight: '1.8' }}>
+          We are on a mission to make life easier by bridging the gap between individuals who need services and verified professionals who provide them. We believe in quality, trust, and reliability above all else.
+        </p>
       </section>
-      <section className="about-stats">
-        {[
-          ['10K+', 'Active Professionals', 'Verified experts in our network', 'user'],
-          ['50K+', 'Tasks Completed', 'Successfully delivered', 'calendar'],
-          ['25+', 'Cities Covered', 'Across Cameroon', 'location'],
-          ['98%', 'Customer Satisfaction', 'Happy customers every day', 'shield'],
-        ].map(([value, title, desc, icon]) => (
-          <div key={title}>
-            <Icon name={icon as IconName} />
-            <strong>{value}</strong>
-            <span>{title}</span>
-            <p>{desc}</p>
-          </div>
-        ))}
-      </section>
-      <section className="about-cards">
-        <article>
-          <Icon name="briefcase" />
-          <h2>Our Mission</h2>
-          <p>To simplify everyday life by connecting people with reliable professionals through technology, trust, and exceptional service.</p>
-        </article>
-        <article className="story-card">
-          <h2>Our Story</h2>
-          <p>Fixam was founded with a simple idea: finding a reliable professional should be easy, fast, and stress-free.</p>
-          <p>We saw the challenges people face daily trying to find trustworthy help for their homes, businesses, and personal needs. So, we built a platform that brings transparency, convenience, and quality to every service experience.</p>
-          <p>Today, Fixam is proud to be the go-to platform for thousands of customers and professionals across the country.</p>
-        </article>
-        <article>
-          <h2>Our Values</h2>
-          {['Trust', 'Quality', 'Convenience', 'Community'].map((value) => (
-            <SmallTrust key={value} icon="check" label={value} text="We grow together with our customers and professionals." />
-          ))}
-        </article>
-      </section>
-      <CtaBand onNavigate={onNavigate} />
-      <Footer />
-    </>
+      <Footer onNavigate={onNavigate} />
+    </div>
   )
 }
 
-function Login({ onNavigate }: { onNavigate: (page: Page) => void }) {
+function Guide({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation();
+
   return (
-    <main className="login-page">
-      <section className="login-art">
-        <Logo light />
-        <div className="login-art-copy">
-          <h1>
-            Welcome Back! <span>Let’s get things done today.</span>
-          </h1>
-          <p>Login to your account and continue using Fixam to connect with trusted professionals.</p>
+    <div className="guide-page">
+      <div className="services-hero">
+        <h1>{t('nav.guide') || 'How It Works'}</h1>
+        <p>Everything you need to know about getting things done on Fixam.</p>
+      </div>
+      
+      <section className="section guide-content" style={{ padding: '4rem 2rem', maxWidth: '800px', margin: '0 auto' }}>
+        
+        <div className="faq-item" style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>How to Register</h2>
+          <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
+            Getting started is completely free! Simply click on the <strong>Join</strong> button at the top right of the page. You can sign up using your email or phone number. Once your account is verified, you can immediately start posting tasks or browsing for professionals.
+          </p>
         </div>
-        <div className="floating-benefits">
-          <SmallTrust icon="shield" label="Verified Professionals" />
-          <SmallTrust icon="wallet" label="Secure Payments" />
-          <SmallTrust icon="check" label="Satisfaction Guaranteed" />
+
+        <div className="faq-item" style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>How to Find the Right Provider</h2>
+          <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
+            There are two main ways to get your job done:
+            <br/><br/>
+            1. <strong>Post a Task</strong>: Describe what you need, set your budget, and let verified professionals send you proposals.
+            <br/>
+            2. <strong>Direct Booking</strong>: Browse through our "Explore" page, view profiles, read reviews, and hire a specific professional directly.
+          </p>
         </div>
-        <div className="login-person">
-          <ImageSlot src={images.heroProfessional} alt="" label="Fixam pro" />
+
+        <div className="faq-item" style={{ marginBottom: '3rem' }}>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>Safety and Verification</h2>
+          <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
+            Your safety is our absolute priority. Every professional on Fixam undergoes a rigorous background check, identity verification, and skills assessment before they are allowed to offer services on the platform. Payments are also held securely until the job is completed to your satisfaction.
+          </p>
         </div>
-        <div className="login-stats">
-          <span><strong>10K+</strong>Tasks Completed</span>
-          <span><strong>5K+</strong>Verified Pros</span>
-          <span><strong>98%</strong>Satisfaction</span>
-          <span><strong>24/7</strong>Support</span>
+
+        <div className="center-actions" style={{ textAlign: 'center', marginTop: '4rem' }}>
+          <button className="primary-button" onClick={() => onNavigate('login')}>Get Started Now</button>
         </div>
       </section>
-      <section className="login-form-wrap">
-        <div className="login-top">
-          <span>Don’t have an account?</span>
-          <button className="outline-button">Sign Up</button>
-        </div>
-        <form className="login-card">
-          <h2>Welcome back</h2>
-          <p>Login to your Fixam account</p>
-          <label>
-            Email Address
-            <span><Icon name="message" /><input type="email" placeholder="Enter your email address" /></span>
-          </label>
-          <label>
-            Password
-            <span><Icon name="shield" /><input type="password" placeholder="Enter your password" /></span>
-          </label>
-          <button className="link-button" type="button">Forgot Password?</button>
-          <button className="primary-button login-button" type="button" onClick={() => onNavigate('dashboard')}>Login →</button>
-          <div className="divider">or continue with</div>
-          <div className="social-row">
-            <button type="button">Google</button>
-            <button type="button">Apple</button>
-            <button type="button">Facebook</button>
-          </div>
-          <p className="secure-note"><Icon name="shield" /> Your data is safe and secure with us.</p>
-        </form>
-        <AppTrust simple />
-      </section>
-    </main>
+
+      <Footer onNavigate={onNavigate} />
+    </div>
   )
 }
+
+// Removed Login and Register to src/pages/Auth/
 
 function Dashboard({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
@@ -592,26 +474,56 @@ function CtaBand({ onNavigate }: { onNavigate?: (page: Page) => void }) {
   )
 }
 
-function Footer() {
+function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
+  const { t } = useTranslation();
+
   return (
-    <footer className="footer">
-      <div>
-        <Logo light />
-        <p>Fixam connects you with verified professionals to get things done quickly and reliably.</p>
-        <div className="socials"><span>f</span><span>x</span><span>◎</span><span>in</span></div>
+    <footer className="hero-footer">
+      <div className="hero-footer-cta">
+        <h2>{t('footer.ready')}</h2>
+        <p>{t('footer.join')}</p>
+        <button className="primary-button large" onClick={() => onNavigate?.('login')}>{t('footer.start_now')}</button>
       </div>
-      {[
-        ['Company', 'About Us', 'How It Works', 'Careers', 'Press', 'Contact Us'],
-        ['Services', 'Plumbing', 'Electrical', 'Cleaning', 'Painting', 'All Services'],
-        ['Support', 'Help Center', 'Safety', 'Terms of Service', 'Privacy Policy', 'Refund Policy'],
-        ['Contact Us', '+237 6XX XXX XXX', 'support@fixam.com', 'Douala, Cameroon'],
-      ].map(([title, ...links]) => (
-        <div key={title}>
-          <h3>{title}</h3>
-          {links.map((link) => <a href="/" onClick={(event) => event.preventDefault()} key={link}>{link}</a>)}
+      <div className="footer-links-grid">
+        <div className="footer-brand">
+          <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+          <p>{t('footer.description')}</p>
+          <div className="socials"><span>f</span><span>x</span><span>◎</span><span>in</span></div>
         </div>
-      ))}
-      <p className="copyright">© 2026 Fixam. All rights reserved.</p>
+        <div>
+          <h3>{t('footer.company')}</h3>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('about') }}>{t('footer.about')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('home') }}>{t('footer.how_it_works')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.careers')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.press')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.contact')}</a>
+        </div>
+        <div>
+          <h3>{t('footer.services')}</h3>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.plumbing')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.electrical')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.cleaning')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.painting')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('footer.all_services')}</a>
+        </div>
+        <div>
+          <h3>{t('footer.support')}</h3>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.help')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.safety')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.terms')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.privacy')}</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.refund')}</a>
+        </div>
+        <div>
+          <h3>{t('footer.contact')}</h3>
+          <a href="#" onClick={(e) => e.preventDefault()}>+237 6XX XXX XXX</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>support@fixam.com</a>
+          <a href="#" onClick={(e) => e.preventDefault()}>Douala, Cameroon</a>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <p className="copyright">© 2026 Fixam. All rights reserved.</p>
+      </div>
     </footer>
   )
 }
@@ -640,15 +552,24 @@ function ServiceCard(service: (typeof services)[number]) {
   )
 }
 
-function ProCard({ pro, mini = false }: { pro: (typeof pros)[number]; mini?: boolean }) {
+function ProCard({ pro, mini = false, onNavigate }: { pro: (typeof pros)[number]; mini?: boolean; onNavigate?: (page: Page) => void }) {
   return (
-    <article className={mini ? 'pro-card mini' : 'pro-card'}>
-      <ImageSlot src={pro.image} alt="" label={pro.name} />
-      <div>
-        <h3>{pro.name}</h3>
-        <p>{pro.role}</p>
-        <div><span className="stars">★ {pro.rating}</span><span>{pro.distance}</span></div>
-        {!mini && <button className="primary-button">Book Now</button>}
+    <article className={mini ? 'premium-pro-card mini' : 'premium-pro-card'}>
+      <div className="pro-card-cover">
+        <img src={pro.image} alt={pro.name} className="pro-cover-img" />
+        <div className="pro-badge"><Icon name="shield" /> Verified</div>
+      </div>
+      <div className="pro-card-content">
+        <div className="pro-header">
+          <h3>{pro.name}</h3>
+          <span className="pro-rating"><Icon name="star" /> {pro.rating}</span>
+        </div>
+        <p className="pro-role">{pro.role}</p>
+        <div className="pro-stats">
+          <div className="stat-pill"><Icon name="check" /> 100+ Jobs</div>
+          <div className="stat-pill"><Icon name="location" /> {pro.distance}</div>
+        </div>
+        {!mini && <button className="primary-button full-width" onClick={() => onNavigate && onNavigate('login')}>Hire {pro.name.split(' ')[0]}</button>}
       </div>
     </article>
   )
@@ -693,9 +614,9 @@ function ActivityCard() {
   )
 }
 
-function SectionTitle({ title, caption }: { title: string; caption: string }) {
+function SectionTitle({ title, caption, className }: { title: string; caption: string; className?: string }) {
   return (
-    <div className="section-title">
+    <div className={`section-title ${className || ''}`}>
       <h2>{title}</h2>
       <p>{caption}</p>
     </div>
@@ -716,18 +637,12 @@ function AppTrust({ simple = false }: { simple?: boolean }) {
     <section className={simple ? 'app-trust simple' : 'app-trust'}>
       <div>
         <h2>Trusted by Thousands</h2>
-        <div className="brand-cloud">
-          <strong className="mtn-logo">MTN</strong>
-          <strong className="orange-logo">orange</strong>
-        </div>
+        <div className="brand-cloud"><strong>MTN</strong><strong>VISA</strong><strong>orange</strong><strong>MoMo</strong><strong>PayPal</strong></div>
       </div>
       <div>
         <h2>Get the Fixam App</h2>
         <p>Manage tasks, chat with pros and more from your mobile device.</p>
-        <div className="store-row">
-          <button><span className="apple-mark">Apple</span> App Store</button>
-          <button><span className="play-mark" /> Google Play</button>
-        </div>
+        <div className="store-row"><button>App Store</button><button>Google Play</button></div>
       </div>
       {!simple && <ImageSlot className="app-phone-preview" src={images.appHomeScreen} alt="Fixam app preview" label="Fixam app" />}
     </section>
@@ -758,7 +673,7 @@ function Logo({ light = false }: { light?: boolean }) {
   )
 }
 
-function Icon({ name }: { name: IconName }) {
+export function Icon({ name }: { name: IconName }) {
   const paths: Record<IconName, string> = {
     appliance: 'M7 4h10v16H7z M10 7h4 M10 17h4 M10 11a2 2 0 1 0 4 0a2 2 0 0 0-4 0z',
     bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9z M10 21h4',

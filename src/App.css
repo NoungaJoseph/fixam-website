@@ -1,13 +1,13 @@
 :root {
-  --ink: #07142f;
-  --muted: #687693;
-  --line: #dce6f4;
-  --soft: #f4fbfd;
-  --teal: #009b8f;
-  --teal-dark: #007b73;
-  --blue: #126df5;
-  --green: #21c59b;
-  --shadow: 0 18px 60px rgba(28, 48, 85, 0.12);
+  --ink: #0F172A;
+  --muted: #64748B;
+  --line: #E2E8F0;
+  --soft: #E0F2F1;
+  --teal: #0D9488;
+  --teal-dark: #0F766E;
+  --blue: #2563EB;
+  --green: #22C55E;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 #root {
@@ -25,9 +25,7 @@ button {
 
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 75% 8%, rgba(0, 155, 143, 0.08), transparent 24rem),
-    linear-gradient(180deg, #ffffff 0%, #f9fcff 46%, #ffffff 100%);
+  background: var(--soft);
   color: var(--ink);
 }
 
@@ -72,32 +70,13 @@ button {
   gap: 1.38rem;
 }
 
-.landing-header .nav-link {
-  font-size: 0.76rem;
-  font-weight: 900;
-}
-
-.landing-header .nav-link::after {
-  bottom: -0.72rem;
-  height: 2px;
-}
-
 .landing-header .theme-toggle {
   display: none;
 }
 
-.landing-header .outline-button,
-.landing-header .primary-button {
-  min-height: 2.45rem;
-  border-radius: 0.42rem;
-  padding: 0 1.05rem;
-  font-size: 0.76rem;
-}
 
-.landing-header .primary-button {
-  background: var(--teal);
-  box-shadow: none;
-}
+
+
 
 .brand-button,
 .nav-link,
@@ -135,8 +114,8 @@ button {
   position: relative;
   padding: 0.4rem 0;
   color: var(--ink);
-  font-size: 0.92rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .nav-link::after {
@@ -183,10 +162,11 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  min-height: 2.8rem;
-  border-radius: 0.5rem;
-  padding: 0 1.25rem;
-  font-weight: 900;
+  min-height: 3.2rem;
+  border-radius: 0;
+  padding: 0 1.8rem;
+  font-weight: 700;
+  font-size: 1rem;
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
@@ -194,7 +174,7 @@ button {
   border: 0;
   background: linear-gradient(135deg, var(--teal), var(--blue));
   color: #fff;
-  box-shadow: 0 12px 28px rgba(18, 109, 245, 0.18);
+  box-shadow: 0 8px 24px rgba(0, 155, 143, 0.25);
 }
 
 .outline-button {
@@ -254,7 +234,9 @@ button {
 .about-cards,
 .cta-band,
 .app-trust {
-  width: min(1280px, calc(100% - 3rem));
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 4%;
   margin: 0 auto;
 }
 
@@ -467,12 +449,17 @@ p {
 }
 
 .section-title h2 {
-  font-size: 2rem;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--teal);
 }
 
 .section-title p {
   margin-top: 0.55rem;
   color: var(--muted);
+  font-size: 1.3rem;
 }
 
 .service-strip,
@@ -598,7 +585,8 @@ p {
 }
 
 .pro-grid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
 .pro-card {
@@ -806,11 +794,8 @@ p {
 }
 
 .landing-page {
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 78% 9%, rgba(0, 155, 143, 0.055), transparent 18rem),
-    radial-gradient(circle at 17% 3%, rgba(18, 109, 245, 0.035), transparent 18rem),
-    #fff;
+  overflow: clip;
+  background: var(--soft);
 }
 
 .landing-page .section,
@@ -936,13 +921,16 @@ p {
 }
 
 .landing-page .section-title h2 {
-  font-size: 1.58rem;
-  font-weight: 950;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--teal);
 }
 
 .landing-page .section-title p {
-  margin-top: 0.44rem;
-  font-size: 0.88rem;
+  margin-top: 0.55rem;
+  font-size: 1.3rem;
 }
 
 .landing-page .service-strip {
@@ -1059,7 +1047,7 @@ p {
 }
 
 .landing-page .pro-grid {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.35rem;
 }
 
@@ -2440,4 +2428,395 @@ p {
   .dashboard-topbar {
     padding: 1rem;
   }
+}
+
+/* Premium Pro Card Styles */
+.premium-pro-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.premium-pro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+}
+
+.pro-card-cover {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}
+
+.pro-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pro-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pro-badge svg {
+  color: var(--teal);
+  width: 12px;
+}
+
+.pro-card-content {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.pro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.3rem;
+}
+
+.pro-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pro-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.pro-rating svg {
+  color: #f59e0b;
+  width: 14px;
+}
+
+.pro-role {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.pro-stats {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: var(--line);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.stat-pill svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Auth Split-Screen Layout */
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background: white;
+  align-items: flex-start;
+}
+
+.auth-form-side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  background: white;
+  z-index: 2;
+  min-height: 100vh;
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-brand {
+  margin-bottom: 3rem;
+  align-self: flex-start;
+}
+
+.auth-header {
+  margin-bottom: 2.5rem;
+}
+
+.auth-header h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.account-type-toggle {
+  display: flex;
+  background: var(--soft);
+  padding: 0.3rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.account-type-toggle button {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.account-type-toggle button.active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.name-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.name-row .input-group {
+  flex: 1;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 1rem;
+  height: 3.2rem;
+  transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(37, 185, 172, 0.1);
+}
+
+.input-wrapper svg {
+  color: var(--muted);
+  width: 18px;
+  margin-right: 0.8rem;
+}
+
+.input-wrapper input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--line);
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+}
+
+.social-login-grid {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  height: 3.2rem;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.social-btn:hover {
+  background: var(--soft);
+}
+
+.social-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--muted);
+}
+
+.auth-switch button {
+  font-weight: 700;
+  color: var(--teal);
+}
+
+/* Auth Right Side (Art) */
+.auth-art-side {
+  flex: 1;
+  display: none;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+@media (min-width: 900px) {
+  .auth-art-side {
+    display: block;
+  }
+}
+
+.auth-art-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem;
+}
+
+.auth-art-content {
+  color: white;
+  max-width: 500px;
+}
+
+.auth-art-content h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.auth-art-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 3rem;
+}
+
+.auth-stats {
+  display: flex;
+  gap: 3rem;
+}
+
+
+
+.stat-item h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+
+.stat-item span {
+  font-size: 1rem;
+  opacity: 0.8;
 }

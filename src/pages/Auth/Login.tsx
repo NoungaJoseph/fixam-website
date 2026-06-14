@@ -1,0 +1,154 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Page, asset, images, Icon } from '../../App';
+
+export default function Login({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation();
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  
+  // Custom dropdown state for phone
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [countryCode, setCountryCode] = useState('+237');
+  const [phone, setPhone] = useState('');
+  const countries = [
+    { code: '+237', name: 'Cameroon', flag: 'https://flagcdn.com/w40/cm.png' },
+    { code: '+234', name: 'Nigeria', flag: 'https://flagcdn.com/w40/ng.png' },
+    { code: '+233', name: 'Ghana', flag: 'https://flagcdn.com/w40/gh.png' },
+    { code: '+225', name: 'Côte d\'Ivoire', flag: 'https://flagcdn.com/w40/ci.png' }
+  ];
+  const selectedCountry = countries.find(c => c.code === countryCode) || countries[0];
+
+  return (
+    <main className="auth-layout">
+      <section className="auth-form-side">
+        <div className="auth-form-container">
+          <button className="brand brand-button auth-brand" onClick={() => onNavigate('home')}>
+            <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+          </button>
+          
+          <div className="auth-header">
+            <h2>Welcome back</h2>
+            <p>Enter your details to access your account.</p>
+          </div>
+
+          <form className="auth-form" onSubmit={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>
+            {loginMethod === 'email' ? (
+              <div className="input-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <label>Email Address</label>
+                  <button type="button" onClick={() => setLoginMethod('phone')} style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Use Phone instead</button>
+                </div>
+                <div className="input-wrapper">
+                  <Icon name="message" />
+                  <input type="email" placeholder="you@example.com" required />
+                </div>
+              </div>
+            ) : (
+              <div className="input-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <label>Phone Number</label>
+                  <button type="button" onClick={() => setLoginMethod('email')} style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer' }}>Use Email instead</button>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', position: 'relative' }}>
+                  <div 
+                    className="input-wrapper" 
+                    style={{ padding: '0 0.8rem', width: 'auto', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', userSelect: 'none' }}
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <img src={selectedCountry.flag} alt={selectedCountry.name} style={{ width: '20px', borderRadius: '2px' }} />
+                    <span style={{ fontWeight: 600 }}>{selectedCountry.code}</span>
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ marginLeft: '4px' }}>
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+
+                  {isDropdownOpen && (
+                    <div style={{
+                      position: 'absolute', top: '110%', left: 0, background: 'white', border: '1px solid var(--line)', 
+                      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, width: '180px', overflow: 'hidden'
+                    }}>
+                      {countries.map((country) => (
+                        <div 
+                          key={country.code}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--soft)' }}
+                          onClick={() => {
+                            setCountryCode(country.code);
+                            setIsDropdownOpen(false);
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = 'var(--soft)'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                        >
+                          <img src={country.flag} alt={country.name} style={{ width: '24px', borderRadius: '2px' }} />
+                          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{country.code}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="input-wrapper" style={{ flex: 1 }}>
+                    <input 
+                      type="tel" 
+                      placeholder="600 000 000" 
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required 
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="input-group">
+              <label>Password</label>
+              <div className="input-wrapper">
+                <Icon name="shield" />
+                <input type="password" placeholder="••••••••" required />
+              </div>
+            </div>
+
+            <div className="auth-actions">
+              <label className="remember-me">
+                <input type="checkbox" /> Remember me
+              </label>
+              <button type="button" className="link-button" onClick={() => onNavigate('forgot_password')}>Forgot password?</button>
+            </div>
+
+            <button type="submit" className="primary-button full-width">Sign In</button>
+
+            <div className="auth-divider">
+              <span>Or continue with</span>
+            </div>
+
+            <div className="social-login-grid">
+              <button type="button" className="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" /> Google</button>
+              <button type="button" className="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple" /> Apple</button>
+            </div>
+          </form>
+
+          <p className="auth-switch">
+            Don't have an account? <button type="button" className="link-button" onClick={() => onNavigate('register')}>Sign up</button>
+          </p>
+        </div>
+      </section>
+      
+      <section className="auth-art-side" style={{ backgroundImage: `url(${images.servicePlumber})` }}>
+        <div className="auth-art-overlay">
+          <div className="auth-art-content">
+            <h2>Trusted by thousands of professionals & clients.</h2>
+            <p>Join the community to get things done securely and swiftly.</p>
+            <div className="auth-stats">
+              <div className="stat-item">
+                <h3>10k+</h3>
+                <span>Verified Pros</span>
+              </div>
+              <div className="stat-item">
+                <h3>50k+</h3>
+                <span>Jobs Done</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
