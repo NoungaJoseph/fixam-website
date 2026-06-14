@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
@@ -177,6 +177,26 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
 
 function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { t } = useTranslation()
+  const proGridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Only auto-scroll on mobile where scrollWidth > clientWidth
+    const interval = setInterval(() => {
+      if (proGridRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = proGridRef.current;
+        if (scrollWidth > clientWidth) {
+          const maxScroll = scrollWidth - clientWidth;
+          const nextScroll = scrollLeft + clientWidth * 0.85; // scroll by ~85vw
+          if (nextScroll >= maxScroll) {
+            proGridRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            proGridRef.current.scrollTo({ left: nextScroll, behavior: 'smooth' });
+          }
+        }
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="landing-page">
@@ -239,7 +259,7 @@ function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
 
       <section className="section">
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
-        <div className="pro-grid">
+        <div className="pro-grid" ref={proGridRef}>
           {pros.map((pro) => (
             <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
           ))}
