@@ -140,7 +140,7 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
       <header className="site-header">
         <div className="header-left">
           <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
-            <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '56px' }} />
           </button>
         </div>
         
@@ -521,7 +521,7 @@ function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
       </div>
       <div className="footer-links-grid">
         <div className="footer-brand">
-          <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+          <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '72px' }} />
           <p>{t('footer.description')}</p>
           <div className="socials"><span>f</span><span>x</span><span>◎</span><span>in</span></div>
         </div>

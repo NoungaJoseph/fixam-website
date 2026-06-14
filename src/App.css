@@ -59,6 +59,11 @@ button {
   padding: 0.5rem;
 }
 
+.mobile-menu-btn svg {
+  width: 36px;
+  height: 36px;
+}
+
 .landing-header {
   width: min(1400px, calc(100% - 5rem));
   padding: 1.08rem 0;
