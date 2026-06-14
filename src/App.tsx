@@ -113,9 +113,9 @@ function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
         <div className="categories-grid">
           {services.map((service) => (
             <button className="category-card-large" key={service.id} onClick={() => onNavigate('login')}>
-              <img src={service.image} alt={t(`categories.${service.id}`) || service.title} />
+              <img src={service.image} alt={t(`categories.${service.id}`, service.title)} />
               <div className="category-card-overlay">
-                <h3>{t(`categories.${service.id}`) || service.title}</h3>
+                <h3>{t(`categories.${service.id}`, service.title)}</h3>
               </div>
             </button>
           ))}
@@ -220,9 +220,9 @@ function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
           <div className="category-scroll-container marquee">
             {[...services, ...services].map((service, index) => (
               <button className="category-card-large" key={`${service.id}-${index}`} onClick={() => onNavigate('login')}>
-                <img src={service.image} alt={t(`categories.${service.id}`) || service.title} />
+                <img src={service.image} alt={t(`categories.${service.id}`, service.title)} />
                 <div className="category-card-overlay">
-                  <h3>{t(`categories.${service.id}`) || service.title}</h3>
+                  <h3>{t(`categories.${service.id}`, service.title)}</h3>
                 </div>
               </button>
             ))}
