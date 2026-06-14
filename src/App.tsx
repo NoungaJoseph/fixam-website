@@ -128,7 +128,7 @@ function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
 
 function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
   const { t, i18n } = useTranslation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavigate = (newPage: Page) => {
     setIsMobileMenuOpen(false);
