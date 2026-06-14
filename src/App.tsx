@@ -128,19 +128,34 @@ function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
 
 function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
   const { t, i18n } = useTranslation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  const handleNavigate = (newPage: Page) => {
+    setIsMobileMenuOpen(false);
+    onNavigate(newPage);
+  };
 
   return (
     <div className="header-wrapper">
       <header className="site-header">
         <div className="header-left">
-          <button className="brand brand-button" onClick={() => onNavigate('home')} aria-label="Go to homepage">
+          <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
             <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
           </button>
         </div>
-        <nav className="main-nav">
-          <button className="nav-link" onClick={() => onNavigate('services')}>{t('nav.explore')}</button>
-          <button className="nav-link" onClick={() => onNavigate('guide')}>{t('nav.guide')}</button>
-          <button className="nav-link" onClick={() => onNavigate('about')}>{t('nav.about')}</button>
+        
+        <button 
+          className="mobile-menu-btn" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <Icon name={isMobileMenuOpen ? "x" : "menu"} />
+        </button>
+
+        <nav className={`main-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          <button className="nav-link" onClick={() => handleNavigate('services')}>{t('nav.explore')}</button>
+          <button className="nav-link" onClick={() => handleNavigate('guide')}>{t('nav.guide')}</button>
+          <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about')}</button>
           <div className="language-dropdown">
             <select 
               value={i18n.language} 
@@ -152,8 +167,8 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
               <option value="fr">Français</option>
             </select>
           </div>
-          <button className="nav-link" onClick={() => onNavigate('login')}>{t('nav.signin')}</button>
-          <button className="primary-button" onClick={() => onNavigate('login')}>{t('nav.join')}</button>
+          <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin')}</button>
+          <button className="primary-button" onClick={() => handleNavigate('login')}>{t('nav.join')}</button>
         </nav>
       </header>
     </div>

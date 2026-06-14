@@ -50,6 +50,15 @@ button {
   gap: 1.25rem;
 }
 
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--teal-dark);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
 .landing-header {
   width: min(1400px, calc(100% - 5rem));
   padding: 1.08rem 0;
