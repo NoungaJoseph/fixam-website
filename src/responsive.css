@@ -34,6 +34,7 @@
   }
 
   .main-nav {
+    display: flex !important;
     position: fixed;
     top: 0;
     right: -100%;
@@ -221,8 +222,8 @@
   }
   
   .footer-links-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .hero-footer-cta h2 {
