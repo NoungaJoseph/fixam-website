@@ -22,8 +22,8 @@ export default function Login({ onNavigate }: { onNavigate: (page: Page) => void
     <main className="auth-layout">
       <section className="auth-form-side">
         <div className="auth-form-container">
-          <button className="brand brand-button auth-brand" onClick={() => onNavigate('home')}>
-            <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+          <button className="brand brand-button" onClick={() => onNavigate('home')} aria-label="Go to homepage">
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)' }} />
           </button>
           
           <div className="auth-header">

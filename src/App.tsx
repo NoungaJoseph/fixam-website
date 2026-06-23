@@ -4,10 +4,12 @@ import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
 import OTPVerification from './pages/Auth/OTPVerification'
+import TermsOfService from './pages/TermsOfService'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 import './App.css'
 import './marketplace.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -92,6 +94,8 @@ function App() {
             {page === 'services' && <Services onNavigate={setPage} />}
             {page === 'guide' && <Guide onNavigate={setPage} />}
             {page === 'about' && <About onNavigate={setPage} />}
+            {page === 'terms' && <TermsOfService onNavigate={setPage} />}
+            {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
             {page === 'home' && <Home onNavigate={setPage} />}
           </main>
         </>
@@ -140,7 +144,7 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
       <header className="site-header">
         <div className="header-left">
           <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
-            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '56px' }} />
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
           </button>
         </div>
         
@@ -521,7 +525,7 @@ function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
       </div>
       <div className="footer-links-grid">
         <div className="footer-brand">
-          <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '72px' }} />
+          <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
           <p>{t('footer.description')}</p>
           <div className="socials"><span>f</span><span>x</span><span>◎</span><span>in</span></div>
         </div>
@@ -545,8 +549,8 @@ function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
           <h3>{t('footer.support')}</h3>
           <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.help')}</a>
           <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.safety')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.terms')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.privacy')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('terms') }}>{t('footer.terms')}</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('privacy') }}>{t('footer.privacy')}</a>
           <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.refund')}</a>
         </div>
         <div>

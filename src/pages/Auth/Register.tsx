@@ -90,7 +90,7 @@ export default function Register({ onNavigate }: { onNavigate: (page: Page) => v
       <section className="auth-form-side">
         <div className="auth-form-container" style={{ margin: '2rem 0' }}>
           <button className="brand brand-button auth-brand" onClick={() => onNavigate('home')}>
-            <img src={asset('fixam.png')} alt="Fixam Logo" style={{ height: '32px' }} />
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)' }} />
           </button>
           
           <div className="auth-header">
