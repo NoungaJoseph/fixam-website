@@ -72,6 +72,19 @@ const resources = {
         "desc3": "Select the best pro and book with confidence.",
         "step4": "Get It Done",
         "desc4": "Relax while the job gets done right."
+      },
+      "guide": {
+        "hero_title": "How It Works",
+        "hero_desc": "Everything you need to know about getting things done on Fixam.",
+        "register_title": "How to Register",
+        "register_desc": "Getting started is completely free! Simply click on the Get Started button at the top right of the page. You can sign up using your email or phone number. Once your account is verified, you can immediately start posting tasks or browsing for professionals.",
+        "find_provider_title": "How to Find the Right Provider",
+        "find_provider_desc": "There are two main ways to get your job done:",
+        "find_provider_step1": "Post a Task: Describe what you need, set your budget, and let verified professionals send you proposals.",
+        "find_provider_step2": "Direct Booking: Browse through our 'Explore' page, view profiles, read reviews, and hire a specific professional directly.",
+        "safety_title": "Safety and Verification",
+        "safety_desc": "Your safety is our absolute priority. Every professional on Fixam undergoes a rigorous background check, identity verification, and skills assessment before they are allowed to offer services on the platform. Payments are also held securely until the job is completed to your satisfaction.",
+        "get_started_btn": "Get Started Now"
       }
     }
   },
@@ -145,6 +158,19 @@ const resources = {
         "desc3": "Sélectionnez le meilleur pro et réservez en toute confiance.",
         "step4": "C'est fait",
         "desc4": "Détendez-vous pendant que le travail est bien fait."
+      },
+      "guide": {
+        "hero_title": "Comment ça marche",
+        "hero_desc": "Tout ce que vous devez savoir pour accomplir vos tâches sur Fixam.",
+        "register_title": "Comment s'inscrire",
+        "register_desc": "Commencer est complètement gratuit ! Cliquez simplement sur le bouton Commencer en haut à droite de la page. Vous pouvez vous inscrire avec votre e-mail ou votre numéro de téléphone. Une fois votre compte vérifié, vous pouvez immédiatement commencer à publier des tâches ou à rechercher des professionnels.",
+        "find_provider_title": "Comment trouver le bon professionnel",
+        "find_provider_desc": "Il existe deux façons principales d'accomplir votre travail :",
+        "find_provider_step1": "Publier une tâche : Décrivez ce dont vous avez besoin, fixez votre budget et laissez des professionnels vérifiés vous envoyer des propositions.",
+        "find_provider_step2": "Réservation directe : Parcourez notre page d'exploration, consultez les profils, lisez les avis et embauchez directement un professionnel spécifique.",
+        "safety_title": "Sécurité et vérification",
+        "safety_desc": "Votre sécurité est notre priorité absolue. Chaque professionnel sur Fixam subit une vérification rigoureuse des antécédents, une vérification d'identité et une évaluation des compétences avant d'être autorisé à proposer des services sur la plateforme. Les paiements sont également conservés en toute sécurité jusqu'à ce que le travail soit effectué à votre satisfaction.",
+        "get_started_btn": "Commencer maintenant"
       }
     }
   }

@@ -64,7 +64,7 @@ export default function OTPVerification({ onNavigate }: { onNavigate: (page: Pag
                     textAlign: 'center',
                     border: '1px solid var(--line)',
                     borderRadius: '8px',
-                    backgroundColor: 'white',
+                    backgroundColor: 'var(--surface)',
                     color: 'var(--ink)',
                     outline: 'none',
                     transition: 'border-color 0.2s',

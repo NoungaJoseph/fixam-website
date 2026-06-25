@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images, Icon } from '../../App';
 
-export default function Login({ onNavigate }: { onNavigate: (page: Page) => void }) {
+export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page) => void; onLogin?: (role: 'client' | 'pro') => void }) {
   const { t } = useTranslation();
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [role, setRole] = useState<'client' | 'pro'>('client');
   
   // Custom dropdown state for phone
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -31,7 +32,24 @@ export default function Login({ onNavigate }: { onNavigate: (page: Page) => void
             <p>Enter your details to access your account.</p>
           </div>
 
-          <form className="auth-form" onSubmit={(e) => { e.preventDefault(); onNavigate('dashboard'); }}>
+          <div className="account-type-toggle">
+            <button 
+              type="button" 
+              className={role === 'client' ? 'active' : ''} 
+              onClick={() => setRole('client')}
+            >
+              I am a Client
+            </button>
+            <button 
+              type="button" 
+              className={role === 'pro' ? 'active' : ''} 
+              onClick={() => setRole('pro')}
+            >
+              I am a Professional
+            </button>
+          </div>
+
+          <form className="auth-form" onSubmit={(e) => { e.preventDefault(); onLogin?.(role); onNavigate('dashboard'); }}>
             {loginMethod === 'email' ? (
               <div className="input-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -64,8 +82,8 @@ export default function Login({ onNavigate }: { onNavigate: (page: Page) => void
 
                   {isDropdownOpen && (
                     <div style={{
-                      position: 'absolute', top: '110%', left: 0, background: 'white', border: '1px solid var(--line)', 
-                      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, width: '180px', overflow: 'hidden'
+                      position: 'absolute', top: '110%', left: 0, background: 'var(--surface)', border: '1px solid var(--line)', 
+                      borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', zIndex: 10, width: '180px', overflow: 'hidden'
                     }}>
                       {countries.map((country) => (
                         <div 
@@ -76,7 +94,7 @@ export default function Login({ onNavigate }: { onNavigate: (page: Page) => void
                             setIsDropdownOpen(false);
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--soft)'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface)'}
                         >
                           <img src={country.flag} alt={country.name} style={{ width: '24px', borderRadius: '2px' }} />
                           <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{country.code}</span>
@@ -138,11 +156,11 @@ export default function Login({ onNavigate }: { onNavigate: (page: Page) => void
             <p>Join the community to get things done securely and swiftly.</p>
             <div className="auth-stats">
               <div className="stat-item">
-                <h3>10k+</h3>
+                <h3>150+</h3>
                 <span>Verified Pros</span>
               </div>
               <div className="stat-item">
-                <h3>50k+</h3>
+                <h3>800+</h3>
                 <span>Jobs Done</span>
               </div>
             </div>

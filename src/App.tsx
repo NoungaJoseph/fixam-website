@@ -18,6 +18,29 @@ export type IconName =
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
+const getApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://fixam-backend-production.up.railway.app/api';
+};
+
+const getMediaUrl = (path?: string) => {
+  if (!path) return 'https://via.placeholder.com/150';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  const API_URL = getApiUrl();
+  const origin = API_URL.replace(/\/api\/?$/, '');
+  return `${origin}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
+const hashCode = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return hash;
+};
+
 export const images = {
   landingHero: asset('landing-hero-composite.png'),
   heroProfessional: asset('hero-professional.png'),
@@ -35,6 +58,12 @@ export const images = {
   taskPlumbing: asset('task-plumbing.jpg'),
   taskElectrical: asset('task-electrical.jpg'),
   taskCleaning: asset('task-cleaning.jpg'),
+  heroBg: asset('cleaning.jpg'),
+  onboardingExperts: asset('experts.png'),
+  onboardingVerified: asset('verified.png'),
+  onboardingPayment: asset('payment.png'),
+  onboardingBook: asset('book.png'),
+  onboardingAgree: asset('agree.png'),
 } as const
 
 const services: Array<{ id: string; title: string; icon: IconName; color: string; image: string; desc?: string; count?: string }> = [
@@ -72,6 +101,17 @@ const tasks = [
   { title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', image: images.taskCleaning },
 ]
 
+const leads = [
+  { title: 'Emergency kitchen plumbing fix', tag: 'Plumbing', price: '35,000 XAF', status: 'Active', image: images.taskPlumbing },
+  { title: 'Install ceiling fans & rewiring', tag: 'Electrical', price: '20,000 XAF', status: 'Active', image: images.taskElectrical },
+  { title: 'Move out deep cleaning service', tag: 'Cleaning', price: '25,000 XAF', status: 'Active', image: images.taskCleaning },
+]
+
+const activeProposals = [
+  { name: 'Theresa May', role: 'Plumbing Request', rating: '5.0', distance: '1.2 km away', image: images.proMary },
+  { name: 'John Doe', role: 'Electrical Repair', rating: '4.9', distance: '3.4 km away', image: images.proJeff },
+]
+
 const useMaintenanceCheck = () => {
   const [appReady, setAppReady] = useState(false);
   const [maintenance, setMaintenance] = useState(false);
@@ -79,7 +119,7 @@ const useMaintenanceCheck = () => {
 
   const checkStatus = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+      const API_URL = getApiUrl();
       const response = await fetch(`${API_URL}/system/status`);
       const data = await response.json();
 
@@ -118,6 +158,48 @@ function MaintenanceScreen({ message }: { message: string }) {
 function App() {
   const [page, setPage] = useState<Page>('home')
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
+  const [livePros, setLivePros] = useState<any[]>([]);
+  const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
+
+  useEffect(() => {
+    if (maintenance || !appReady) return;
+    const fetchPros = async () => {
+      try {
+        const API_URL = getApiUrl();
+        const res = await fetch(`${API_URL}/providers`);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          const formatted = data.data.map((item: any) => {
+            const name = item.user?.fullName || 'Anonymous Provider';
+            const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
+            const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
+            const distance = item.serviceArea || 'Douala';
+            
+            let image = images.proJeff;
+            if (item.user?.avatar) {
+              image = getMediaUrl(item.user.avatar);
+            } else {
+              const placeholders = [images.proJeff, images.proSamuel, images.proMary, images.proPeter];
+              const idx = Math.abs(hashCode(item.id || name)) % placeholders.length;
+              image = placeholders[idx];
+            }
+
+            return {
+              name,
+              role,
+              rating,
+              distance,
+              image
+            };
+          });
+          setLivePros(formatted);
+        }
+      } catch (err) {
+        console.error('Failed to fetch providers:', err);
+      }
+    };
+    fetchPros();
+  }, [appReady, maintenance]);
 
   if (!appReady) {
     return <div style={{ height: '100vh', backgroundColor: '#F8FAFC' }} />;
@@ -130,11 +212,11 @@ function App() {
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} />
+        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} />
       ) : page === 'login' ? (
-        <Login onNavigate={setPage} />
+        <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
-        <Register onNavigate={setPage} />
+        <Register onNavigate={setPage} onRegister={(role) => setUserRole(role)} />
       ) : page === 'forgot_password' ? (
         <ForgotPassword onNavigate={setPage} />
       ) : page === 'otp' ? (
@@ -148,7 +230,7 @@ function App() {
             {page === 'about' && <About onNavigate={setPage} />}
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
             {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
-            {page === 'home' && <Home onNavigate={setPage} />}
+            {page === 'home' && <Home onNavigate={setPage} livePros={livePros} />}
           </main>
         </>
       )}
@@ -231,7 +313,7 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
   )
 }
 
-function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
+function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; livePros: any[] }) {
   const { t } = useTranslation()
   const proGridRef = useRef<HTMLDivElement>(null);
 
@@ -254,13 +336,13 @@ function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
     return () => clearInterval(interval);
   }, []);
 
+  const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
+
   return (
     <div className="landing-page">
       <section className="hero-video-section">
         <div className="hero-video-container">
-          <video autoPlay muted loop playsInline className="hero-bg-video">
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
-          </video>
+          <img src={images.heroBg} alt="" className="hero-bg-image" />
           <div className="hero-video-overlay"></div>
           <div className="hero-copy video-copy reveal">
             <h1 className="hero-title">
@@ -292,10 +374,10 @@ function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
         </div>
         <div className="sticky-cards-container">
           {[
-            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.taskCleaning, color: '#f0fdf4' },
-            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.heroProfessional, color: '#eff6ff' },
-            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.taskElectrical, color: '#faf5ff' },
-            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.taskPlumbing, color: '#fffbeb' },
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, color: '#0E2629' },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, color: '#0E182B' },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, color: '#17122B' },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, color: '#211714' },
           ].map((card, index) => (
             <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.color }}>
               <div className="sticky-card-content">
@@ -316,7 +398,7 @@ function Home({ onNavigate }: { onNavigate: (page: Page) => void }) {
       <section className="section">
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
         <div className="pro-grid" ref={proGridRef}>
-          {pros.map((pro) => (
+          {displayedPros.map((pro) => (
             <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
           ))}
         </div>
@@ -356,39 +438,39 @@ function Guide({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
     <div className="guide-page">
       <div className="services-hero">
-        <h1>{t('nav.guide') || 'How It Works'}</h1>
-        <p>Everything you need to know about getting things done on Fixam.</p>
+        <h1>{t('guide.hero_title')}</h1>
+        <p>{t('guide.hero_desc')}</p>
       </div>
       
       <section className="section guide-content" style={{ padding: '4rem 2rem', maxWidth: '800px', margin: '0 auto' }}>
         
         <div className="faq-item" style={{ marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>How to Register</h2>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>{t('guide.register_title')}</h2>
           <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
-            Getting started is completely free! Simply click on the <strong>Join</strong> button at the top right of the page. You can sign up using your email or phone number. Once your account is verified, you can immediately start posting tasks or browsing for professionals.
+            {t('guide.register_desc')}
           </p>
         </div>
 
         <div className="faq-item" style={{ marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>How to Find the Right Provider</h2>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>{t('guide.find_provider_title')}</h2>
           <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
-            There are two main ways to get your job done:
+            {t('guide.find_provider_desc')}
             <br/><br/>
-            1. <strong>Post a Task</strong>: Describe what you need, set your budget, and let verified professionals send you proposals.
+            1. {t('guide.find_provider_step1')}
             <br/>
-            2. <strong>Direct Booking</strong>: Browse through our "Explore" page, view profiles, read reviews, and hire a specific professional directly.
+            2. {t('guide.find_provider_step2')}
           </p>
         </div>
 
         <div className="faq-item" style={{ marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>Safety and Verification</h2>
+          <h2 style={{ fontSize: '1.8rem', color: 'var(--ink)', marginBottom: '1rem' }}>{t('guide.safety_title')}</h2>
           <p style={{ fontSize: '1.2rem', color: 'var(--muted)', lineHeight: '1.6' }}>
-            Your safety is our absolute priority. Every professional on Fixam undergoes a rigorous background check, identity verification, and skills assessment before they are allowed to offer services on the platform. Payments are also held securely until the job is completed to your satisfaction.
+            {t('guide.safety_desc')}
           </p>
         </div>
 
         <div className="center-actions" style={{ textAlign: 'center', marginTop: '4rem' }}>
-          <button className="primary-button" onClick={() => onNavigate('login')}>Get Started Now</button>
+          <button className="primary-button" onClick={() => onNavigate('login')}>{t('guide.get_started_btn')}</button>
         </div>
       </section>
 
@@ -399,105 +481,285 @@ function Guide({ onNavigate }: { onNavigate: (page: Page) => void }) {
 
 // Removed Login and Register to src/pages/Auth/
 
-function Dashboard({ onNavigate }: { onNavigate: (page: Page) => void }) {
+function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
+
+  const clientLinks = ['Dashboard', 'My Tasks', 'Messages', 'Saved Professionals', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'];
+  const clientIcons: IconName[] = ['home', 'calendar', 'chat', 'star', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'];
+
+  const proLinks = ['Dashboard', 'My Jobs', 'Messages', 'Job Leads', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'];
+  const proIcons: IconName[] = ['home', 'briefcase', 'chat', 'search', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'];
+
+  const sidebarLinks = userRole === 'client' ? clientLinks : proLinks;
+  const sidebarIcons = userRole === 'client' ? clientIcons : proIcons;
+
   return (
     <main className="dashboard-page">
-      <aside className="sidebar">
-        <button className="brand brand-button" onClick={() => onNavigate('home')}><Logo /></button>
-        {['Dashboard', 'My Tasks', 'Messages', 'Saved Professionals', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'].map((item, index) => (
-          <button className={index === 0 ? 'side-link active' : 'side-link'} key={item}>
-            <Icon name={['home', 'calendar', 'chat', 'star', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'][index] as IconName} />
-            {item}
-            {item === 'Messages' && <span>2</span>}
-            {item === 'Wallet' && <span>48 Coins</span>}
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <button className="brand brand-button" onClick={() => onNavigate('home')}><Logo /></button>
+          <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
+            <Icon name="x" />
           </button>
-        ))}
-        <div className="sidebar-cta">
-          <h3>Post a Task</h3>
-          <p>Get offers from verified professionals in minutes.</p>
-          <button>Create Task →</button>
         </div>
+        
+        <div className="sidebar-links-container">
+          {sidebarLinks.map((item, index) => (
+            <button className={index === 0 ? 'side-link active' : 'side-link'} key={item}>
+              <Icon name={sidebarIcons[index]} />
+              <span>{item}</span>
+              {item === 'Messages' && <span className="badge">2</span>}
+              {item === 'Wallet' && <span className="badge-text">{userRole === 'client' ? '48 Coins' : '85K XAF'}</span>}
+            </button>
+          ))}
+        </div>
+        
+        {userRole === 'client' ? (
+          <div className="sidebar-cta">
+            <h3>Post a Task</h3>
+            <p>Get offers from verified professionals in minutes.</p>
+            <button onClick={() => alert('Post Task flow coming soon!')}>Create Task →</button>
+          </div>
+        ) : (
+          <div className="sidebar-cta">
+            <h3>Find Job Leads</h3>
+            <p>Browse recent client requests and make offers.</p>
+            <button onClick={() => alert('Find Leads flow coming soon!')}>Browse Leads →</button>
+          </div>
+        )}
       </aside>
+      
       <section className="dashboard-main">
         <header className="dashboard-topbar">
-          <label>
+          <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+            <Icon name="menu" />
+          </button>
+          <label className="search-bar">
             <Icon name="search" />
-            <input placeholder="Search services, professionals, or tasks..." />
+            <input placeholder={userRole === 'client' ? "Search services, professionals..." : "Search leads, contracts..."} />
           </label>
           <div className="dash-icons">
             <Icon name="bell" />
             <Icon name="chat" />
           </div>
           <button className="profile-chip" onClick={() => onNavigate('home')}>
-            <ImageSlot src={images.proJeff} alt="" label="NJ" />
-            <span>Nounga Joseph<small>Client</small></span>
+            <ImageSlot src={userRole === 'client' ? images.proJeff : images.proSamuel} alt="" label="NJ" />
+            <span>Nounga Joseph<small>{userRole === 'client' ? 'Client' : 'Professional'}</small></span>
           </button>
         </header>
+        
         <div className="dashboard-content">
           <div className="dashboard-left">
-            <h1>Welcome back, Nounga! 👋</h1>
-            <p>What would you like to do today?</p>
-            <div className="quick-actions">
-              {[
-                ['Create a Task', 'Post a new task', 'briefcase'],
-                ['Find Professional', 'Browse experts', 'user'],
-                ['Messages', 'View your chats', 'chat'],
-                ['My Wallet', 'View balance', 'wallet'],
-              ].map(([title, desc, icon]) => (
-                <button key={title}>
-                  <Icon name={icon as IconName} />
-                  <strong>{title}</strong>
-                  <span>{desc}</span>
-                  <b>→</b>
-                </button>
-              ))}
-            </div>
-            <div className="metric-card">
-              {[
-                ['12', 'Total Tasks', 'calendar'],
-                ['5', 'In Progress', 'bell'],
-                ['6', 'Completed', 'check'],
-                ['4.8', 'Average Rating', 'star'],
-              ].map(([value, label, icon]) => (
-                <div key={label}>
-                  <Icon name={icon as IconName} />
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-            <section className="task-table">
-              <div className="task-head">
-                <h2>My Tasks</h2>
-                <button>View All Tasks</button>
+            <div className="welcome-header">
+              <div>
+                <h1>{userRole === 'client' ? 'Welcome back, Nounga! 👋' : 'Welcome back, Pro Nounga! 🚀'}</h1>
+                <p>What would you like to do today?</p>
               </div>
-              <div className="tabs"><span>All (12)</span><span>Pending (3)</span><span>In Progress (5)</span><span>Completed (6)</span><span>Cancelled (1)</span></div>
-              {tasks.map((task) => (
-                <article className="task-row" key={task.title}>
-                  <ImageSlot src={task.image} alt="" label={task.tag} />
-                  <div><span>{task.tag}</span><h3>{task.title}</h3><p>Douala, Cameroon</p></div>
-                  <strong>{task.price}</strong>
-                  <b>{task.status}</b>
-                </article>
-              ))}
-              <button className="wide-button">View All Tasks →</button>
-            </section>
-            <div className="dashboard-alert"><Icon name="shield" /><span><strong>All professionals are verified and trusted.</strong>Your safety and satisfaction are our priority.</span><button>Learn More</button></div>
+              {onRoleChange && (
+                <button 
+                  className="outline-button role-switch-btn"
+                  onClick={() => onRoleChange(userRole === 'client' ? 'pro' : 'client')}
+                >
+                  Switch to {userRole === 'client' ? 'Provider View' : 'Client View'}
+                </button>
+              )}
+            </div>
+            
+            <div className="quick-actions">
+              {userRole === 'client' ? (
+                [
+                  ['Create a Task', 'Post a new task', 'briefcase'],
+                  ['Find Professional', 'Browse experts', 'user'],
+                  ['Messages', 'View your chats', 'chat'],
+                  ['My Wallet', 'View balance', 'wallet'],
+                ].map(([title, desc, icon]) => (
+                  <button key={title}>
+                    <Icon name={icon as IconName} />
+                    <strong>{title}</strong>
+                    <span>{desc}</span>
+                    <b>→</b>
+                  </button>
+                ))
+              ) : (
+                [
+                  ['Browse Leads', 'Find matching tasks', 'search'],
+                  ['Active Contracts', 'Manage ongoing work', 'briefcase'],
+                  ['Messages', 'Chat with clients', 'chat'],
+                  ['Earnings', 'View payouts & rewards', 'wallet'],
+                ].map(([title, desc, icon]) => (
+                  <button key={title}>
+                    <Icon name={icon as IconName} />
+                    <strong>{title}</strong>
+                    <span>{desc}</span>
+                    <b>→</b>
+                  </button>
+                ))
+              )}
+            </div>
+            
+            <div className="metric-card">
+              {userRole === 'client' ? (
+                [
+                  ['12', 'Total Tasks', 'calendar'],
+                  ['5', 'In Progress', 'bell'],
+                  ['6', 'Completed', 'check'],
+                  ['4.8', 'Average Rating', 'star'],
+                ].map(([value, label, icon]) => (
+                  <div key={label}>
+                    <Icon name={icon as IconName} />
+                    <strong>{value}</strong>
+                    <span>{label}</span>
+                  </div>
+                ))
+              ) : (
+                [
+                  ['85,000 XAF', 'Total Earnings', 'wallet'],
+                  ['3', 'Active Jobs', 'briefcase'],
+                  ['28', 'Completed Jobs', 'check'],
+                  ['4.9', 'Average Rating', 'star'],
+                ].map(([value, label, icon]) => (
+                  <div key={label}>
+                    <Icon name={icon as IconName} />
+                    <strong>{value}</strong>
+                    <span>{label}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            
+            {userRole === 'client' ? (
+              <section className="task-table">
+                <div className="task-head">
+                  <h2>My Tasks</h2>
+                  <button>View All Tasks</button>
+                </div>
+                <div className="tabs">
+                  <span className="active">All (12)</span>
+                  <span>Pending (3)</span>
+                  <span>In Progress (5)</span>
+                  <span>Completed (6)</span>
+                  <span>Cancelled (1)</span>
+                </div>
+                {tasks.map((task) => (
+                  <article className="task-row" key={task.title}>
+                    <ImageSlot src={task.image} alt="" label={task.tag} />
+                    <div className="task-info">
+                      <span>{task.tag}</span>
+                      <h3>{task.title}</h3>
+                      <p>Douala, Cameroon</p>
+                    </div>
+                    <strong>{task.price}</strong>
+                    <b className={`status-badge ${task.status.toLowerCase().replace(' ', '-')}`}>{task.status}</b>
+                  </article>
+                ))}
+                <button className="wide-button">View All Tasks →</button>
+              </section>
+            ) : (
+              <section className="task-table">
+                <div className="task-head">
+                  <h2>Job Leads Near You</h2>
+                  <button>Filter Leads</button>
+                </div>
+                <div className="tabs">
+                  <span className="active">All Leads (3)</span>
+                  <span>Plumbing (1)</span>
+                  <span>Electrical (1)</span>
+                  <span>Cleaning (1)</span>
+                </div>
+                {leads.map((lead) => (
+                  <article className="task-row pro-lead-row" key={lead.title}>
+                    <ImageSlot src={lead.image} alt="" label={lead.tag} />
+                    <div className="task-info">
+                      <span>{lead.tag}</span>
+                      <h3>{lead.title}</h3>
+                      <p>Douala, Cameroon • 2.4 km away</p>
+                    </div>
+                    <strong>{lead.price}</strong>
+                    <button 
+                      className="primary-button send-proposal-btn"
+                      onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
+                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
+                    >
+                      Send Proposal
+                    </button>
+                  </article>
+                ))}
+                <button className="wide-button">View All Leads →</button>
+              </section>
+            )}
+            
+            <div className="dashboard-alert">
+              <Icon name="shield" />
+              <span><strong>{userRole === 'client' ? 'All professionals are verified and trusted.' : 'Safety guidelines for service delivery.'}</strong> {userRole === 'client' ? 'Your safety and satisfaction are our priority.' : 'Please follow community rules and verify locations.'}</span>
+              <button>Learn More</button>
+            </div>
           </div>
+          
           <aside className="dashboard-right">
             <div className="wallet-card">
-              <span>Wallet Balance</span>
-              <strong>48 Coins</strong>
-              <p>≈ 960 FCFA</p>
-              <button>Top Up Wallet →</button>
+              <span>{userRole === 'client' ? 'Wallet Balance' : 'Total Earnings'}</span>
+              <strong>{userRole === 'client' ? '48 Coins' : '85,000 XAF'}</strong>
+              <p>{userRole === 'client' ? '≈ 960 FCFA' : 'Payout pending: 15,000 XAF'}</p>
+              <button>{userRole === 'client' ? 'Top Up Wallet →' : 'Request Payout →'}</button>
             </div>
+            
             <ActivityCard />
-            <section className="right-panel">
-              <div className="panel-title"><h2>Top Rated Professionals</h2><button>View All</button></div>
-              <div className="mini-pros">
-                {pros.slice(0, 3).map((pro) => <ProCard key={pro.name} pro={pro} mini />)}
-              </div>
-            </section>
+            
+            {userRole === 'client' ? (
+              <section className="right-panel">
+                <div className="panel-title">
+                  <h2>Top Rated Professionals</h2>
+                  <button onClick={() => onNavigate('services')}>View All</button>
+                </div>
+                <div className="mini-pros">
+                  {displayedPros.slice(0, 3).map((pro) => (
+                    <ProCard key={pro.name} pro={pro} mini />
+                  ))}
+                </div>
+              </section>
+            ) : (
+              <section className="right-panel">
+                <div className="panel-title">
+                  <h2>New Client Proposals</h2>
+                  <button>View All</button>
+                </div>
+                <div className="mini-pros">
+                  {activeProposals.map((proposal) => (
+                    <article className="premium-pro-card mini" key={proposal.name}>
+                      <div className="pro-card-cover" style={{ height: '75px' }}>
+                        <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
+                      </div>
+                      <div className="pro-card-content" style={{ padding: '0.8rem' }}>
+                        <div className="pro-header">
+                          <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
+                          <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
+                            <Icon name="star" /> {proposal.rating}
+                          </span>
+                        </div>
+                        <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
+                          <button 
+                            className="primary-button" 
+                            style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
+                            onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
+                          >
+                            Accept
+                          </button>
+                          <button 
+                            className="outline-button" 
+                            style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
+                            onClick={() => alert(`Declined proposal from ${proposal.name}`)}
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
           </aside>
         </div>
       </section>
@@ -535,8 +797,8 @@ function StatsBand() {
   return (
     <section className="stats-band">
       {[
-        ['10K+', 'Tasks Completed', 'calendar'],
-        ['5K+', 'Verified Professionals', 'user'],
+        ['800+', 'Tasks Completed', 'calendar'],
+        ['150+', 'Verified Professionals', 'user'],
         ['98%', 'Customer Satisfaction', 'shield'],
         ['24/7', 'Support Available', 'bell'],
       ].map(([value, label, icon]) => (

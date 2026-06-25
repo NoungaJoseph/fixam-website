@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images, Icon } from '../../App';
 
-export default function Register({ onNavigate }: { onNavigate: (page: Page) => void }) {
+export default function Register({ onNavigate, onRegister }: { onNavigate: (page: Page) => void; onRegister?: (role: 'client' | 'pro') => void }) {
   const { t } = useTranslation();
   const [accountType, setAccountType] = useState<'client' | 'pro'>('client');
   const [countryCode, setCountryCode] = useState('+237');
@@ -82,6 +82,7 @@ export default function Register({ onNavigate }: { onNavigate: (page: Page) => v
       alert("Please ensure your password meets all strength requirements.");
       return;
     }
+    onRegister?.(accountType);
     onNavigate('otp');
   };
 
@@ -161,8 +162,8 @@ export default function Register({ onNavigate }: { onNavigate: (page: Page) => v
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
                   <div style={{
-                    position: 'absolute', top: '110%', left: 0, background: 'white', border: '1px solid var(--line)', 
-                    borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 10, width: '180px', overflow: 'hidden'
+                    position: 'absolute', top: '110%', left: 0, background: 'var(--surface)', border: '1px solid var(--line)', 
+                    borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', zIndex: 10, width: '180px', overflow: 'hidden'
                   }}>
                     {countries.map((country) => (
                       <div 
@@ -173,7 +174,7 @@ export default function Register({ onNavigate }: { onNavigate: (page: Page) => v
                           setIsDropdownOpen(false);
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.background = 'var(--soft)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface)'}
                       >
                         <img src={country.flag} alt={country.name} style={{ width: '24px', borderRadius: '2px' }} />
                         <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{country.code}</span>
