@@ -251,6 +251,20 @@ function App() {
           </main>
         </>
       )}
+
+      {/* Floating WhatsApp Support Button */}
+      <a 
+        href="https://wa.me/237600000000" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="whatsapp-float"
+        aria-label="Contact Support on WhatsApp"
+      >
+        <svg viewBox="0 0 24 24" className="whatsapp-icon">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.45 5.518 0 10.011-4.493 10.014-10.011.002-2.673-1.028-5.186-2.9-7.06C16.56 1.66 14.07 .63 11.4 0.63 5.922 0.63 1.453 5.1 1.45 10.58c-.001 1.636.43 3.226 1.25 4.63l-1.013 3.697 3.793-.995.176.104z" fill="currentColor"/>
+          <path d="M17.472 14.382c-.3-.149-1.777-.878-2.046-.975-.269-.099-.465-.148-.659.15-.195.297-.752.943-.918 1.14-.166.195-.331.22-.63.072-.3-.149-1.27-.469-2.42-1.496-.893-.798-1.495-1.784-1.67-2.083-.176-.3-.018-.462.13-.61.137-.133.303-.35.454-.524.152-.174.202-.298.303-.497.102-.199.05-.373-.025-.523-.075-.15-.659-1.591-.902-2.175-.237-.569-.479-.492-.66-.502-.174-.01-.373-.011-.572-.011-.199 0-.523.074-.797.373-.274.298-1.047 1.023-1.047 2.497 0 1.475 1.075 2.897 1.226 3.094.15.199 2.115 3.228 5.127 4.527.717.311 1.276.497 1.712.636.722.23 1.378.197 1.9.119.58-.088 1.777-.726 2.025-1.43.248-.704.248-1.306.173-1.43-.075-.124-.274-.199-.572-.349z" fill="currentColor"/>
+        </svg>
+      </a>
     </div>
   )
 }
@@ -284,58 +298,114 @@ function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
 function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchVal, setSearchVal] = useState('');
 
   const handleNavigate = (newPage: Page) => {
     setIsMobileMenuOpen(false);
     onNavigate(newPage);
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchVal.trim()) {
+      alert(`Searching for: ${searchVal}`);
+    }
+  };
+
   return (
     <div className="header-wrapper">
-      <header className="site-header">
-        <div className="header-left">
-          <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
-            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
-          </button>
-        </div>
-        
-        <button 
-          className="mobile-menu-btn" 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          <Icon name={isMobileMenuOpen ? "x" : "menu"} />
-        </button>
-
-        <nav className={`main-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <button className="nav-link" onClick={() => handleNavigate('services')}>{t('nav.explore')}</button>
-          <button className="nav-link" onClick={() => handleNavigate('guide')}>{t('nav.guide')}</button>
-          <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about')}</button>
-          <div className="language-dropdown">
-            <select 
-              value={i18n.language} 
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
-              className="nav-link"
-              style={{ background: 'transparent', border: 'none', fontWeight: 800, cursor: 'pointer' }}
-            >
-              <option value="en">English</option>
-              <option value="fr">Français</option>
-            </select>
+      <header className="site-header-new">
+        {/* Upper Row */}
+        <div className="header-upper-row">
+          <div className="header-left">
+            <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
+              <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
+            </button>
           </div>
-          <button 
-            className="theme-toggle-btn nav-link" 
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            aria-label="Toggle Theme"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', padding: '0.4rem', border: 'none', background: 'transparent', cursor: 'pointer' }}
-          >
-            <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-          </button>
-          <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin')}</button>
-          <button className="primary-button" onClick={() => handleNavigate('login')}>{t('nav.join')}</button>
+
+          <form className="header-search-bar" onSubmit={handleSearchSubmit}>
+            <input 
+              type="text" 
+              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+            />
+            <button type="submit" className="search-btn">{t('search.btn') || 'Search'}</button>
+          </form>
+
+          <div className="header-right-actions">
+            <div className="header-socials-desktop">
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="shield" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="wrench" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="star" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="user" /></a>
+            </div>
+
+            <div className="language-dropdown-new">
+              <select 
+                value={i18n.language} 
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                style={{ background: 'transparent', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+              >
+                <option value="en">EN</option>
+                <option value="fr">FR</option>
+              </select>
+            </div>
+
+            <button 
+              className="theme-toggle-btn-new" 
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              aria-label="Toggle Theme"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', border: 'none', background: 'transparent', cursor: 'pointer' }}
+            >
+              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+            </button>
+
+            <button 
+              className="mobile-menu-btn" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <Icon name={isMobileMenuOpen ? "x" : "menu"} />
+            </button>
+          </div>
+        </div>
+
+        {/* Lower Row (Desktop Navigation) */}
+        <div className="header-lower-row">
+          <nav className="desktop-nav">
+            <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'services' ? 'active' : ''}`} onClick={() => handleNavigate('services')}>{t('nav.explore') || 'EXPLORE SERVICES'}</button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'guide' ? 'active' : ''}`} onClick={() => handleNavigate('guide')}>{t('nav.guide') || 'GUIDE'}</button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
+            <span className="nav-divider">|</span>
+            <button className="nav-link-new" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
+          </nav>
+        </div>
+
+        {/* Mobile Navigation Drawer */}
+        <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          <div className="mobile-search-wrapper">
+            <input 
+              type="text" 
+              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+            />
+            <button onClick={handleSearchSubmit} className="search-btn">{t('search.btn') || 'Search'}</button>
+          </div>
+          <button className="nav-link" onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('services')}>{t('nav.explore') || 'EXPLORE SERVICES'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('guide')}>{t('nav.guide') || 'GUIDE'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
         </nav>
       </header>
     </div>
-  )
+  );
 }
 
 function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; livePros: any[] }) {
@@ -377,6 +447,29 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
         </div>
       </section>
 
+      {/* Quick Action Tools Section */}
+      <section className="quick-actions-homepage">
+        <SectionTitle title="Quick Action Tools" caption="Access platform features instantly to get things done." />
+        <div className="quick-actions-homepage-grid">
+          {[
+            { title: t('quick_actions.post_task') || 'Post a Task', desc: t('quick_actions.post_task_desc') || 'Need something done? Create a task and get offers in minutes.', icon: 'briefcase' as IconName },
+            { title: t('quick_actions.join_pro') || 'Join as Professional', desc: t('quick_actions.join_pro_desc') || 'Create a provider profile, upload certificates, and find work.', icon: 'wrench' as IconName },
+            { title: t('quick_actions.explore') || 'Explore Services', desc: t('quick_actions.explore_desc') || 'Browse all professional services and check reviews.', icon: 'search' as IconName },
+            { title: t('quick_actions.safety') || 'Trust & Safety', desc: t('quick_actions.safety_desc') || 'Learn how we verify users and keep transactions secure.', icon: 'shield' as IconName },
+            { title: t('quick_actions.wallet') || 'Top Up Wallet', desc: t('quick_actions.wallet_desc') || 'Manage coins, purchase packages, and view transaction history.', icon: 'wallet' as IconName },
+            { title: t('quick_actions.support') || 'Help & Support', desc: t('quick_actions.support_desc') || 'Get in touch with our 24/7 dedicated support team.', icon: 'message' as IconName }
+          ].map((action, index) => (
+            <div className="homepage-action-card" key={index} onClick={() => onNavigate('login')}>
+              <h3>{action.title}</h3>
+              <div className="action-card-icon">
+                <Icon name={action.icon} />
+              </div>
+              <p>{action.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="section full-width-section">
         <SectionTitle title={t('categories.title')} caption={t('categories.subtitle')} />
         <div className="category-scroll-wrapper">
@@ -399,12 +492,12 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
         </div>
         <div className="sticky-cards-container">
           {[
-            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, color: '#0E2629' },
-            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, color: '#0E182B' },
-            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, color: '#17122B' },
-            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, color: '#211714' },
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, bgVar: 'var(--card-bg-1)' },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, bgVar: 'var(--card-bg-2)' },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, bgVar: 'var(--card-bg-3)' },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, bgVar: 'var(--card-bg-4)' },
           ].map((card, index) => (
-            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.color }}>
+            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.bgVar }}>
               <div className="sticky-card-content">
                 <div className="sticky-card-text">
                   <span className="step-number">0{index + 1}</span>
@@ -864,54 +957,39 @@ function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
   const { t } = useTranslation();
 
   return (
-    <footer className="hero-footer">
-      <div className="hero-footer-cta">
-        <h2>{t('footer.ready')}</h2>
-        <p>{t('footer.join')}</p>
-        <button className="primary-button large" onClick={() => onNavigate?.('login')}>{t('footer.start_now')}</button>
+    <footer className="simple-footer">
+      <div className="footer-top-links">
+        <button onClick={() => onNavigate?.('home')}>{t('nav.home') || 'Home'}</button>
+        <span className="separator">|</span>
+        <button onClick={() => onNavigate?.('services')}>{t('nav.explore') || 'Explore Services'}</button>
+        <span className="separator">|</span>
+        <button onClick={() => onNavigate?.('guide')}>{t('nav.guide') || 'Guide'}</button>
+        <span className="separator">|</span>
+        <button onClick={() => onNavigate?.('about')}>{t('nav.about') || 'About Us'}</button>
+        <span className="separator">|</span>
+        <button onClick={() => onNavigate?.('login')}>{t('nav.signin') || 'Sign In'}</button>
       </div>
-      <div className="footer-links-grid">
-        <div className="footer-brand">
-          <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
-          <p>{t('footer.description')}</p>
-          <div className="socials"><span>f</span><span>x</span><span>◎</span><span>in</span></div>
-        </div>
-        <div>
-          <h3>{t('footer.company')}</h3>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('about') }}>{t('footer.about')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('home') }}>{t('footer.how_it_works')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.careers')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.press')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.contact')}</a>
-        </div>
-        <div>
-          <h3>{t('footer.services')}</h3>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.plumbing')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.electrical')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.cleaning')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('categories.painting')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('services') }}>{t('footer.all_services')}</a>
-        </div>
-        <div>
-          <h3>{t('footer.support')}</h3>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.help')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.safety')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('terms') }}>{t('footer.terms')}</a>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigate?.('privacy') }}>{t('footer.privacy')}</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.refund')}</a>
-        </div>
-        <div>
-          <h3>{t('footer.contact')}</h3>
-          <a href="#" onClick={(e) => e.preventDefault()}>+237 6XX XXX XXX</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>support@fixam.com</a>
-          <a href="#" onClick={(e) => e.preventDefault()}>Douala, Cameroon</a>
-        </div>
-      </div>
-      <div className="footer-bottom">
+      
+      <p className="footer-subtext">Fixam — Trusted Professional Services Platform</p>
+
+      <div className="footer-bottom-bar">
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>
+        
+        <div className="footer-socials">
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="shield" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="wrench" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="star" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="user" /></a>
+        </div>
+
+        <div className="footer-legal-links">
+          <button onClick={() => onNavigate?.('privacy')}>{t('footer.privacy') || 'Privacy Policy'}</button>
+          <button onClick={() => onNavigate?.('terms')}>{t('footer.terms') || 'Terms of Service'}</button>
+          <button onClick={() => alert('Support flow coming soon!')}>{t('footer.help') || 'Support'}</button>
+        </div>
       </div>
     </footer>
-  )
+  );
 }
 
 function ServiceMini(service: (typeof services)[number]) {

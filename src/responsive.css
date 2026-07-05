@@ -18,14 +18,23 @@
 }
 
 @media (max-width: 768px) {
-  .site-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 0;
-    width: 100%;
+  .site-header-new {
     backdrop-filter: none !important;
     background: var(--surface);
+  }
+
+  .header-upper-row {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .header-search-bar,
+  .header-socials-desktop {
+    display: none !important;
+  }
+
+  .header-lower-row {
+    display: none !important;
   }
 
   .mobile-menu-btn {
@@ -33,7 +42,7 @@
     z-index: 100;
   }
 
-  .main-nav {
+  .main-nav-mobile {
     display: flex !important;
     position: fixed;
     top: 0;
@@ -44,15 +53,70 @@
     background: var(--surface);
     flex-direction: column;
     align-items: flex-start;
-    padding: 6rem 2rem 2rem;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    padding: 6rem 1.5rem 2rem;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.15);
     transition: right 0.3s ease;
     z-index: 99;
     gap: 0;
   }
 
-  .main-nav.mobile-open {
+  .main-nav-mobile.mobile-open {
     right: 0;
+  }
+
+  .main-nav-mobile .nav-link {
+    width: 100%;
+    text-align: left;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .mobile-search-wrapper {
+    display: flex;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--soft);
+    margin-bottom: 1.5rem;
+  }
+
+  .mobile-search-wrapper input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.6rem 1rem;
+    color: var(--ink);
+    font-size: 0.95rem;
+    outline: none;
+    width: 100%;
+  }
+
+  .mobile-search-wrapper .search-btn {
+    border: none;
+    background: var(--teal-dark);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .quick-actions-homepage-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
   }
 
   .main-nav .nav-link, .main-nav .language-dropdown {

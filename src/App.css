@@ -11,6 +11,10 @@
   --green: #22C55E;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --logo-filter: none;
+  --card-bg-1: #0E2629;
+  --card-bg-2: #0E182B;
+  --card-bg-3: #17122B;
+  --card-bg-4: #211714;
 }
 
 :root.light {
@@ -22,6 +26,10 @@
   --header-bg: rgba(255, 255, 255, 0.85);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --logo-filter: invert(1);
+  --card-bg-1: #E0F2F1;
+  --card-bg-2: #E3F2FD;
+  --card-bg-3: #F3E5F5;
+  --card-bg-4: #EFEBE9;
 }
 
 .brand img {
@@ -3232,4 +3240,377 @@ p {
 .language-dropdown select option {
   background: var(--surface);
   color: var(--ink);
+}
+
+/* ==========================================
+   New 2-Row Header Layout (Refined)
+   ========================================== */
+.site-header-new {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: var(--header-bg);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-upper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  width: min(1440px, calc(100% - 4rem));
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.header-search-bar {
+  display: flex;
+  align-items: center;
+  flex: 0 1 500px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.header-search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  color: var(--ink);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.header-search-bar .search-btn {
+  border: none;
+  background: var(--teal-dark);
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.header-search-bar .search-btn:hover {
+  background: var(--teal);
+}
+
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header-socials-desktop {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header-socials-desktop a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.header-socials-desktop a:hover {
+  color: var(--teal);
+  background-color: rgba(20, 184, 166, 0.1);
+}
+
+.header-socials-desktop a svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.language-dropdown-new select {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+}
+
+.language-dropdown-new select option {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.theme-toggle-btn-new {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.theme-toggle-btn-new:hover {
+  color: var(--teal);
+}
+
+.theme-toggle-btn-new svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.header-lower-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1440px, calc(100% - 4rem));
+  margin: 0 auto;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-divider {
+  color: var(--line);
+  font-weight: 300;
+  font-size: 0.85rem;
+}
+
+.nav-link-new {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link-new:hover,
+.nav-link-new.active {
+  color: var(--teal);
+}
+
+.main-nav-mobile {
+  display: none;
+}
+
+/* ==========================================
+   Simplified Footer Layout (Enako Pattern)
+   ========================================== */
+.simple-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+  padding: 4rem 2rem 2rem;
+  margin-top: 4rem;
+}
+
+.footer-top-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-top-links button {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.footer-top-links button:hover {
+  color: var(--teal);
+}
+
+.footer-top-links .separator {
+  color: var(--line);
+  font-weight: 300;
+}
+
+.footer-subtext {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 3rem;
+  font-weight: 500;
+}
+
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1280px;
+  border-top: 1px solid var(--line);
+  padding-top: 2rem;
+  gap: 2rem;
+}
+
+.footer-bottom-bar .copyright {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footer-socials a {
+  color: var(--muted);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-socials a:hover {
+  color: var(--teal);
+}
+
+.footer-socials a svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.footer-legal-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.footer-legal-links button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0;
+}
+
+.footer-legal-links button:hover {
+  color: var(--teal);
+}
+
+/* ==========================================
+   Quick Action Tools Grid (Homepage)
+   ========================================== */
+.quick-actions-homepage {
+  padding: 6rem 4%;
+  max-width: 1600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.quick-actions-homepage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  margin-top: 3.5rem;
+  box-shadow: var(--shadow);
+}
+
+.homepage-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.homepage-action-card:hover {
+  background: var(--soft);
+  transform: translateY(-2px);
+}
+
+.homepage-action-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--teal-dark);
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.homepage-action-card .action-card-icon {
+  width: 4rem;
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  margin-bottom: 1.5rem;
+}
+
+.homepage-action-card .action-card-icon svg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.homepage-action-card p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 260px;
+  margin: 0;
+}
+
+/* ==========================================
+   Floating WhatsApp Support Button
+   ========================================== */
+.whatsapp-float {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  background-color: #25D366;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  background-color: #128C7E;
+}
+
+.whatsapp-float svg {
+  width: 2rem;
+  height: 2rem;
 }
