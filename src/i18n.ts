@@ -5,12 +5,31 @@ const resources = {
   en: {
     translation: {
       "nav": {
+        "home": "Home",
         "explore": "Explore",
         "guide": "How it Works",
         "about": "About Us",
         "signin": "Sign In",
         "join": "Get Started",
         "language": "English"
+      },
+      "search": {
+        "placeholder": "Enter Keywords...",
+        "btn": "Search"
+      },
+      "quick_actions": {
+        "post_task": "Post a Task",
+        "post_task_desc": "Need something done? Create a task and get offers in minutes.",
+        "join_pro": "Join as Professional",
+        "join_pro_desc": "Create a provider profile, upload certificates, and find work.",
+        "explore": "Explore Services",
+        "explore_desc": "Browse all professional services and check reviews.",
+        "safety": "Trust & Safety",
+        "safety_desc": "Learn how we verify users and keep transactions secure.",
+        "wallet": "Top Up Wallet",
+        "wallet_desc": "Manage coins, purchase packages, and view transaction history.",
+        "support": "Help & Support",
+        "support_desc": "Get in touch with our 24/7 dedicated support team."
       },
       "hero": {
         "title1": "Find the perfect",
@@ -91,12 +110,31 @@ const resources = {
   fr: {
     translation: {
       "nav": {
+        "home": "Accueil",
         "explore": "Explorer",
         "guide": "Comment ça marche",
         "about": "À propos",
         "signin": "Se connecter",
         "join": "Commencer",
         "language": "Français"
+      },
+      "search": {
+        "placeholder": "Saisir des mots-clés...",
+        "btn": "Rechercher"
+      },
+      "quick_actions": {
+        "post_task": "Publier une tâche",
+        "post_task_desc": "Besoin d'aide ? Créez une tâche et recevez des offres en quelques minutes.",
+        "join_pro": "Devenir professionnel",
+        "join_pro_desc": "Créez un profil de prestataire, téléchargez vos certificats et trouvez du travail.",
+        "explore": "Explorer les services",
+        "explore_desc": "Parcourez tous les services professionnels et consultez les avis.",
+        "safety": "Confiance et sécurité",
+        "safety_desc": "Découvrez comment nous vérifions les utilisateurs et sécurisons les transactions.",
+        "wallet": "Recharger le portefeuille",
+        "wallet_desc": "Gerez vos pièces, achetez des forfaits et consultez l'historique des transactions.",
+        "support": "Aide et support",
+        "support_desc": "Contactez notre équipe d'assistance dédiée 24h/24 et 7j/7."
       },
       "hero": {
         "title1": "Trouvez les",

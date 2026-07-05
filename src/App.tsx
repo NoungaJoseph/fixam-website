@@ -15,7 +15,7 @@ export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
-  | 'sun' | 'moon'
+  | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
@@ -335,10 +335,10 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
 
           <div className="header-right-actions">
             <div className="header-socials-desktop">
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="shield" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="wrench" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="star" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="user" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="instagram" /></a>
+              <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="linkedin" /></a>
             </div>
 
             <div className="language-dropdown-new">
@@ -976,10 +976,10 @@ function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>
         
         <div className="footer-socials">
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="shield" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="wrench" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="star" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="user" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="instagram" /></a>
+          <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="linkedin" /></a>
         </div>
 
         <div className="footer-legal-links">
@@ -1164,6 +1164,10 @@ export function Icon({ name }: { name: IconName }) {
     wrench: 'M14 7a5 5 0 0 0 6 6L10 23l-4-4 10-10a5 5 0 0 0-2-2z',
     sun: 'M12 7a5 5 0 1 1-4.995 5.217l-.005-.217l.005-.217A5 5 0 0 1 12 7z M12 2a1 1 0 0 1 .993.883l.007.117v1a1 1 0 0 1-1.993.117l-.007-.117v-1A1 1 0 0 1 12 2z M12 19a1 1 0 0 1 .993.883l.007.117v1a1 1 0 0 1-1.993.117l-.007-.117v-1a1 1 0 0 1 1-1z M4 11a1 1 0 0 1 .117 1.993l-.117.007h-1a1 1 0 0 1-.117-1.993l.117-.007h1z M21 11a1 1 0 0 1 .117 1.993l-.117.007h-1a1 1 0 0 1-.117-1.993l.117-.007h1z M6.213 4.81l.094.083.7.7a1 1 0 0 1-1.32 1.497l-.094-.083-.7-.7a1 1 0 0 1 1.217-1.567l.102.07z M19.107 4.893a1 1 0 0 1 .083 1.32l-.083.094-.7.7a1 1 0 0 1-1.497-1.32l.083-.094.7-.7a1 1 0 0 1 1.414 0z M7.007 16.993a1 1 0 0 1 .083 1.32l-.083.094-.7.7a1 1 0 0 1-1.497-1.32l.083-.094.7-.7a1 1 0 0 1 1.414 0z M18.313 16.91l.094.083.7.7a1 1 0 0 1-1.32 1.497l-.094-.083-.7-.7a1 1 0 0 1 1.218-1.567l.102.07z',
     moon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
+    facebook: 'M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z',
+    twitter: 'M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z',
+    instagram: 'M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5z M12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10z M17.5 6.51a.12.12 0 0 1 0-.24.12.12 0 0 1 0 .24',
+    linkedin: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z M2 9h4v12H2z M4 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z',
   }
 
   return (
