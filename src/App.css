@@ -10,6 +10,22 @@
   --blue: #2563EB;
   --green: #22C55E;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --logo-filter: none;
+}
+
+:root.light {
+  --ink: #0F172A;
+  --muted: #475569;
+  --line: #E2E8F0;
+  --soft: #F8FAFC;
+  --surface: #FFFFFF;
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --logo-filter: invert(1);
+}
+
+.brand img {
+  filter: var(--logo-filter);
 }
 
 #root {
@@ -3211,4 +3227,9 @@ p {
   .legal-nav-links button {
     width: 100%;
   }
+}
+
+.language-dropdown select option {
+  background: var(--surface);
+  color: var(--ink);
 }

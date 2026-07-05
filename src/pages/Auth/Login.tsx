@@ -9,15 +9,26 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
   
   // Custom dropdown state for phone
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [countryCode, setCountryCode] = useState('+237');
+  const [countryCode, setCountryCode] = useState(() => {
+    return localStorage.getItem('FIXAM_LAST_SELECTED_DIAL_CODE') || '+237';
+  });
   const [phone, setPhone] = useState('');
   const countries = [
     { code: '+237', name: 'Cameroon', flag: 'https://flagcdn.com/w40/cm.png' },
-    { code: '+234', name: 'Nigeria', flag: 'https://flagcdn.com/w40/ng.png' },
+    { code: '+254', name: 'Kenya', flag: 'https://flagcdn.com/w40/ke.png' },
     { code: '+233', name: 'Ghana', flag: 'https://flagcdn.com/w40/gh.png' },
-    { code: '+225', name: 'Côte d\'Ivoire', flag: 'https://flagcdn.com/w40/ci.png' }
+    { code: '+225', name: 'Côte d\'Ivoire', flag: 'https://flagcdn.com/w40/ci.png' },
+    { code: '+255', name: 'Tanzania', flag: 'https://flagcdn.com/w40/tz.png' },
+    { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
+    // { code: '+234', name: 'Nigeria', flag: 'https://flagcdn.com/w40/ng.png' } // Standby
   ];
   const selectedCountry = countries.find(c => c.code === countryCode) || countries[0];
+
+  const handleCountrySelect = (code: string) => {
+    setCountryCode(code);
+    setIsDropdownOpen(false);
+    localStorage.setItem('FIXAM_LAST_SELECTED_DIAL_CODE', code);
+  };
 
   return (
     <main className="auth-layout">
@@ -90,8 +101,7 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
                           key={country.code}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem 1rem', cursor: 'pointer', borderBottom: '1px solid var(--soft)' }}
                           onClick={() => {
-                            setCountryCode(country.code);
-                            setIsDropdownOpen(false);
+                            handleCountrySelect(country.code);
                           }}
                           onMouseEnter={(e) => e.currentTarget.style.background = 'var(--soft)'}
                           onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface)'}

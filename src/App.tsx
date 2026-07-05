@@ -15,6 +15,7 @@ export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
+  | 'sun' | 'moon'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
@@ -160,6 +161,22 @@ function App() {
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
   const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+    }
+    return 'dark';
+  });
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (maintenance || !appReady) return;
@@ -212,7 +229,7 @@ function App() {
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} />
+        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} theme={theme} setTheme={setTheme} />
       ) : page === 'login' ? (
         <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
@@ -223,7 +240,7 @@ function App() {
         <OTPVerification onNavigate={setPage} />
       ) : (
         <>
-          <Header page={page} onNavigate={setPage} />
+          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} />
           <main>
             {page === 'services' && <Services onNavigate={setPage} />}
             {page === 'guide' && <Guide onNavigate={setPage} />}
@@ -264,7 +281,7 @@ function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
   )
 }
 
-function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => void }) {
+function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -305,6 +322,14 @@ function Header({ page, onNavigate }: { page: Page; onNavigate: (page: Page) => 
               <option value="fr">Français</option>
             </select>
           </div>
+          <button 
+            className="theme-toggle-btn nav-link" 
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            aria-label="Toggle Theme"
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', padding: '0.4rem', border: 'none', background: 'transparent', cursor: 'pointer' }}
+          >
+            <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+          </button>
           <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin')}</button>
           <button className="primary-button" onClick={() => handleNavigate('login')}>{t('nav.join')}</button>
         </nav>
@@ -481,7 +506,7 @@ function Guide({ onNavigate }: { onNavigate: (page: Page) => void }) {
 
 // Removed Login and Register to src/pages/Auth/
 
-function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
+function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setTheme }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
 
@@ -540,6 +565,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             <input placeholder={userRole === 'client' ? "Search services, professionals..." : "Search leads, contracts..."} />
           </label>
           <div className="dash-icons">
+            <button 
+              className="dash-theme-btn" 
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              style={{ background: 'transparent', border: 'none', color: 'var(--muted)', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              aria-label="Toggle Theme"
+            >
+              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+            </button>
             <Icon name="bell" />
             <Icon name="chat" />
           </div>
@@ -1051,6 +1084,8 @@ export function Icon({ name }: { name: IconName }) {
     user: 'M12 12a5 5 0 1 0 0-10a5 5 0 0 0 0 10z M4 22a8 8 0 0 1 16 0',
     wallet: 'M3 7h18v12H3z M16 12h5 M6 7V5h12v2',
     wrench: 'M14 7a5 5 0 0 0 6 6L10 23l-4-4 10-10a5 5 0 0 0-2-2z',
+    sun: 'M12 7a5 5 0 1 1-4.995 5.217l-.005-.217l.005-.217A5 5 0 0 1 12 7z M12 2a1 1 0 0 1 .993.883l.007.117v1a1 1 0 0 1-1.993.117l-.007-.117v-1A1 1 0 0 1 12 2z M12 19a1 1 0 0 1 .993.883l.007.117v1a1 1 0 0 1-1.993.117l-.007-.117v-1a1 1 0 0 1 1-1z M4 11a1 1 0 0 1 .117 1.993l-.117.007h-1a1 1 0 0 1-.117-1.993l.117-.007h1z M21 11a1 1 0 0 1 .117 1.993l-.117.007h-1a1 1 0 0 1-.117-1.993l.117-.007h1z M6.213 4.81l.094.083.7.7a1 1 0 0 1-1.32 1.497l-.094-.083-.7-.7a1 1 0 0 1 1.217-1.567l.102.07z M19.107 4.893a1 1 0 0 1 .083 1.32l-.083.094-.7.7a1 1 0 0 1-1.497-1.32l.083-.094.7-.7a1 1 0 0 1 1.414 0z M7.007 16.993a1 1 0 0 1 .083 1.32l-.083.094-.7.7a1 1 0 0 1-1.497-1.32l.083-.094.7-.7a1 1 0 0 1 1.414 0z M18.313 16.91l.094.083.7.7a1 1 0 0 1-1.32 1.497l-.094-.083-.7-.7a1 1 0 0 1 1.218-1.567l.102.07z',
+    moon: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
   }
 
   return (

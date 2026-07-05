@@ -15,9 +15,12 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const countries = [
     { code: '+237', name: 'Cameroon', flag: 'https://flagcdn.com/w40/cm.png' },
-    { code: '+234', name: 'Nigeria', flag: 'https://flagcdn.com/w40/ng.png' },
+    { code: '+254', name: 'Kenya', flag: 'https://flagcdn.com/w40/ke.png' },
     { code: '+233', name: 'Ghana', flag: 'https://flagcdn.com/w40/gh.png' },
-    { code: '+225', name: 'Côte d\'Ivoire', flag: 'https://flagcdn.com/w40/ci.png' }
+    { code: '+225', name: 'Côte d\'Ivoire', flag: 'https://flagcdn.com/w40/ci.png' },
+    { code: '+255', name: 'Tanzania', flag: 'https://flagcdn.com/w40/tz.png' },
+    { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
+    // { code: '+234', name: 'Nigeria', flag: 'https://flagcdn.com/w40/ng.png' } // Standby
   ];
   const selectedCountry = countries.find(c => c.code === countryCode) || countries[0];
 
