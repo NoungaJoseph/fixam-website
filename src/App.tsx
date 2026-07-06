@@ -669,6 +669,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
     ];
 
     const handleNavClick = (itemName: string) => {
+      setIsSidebarOpen(false);
       if (itemName === 'Help Center') {
         alert('Support flow coming soon!');
       } else {
@@ -1935,6 +1936,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
 
     return (
       <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        {isSidebarOpen && (
+          <div 
+            className="sidebar-backdrop" 
+            onClick={() => setIsSidebarOpen(false)} 
+            style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
+          ></div>
+        )}
         {/* Left Sidebar */}
         <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
           <div className="brand-header">

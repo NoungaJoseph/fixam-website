@@ -563,4 +563,90 @@ html, body, #root, .dashboard-shell-new {
     .form-grid-2 {
       grid-template-columns: 1fr !important;
     }
+
+    /* Hide sidebar toggle on mobile since we have the hamburger */
+    .sidebar-toggle-btn {
+      display: none !important;
+    }
+
+    /* Profile Card specific adjustments */
+    .profile-header-card {
+      padding: 1rem !important;
+    }
+    .profile-avatar-large {
+      width: 80px !important;
+      height: 80px !important;
+    }
+    .profile-header-actions button {
+      width: 100% !important;
+    }
+
+    /* My Bookings layout */
+    .booking-detailed-card {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 1rem !important;
+    }
+    .booking-card-left {
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+      width: 100%;
+    }
+    .booking-info-details {
+      align-items: center !important;
+    }
+    .booking-card-mid {
+      width: 100% !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+    }
+    .booking-card-actions {
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.5rem !important;
+    }
+    .booking-card-actions button {
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    /* Find Services (Providers grid) */
+    .recommended-grid-premium, .pro-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .recommended-card-premium {
+      flex-direction: column !important;
+    }
+    .card-actions-row button {
+      flex: 1 !important;
+    }
+    
+    /* Saved Providers / Provider cards */
+    .pro-card-new, .provider-detailed-card {
+      flex-direction: column !important;
+    }
+
+    /* Tasks page */
+    .task-detailed-card {
+      padding: 1rem !important;
+    }
+    .task-card-header {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.5rem !important;
+    }
+    .task-card-footer {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.5rem !important;
+    }
+    .task-actions-row {
+      flex-direction: column !important;
+    }
+    .task-actions-row button {
+      width: 100% !important;
+    }
   }
