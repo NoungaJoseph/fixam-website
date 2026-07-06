@@ -408,12 +408,32 @@ html, body, #root, .dashboard-shell-new {
   }
 
   .dash-metrics-grid-3, .dash-metrics-grid-2 {
-    grid-template-columns: 1fr !important;
-    gap: 0.8rem;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
   }
 
   .dash-metrics-grid-3 .metric-card-premium:nth-child(3) {
     grid-column: span 1 !important;
+  }
+  
+  .metric-card-premium .metric-icon-box {
+    display: none !important;
+  }
+  
+  .metric-card-premium .metric-trend {
+    display: none !important;
+  }
+  
+  .metric-card-premium {
+    padding: 0.8rem !important;
+  }
+  
+  .metric-card-premium strong.metric-big-num {
+    font-size: 1.2rem !important;
+  }
+  
+  .metric-card-desc {
+    font-size: 0.8rem !important;
   }
 
   .dash-row-2-grid,
@@ -492,5 +512,55 @@ html, body, #root, .dashboard-shell-new {
     .dash-sidebar-new.open .hamburger-toggle {
       display: block !important;
     }
+
+    .profile-details-dash {
+      display: none !important;
+    }
+
+    .profile-sub-tabs {
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 5px;
+    }
+    .profile-sub-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .profile-header-card {
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+
+    .profile-user-headline {
+      align-items: center !important;
+      text-align: center !important;
+    }
+
+    .profile-header-stats-row {
+      flex-direction: column !important;
+      gap: 1rem !important;
+    }
+
+    .info-list-row {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      word-break: break-all !important;
+      gap: 0.2rem !important;
+    }
+    
+    .info-list-grid {
+      grid-template-columns: 1fr !important;
+    }
+    
+    .profile-overview-layout {
+      flex-direction: column !important;
+    }
+    
+    .form-grid-2 {
+      grid-template-columns: 1fr !important;
+    }
   }
-  
