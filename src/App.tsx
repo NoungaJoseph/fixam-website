@@ -163,9 +163,9 @@ function App() {
   const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+      return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {
@@ -299,6 +299,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleNavigate = (newPage: Page) => {
     setIsMobileMenuOpen(false);
@@ -600,17 +601,1800 @@ function Guide({ onNavigate }: { onNavigate: (page: Page) => void }) {
 // Removed Login and Register to src/pages/Auth/
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setTheme }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
+  const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [searchVal, setSearchVal] = useState('');
   const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
 
-  const clientLinks = ['Dashboard', 'My Tasks', 'Messages', 'Saved Professionals', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'];
-  const clientIcons: IconName[] = ['home', 'calendar', 'chat', 'star', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'];
+  // Client-specific interactive state hooks
+  const [clientTasks, setClientTasks] = useState([
+    { id: 1, title: 'Fix leaking pipe in kitchen', tag: 'Plumbing', price: '25,000 XAF', status: 'In Progress', bids: 3 },
+    { id: 2, title: 'Installing ceiling fan in bedroom', tag: 'Electrical', price: '15,000 XAF', status: 'Pending Offers', bids: 5 },
+    { id: 3, title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', bids: 0 }
+  ]);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskCategory, setNewTaskCategory] = useState('Plumbing');
+  const [newTaskBudget, setNewTaskBudget] = useState('');
+  const [newTaskDesc, setNewTaskDesc] = useState('');
 
+  const [clientBookings, setClientBookings] = useState([
+    { id: 1, service: 'Plumbing Service', provider: 'Jeff Thomson', date: 'May 21', time: '9:00 AM', status: 'Confirmed', price: '25,000 XAF', image: images.proJeff },
+    { id: 2, service: 'Electrical Installation', provider: 'Samuel Bright', date: 'May 22', time: '2:30 PM', status: 'Pending', price: '15,000 XAF', image: images.proSamuel },
+    { id: 3, service: 'House deep cleaning', provider: 'Mary Clean', date: 'May 24', time: '11:00 AM', status: 'Confirmed', price: '20,000 XAF', image: images.proMary }
+  ]);
+
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: 'pro', text: 'Hello Nounga, I can come over tomorrow at 9:00 AM. Does that work?', time: 'Yesterday' },
+    { id: 2, sender: 'client', text: 'Yes, that works perfectly. Please bring your tools for piping.', time: 'Yesterday' },
+    { id: 3, sender: 'pro', text: 'Great, see you then!', time: 'Yesterday' }
+  ]);
+  const [newMsgText, setNewMsgText] = useState('');
+  const [activeChatUser, setActiveChatUser] = useState('Jeff Thomson');
+  
+  const [savedProsState, setSavedProsState] = useState([
+    { id: 1, name: 'Jeff Thomson', role: 'Plumbing Specialist', rating: '4.8', distance: '4.2 km away', image: images.proJeff },
+    { id: 2, name: 'Samuel Bright', role: 'Electrician', rating: '4.7', distance: '3.6 km away', image: images.proSamuel },
+    { id: 3, name: 'Mary Clean', role: 'Cleaning Expert', rating: '4.9', distance: '2.1 km away', image: images.proMary }
+  ]);
+
+  // Find Services interactive states
+  const [findServicesSearch, setFindServicesSearch] = useState('');
+  const [findServicesLoc, setFindServicesLoc] = useState('Douala, Cameroon');
+  const [findServicesRating, setFindServicesRating] = useState('All');
+  const [findServicesCat, setFindServicesCat] = useState('All Categories');
+  const [findServicesPrice, setFindServicesPrice] = useState(5);
+  const [availNow, setAvailNow] = useState(false);
+  const [availToday, setAvailToday] = useState(false);
+  const [serviceTypeInPerson, setServiceTypeInPerson] = useState(true);
+  const [serviceTypeRemote, setServiceTypeRemote] = useState(false);
+
+  const [profileActiveSubTab, setProfileActiveSubTab] = useState('Overview');
+
+  if (userRole === 'client') {
+    const clientNavItems = [
+      { name: 'Dashboard', icon: 'home' as IconName },
+      { name: 'Find Services', icon: 'search' as IconName },
+      { name: 'My Bookings', icon: 'calendar' as IconName },
+      { name: 'Messages', icon: 'chat' as IconName, badge: 3 },
+      { name: 'Saved Providers', icon: 'star' as IconName },
+      { name: 'My Tasks', icon: 'briefcase' as IconName },
+      { name: 'Reviews', icon: 'check' as IconName },
+      { name: 'Wallet & Coins', icon: 'wallet' as IconName, walletBadge: '1,250' },
+      { name: 'My Referrals', icon: 'user' as IconName },
+      { name: 'Notifications', icon: 'bell' as IconName, badge: 8 },
+      { name: 'Settings', icon: 'wrench' as IconName },
+      { name: 'Help Center', icon: 'message' as IconName }
+    ];
+
+    const handleNavClick = (itemName: string) => {
+      if (itemName === 'Help Center') {
+        alert('Support flow coming soon!');
+      } else {
+        setActiveTab(itemName);
+      }
+    };
+
+    // Sub-view rendering methods
+    const renderRecommendedProviders = () => {
+      return (
+        <div className="dash-panel-premium recommend-panel-premium">
+          <div className="dash-panel-header-new">
+            <h2>Recommended Professionals</h2>
+            <button className="panel-link" onClick={() => setActiveTab('Find Services')}>View All</button>
+          </div>
+          <div className="recommended-grid-premium">
+            {displayedPros.slice(0, 3).map((pro, index) => (
+              <div className="recommended-card-premium" key={index}>
+                <div className="card-top-header">
+                  <span className="verify-badge"><Icon name="shield" /> Verified</span>
+                  <button className="btn-heart-save" onClick={() => alert(`${pro.name} saved!`)}>
+                    <Icon name="star" />
+                  </button>
+                </div>
+                <div className="avatar-wrapper">
+                  <img src={pro.image} alt={pro.name} />
+                  <span className="status-indicator online"></span>
+                </div>
+                <h4>{pro.name}</h4>
+                <span className="provider-cat-badge">{pro.role}</span>
+                <div className="rating-row-premium">
+                  <Icon name="star" />
+                  <span className="rating-num">{pro.rating}</span>
+                  <span className="rating-count">(100+ jobs)</span>
+                </div>
+                <div className="price-tag-row">
+                  <span className="price-val">1 coin <small>/ hr</small></span>
+                  <span className="distance-val"><Icon name="location" /> {pro.distance}</span>
+                </div>
+                <div className="card-actions-row">
+                  <button className="btn-card-primary" onClick={() => {
+                    setActiveTab('Messages');
+                    setActiveChatUser(pro.name);
+                  }}>Chat Now</button>
+                  <button className="btn-card-secondary" onClick={() => {
+                    const newBk = {
+                      id: Date.now(),
+                      service: pro.role,
+                      provider: pro.name,
+                      date: 'May 26',
+                      time: '10:00 AM',
+                      status: 'Pending',
+                      price: '1 coin',
+                      image: pro.image
+                    };
+                    setClientBookings([newBk, ...clientBookings]);
+                    alert(`Booking requested with ${pro.name}! Check 'My Bookings' tab.`);
+                  }}>Book</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const renderMyBookings = () => {
+      return (
+        <div className="dash-panel-premium full-width-panel animate-fade-in">
+          <div className="dash-panel-header-new">
+            <h2>My Bookings</h2>
+            <button className="btn-tab-action" onClick={() => {
+              const dateStr = prompt("Enter booking date (e.g. May 25):", "May 25");
+              if (dateStr) {
+                const newBk = {
+                  id: Date.now(),
+                  service: 'General Maintenance',
+                  provider: 'Jeff Thomson',
+                  date: dateStr,
+                  time: '12:00 PM',
+                  status: 'Pending',
+                  price: '25,000 XAF',
+                  image: images.proJeff
+                };
+                setClientBookings([newBk, ...clientBookings]);
+              }
+            }}>+ New Booking</button>
+          </div>
+          <div className="bookings-detailed-list">
+            {clientBookings.map((bk) => (
+              <div className="booking-detailed-card" key={bk.id}>
+                <div className="booking-card-left">
+                  <img src={bk.image} alt={bk.provider} />
+                  <div className="booking-info-details">
+                    <h3>{bk.service}</h3>
+                    <p className="provider-name">Provider: <strong>{bk.provider}</strong></p>
+                    <p className="price-lbl-detail">Price: <span>{bk.price}</span></p>
+                  </div>
+                </div>
+                <div className="booking-card-mid">
+                  <div className="schedule-badge">
+                    <Icon name="calendar" />
+                    <span>{bk.date} • {bk.time}</span>
+                  </div>
+                  <span className={`booking-status-badge ${bk.status.toLowerCase()}`}>
+                    {bk.status}
+                  </span>
+                </div>
+                <div className="booking-card-actions">
+                  <button className="btn-chat-booking" onClick={() => {
+                    setActiveTab('Messages');
+                    setActiveChatUser(bk.provider);
+                  }}>
+                    <Icon name="chat" /> Chat
+                  </button>
+                  {bk.status !== 'Completed' && (
+                    <>
+                      <button className="btn-reschedule-booking" onClick={() => {
+                        const newD = prompt("Enter new date:", bk.date);
+                        if (newD) {
+                          setClientBookings(clientBookings.map(b => b.id === bk.id ? {...b, date: newD} : b));
+                        }
+                      }}>Reschedule</button>
+                      <button className="btn-cancel-booking" onClick={() => {
+                        if (confirm("Cancel this booking?")) {
+                          setClientBookings(clientBookings.filter(b => b.id !== bk.id));
+                        }
+                      }}>Cancel</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    const handlePostTask = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!newTaskTitle || !newTaskBudget) {
+        alert("Please fill in the title and budget");
+        return;
+      }
+      const newT = {
+        id: Date.now(),
+        title: newTaskTitle,
+        tag: newTaskCategory,
+        price: Number(newTaskBudget).toLocaleString() + " XAF",
+        status: 'Pending Offers',
+        bids: 2
+      };
+      setClientTasks([newT, ...clientTasks]);
+      setNewTaskTitle('');
+      setNewTaskBudget('');
+      setNewTaskDesc('');
+      alert("Task published successfully!");
+    };
+
+    const renderMyTasks = () => {
+      return (
+        <div className="tasks-container-grid animate-fade-in">
+          <div className="dash-panel-premium task-list-panel">
+            <div className="dash-panel-header-new">
+              <h2>My Posted Tasks</h2>
+            </div>
+            <div className="posted-tasks-list">
+              {clientTasks.map((tk) => (
+                <div className="task-detailed-card" key={tk.id}>
+                  <div className="task-card-header">
+                    <span className="task-tag">{tk.tag}</span>
+                    <strong className="task-price">{tk.price}</strong>
+                  </div>
+                  <h3>{tk.title}</h3>
+                  <div className="task-card-footer">
+                    <span className={`task-status-pill ${tk.status.toLowerCase().replace(' ', '-')}`}>
+                      {tk.status}
+                    </span>
+                    <span className="task-bids-count">
+                      <Icon name="user" /> {tk.bids} offers received
+                    </span>
+                  </div>
+                  <div className="task-actions-row">
+                    {tk.bids > 0 && (
+                      <button className="btn-view-offers" onClick={() => alert(`Viewing ${tk.bids} offers from local professionals.`)}>
+                        View Offers
+                      </button>
+                    )}
+                    <button className="btn-delete-task" onClick={() => {
+                      if (confirm("Are you sure you want to remove this task?")) {
+                        setClientTasks(clientTasks.filter(t => t.id !== tk.id));
+                      }
+                    }}>Cancel Task</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="dash-panel-premium post-task-form-panel">
+            <h2>Post a New Task</h2>
+            <p>Describe what you need and local service providers will send you proposals.</p>
+            <form onSubmit={handlePostTask} className="quick-post-task-form">
+              <label>
+                <span>Task Title</span>
+                <input 
+                  type="text" 
+                  placeholder="e.g. Fix kitchen faucet leak" 
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  required
+                />
+              </label>
+              <div className="form-row-2">
+                <label>
+                  <span>Category</span>
+                  <select value={newTaskCategory} onChange={(e) => setNewTaskCategory(e.target.value)}>
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Painting">Painting</option>
+                    <option value="Carpentry">Carpentry</option>
+                    <option value="AC Repair">AC Repair</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Budget (XAF)</span>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 20000" 
+                    value={newTaskBudget}
+                    onChange={(e) => setNewTaskBudget(e.target.value)}
+                    required
+                  />
+                </label>
+              </div>
+              <label>
+                <span>Description Details</span>
+                <textarea 
+                  rows={4}
+                  placeholder="Provide details about the job..."
+                  value={newTaskDesc}
+                  onChange={(e) => setNewTaskDesc(e.target.value)}
+                />
+              </label>
+              <button type="submit" className="btn-post-submit">Publish Task</button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    const renderWalletAndCoins = () => {
+      const coinPackages = [
+        { name: 'Starter Pack', coins: 10, price: '5,000 XAF', popular: false },
+        { name: 'Value Pack', coins: 50, price: '22,000 XAF', popular: true },
+        { name: 'Pro Pack', coins: 100, price: '40,000 XAF', popular: false }
+      ];
+
+      return (
+        <div className="wallet-tab-grid animate-fade-in">
+          <div className="wallet-left-column">
+            <div className="dash-panel-premium main-wallet-card-premium">
+              <div className="card-top-wallet">
+                <div>
+                  <span className="wallet-lbl">Available Coins</span>
+                  <strong className="wallet-big-val">1,250</strong>
+                </div>
+                <div className="wallet-chip"><Icon name="wallet" /></div>
+              </div>
+              <div className="wallet-pills-row">
+                <div className="wallet-pill-stat">
+                  <span>Total Earned</span>
+                  <strong>1,450</strong>
+                </div>
+                <div className="wallet-pill-stat">
+                  <span>Total Spent</span>
+                  <strong>200</strong>
+                </div>
+              </div>
+            </div>
+
+            {/* Spending Overview Chart */}
+            <div className="dash-panel-premium spending-chart-panel">
+              <div className="dash-panel-header-new">
+                <h2>Spending Overview</h2>
+                <select className="select-month">
+                  <option>This Month</option>
+                  <option>Last Month</option>
+                </select>
+              </div>
+              <div className="chart-content-dash">
+                <div className="chart-svg-wrapper">
+                  <svg width="140" height="140" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--line)" strokeWidth="3.5" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#14B8A6" strokeWidth="3.5" strokeDasharray="48 52" strokeDashoffset="100" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3B82F6" strokeWidth="3.5" strokeDasharray="24 76" strokeDashoffset="52" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#F59E0B" strokeWidth="3.5" strokeDasharray="16 84" strokeDashoffset="28" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#A855F7" strokeWidth="3.5" strokeDasharray="12 88" strokeDashoffset="12" />
+                  </svg>
+                  <div className="chart-inner-text">
+                    <span className="chart-num">25</span>
+                    <span className="chart-lbl">Total Coins Used</span>
+                  </div>
+                </div>
+                <div className="chart-legend-list">
+                  <div className="legend-item-dash">
+                    <span className="legend-color-dot" style={{ backgroundColor: '#14B8A6' }}></span>
+                    <span>Booking Payments</span>
+                    <span className="legend-val">12 coins (48%)</span>
+                  </div>
+                  <div className="legend-item-dash">
+                    <span className="legend-color-dot" style={{ backgroundColor: '#3B82F6' }}></span>
+                    <span>Urgent Bookings</span>
+                    <span className="legend-val">6 coins (24%)</span>
+                  </div>
+                  <div className="legend-item-dash">
+                    <span className="legend-color-dot" style={{ backgroundColor: '#F59E0B' }}></span>
+                    <span>Service Add-ons</span>
+                    <span className="legend-val">4 coins (16%)</span>
+                  </div>
+                  <div className="legend-item-dash">
+                    <span className="legend-color-dot" style={{ backgroundColor: '#A855F7' }}></span>
+                    <span>Other</span>
+                    <span className="legend-val">3 coins (12%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="dash-panel-premium transactions-panel">
+              <h2>Transaction History</h2>
+              <div className="transactions-table-wrapper">
+                <table className="transactions-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Description</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>May 20, 2026</td>
+                      <td>Booked Plumber Pro</td>
+                      <td><span className="tx-type spend">Spend</span></td>
+                      <td>-3 coins</td>
+                    </tr>
+                    <tr>
+                      <td>May 18, 2026</td>
+                      <td>Referral Bonus (Roman)</td>
+                      <td><span className="tx-type earn">Earn</span></td>
+                      <td>+1 coin</td>
+                    </tr>
+                    <tr>
+                      <td>May 15, 2026</td>
+                      <td>Coins Top Up (Starter Pack)</td>
+                      <td><span className="tx-type topup">Top Up</span></td>
+                      <td>+10 coins</td>
+                    </tr>
+                    <tr>
+                      <td>May 10, 2026</td>
+                      <td>Booked CleanMaster</td>
+                      <td><span className="tx-type spend">Spend</span></td>
+                      <td>-5 coins</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div className="wallet-right-column">
+            <div className="dash-panel-premium purchase-packages-panel">
+              <h2>Buy Coins Package</h2>
+              <p>Top up your wallet with coins to book instant professional services.</p>
+              <div className="coin-packages-list">
+                {coinPackages.map((pkg, idx) => (
+                  <div className={`package-card ${pkg.popular ? 'popular' : ''}`} key={idx}>
+                    {pkg.popular && <span className="popular-badge">Most Popular</span>}
+                    <h3>{pkg.name}</h3>
+                    <div className="package-coins">
+                      <strong>{pkg.coins}</strong> <span>Coins</span>
+                    </div>
+                    <span className="package-price">{pkg.price}</span>
+                    <button className="btn-buy-package" onClick={() => alert(`Purchase flow for ${pkg.name} initiated!`)}>Buy Package</button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderNotifications = () => {
+      return (
+        <div className="dash-panel-premium full-width-panel animate-fade-in">
+          <div className="dash-panel-header-new">
+            <h2>Notifications Log</h2>
+            <button className="panel-link" onClick={() => alert('All notifications marked as read')}>Mark all as read</button>
+          </div>
+          <div className="activity-items-list large-list">
+            <div className="activity-item-row a-confirmed">
+              <div className="activity-icon-container"><Icon name="calendar" /></div>
+              <div className="activity-details">
+                <h4 className="activity-title">You booked Plumber Pro</h4>
+                <p className="activity-subtitle">Booking confirmed for tomorrow at 9:00 AM</p>
+              </div>
+              <span className="activity-time">2 min ago</span>
+            </div>
+
+            <div className="activity-item-row a-accepted">
+              <div className="activity-icon-container"><Icon name="check" /></div>
+              <div className="activity-details">
+                <h4 className="activity-title">John Doe accepted your request</h4>
+                <p className="activity-subtitle">Electrical Installation proposal accepted</p>
+              </div>
+              <span className="activity-time">15 min ago</span>
+            </div>
+
+            <div className="activity-item-row a-payment">
+              <div className="activity-icon-container"><Icon name="wallet" /></div>
+              <div className="activity-details">
+                <h4 className="activity-title">Payment with coins completed</h4>
+                <p className="activity-subtitle">3 coins successfully deducted for Plumbing booking</p>
+              </div>
+              <span className="activity-time">1 hour ago</span>
+            </div>
+
+            <div className="activity-item-row a-message">
+              <div className="activity-icon-container"><Icon name="chat" /></div>
+              <div className="activity-details">
+                <h4 className="activity-title">New message from CleanMaster</h4>
+                <p className="activity-subtitle">"Hey Nounga, let me know if we need extra cleaning agents..."</p>
+              </div>
+              <span className="activity-time">2 hours ago</span>
+            </div>
+
+            <div className="activity-item-row a-referral">
+              <div className="activity-icon-container"><Icon name="star" /></div>
+              <div className="activity-details">
+                <h4 className="activity-title">You earned 1 coin from referral</h4>
+                <p className="activity-subtitle">Your friend Roman joined Fixam</p>
+              </div>
+              <span className="activity-time">1 day ago</span>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const handleSendMsg = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!newMsgText.trim()) return;
+      const newM = {
+        id: Date.now(),
+        sender: 'client',
+        text: newMsgText,
+        time: 'Just now'
+      };
+      setChatMessages([...chatMessages, newM]);
+      setNewMsgText('');
+      
+      // Auto-reply simulation
+      setTimeout(() => {
+        const reply = {
+          id: Date.now() + 1,
+          sender: 'pro',
+          text: `Thanks for the message! I will get back to you shortly regarding the job request.`,
+          time: 'Just now'
+        };
+        setChatMessages(prev => [...prev, reply]);
+      }, 1500);
+    };
+
+    const renderMessagesView = () => {
+      const chatUsers = [
+        { name: 'Jeff Thomson', role: 'Plumbing Specialist', active: activeChatUser === 'Jeff Thomson', unread: 0, image: images.proJeff },
+        { name: 'Samuel Bright', role: 'Electrician', active: activeChatUser === 'Samuel Bright', unread: 1, image: images.proSamuel },
+        { name: 'Mary Clean', role: 'Cleaning Expert', active: activeChatUser === 'Mary Clean', unread: 0, image: images.proMary }
+      ];
+
+      return (
+        <div className="messages-grid-layout animate-fade-in">
+          <div className="dash-panel-premium chat-sidebar-panel">
+            <h2>Inbox Chats</h2>
+            <div className="chats-users-list">
+              {chatUsers.map((cu, idx) => (
+                <button 
+                  className={`chat-user-row ${cu.name === activeChatUser ? 'active' : ''}`}
+                  key={idx}
+                  onClick={() => setActiveChatUser(cu.name)}
+                >
+                  <img src={cu.image} alt={cu.name} />
+                  <div className="chat-user-info">
+                    <h4>{cu.name}</h4>
+                    <span>{cu.role}</span>
+                  </div>
+                  {cu.unread > 0 && <span className="chat-unread-dot">{cu.unread}</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="dash-panel-premium chat-viewport-panel">
+            <div className="chat-header-row">
+              <img src={chatUsers.find(u => u.name === activeChatUser)?.image || images.proJeff} alt={activeChatUser} />
+              <div>
+                <h3>{activeChatUser}</h3>
+                <span className="online-badge">• Online</span>
+              </div>
+            </div>
+
+            <div className="chat-messages-scroll">
+              {chatMessages.map((msg) => (
+                <div className={`msg-bubble-row ${msg.sender}`} key={msg.id}>
+                  <div className="bubble-content">
+                    <p>{msg.text}</p>
+                    <span className="bubble-time">{msg.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <form onSubmit={handleSendMsg} className="chat-input-bar">
+              <input 
+                type="text" 
+                placeholder="Type a message..." 
+                value={newMsgText}
+                onChange={(e) => setNewMsgText(e.target.value)}
+              />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+      );
+    };
+
+    const renderSavedProviders = () => {
+      return (
+        <div className="dash-panel-premium full-width-panel animate-fade-in">
+          <div className="dash-panel-header-new">
+            <h2>Saved Providers</h2>
+            <button className="panel-link" onClick={() => setActiveTab('Find Services')}>Browse More</button>
+          </div>
+          {savedProsState.length === 0 ? (
+            <p>No saved providers yet.</p>
+          ) : (
+            <div className="saved-providers-grid">
+              {savedProsState.map((pro, index) => (
+                <div className="recommended-card-premium saved-card" key={index}>
+                  <div className="avatar-wrapper">
+                    <img src={pro.image} alt={pro.name} />
+                  </div>
+                  <h4>{pro.name}</h4>
+                  <span className="provider-cat-badge">{pro.role}</span>
+                  <div className="rating-row-premium">
+                    <Icon name="star" />
+                    <span>{pro.rating}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                    <button 
+                      className="btn-card-primary" 
+                      style={{ flex: 1 }}
+                      onClick={() => {
+                        setActiveTab('Messages');
+                        setActiveChatUser(pro.name);
+                      }}
+                    >
+                      Chat
+                    </button>
+                    <button 
+                      className="outline-button"
+                      style={{ padding: '0.4rem', border: '1px solid var(--line)', minHeight: 'auto', borderRadius: '6px' }}
+                      onClick={() => {
+                        setSavedProsState(savedProsState.filter(p => p.id !== pro.id));
+                        alert(`${pro.name} removed from saved.`);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const renderSettingsView = () => {
+      return (
+        <div className="dash-panel-premium settings-panel-premium animate-fade-in">
+          <h2>Client Settings</h2>
+          <form className="settings-form-premium" onSubmit={(e) => { e.preventDefault(); alert('Settings saved successfully!'); }}>
+            <div className="form-grid-2">
+              <label>
+                <span>Full Name</span>
+                <input type="text" defaultValue="Nounga Joseph" />
+              </label>
+              <label>
+                <span>Email Address</span>
+                <input type="email" defaultValue="joseph.nounga@gmail.com" />
+              </label>
+            </div>
+            <div className="form-grid-2">
+              <label>
+                <span>Phone Number</span>
+                <input type="text" defaultValue="+237 677 88 99 00" />
+              </label>
+              <label>
+                <span>Language preference</span>
+                <select defaultValue="English">
+                  <option value="English">English</option>
+                  <option value="French">French</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              <span>Address / Location Area</span>
+              <input type="text" defaultValue="Douala, Cameroon" />
+            </label>
+            
+            <div className="settings-checkbox-row">
+              <input type="checkbox" id="email-notifs" defaultChecked />
+              <label htmlFor="email-notifs">Receive email notifications for booking updates</label>
+            </div>
+            <div className="settings-checkbox-row">
+              <input type="checkbox" id="sms-notifs" defaultChecked />
+              <label htmlFor="sms-notifs">Receive SMS text notifications for urgent offers</label>
+            </div>
+
+            <button type="submit" className="btn-settings-submit">Save Preferences</button>
+          </form>
+        </div>
+      );
+    };
+
+    const renderReferralsView = () => {
+      return (
+        <div className="referrals-grid-layout animate-fade-in">
+          <div className="dash-panel-premium invite-friends-panel">
+            <h2>Invite Friends, Earn Coins!</h2>
+            <p>Give your friends 1 coin to try Fixam, and you will receive 1 coin when they complete their first booking.</p>
+            <div className="referral-link-box">
+              <input type="text" readOnly value="https://fixam.com/invite/nounga_joseph_77" />
+              <button type="button" onClick={() => {
+                navigator.clipboard.writeText("https://fixam.com/invite/nounga_joseph_77");
+                alert("Referral link copied to clipboard!");
+              }}>Copy</button>
+            </div>
+            <div className="referral-stats-grid">
+              <div className="ref-stat-card">
+                <span>Total Invites</span>
+                <strong>5</strong>
+              </div>
+              <div className="ref-stat-card">
+                <span>Active Referrals</span>
+                <strong>3</strong>
+              </div>
+              <div className="ref-stat-card">
+                <span>Coins Earned</span>
+                <strong>3</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="dash-panel-premium referrals-list-panel">
+            <h2>Referred Friends</h2>
+            <div className="referred-friends-list">
+              <div className="referred-friend-row">
+                <div>
+                  <h4>Roman S.</h4>
+                  <span>Joined May 19, 2026</span>
+                </div>
+                <span className="ref-status completed">Coins Earned</span>
+              </div>
+              <div className="referred-friend-row">
+                <div>
+                  <h4>Carine M.</h4>
+                  <span>Joined May 15, 2026</span>
+                </div>
+                <span className="ref-status completed">Coins Earned</span>
+              </div>
+              <div className="referred-friend-row">
+                <div>
+                  <h4>David N.</h4>
+                  <span>Joined May 10, 2026</span>
+                </div>
+                <span className="ref-status pending">Booking Pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderReviewsView = () => {
+      return (
+        <div className="dash-panel-premium reviews-panel-premium animate-fade-in">
+          <h2>My Service Reviews</h2>
+          <div className="reviews-list-premium">
+            <div className="review-item-premium">
+              <div className="review-header">
+                <div>
+                  <h4>Jeff Thomson</h4>
+                  <span>Plumbing Service</span>
+                </div>
+                <div className="review-stars-premium">
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <strong>5.0</strong>
+                </div>
+              </div>
+              <p className="review-comment">"Excellent work! Jeff was very professional and fixed the leak in my kitchen pipe quickly. Highly recommended!"</p>
+              <span className="review-date">May 10, 2026</span>
+            </div>
+
+            <div className="review-item-premium">
+              <div className="review-header">
+                <div>
+                  <h4>Mary Clean</h4>
+                  <span>Cleaning Expert</span>
+                </div>
+                <div className="review-stars-premium">
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <Icon name="star" />
+                  <strong>4.8</strong>
+                </div>
+              </div>
+              <p className="review-comment">"Mary and her team did a fantastic job deep cleaning my house. It was spotless. Only small issue was they arrived 10 mins late, but overall great."</p>
+              <span className="review-date">April 28, 2026</span>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const renderMyProfile = () => {
+      return (
+        <div className="profile-tab-container animate-fade-in">
+          <div className="profile-header-card">
+            <div className="profile-avatar-section">
+              <div className="profile-avatar-big">
+                <img src={images.proJeff} alt="Nounga" />
+                <button className="btn-change-avatar" aria-label="Change Avatar" onClick={() => alert('Change avatar flow coming soon!')}>
+                  <Icon name="user" />
+                </button>
+              </div>
+              <div className="profile-user-headline">
+                <div className="profile-name-row">
+                  <h2>Nounga</h2>
+                  <span className="badge-verified"><Icon name="shield" /> Verified</span>
+                </div>
+                <p className="profile-email-lbl"><Icon name="message" /> nounga@gmail.com</p>
+                <p className="profile-phone-lbl"><Icon name="bell" /> +237 6 98 76 54 32</p>
+                <p className="profile-loc-lbl"><Icon name="location" /> Douala, Cameroon</p>
+                <span className="profile-role-tag">Client Account</span>
+              </div>
+            </div>
+            
+            <div className="profile-header-stats-row">
+              <div className="profile-header-stat-box">
+                <span className="stat-lbl">Member Since</span>
+                <strong className="stat-val"><Icon name="calendar" /> May 15, 2024</strong>
+              </div>
+              <div className="profile-header-stat-box">
+                <span className="stat-lbl">Account Status</span>
+                <strong className="stat-val status-active"><span className="dot-indicator"></span> Active</strong>
+              </div>
+              <div className="profile-header-stat-box">
+                <span className="stat-lbl">Account Security</span>
+                <strong className="stat-val security-strong"><Icon name="shield" /> Strong</strong>
+              </div>
+            </div>
+
+            <button className="btn-edit-profile-header" onClick={() => alert('Edit Profile modal coming soon!')}>
+              <Icon name="wrench" /> Edit Profile
+            </button>
+          </div>
+
+          <div className="profile-sub-tabs">
+            {['Overview', 'Bookings', 'Reviews', 'Payments', 'Saved Providers', 'Preferences', 'Settings'].map((subTab) => (
+              <button 
+                key={subTab} 
+                className={`profile-sub-tab-btn ${profileActiveSubTab === subTab ? 'active' : ''}`}
+                onClick={() => setProfileActiveSubTab(subTab)}
+              >
+                {subTab}
+              </button>
+            ))}
+          </div>
+
+          {profileActiveSubTab === 'Overview' && (
+            <div className="profile-overview-layout">
+              <div className="profile-overview-left">
+                <div className="dash-panel-premium p-about-panel">
+                  <h3>About Me</h3>
+                  <p>I'm a business owner based in Douala. I use Fixam to find reliable and verified professionals for all my home and office needs. Quality service and trust are my top priorities.</p>
+                </div>
+
+                <div className="dash-panel-premium p-info-panel">
+                  <h3>Personal Information</h3>
+                  <div className="info-list-grid">
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="user" /> Full Name</span>
+                      <strong className="info-val">Nounga</strong>
+                    </div>
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="message" /> Email Address</span>
+                      <strong className="info-val">nounga@gmail.com <span className="verified-text"><Icon name="check" /> Verified</span></strong>
+                    </div>
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="bell" /> Phone Number</span>
+                      <strong className="info-val">+237 6 98 76 54 32 <span className="verified-text"><Icon name="check" /> Verified</span></strong>
+                    </div>
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="location" /> Location</span>
+                      <strong className="info-val">Douala, Littoral, Cameroon</strong>
+                    </div>
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="wrench" /> Language</span>
+                      <strong className="info-val">English, Français</strong>
+                    </div>
+                    <div className="info-list-row">
+                      <span className="info-lbl"><Icon name="calendar" /> Timezone</span>
+                      <strong className="info-val">GMT+1 (West Africa Time)</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="dash-panel-premium p-activity-panel">
+                  <div className="panel-title-row">
+                    <h3>Recent Activity</h3>
+                    <button className="link-view-all" onClick={() => setActiveTab('Notifications')}>View All</button>
+                  </div>
+                  <div className="activity-items-list-p">
+                    <div className="activity-item-row-p">
+                      <div className="activity-icon-p a-confirmed"><Icon name="calendar" /></div>
+                      <div className="activity-details-p">
+                        <h4>You booked Plumber Pro</h4>
+                        <span>Booking confirmed</span>
+                      </div>
+                      <span className="activity-time-p">2 min ago</span>
+                    </div>
+
+                    <div className="activity-item-row-p">
+                      <div className="activity-icon-p a-accepted"><Icon name="check" /></div>
+                      <div className="activity-details-p">
+                        <h4>John Doe accepted your request</h4>
+                        <span>Electrical Installation</span>
+                      </div>
+                      <span className="activity-time-p">15 min ago</span>
+                    </div>
+
+                    <div className="activity-item-row-p">
+                      <div className="activity-icon-p a-payment"><Icon name="wallet" /></div>
+                      <div className="activity-details-p">
+                        <h4>Payment with coins completed</h4>
+                        <span>3 coins used</span>
+                      </div>
+                      <span className="activity-time-p">1 hour ago</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="profile-overview-right">
+                <div className="dash-panel-premium p-summary-panel">
+                  <h3>Account Summary</h3>
+                  <div className="summary-widgets-grid">
+                    <div className="summary-widget-box s-bookings">
+                      <div className="widget-icon"><Icon name="calendar" /></div>
+                      <div className="widget-content">
+                        <strong>12</strong>
+                        <span>Total Bookings</span>
+                      </div>
+                    </div>
+                    <div className="summary-widget-box s-active">
+                      <div className="widget-icon"><Icon name="briefcase" /></div>
+                      <div className="widget-content">
+                        <strong>4</strong>
+                        <span>Active Bookings</span>
+                      </div>
+                    </div>
+                    <div className="summary-widget-box s-completed">
+                      <div className="widget-icon"><Icon name="check" /></div>
+                      <div className="widget-content">
+                        <strong>8</strong>
+                        <span>Completed Jobs</span>
+                      </div>
+                    </div>
+                    <div className="summary-widget-box s-rating">
+                      <div className="widget-icon"><Icon name="star" /></div>
+                      <div className="widget-content">
+                        <strong>4.8</strong>
+                        <span>Average Rating</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {profileActiveSubTab !== 'Overview' && (
+            <div className="dash-panel-premium" style={{marginTop: '2rem'}}>
+              <h3>{profileActiveSubTab}</h3>
+              <p>Content for {profileActiveSubTab} will be displayed here.</p>
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const renderFindServices = () => {
+      // Mock providers list matching screenshot 2
+      const providersList = [
+        {
+          name: 'CleanMaster',
+          role: 'Cleaning Service',
+          rating: '4.8',
+          reviews: 124,
+          location: 'Douala, Cameroon',
+          badge: 'Top Rated',
+          desc: 'Professional cleaning services for homes, offices and commercial spaces.',
+          tags: ['House Cleaning', 'Office Cleaning', 'Deep Cleaning'],
+          price: '1 coin',
+          image: images.proMary,
+          verified: true
+        },
+        {
+          name: 'ElectroFix',
+          role: 'Electrical Service',
+          rating: '4.9',
+          reviews: 98,
+          location: 'Douala, Cameroon',
+          badge: 'Top Rated',
+          desc: 'All electrical installation, repair and maintenance services.',
+          tags: ['Installation', 'Wiring', 'Repair'],
+          price: '1 coin',
+          image: images.proSamuel,
+          verified: true
+        },
+        {
+          name: 'Plumber Pro',
+          role: 'Plumbing Service',
+          rating: '4.7',
+          reviews: 86,
+          location: 'Douala, Cameroon',
+          badge: 'Popular',
+          desc: 'Expert plumbing services for residential and commercial needs.',
+          tags: ['Pipe Repair', 'Installation', 'Leak Fix'],
+          price: '1 coin',
+          image: images.proJeff,
+          verified: true
+        },
+        {
+          name: 'PaintPro',
+          role: 'Painting Service',
+          rating: '4.6',
+          reviews: 72,
+          location: 'Douala, Cameroon',
+          badge: 'Rising Star',
+          desc: 'Professional painting services with quality finishing.',
+          tags: ['Interior Painting', 'Exterior Painting', 'Wall Painting'],
+          price: '1 coin',
+          image: images.proPeter,
+          verified: true
+        }
+      ];
+
+      // Filter logic simulation
+      const filteredProviders = providersList.filter(p => {
+        if (findServicesSearch && !p.name.toLowerCase().includes(findServicesSearch.toLowerCase()) && !p.role.toLowerCase().includes(findServicesSearch.toLowerCase())) {
+          return false;
+        }
+        if (findServicesCat !== 'All Categories' && p.role.toLowerCase() !== findServicesCat.toLowerCase()) {
+          return false;
+        }
+        if (findServicesRating === '4.5 & up' && Number(p.rating) < 4.5) return false;
+        if (findServicesRating === '4.0 & up' && Number(p.rating) < 4.0) return false;
+        
+        return true;
+      });
+
+      return (
+        <div className="find-services-page animate-fade-in">
+          <div className="find-services-header">
+            <h2>Find Services</h2>
+            <p>Find verified professionals for any service you need.</p>
+          </div>
+
+          <div className="search-bar-row-fs">
+            <div className="input-wrapper-fs query-input">
+              <Icon name="search" />
+              <input 
+                type="text" 
+                placeholder="What service do you need?" 
+                value={findServicesSearch}
+                onChange={(e) => setFindServicesSearch(e.target.value)}
+              />
+            </div>
+            <div className="input-wrapper-fs location-input">
+              <Icon name="location" />
+              <input 
+                type="text" 
+                placeholder="Location" 
+                value={findServicesLoc}
+                onChange={(e) => setFindServicesLoc(e.target.value)}
+              />
+            </div>
+            <button className="btn-search-fs" onClick={() => alert('Search initiated!')}>Search</button>
+          </div>
+
+          <div className="popular-searches-row-fs">
+            <span>Popular Searches:</span>
+            {['Plumbing', 'Electrical', 'Cleaning', 'Painting', 'AC Repair', 'Carpentry'].map(keyword => (
+              <button 
+                type="button" 
+                key={keyword}
+                onClick={() => setFindServicesSearch(keyword)}
+                className="popular-search-tag-fs"
+              >
+                {keyword}
+              </button>
+            ))}
+          </div>
+
+          <div className="categories-scroll-row-fs">
+            <div className="categories-scroll-wrapper-fs">
+              {[
+                { name: 'Cleaning', count: 128, icon: 'cleaning' as IconName },
+                { name: 'Plumbing', count: 95, icon: 'plumbing' as IconName },
+                { name: 'Electrical', count: 112, icon: 'electrical' as IconName },
+                { name: 'Painting', count: 78, icon: 'painting' as IconName },
+                { name: 'Carpentry', count: 63, icon: 'wrench' as IconName },
+                { name: 'AC Repair', count: 54, icon: 'appliance' as IconName },
+                { name: 'Pest Control', count: 42, icon: 'shield' as IconName }
+              ].map((c) => (
+                <button 
+                  type="button" 
+                  key={c.name}
+                  onClick={() => setFindServicesCat(c.name + ' Service')}
+                  className={`category-scroll-item-fs ${findServicesCat === c.name + ' Service' ? 'active' : ''}`}
+                >
+                  <div className="cat-icon-fs"><Icon name={c.icon} /></div>
+                  <div className="cat-details-fs">
+                    <strong>{c.name}</strong>
+                    <span>{c.count} providers</span>
+                  </div>
+                </button>
+              ))}
+              <button type="button" className="category-scroll-item-fs more-btn" onClick={() => setFindServicesCat('All Categories')}>
+                <div className="cat-icon-fs"><Icon name="menu" /></div>
+                <div className="cat-details-fs">
+                  <strong>More</strong>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="fs-directory-layout">
+            <div className="fs-directory-left">
+              <div className="fs-results-header">
+                <span>Showing {filteredProviders.length} providers</span>
+                <div className="fs-sort-dropdown">
+                  <span>Sort by: </span>
+                  <select>
+                    <option>Recommended</option>
+                    <option>Rating: High to Low</option>
+                    <option>Price: Low to High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="fs-providers-list">
+                {filteredProviders.map((p, idx) => (
+                  <div className="fs-provider-card" key={idx}>
+                    <img src={p.image} alt={p.name} className="prov-avatar" />
+                    
+                    <div className="prov-card-middle">
+                      <div className="prov-header-row">
+                        <h3>{p.name}</h3>
+                        {p.verified && <span className="verified-check-fs"><Icon name="shield" /></span>}
+                        {p.badge && <span className={`badge-prov ${p.badge.toLowerCase().replace(' ', '-')}`}>{p.badge}</span>}
+                      </div>
+                      <p className="prov-role-desc">{p.role}</p>
+                      
+                      <div className="prov-rating-row">
+                        <Icon name="star" />
+                        <strong>{p.rating}</strong>
+                        <span>({p.reviews} reviews)</span>
+                        <span className="dot-sep">•</span>
+                        <span className="loc-text"><Icon name="location" /> {p.location}</span>
+                      </div>
+                      
+                      <p className="prov-summary-desc">{p.desc}</p>
+                      
+                      <div className="prov-tags-row">
+                        {p.tags.map((tag, tIdx) => (
+                          <span key={tIdx} className="prov-tag-badge">{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="prov-card-right">
+                      <div className="prov-price-box">
+                        <span>From</span>
+                        <strong>{p.price} <small>/ hour</small></strong>
+                      </div>
+                      <button className="btn-view-prov" onClick={() => {
+                        setActiveTab('Messages');
+                        setActiveChatUser(p.name);
+                      }}>View Profile</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="fs-pagination-row">
+                <button className="page-arrow" disabled>&lt;</button>
+                <button className="page-num active">1</button>
+                <button className="page-num" onClick={() => alert('Go to page 2')}>2</button>
+                <button className="page-num" onClick={() => alert('Go to page 3')}>3</button>
+                <button className="page-num" onClick={() => alert('Go to page 4')}>4</button>
+                <button className="page-num" onClick={() => alert('Go to page 5')}>5</button>
+                <span className="page-dots">...</span>
+                <button className="page-num" onClick={() => alert('Go to last page')}>27</button>
+                <button className="page-arrow" onClick={() => alert('Next page')}>&gt;</button>
+              </div>
+            </div>
+
+            <div className="fs-directory-right">
+              <div className="dash-panel-premium filters-sidebar-panel">
+                <div className="filters-header-row">
+                  <h3>Filters</h3>
+                  <button className="btn-clear-filters" onClick={() => {
+                    setFindServicesSearch('');
+                    setFindServicesCat('All Categories');
+                    setFindServicesRating('All');
+                    setFindServicesPrice(5);
+                    setAvailNow(false);
+                    setAvailToday(false);
+                    setServiceTypeInPerson(true);
+                    setServiceTypeRemote(false);
+                  }}>Clear all</button>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Location</label>
+                  <select className="filter-select-input" value={findServicesLoc} onChange={(e) => setFindServicesLoc(e.target.value)}>
+                    <option value="Douala, Cameroon">Douala, Cameroon</option>
+                    <option value="Yaoundé, Cameroon">Yaoundé, Cameroon</option>
+                  </select>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Category</label>
+                  <select className="filter-select-input" value={findServicesCat} onChange={(e) => setFindServicesCat(e.target.value)}>
+                    <option value="All Categories">All Categories</option>
+                    <option value="Cleaning Service">Cleaning Service</option>
+                    <option value="Plumbing Service">Plumbing Service</option>
+                    <option value="Electrical Service">Electrical Service</option>
+                    <option value="Painting Service">Painting Service</option>
+                    <option value="Carpentry Service">Carpentry Service</option>
+                  </select>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Price (per hour)</label>
+                  <div className="price-slider-box">
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max="5" 
+                      value={findServicesPrice}
+                      onChange={(e) => setFindServicesPrice(Number(e.target.value))}
+                      className="price-slider-range"
+                    />
+                    <div className="price-slider-labels">
+                      <span>0 coin</span>
+                      <span>{findServicesPrice === 5 ? '5+ coins' : `${findServicesPrice} coins`}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Provider Rating</label>
+                  <div className="filter-rating-options">
+                    <button 
+                      type="button" 
+                      className={`rating-pill-btn ${findServicesRating === 'All' ? 'active' : ''}`}
+                      onClick={() => setFindServicesRating('All')}
+                    >
+                      All
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`rating-pill-btn ${findServicesRating === '4.0 & up' ? 'active' : ''}`}
+                      onClick={() => setFindServicesRating('4.0 & up')}
+                    >
+                      4★ & up
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`rating-pill-btn ${findServicesRating === '4.5 & up' ? 'active' : ''}`}
+                      onClick={() => setFindServicesRating('4.5 & up')}
+                    >
+                      4.5★ & up
+                    </button>
+                  </div>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Availability</label>
+                  <label className="checkbox-filter-row">
+                    <input type="checkbox" checked={availNow} onChange={(e) => setAvailNow(e.target.checked)} />
+                    <span>Available Now</span>
+                  </label>
+                  <label className="checkbox-filter-row">
+                    <input type="checkbox" checked={availToday} onChange={(e) => setAvailToday(e.target.checked)} />
+                    <span>Available Today</span>
+                  </label>
+                </div>
+
+                <div className="filter-group">
+                  <label className="filter-lbl-name">Service Type</label>
+                  <label className="checkbox-filter-row">
+                    <input type="checkbox" checked={serviceTypeInPerson} onChange={(e) => setServiceTypeInPerson(e.target.checked)} />
+                    <span>In Person</span>
+                  </label>
+                  <label className="checkbox-filter-row">
+                    <input type="checkbox" checked={serviceTypeRemote} onChange={(e) => setServiceTypeRemote(e.target.checked)} />
+                    <span>Remote</span>
+                  </label>
+                </div>
+
+                <button type="button" className="btn-apply-filters-fs" onClick={() => alert('Filters applied!')}>
+                  Apply Filters
+                </button>
+              </div>
+
+              <div className="dash-panel-premium promo-card-fs">
+                <div className="promo-text-fs">
+                  <h4>Get the best experience</h4>
+                  <p>Book your favorite providers faster and manage all your bookings in one place.</p>
+                </div>
+                <button type="button" className="btn-promo-action-fs" onClick={() => setActiveTab('Dashboard')}>Book a Service</button>
+                <div className="promo-clipboard-svg">📋</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        {/* Left Sidebar */}
+        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
+          <div className="brand-header">
+            <button className="brand brand-button dash-brand-compact" onClick={() => onNavigate('home')}>
+              <span className="logo-mark-dash">F</span>
+              <span className="logo-text-dash">Fixam</span>
+            </button>
+            <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+              {isSidebarCollapsed ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              )}
+            </button>
+            <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
+              <Icon name="x" />
+            </button>
+          </div>
+
+          <div className="user-card-new" onClick={() => setActiveTab('My Profile')} style={{ cursor: 'pointer' }}>
+            <img src={images.proJeff} alt="User Avatar" />
+            <div className="user-info-new">
+              <h3>Nounga</h3>
+              <div className="role-row">
+                <span className="role-text">Client</span>
+                <span className="verified-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.7rem', height: '0.7rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Verified
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <nav className="sidebar-links-new">
+            {clientNavItems.map((item) => (
+              <button 
+                key={item.name} 
+                className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
+                onClick={() => handleNavClick(item.name)}
+              >
+                <Icon name={item.icon} />
+                <span>{item.name}</span>
+                {item.badge && <span className="badge-count">{item.badge}</span>}
+                {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
+              </button>
+            ))}
+            
+            {onRoleChange && (
+              <button className="side-link-new" onClick={() => onRoleChange('pro')}>
+                <Icon name="user" />
+                <span>Provider View</span>
+              </button>
+            )}
+
+            <button className="side-link-new" onClick={() => onNavigate('login')}>
+              <Icon name="x" />
+              <span>Logout</span>
+            </button>
+          </nav>
+
+        </aside>
+
+        {/* Main Dashboard Area */}
+        <section className="dash-main-new">
+          {/* Top Bar Header */}
+          <header className="dash-header-premium">
+            <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu" style={{ display: 'none' }}>
+              <Icon name="menu" />
+            </button>
+            <div className="mobile-logo-dash" style={{ display: 'none', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--ink)' }}>
+              <span className="logo-mark-dash" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>F</span>
+              Fixam
+            </div>
+            <div className="search-wrapper-dash">
+              <Icon name="search" />
+              <input 
+                type="text" 
+                placeholder="Search services, providers, tasks..." 
+                value={searchVal}
+                onChange={(e) => setSearchVal(e.target.value)}
+              />
+              <span className="shortcut-badge">⌘ K</span>
+            </div>
+
+            <div className="actions-right-dash">
+              <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
+                <Icon name="chat" />
+                <span className="badge-indicator">3</span>
+              </button>
+              <button className="icon-btn-dash" onClick={() => setActiveTab('Notifications')} aria-label="Notifications">
+                <Icon name="bell" />
+                <span className="badge-indicator">8</span>
+              </button>
+              <button className="icon-btn-dash" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle Theme">
+                <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+              </button>
+
+              <button className="profile-chip-dash" onClick={() => setActiveTab('My Profile')}>
+                <img src={images.proJeff} alt="Nounga profile" />
+                <div className="profile-details-dash">
+                  <span className="profile-name-dash">
+                    Nounga
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                  <span className="profile-role-dash">Client</span>
+                </div>
+              </button>
+            </div>
+          </header>
+
+          {/* Main Content Columns */}
+          <div className="dash-content-premium">
+            {activeTab === 'Dashboard' && (
+              <>
+                {/* Left/Middle Column */}
+                <div className="dash-body-left">
+                  {/* Greeting row */}
+                  <div className="dash-greeting-row">
+                    <div>
+                      <h1>Good evening, Nounga! 👋</h1>
+                      <p>Here's what's happening with your account today.</p>
+                    </div>
+                    <button className="btn-browse-services" onClick={() => setActiveTab('Find Services')}>
+                      <Icon name="search" />
+                      Browse Services
+                    </button>
+                  </div>
+
+                  {/* 5 Stats Cards Row */}
+                  <div className="dash-metrics-grid-3">
+                    <div className="metric-card-premium m-bookings" onClick={() => setActiveTab('My Bookings')} style={{ cursor: 'pointer' }}>
+                      <div className="metric-card-header">
+                        <span>Bookings</span>
+                        <div className="metric-icon-box"><Icon name="calendar" /></div>
+                      </div>
+                      <strong className="metric-big-num">12</strong>
+                      <span className="metric-card-desc">Total Bookings</span>
+                      <span className="metric-trend trend-up">↑ 20% this month</span>
+                    </div>
+
+                    <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Tasks')} style={{ cursor: 'pointer' }}>
+                      <div className="metric-card-header">
+                        <span>Active Tasks</span>
+                        <div className="metric-icon-box"><Icon name="briefcase" /></div>
+                      </div>
+                      <strong className="metric-big-num">4</strong>
+                      <span className="metric-card-desc">In Progress</span>
+                      <span className="metric-view-all">View all &gt;</span>
+                    </div>
+
+                    <div className="metric-card-premium m-completed">
+                      <div className="metric-card-header">
+                        <span>Completed</span>
+                        <div className="metric-icon-box"><Icon name="check" /></div>
+                      </div>
+                      <strong className="metric-big-num">8</strong>
+                      <span className="metric-card-desc">Jobs Completed</span>
+                      <span className="metric-trend trend-up">↑ 15% this month</span>
+                    </div>
+
+                  </div>
+                  <div className="dash-metrics-grid-2">
+                    <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet & Coins')} style={{ cursor: 'pointer' }}>
+                      <div className="metric-card-header">
+                        <span>Coins Balance</span>
+                        <div className="metric-icon-box"><Icon name="wallet" /></div>
+                      </div>
+                      <strong className="metric-big-num">1,250</strong>
+                      <span className="metric-card-desc">Available Coins</span>
+                      <button className="coins-plus-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>+</button>
+                    </div>
+
+                    <div className="metric-card-premium m-saved" onClick={() => setActiveTab('Saved Providers')} style={{ cursor: 'pointer' }}>
+                      <div className="metric-card-header">
+                        <span>Saved Providers</span>
+                        <div className="metric-icon-box"><Icon name="star" /></div>
+                      </div>
+                      <strong className="metric-big-num">18</strong>
+                      <span className="metric-card-desc">Saved</span>
+                      <span className="metric-view-all">View all &gt;</span>
+                    </div>
+                  </div>
+
+                  {/* Phase 3 Layout: Stacked Panels */}
+                  {/* 1. Top Categories Panel */}
+                  <div className="dash-panel-premium top-categories-panel" style={{ marginBottom: '2rem' }}>
+                    <div className="dash-panel-header-new">
+                      <h2>Top Categories</h2>
+                      <button className="panel-link" onClick={() => setActiveTab('Find Services')}>View All</button>
+                    </div>
+                    <div className="popular-scroll-dash">
+                      {services.slice(0, 15).map(service => (
+                        <div key={service.id} className="popular-service-card-dash" onClick={() => setActiveTab('Find Services')}>
+                          <img src={service.image} alt={service.title} />
+                          <div className="overlay">
+                            <span className="title">{service.title}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 2. Recommended For You Panel */}
+                  <div className="dash-panel-premium recommended-panel-dash" style={{ marginBottom: '2rem' }}>
+                    <div className="dash-panel-header-new">
+                      <h2>Recommended for You</h2>
+                      <button className="panel-link" onClick={() => setActiveTab('Marketplace')}>View All</button>
+                    </div>
+                    <div className="recommended-carousel-dash">
+                      {displayedPros.slice(0, 5).map((pro, idx) => (
+                        <div className="recommended-card-dash" key={idx}>
+                          <button className="btn-heart-save" onClick={() => alert(`${pro.name} saved!`)}>
+                            <Icon name="star" />
+                          </button>
+                          <img src={pro.image} alt={pro.name} />
+                          <h4>{pro.name}</h4>
+                          <div className="rating-row">
+                            <Icon name="star" />
+                            <span>{pro.rating}</span>
+                            <span className="review-count">({Math.floor(Math.random() * 100 + 50)})</span>
+                          </div>
+                          <span className="provider-cat">{pro.role}</span>
+                          <span className="price-lbl">From <strong>1 coin</strong></span>
+                        </div>
+                      ))}
+                      <button className="carousel-arrow" onClick={() => setActiveTab('Find Services')} aria-label="View more">&gt;</button>
+                    </div>
+                  </div>
+
+                  {/* 3. Spending Overview */}
+                  <div className="dash-panel-premium spending-overview-panel" style={{ marginBottom: '2rem' }}>
+                    <div className="dash-panel-header-new">
+                      <h2>Spending Overview</h2>
+                      <select className="select-month">
+                        <option>This Month</option>
+                        <option>Last Month</option>
+                      </select>
+                    </div>
+                    <div className="chart-content-dash">
+                      <div className="chart-svg-wrapper">
+                        <svg width="160" height="160" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--line)" strokeWidth="3" />
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#14B8A6" strokeWidth="3" strokeDasharray="48 52" strokeDashoffset="100" />
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3B82F6" strokeWidth="3" strokeDasharray="24 76" strokeDashoffset="52" />
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#F59E0B" strokeWidth="3" strokeDasharray="16 84" strokeDashoffset="28" />
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#A855F7" strokeWidth="3" strokeDasharray="12 88" strokeDashoffset="12" />
+                        </svg>
+                        <div className="chart-inner-text">
+                          <span className="chart-num">25</span>
+                          <span className="chart-lbl">Total Coins<br/>Used</span>
+                        </div>
+                      </div>
+                      <div className="chart-legend-list">
+                        <div className="legend-item-dash">
+                          <span className="legend-color-dot" style={{ backgroundColor: '#14B8A6' }}></span>
+                          <span>Booking Payments</span>
+                          <span className="legend-val">12 coins (48%)</span>
+                        </div>
+                        <div className="legend-item-dash">
+                          <span className="legend-color-dot" style={{ backgroundColor: '#3B82F6' }}></span>
+                          <span>Urgent Bookings</span>
+                          <span className="legend-val">6 coins (24%)</span>
+                        </div>
+                        <div className="legend-item-dash">
+                          <span className="legend-color-dot" style={{ backgroundColor: '#F59E0B' }}></span>
+                          <span>Service Add-ons</span>
+                          <span className="legend-val">4 coins (16%)</span>
+                        </div>
+                        <div className="legend-item-dash">
+                          <span className="legend-color-dot" style={{ backgroundColor: '#A855F7' }}></span>
+                          <span>Other</span>
+                          <span className="legend-val">3 coins (12%)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 4. Recent Activity (Bottom) */}
+                  <div className="dash-panel-premium recent-activity-panel">
+                    <div className="dash-panel-header-new">
+                      <h2>Recent Activity</h2>
+                      <button className="panel-link" onClick={() => setActiveTab('Notifications')}>View All</button>
+                    </div>
+                    <div className="activity-items-list">
+                      <div className="activity-item-row a-confirmed">
+                        <div className="activity-icon-container"><Icon name="calendar" /></div>
+                        <div className="activity-details">
+                          <h4 className="activity-title">You booked Plumber Pro</h4>
+                          <p className="activity-subtitle">Booking confirmed</p>
+                        </div>
+                        <span className="activity-time">2 min ago</span>
+                      </div>
+                      <div className="activity-item-row a-accepted">
+                        <div className="activity-icon-container"><Icon name="check" /></div>
+                        <div className="activity-details">
+                          <h4 className="activity-title">John Doe accepted your request</h4>
+                          <p className="activity-subtitle">Electrical Installation</p>
+                        </div>
+                        <span className="activity-time">15 min ago</span>
+                      </div>
+                      <div className="activity-item-row a-payment">
+                        <div className="activity-icon-container"><Icon name="wallet" /></div>
+                        <div className="activity-details">
+                          <h4 className="activity-title">Payment with coins completed</h4>
+                          <p className="activity-subtitle">3 coins used</p>
+                        </div>
+                        <span className="activity-time">1 hour ago</span>
+                      </div>
+                      <div className="activity-item-row a-message">
+                        <div className="activity-icon-container"><Icon name="chat" /></div>
+                        <div className="activity-details">
+                          <h4 className="activity-title">New message from CleanMaster</h4>
+                          <p className="activity-subtitle">Regarding your booking</p>
+                        </div>
+                        <span className="activity-time">2 hours ago</span>
+                      </div>
+                      <div className="activity-item-row a-referral">
+                        <div className="activity-icon-container"><Icon name="star" /></div>
+                        <div className="activity-details">
+                          <h4 className="activity-title">You earned 1 coin from referral</h4>
+                          <p className="activity-subtitle">Your friend Roman joined Fixam</p>
+                        </div>
+                        <span className="activity-time">1 day ago</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Banner CTA */}
+                  <div className="dash-cta-banner-new">
+                    <div className="banner-left">
+                      <div className="banner-svg-box">
+                        <Icon name="briefcase" />
+                      </div>
+                      <div>
+                        <h2>Need something done?</h2>
+                        <p>Post a task and get offers from verified professionals.</p>
+                      </div>
+                    </div>
+                    <button className="btn-post-task" onClick={() => setActiveTab('My Tasks')}>Post a Task</button>
+                  </div>
+                </div>
+
+                {/* Right-hand Column */}
+                <div className="dash-body-right">
+                  {/* Wallet & Coins Card */}
+                  <div className="dash-panel-premium wallet-card-dash-new" onClick={() => setActiveTab('Wallet & Coins')} style={{ cursor: 'pointer' }}>
+                    <div className="dash-panel-header-new">
+                      <h2>Wallet & Coins</h2>
+                      <button className="panel-link" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>View All</button>
+                    </div>
+                    <div className="wallet-main-row">
+                      <div className="wallet-main-left">
+                        <span className="coins-big-lbl">Available Coins</span>
+                        <div className="wallet-coins-row">
+                          <span className="coins-icon-circle"><Icon name="wallet" /></span>
+                          <strong className="coins-big-num">1,250</strong>
+                        </div>
+                      </div>
+                      <button className="btn-buy-coins" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>Buy Coins</button>
+                    </div>
+                    <div className="wallet-stats-row">
+                      <div className="wallet-stat-item">
+                        <span>Total Coins Earned</span>
+                        <strong>1,450</strong>
+                      </div>
+                      <div className="wallet-stat-item">
+                        <span>Total Coins Used</span>
+                        <strong>200</strong>
+                      </div>
+                    </div>
+                    <button className="wallet-tx-link" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>
+                      Transaction History <span>&rarr;</span>
+                    </button>
+                  </div>
+
+                  {/* Upcoming Bookings */}
+                  <div className="dash-panel-premium bookings-card-dash-new">
+                    <div className="dash-panel-header-new">
+                      <h2>Upcoming Bookings</h2>
+                      <button className="panel-link" onClick={() => setActiveTab('My Bookings')}>View Calendar</button>
+                    </div>
+                    <div className="bookings-list-dash">
+                      {clientBookings.map((bk) => (
+                        <div className="booking-item-row-dash" key={bk.id}>
+                          <div className="date-badge-dash">
+                            <span className="date-month">{bk.date.split(' ')[0]}</span>
+                            <span className="date-day">{bk.date.split(' ')[1]}</span>
+                          </div>
+                          <div className="booking-item-details">
+                            <h4>{bk.service}</h4>
+                            <div className="booking-time">{bk.date} • {bk.time}</div>
+                            <div className="booking-customer">Provider: {bk.provider}</div>
+                          </div>
+                          <span className={`booking-status-badge ${bk.status.toLowerCase()}`}>{bk.status}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="btn-view-all-bookings" onClick={() => setActiveTab('My Bookings')}>
+                      View All Bookings &rarr;
+                    </button>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="dash-panel-premium quick-actions-card-dash">
+                    <h2>Quick Actions</h2>
+                    <div className="quick-actions-buttons-row">
+                      <button className="quick-action-btn-dash qa-post" onClick={() => setActiveTab('My Tasks')}>
+                        <div className="btn-icon-wrapper">
+                          <Icon name="briefcase" />
+                        </div>
+                        <span>Post a Task</span>
+                      </button>
+
+                      <button className="quick-action-btn-dash qa-browse" onClick={() => setActiveTab('Find Services')}>
+                        <div className="btn-icon-wrapper">
+                          <Icon name="search" />
+                        </div>
+                        <span>Browse</span>
+                      </button>
+
+                      <button className="quick-action-btn-dash qa-messages" onClick={() => setActiveTab('Messages')}>
+                        <div className="btn-icon-wrapper">
+                          <Icon name="chat" />
+                          <span className="badge-indicator">3</span>
+                        </div>
+                        <span>Messages</span>
+                      </button>
+
+                      <button className="quick-action-btn-dash qa-buy" onClick={() => setActiveTab('Wallet & Coins')}>
+                        <div className="btn-icon-wrapper">
+                          <Icon name="wallet" />
+                        </div>
+                        <span>Buy Coins</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'My Bookings' && renderMyBookings()}
+            {activeTab === 'My Tasks' && renderMyTasks()}
+            {activeTab === 'Saved Providers' && renderSavedProviders()}
+            {activeTab === 'Wallet & Coins' && renderWalletAndCoins()}
+            {activeTab === 'Notifications' && renderNotifications()}
+            {activeTab === 'Messages' && renderMessagesView()}
+            {activeTab === 'Reviews' && renderReviewsView()}
+            {activeTab === 'My Referrals' && renderReferralsView()}
+            {activeTab === 'Settings' && renderSettingsView()}
+            {activeTab === 'My Profile' && renderMyProfile()}
+            {activeTab === 'Find Services' && renderFindServices()}
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // Fallback / Pro Dashboard (keep the original one)
   const proLinks = ['Dashboard', 'My Jobs', 'Messages', 'Job Leads', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'];
   const proIcons: IconName[] = ['home', 'briefcase', 'chat', 'search', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'];
-
-  const sidebarLinks = userRole === 'client' ? clientLinks : proLinks;
-  const sidebarIcons = userRole === 'client' ? clientIcons : proIcons;
 
   return (
     <main className="dashboard-page">
@@ -623,29 +2407,21 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
         </div>
         
         <div className="sidebar-links-container">
-          {sidebarLinks.map((item, index) => (
+          {proLinks.map((item, index) => (
             <button className={index === 0 ? 'side-link active' : 'side-link'} key={item}>
-              <Icon name={sidebarIcons[index]} />
+              <Icon name={proIcons[index]} />
               <span>{item}</span>
               {item === 'Messages' && <span className="badge">2</span>}
-              {item === 'Wallet' && <span className="badge-text">{userRole === 'client' ? '48 Coins' : '85K XAF'}</span>}
+              {item === 'Wallet' && <span className="badge-text">85K XAF</span>}
             </button>
           ))}
         </div>
         
-        {userRole === 'client' ? (
-          <div className="sidebar-cta">
-            <h3>Post a Task</h3>
-            <p>Get offers from verified professionals in minutes.</p>
-            <button onClick={() => alert('Post Task flow coming soon!')}>Create Task →</button>
-          </div>
-        ) : (
-          <div className="sidebar-cta">
-            <h3>Find Job Leads</h3>
-            <p>Browse recent client requests and make offers.</p>
-            <button onClick={() => alert('Find Leads flow coming soon!')}>Browse Leads →</button>
-          </div>
-        )}
+        <div className="sidebar-cta">
+          <h3>Find Job Leads</h3>
+          <p>Browse recent client requests and make offers.</p>
+          <button onClick={() => alert('Find Leads flow coming soon!')}>Browse Leads →</button>
+        </div>
       </aside>
       
       <section className="dashboard-main">
@@ -655,7 +2431,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
           </button>
           <label className="search-bar">
             <Icon name="search" />
-            <input placeholder={userRole === 'client' ? "Search services, professionals..." : "Search leads, contracts..."} />
+            <input placeholder="Search leads, contracts..." />
           </label>
           <div className="dash-icons">
             <button 
@@ -670,8 +2446,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
             <Icon name="chat" />
           </div>
           <button className="profile-chip" onClick={() => onNavigate('home')}>
-            <ImageSlot src={userRole === 'client' ? images.proJeff : images.proSamuel} alt="" label="NJ" />
-            <span>Nounga Joseph<small>{userRole === 'client' ? 'Client' : 'Professional'}</small></span>
+            <ImageSlot src={images.proSamuel} alt="" label="NJ" />
+            <span>Nounga Joseph<small>Professional</small></span>
           </button>
         </header>
         
@@ -679,218 +2455,144 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
           <div className="dashboard-left">
             <div className="welcome-header">
               <div>
-                <h1>{userRole === 'client' ? 'Welcome back, Nounga! 👋' : 'Welcome back, Pro Nounga! 🚀'}</h1>
+                <h1>Welcome back, Pro Nounga! 🚀</h1>
                 <p>What would you like to do today?</p>
               </div>
               {onRoleChange && (
                 <button 
                   className="outline-button role-switch-btn"
-                  onClick={() => onRoleChange(userRole === 'client' ? 'pro' : 'client')}
+                  onClick={() => onRoleChange('client')}
                 >
-                  Switch to {userRole === 'client' ? 'Provider View' : 'Client View'}
+                  Switch to Client View
                 </button>
               )}
             </div>
             
             <div className="quick-actions">
-              {userRole === 'client' ? (
-                [
-                  ['Create a Task', 'Post a new task', 'briefcase'],
-                  ['Find Professional', 'Browse experts', 'user'],
-                  ['Messages', 'View your chats', 'chat'],
-                  ['My Wallet', 'View balance', 'wallet'],
-                ].map(([title, desc, icon]) => (
-                  <button key={title}>
-                    <Icon name={icon as IconName} />
-                    <strong>{title}</strong>
-                    <span>{desc}</span>
-                    <b>→</b>
-                  </button>
-                ))
-              ) : (
-                [
-                  ['Browse Leads', 'Find matching tasks', 'search'],
-                  ['Active Contracts', 'Manage ongoing work', 'briefcase'],
-                  ['Messages', 'Chat with clients', 'chat'],
-                  ['Earnings', 'View payouts & rewards', 'wallet'],
-                ].map(([title, desc, icon]) => (
-                  <button key={title}>
-                    <Icon name={icon as IconName} />
-                    <strong>{title}</strong>
-                    <span>{desc}</span>
-                    <b>→</b>
-                  </button>
-                ))
-              )}
+              {[
+                ['Browse Leads', 'Find matching tasks', 'search'],
+                ['Active Contracts', 'Manage ongoing work', 'briefcase'],
+                ['Messages', 'Chat with clients', 'chat'],
+                ['Earnings', 'View payouts & rewards', 'wallet'],
+              ].map(([title, desc, icon]) => (
+                <button key={title}>
+                  <Icon name={icon as IconName} />
+                  <strong>{title}</strong>
+                  <span>{desc}</span>
+                  <b>→</b>
+                </button>
+              ))}
             </div>
             
             <div className="metric-card">
-              {userRole === 'client' ? (
-                [
-                  ['12', 'Total Tasks', 'calendar'],
-                  ['5', 'In Progress', 'bell'],
-                  ['6', 'Completed', 'check'],
-                  ['4.8', 'Average Rating', 'star'],
-                ].map(([value, label, icon]) => (
-                  <div key={label}>
-                    <Icon name={icon as IconName} />
-                    <strong>{value}</strong>
-                    <span>{label}</span>
-                  </div>
-                ))
-              ) : (
-                [
-                  ['85,000 XAF', 'Total Earnings', 'wallet'],
-                  ['3', 'Active Jobs', 'briefcase'],
-                  ['28', 'Completed Jobs', 'check'],
-                  ['4.9', 'Average Rating', 'star'],
-                ].map(([value, label, icon]) => (
-                  <div key={label}>
-                    <Icon name={icon as IconName} />
-                    <strong>{value}</strong>
-                    <span>{label}</span>
-                  </div>
-                ))
-              )}
+              {[
+                ['85,000 XAF', 'Total Earnings', 'wallet'],
+                ['3', 'Active Jobs', 'briefcase'],
+                ['28', 'Completed Jobs', 'check'],
+                ['4.9', 'Average Rating', 'star'],
+              ].map(([value, label, icon]) => (
+                <div key={label}>
+                  <Icon name={icon as IconName} />
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                </div>
+              ))}
             </div>
             
-            {userRole === 'client' ? (
-              <section className="task-table">
-                <div className="task-head">
-                  <h2>My Tasks</h2>
-                  <button>View All Tasks</button>
-                </div>
-                <div className="tabs">
-                  <span className="active">All (12)</span>
-                  <span>Pending (3)</span>
-                  <span>In Progress (5)</span>
-                  <span>Completed (6)</span>
-                  <span>Cancelled (1)</span>
-                </div>
-                {tasks.map((task) => (
-                  <article className="task-row" key={task.title}>
-                    <ImageSlot src={task.image} alt="" label={task.tag} />
-                    <div className="task-info">
-                      <span>{task.tag}</span>
-                      <h3>{task.title}</h3>
-                      <p>Douala, Cameroon</p>
-                    </div>
-                    <strong>{task.price}</strong>
-                    <b className={`status-badge ${task.status.toLowerCase().replace(' ', '-')}`}>{task.status}</b>
-                  </article>
-                ))}
-                <button className="wide-button">View All Tasks →</button>
-              </section>
-            ) : (
-              <section className="task-table">
-                <div className="task-head">
-                  <h2>Job Leads Near You</h2>
-                  <button>Filter Leads</button>
-                </div>
-                <div className="tabs">
-                  <span className="active">All Leads (3)</span>
-                  <span>Plumbing (1)</span>
-                  <span>Electrical (1)</span>
-                  <span>Cleaning (1)</span>
-                </div>
-                {leads.map((lead) => (
-                  <article className="task-row pro-lead-row" key={lead.title}>
-                    <ImageSlot src={lead.image} alt="" label={lead.tag} />
-                    <div className="task-info">
-                      <span>{lead.tag}</span>
-                      <h3>{lead.title}</h3>
-                      <p>Douala, Cameroon • 2.4 km away</p>
-                    </div>
-                    <strong>{lead.price}</strong>
-                    <button 
-                      className="primary-button send-proposal-btn"
-                      onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
-                    >
-                      Send Proposal
-                    </button>
-                  </article>
-                ))}
-                <button className="wide-button">View All Leads →</button>
-              </section>
-            )}
+            <section className="task-table">
+              <div className="task-head">
+                <h2>Job Leads Near You</h2>
+                <button>Filter Leads</button>
+              </div>
+              <div className="tabs">
+                <span className="active">All Leads (3)</span>
+                <span>Plumbing (1)</span>
+                <span>Electrical (1)</span>
+                <span>Cleaning (1)</span>
+              </div>
+              {leads.map((lead) => (
+                <article className="task-row pro-lead-row" key={lead.title}>
+                  <ImageSlot src={lead.image} alt="" label={lead.tag} />
+                  <div className="task-info">
+                    <span>{lead.tag}</span>
+                    <h3>{lead.title}</h3>
+                    <p>Douala, Cameroon • 2.4 km away</p>
+                  </div>
+                  <strong>{lead.price}</strong>
+                  <button 
+                    className="primary-button send-proposal-btn"
+                    onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
+                    style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
+                  >
+                    Send Proposal
+                  </button>
+                </article>
+              ))}
+              <button className="wide-button">View All Leads →</button>
+            </section>
             
             <div className="dashboard-alert">
               <Icon name="shield" />
-              <span><strong>{userRole === 'client' ? 'All professionals are verified and trusted.' : 'Safety guidelines for service delivery.'}</strong> {userRole === 'client' ? 'Your safety and satisfaction are our priority.' : 'Please follow community rules and verify locations.'}</span>
+              <span><strong>Safety guidelines for service delivery.</strong> Please follow community rules and verify locations.</span>
               <button>Learn More</button>
             </div>
           </div>
           
           <aside className="dashboard-right">
             <div className="wallet-card">
-              <span>{userRole === 'client' ? 'Wallet Balance' : 'Total Earnings'}</span>
-              <strong>{userRole === 'client' ? '48 Coins' : '85,000 XAF'}</strong>
-              <p>{userRole === 'client' ? '≈ 960 FCFA' : 'Payout pending: 15,000 XAF'}</p>
-              <button>{userRole === 'client' ? 'Top Up Wallet →' : 'Request Payout →'}</button>
+              <span>Total Earnings</span>
+              <strong>85,000 XAF</strong>
+              <p>Payout pending: 15,000 XAF</p>
+              <button>Request Payout →</button>
             </div>
             
             <ActivityCard />
             
-            {userRole === 'client' ? (
-              <section className="right-panel">
-                <div className="panel-title">
-                  <h2>Top Rated Professionals</h2>
-                  <button onClick={() => onNavigate('services')}>View All</button>
-                </div>
-                <div className="mini-pros">
-                  {displayedPros.slice(0, 3).map((pro) => (
-                    <ProCard key={pro.name} pro={pro} mini />
-                  ))}
-                </div>
-              </section>
-            ) : (
-              <section className="right-panel">
-                <div className="panel-title">
-                  <h2>New Client Proposals</h2>
-                  <button>View All</button>
-                </div>
-                <div className="mini-pros">
-                  {activeProposals.map((proposal) => (
-                    <article className="premium-pro-card mini" key={proposal.name}>
-                      <div className="pro-card-cover" style={{ height: '75px' }}>
-                        <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
+            <section className="right-panel">
+              <div className="panel-title">
+                <h2>New Client Proposals</h2>
+                <button>View All</button>
+              </div>
+              <div className="mini-pros">
+                {activeProposals.map((proposal) => (
+                  <article className="premium-pro-card mini" key={proposal.name}>
+                    <div className="pro-card-cover" style={{ height: '75px' }}>
+                      <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
+                    </div>
+                    <div className="pro-card-content" style={{ padding: '0.8rem' }}>
+                      <div className="pro-header">
+                        <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
+                        <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
+                          <Icon name="star" /> {proposal.rating}
+                        </span>
                       </div>
-                      <div className="pro-card-content" style={{ padding: '0.8rem' }}>
-                        <div className="pro-header">
-                          <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
-                          <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
-                            <Icon name="star" /> {proposal.rating}
-                          </span>
-                        </div>
-                        <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
-                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
-                          <button 
-                            className="primary-button" 
-                            style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
-                            onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
-                          >
-                            Accept
-                          </button>
-                          <button 
-                            className="outline-button" 
-                            style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
-                            onClick={() => alert(`Declined proposal from ${proposal.name}`)}
-                          >
-                            Decline
-                          </button>
-                        </div>
+                      <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
+                        <button 
+                          className="primary-button" 
+                          style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
+                          onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
+                        >
+                          Accept
+                        </button>
+                        <button 
+                          className="outline-button" 
+                          style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
+                          onClick={() => alert(`Declined proposal from ${proposal.name}`)}
+                        >
+                          Decline
+                        </button>
                       </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
           </aside>
         </div>
       </section>
     </main>
-  )
+  );
 }
 
 function HeroCollage({ compact = false }: { compact?: boolean }) {

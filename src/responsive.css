@@ -1,3 +1,9 @@
+
+/* Global Mobile Overflow Fixes */
+html, body, #root, .dashboard-shell-new {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
 /* Mobile Responsive Adjustments */
 
 @media (max-width: 1024px) {
@@ -321,3 +327,170 @@
     font-size: 2rem;
   }
 }
+
+/* Premium Dashboard Mobile Responsive Rules */
+@media (max-width: 1024px) {
+  .dash-content-premium {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+  .dash-metrics-grid-3, .dash-metrics-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-shell-new, .dashboard-shell-new.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-sidebar-new {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
+    z-index: 9999;
+    background: var(--surface);
+  }
+
+  .dash-sidebar-new.open {
+    left: 0;
+  }
+
+  .dash-header-premium {
+    padding: 1rem 1.2rem;
+  }
+
+  .dash-header-premium .mobile-logo-dash {
+    display: flex !important;
+  }
+  .dash-header-premium {
+    z-index: 998;
+  }
+  .dash-header-premium .menu-toggle-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .dash-header-premium .menu-toggle-btn svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .dash-header-premium .search-wrapper-dash {
+    display: none; /* Hide search shortcut bar on small mobile headers to fit profile details */
+  }
+
+  .dash-content-premium {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+
+  .dash-greeting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dash-greeting-row .btn-browse-services {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dash-metrics-grid-3, .dash-metrics-grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+
+  .dash-metrics-grid-3 .metric-card-premium:nth-child(3) {
+    grid-column: span 1 !important;
+  }
+
+  .dash-row-2-grid,
+  .dash-row-3-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .chart-content-dash {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .top-categories-grid-dash {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .recommended-carousel-dash {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 10px;
+  }
+  
+  .recommended-carousel-dash .recommended-card-dash {
+    scroll-snap-align: start;
+    flex: 0 0 200px;
+  }
+
+  .dash-cta-banner-new {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .dash-cta-banner-new .banner-left {
+    flex-direction: column;
+  }
+
+  .dash-cta-banner-new .btn-post-task {
+    width: 100%;
+  }
+
+  .wallet-card-dash-new .wallet-main-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .wallet-card-dash-new .btn-buy-coins {
+    width: 100%;
+  }
+
+  .quick-actions-card-dash .quick-actions-buttons-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+
+  .quick-actions-card-dash .quick-actions-buttons-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  .profile-overview-layout {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+
+  @media (max-width: 768px) {
+    .dash-sidebar-new.open .hamburger-toggle {
+      display: block !important;
+    }
+  }
+  
