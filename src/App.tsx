@@ -372,7 +372,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
           </div>
         </div>
 
-        <div className="header-lower-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <div className="header-lower-row" style={{ justifyContent: 'space-between' }}>
           <nav className="desktop-nav">
             <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
             <span className="nav-divider">|</span>
