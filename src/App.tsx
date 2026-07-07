@@ -514,7 +514,7 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
             { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, bgVar: 'var(--card-bg-3)' },
             { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, bgVar: 'var(--card-bg-4)' },
           ].map((card, index) => (
-            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.bgVar }}>
+            <div className="sticky-card" key={index} style={{ top: `calc(120px + ${index * 24}px)`, backgroundColor: card.bgVar, zIndex: index + 1 }}>
               <div className="sticky-card-content">
                 <div className="sticky-card-text">
                   <span className="step-number">0{index + 1}</span>

@@ -854,7 +854,7 @@ p {
 }
 
 .landing-page {
-  overflow: clip;
+  overflow: visible;
   background: var(--soft);
 }
 
