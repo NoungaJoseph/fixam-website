@@ -390,7 +390,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
         </div>
 
         {/* Mobile Navigation Drawer */}
-        <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
+        <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <div className="mobile-search-wrapper">
             <input 
               type="text" 
@@ -503,19 +503,28 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
         </div>
       </section>
 
-      <section className="section">
-        <SectionTitle title={t('how_it_works.title')} caption={t('how_it_works.subtitle')} />
-        <div className="steps">
+      <section className="sticky-cards-section">
+        <div className="sticky-cards-header">
+          <SectionTitle title={t('how_it_works.title')} caption={t('how_it_works.subtitle')} />
+        </div>
+        <div className="sticky-cards-container">
           {[
-            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), icon: 'search' as const },
-            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), icon: 'shield' as const },
-            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), icon: 'calendar' as const },
-            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), icon: 'check' as const },
-          ].map((step, index) => (
-            <div className="step reveal" key={index} style={{ animationDelay: `${index * 0.2}s` }}>
-              <Icon name={step.icon} />
-              <h3>{step.title}</h3>
-              <p>{step.desc}</p>
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, bgVar: 'var(--card-bg-1)' },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, bgVar: 'var(--card-bg-2)' },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, bgVar: 'var(--card-bg-3)' },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, bgVar: 'var(--card-bg-4)' },
+          ].map((card, index) => (
+            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.bgVar }}>
+              <div className="sticky-card-content">
+                <div className="sticky-card-text">
+                  <span className="step-number">0{index + 1}</span>
+                  <h3>{card.title}</h3>
+                  <p>{card.desc}</p>
+                </div>
+                <div className="sticky-card-image">
+                  <img src={card.image} alt={card.title} />
+                </div>
+              </div>
             </div>
           ))}
         </div>
