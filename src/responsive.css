@@ -513,6 +513,21 @@ html, body, #root, .dashboard-shell-new {
       display: block !important;
     }
 
+    /* Hide desktop elements on mobile */
+    .desktop-only {
+      display: none !important;
+    }
+    
+    /* Ensure logo pushes to corner on mobile */
+    .header-upper-row {
+      justify-content: space-between !important;
+    }
+    .header-left {
+      flex: 1 !important;
+      display: flex;
+      justify-content: flex-start;
+    }
+
     .profile-details-dash {
       display: none !important;
     }

@@ -324,7 +324,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
             </button>
           </div>
 
-          <form className="header-search-bar" onSubmit={handleSearchSubmit}>
+          <form className="header-search-bar desktop-only" onSubmit={handleSearchSubmit}>
             <input 
               type="text" 
               placeholder={t('search.placeholder') || 'Enter Keywords...'} 
@@ -335,14 +335,14 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
           </form>
 
           <div className="header-right-actions">
-            <div className="header-socials-desktop">
+            <div className="header-socials-desktop desktop-only">
               <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
               <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
               <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="instagram" /></a>
               <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="linkedin" /></a>
             </div>
 
-            <div className="language-dropdown-new">
+            <div className="language-dropdown-new desktop-only">
               <select 
                 value={i18n.language} 
                 onChange={(e) => i18n.changeLanguage(e.target.value)}
@@ -354,7 +354,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
             </div>
 
             <button 
-              className="theme-toggle-btn-new" 
+              className="theme-toggle-btn-new desktop-only" 
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               aria-label="Toggle Theme"
               style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', border: 'none', background: 'transparent', cursor: 'pointer' }}
@@ -372,8 +372,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
           </div>
         </div>
 
-        {/* Lower Row (Desktop Navigation) */}
-        <div className="header-lower-row">
+        <div className="header-lower-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <nav className="desktop-nav">
             <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
             <span className="nav-divider">|</span>
@@ -382,13 +381,16 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
             <button className={`nav-link-new ${page === 'guide' ? 'active' : ''}`} onClick={() => handleNavigate('guide')}>{t('nav.guide') || 'GUIDE'}</button>
             <span className="nav-divider">|</span>
             <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
-            <span className="nav-divider">|</span>
-            <button className="nav-link-new" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
           </nav>
+          
+          <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+             <button className="nav-link-new" onClick={() => handleNavigate('login')} style={{ fontWeight: '600' }}>{t('nav.signin') || 'SIGN IN'}</button>
+             <button onClick={() => handleNavigate('register')} style={{ backgroundColor: '#14B8A6', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>GET STARTED</button>
+          </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
-        <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+        <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="mobile-search-wrapper">
             <input 
               type="text" 
@@ -403,6 +405,20 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
           <button className="nav-link" onClick={() => handleNavigate('guide')}>{t('nav.guide') || 'GUIDE'}</button>
           <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('register')} style={{ color: '#14B8A6' }}>GET STARTED</button>
+
+          <div className="mobile-menu-settings" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 2rem', borderTop: '1px solid var(--line)', marginTop: 'auto' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Icon name="user" />
+              <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 800, color: 'var(--ink)' }}>
+                  <option value="en">EN</option>
+                  <option value="fr">FR</option>
+              </select>
+            </div>
+            <button className="theme-toggle-btn-new" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
+              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+            </button>
+          </div>
         </nav>
       </header>
     </div>
@@ -487,28 +503,19 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
         </div>
       </section>
 
-      <section className="sticky-cards-section">
-        <div className="sticky-cards-header">
-          <SectionTitle title={t('how_it_works.title')} caption={t('how_it_works.subtitle')} />
-        </div>
-        <div className="sticky-cards-container">
+      <section className="section">
+        <SectionTitle title={t('how_it_works.title')} caption={t('how_it_works.subtitle')} />
+        <div className="steps">
           {[
-            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, bgVar: 'var(--card-bg-1)' },
-            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, bgVar: 'var(--card-bg-2)' },
-            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, bgVar: 'var(--card-bg-3)' },
-            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, bgVar: 'var(--card-bg-4)' },
-          ].map((card, index) => (
-            <div className="sticky-card" key={index} style={{ top: `calc(100px + ${index * 20}px)`, backgroundColor: card.bgVar }}>
-              <div className="sticky-card-content">
-                <div className="sticky-card-text">
-                  <span className="step-number">0{index + 1}</span>
-                  <h3>{card.title}</h3>
-                  <p>{card.desc}</p>
-                </div>
-                <div className="sticky-card-image">
-                  <img src={card.image} alt={card.title} />
-                </div>
-              </div>
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), icon: 'search' as const },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), icon: 'shield' as const },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), icon: 'calendar' as const },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), icon: 'check' as const },
+          ].map((step, index) => (
+            <div className="step reveal" key={index} style={{ animationDelay: `${index * 0.2}s` }}>
+              <Icon name={step.icon} />
+              <h3>{step.title}</h3>
+              <p>{step.desc}</p>
             </div>
           ))}
         </div>
