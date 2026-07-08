@@ -372,7 +372,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
           </div>
         </div>
 
-        <div className="header-lower-row" style={{ justifyContent: 'space-between' }}>
+        <div className="header-lower-row" style={{ justifyContent: 'center', position: 'relative' }}>
           <nav className="desktop-nav">
             <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
             <span className="nav-divider">|</span>
@@ -383,7 +383,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
             <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           </nav>
           
-          <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center', position: 'absolute', right: 0 }}>
              <button className="nav-link-new" onClick={() => handleNavigate('login')} style={{ fontWeight: '600' }}>{t('nav.signin') || 'SIGN IN'}</button>
              <button onClick={() => handleNavigate('register')} style={{ backgroundColor: '#14B8A6', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>GET STARTED</button>
           </div>

@@ -522,6 +522,12 @@
   object-fit: cover;
 }
 
+@media (min-width: 901px) {
+  .sticky-card:nth-child(even) .sticky-card-content {
+    flex-direction: row-reverse;
+  }
+}
+
 @media (max-width: 900px) {
   .sticky-card {
     height: 480px;
