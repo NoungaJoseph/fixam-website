@@ -90,7 +90,11 @@ const resources = {
         "step3": "Choose & Book",
         "desc3": "Select the best pro and book with confidence.",
         "step4": "Get It Done",
-        "desc4": "Relax while the job gets done right."
+        "desc4": "Relax while the job gets done right.",
+        "cta1": "Find Experts",
+        "cta2": "Verify Profile",
+        "cta3": "Book Now",
+        "cta4": "Pay Securely"
       },
       "guide": {
         "hero_title": "How It Works",
@@ -195,7 +199,11 @@ const resources = {
         "step3": "Choisir et réserver",
         "desc3": "Sélectionnez le meilleur pro et réservez en toute confiance.",
         "step4": "C'est fait",
-        "desc4": "Détendez-vous pendant que le travail est bien fait."
+        "desc4": "Détendez-vous pendant que le travail est bien fait.",
+        "cta1": "Trouver des experts",
+        "cta2": "Vérifier le profil",
+        "cta3": "Réserver maintenant",
+        "cta4": "Payer en sécurité"
       },
       "guide": {
         "hero_title": "Comment ça marche",
