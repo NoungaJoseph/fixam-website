@@ -181,12 +181,11 @@ function App() {
   // Synchronize initial hash on load and on hash change
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.toLowerCase();
-      if (hash === '#privacy' || hash === '#/privacy') {
-        setPage('privacy');
-      } else if (hash === '#terms' || hash === '#/terms') {
-        setPage('terms');
-      } else if (hash === '#home' || hash === '#/' || !hash) {
+      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy'];
+      if (validPages.includes(hash as Page)) {
+        setPage(hash as Page);
+      } else if (!hash) {
         setPage('home');
       }
     };
@@ -198,14 +197,14 @@ function App() {
 
   // Update hash when page changes
   useEffect(() => {
-    if (page === 'privacy') {
-      window.location.hash = 'privacy';
-    } else if (page === 'terms') {
-      window.location.hash = 'terms';
-    } else if (page === 'home') {
-      if (window.location.hash === '#privacy' || window.location.hash === '#terms') {
-        // Clear hash but prevent page jump
+    const currentHash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+    if (page === 'home') {
+      if (currentHash && currentHash !== 'home') {
         window.history.pushState('', document.title, window.location.pathname + window.location.search);
+      }
+    } else {
+      if (currentHash !== page) {
+        window.location.hash = page;
       }
     }
   }, [page]);
