@@ -11,14 +11,14 @@
   --green: #22C55E;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --logo-filter: none;
-  --card-bg-1: #0E2629;
-  --card-bg-2: #0E182B;
-  --card-bg-3: #17122B;
-  --card-bg-4: #211714;
-  --card-img-bg-1: #0B0F19;
-  --card-img-bg-2: #1F1610;
-  --card-img-bg-3: #0A1D1A;
-  --card-img-bg-4: #180F1D;
+  --card-bg-1: #115E59;
+  --card-bg-2: #7C2D12;
+  --card-bg-3: #312E81;
+  --card-bg-4: #064E3B;
+  --card-img-bg-1: #0A0F1D;
+  --card-img-bg-2: #1A120B;
+  --card-img-bg-3: #1D0E2B;
+  --card-img-bg-4: #0C1E12;
 }
 
 :root.light {
@@ -30,14 +30,14 @@
   --header-bg: rgba(255, 255, 255, 0.85);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --logo-filter: invert(1);
-  --card-bg-1: #E0F2F1;
-  --card-bg-2: #E3F2FD;
-  --card-bg-3: #F3E5F5;
-  --card-bg-4: #EFEBE9;
-  --card-img-bg-1: #F1F5F9;
-  --card-img-bg-2: #FFF3E0;
-  --card-img-bg-3: #E8F5E9;
-  --card-img-bg-4: #FCE4EC;
+  --card-bg-1: #CCFBF1;
+  --card-bg-2: #FFEDD5;
+  --card-bg-3: #E0E7FF;
+  --card-bg-4: #D1FAE5;
+  --card-img-bg-1: #F8FAFC;
+  --card-img-bg-2: #FFFBEB;
+  --card-img-bg-3: #FDF2F8;
+  --card-img-bg-4: #F0FDF4;
 }
 
 .brand img {
