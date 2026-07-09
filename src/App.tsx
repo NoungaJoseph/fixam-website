@@ -520,6 +520,9 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
                   <span className="step-number">0{index + 1}</span>
                   <h3>{card.title}</h3>
                   <p>{card.desc}</p>
+                  <button className="card-cta-btn">
+                    {index === 0 ? t('how_it_works.cta1') || 'Find Experts' : index === 1 ? t('how_it_works.cta2') || 'Verify Profile' : index === 2 ? t('how_it_works.cta3') || 'Book Now' : t('how_it_works.cta4') || 'Pay Securely'}
+                  </button>
                 </div>
                 <div className="sticky-card-image">
                   <img src={card.image} alt={card.title} />
