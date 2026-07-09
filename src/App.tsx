@@ -178,6 +178,39 @@ function App() {
     }
   }, [theme]);
 
+  // Synchronize initial hash on load and on hash change
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#privacy' || hash === '#/privacy') {
+        setPage('privacy');
+      } else if (hash === '#terms' || hash === '#/terms') {
+        setPage('terms');
+      } else if (hash === '#home' || hash === '#/' || !hash) {
+        setPage('home');
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Update hash when page changes
+  useEffect(() => {
+    if (page === 'privacy') {
+      window.location.hash = 'privacy';
+    } else if (page === 'terms') {
+      window.location.hash = 'terms';
+    } else if (page === 'home') {
+      if (window.location.hash === '#privacy' || window.location.hash === '#terms') {
+        // Clear hash but prevent page jump
+        window.history.pushState('', document.title, window.location.pathname + window.location.search);
+      }
+    }
+  }, [page]);
+
+
   useEffect(() => {
     if (maintenance || !appReady) return;
     const fetchPros = async () => {
