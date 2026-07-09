@@ -15,6 +15,10 @@
   --card-bg-2: #0E182B;
   --card-bg-3: #17122B;
   --card-bg-4: #211714;
+  --card-img-bg-1: #0B0F19;
+  --card-img-bg-2: #1F1610;
+  --card-img-bg-3: #0A1D1A;
+  --card-img-bg-4: #180F1D;
 }
 
 :root.light {
@@ -30,6 +34,10 @@
   --card-bg-2: #E3F2FD;
   --card-bg-3: #F3E5F5;
   --card-bg-4: #EFEBE9;
+  --card-img-bg-1: #F1F5F9;
+  --card-img-bg-2: #FFF3E0;
+  --card-img-bg-3: #E8F5E9;
+  --card-img-bg-4: #FCE4EC;
 }
 
 .brand img {

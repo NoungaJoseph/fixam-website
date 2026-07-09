@@ -509,14 +509,14 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
         </div>
         <div className="sticky-cards-container">
           {[
-            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, bgVar: 'var(--card-bg-1)' },
-            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, bgVar: 'var(--card-bg-2)' },
-            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, bgVar: 'var(--card-bg-3)' },
-            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, bgVar: 'var(--card-bg-4)' },
+            { title: t('how_it_works.step1'), desc: t('how_it_works.desc1'), image: images.onboardingExperts, textBg: 'var(--card-bg-1)', imageBg: 'var(--card-img-bg-1)' },
+            { title: t('how_it_works.step2'), desc: t('how_it_works.desc2'), image: images.onboardingVerified, textBg: 'var(--card-bg-2)', imageBg: 'var(--card-img-bg-2)' },
+            { title: t('how_it_works.step3'), desc: t('how_it_works.desc3'), image: images.onboardingBook, textBg: 'var(--card-bg-3)', imageBg: 'var(--card-img-bg-3)' },
+            { title: t('how_it_works.step4'), desc: t('how_it_works.desc4'), image: images.onboardingPayment, textBg: 'var(--card-bg-4)', imageBg: 'var(--card-img-bg-4)' },
           ].map((card, index) => (
-            <div className="sticky-card" key={index} style={{ top: `calc(120px + ${index * 24}px)`, backgroundColor: card.bgVar, zIndex: index + 1 }}>
+            <div className="sticky-card" key={index} style={{ top: `calc(120px + ${index * 24}px)`, zIndex: index + 1 }}>
               <div className="sticky-card-content">
-                <div className="sticky-card-text">
+                <div className="sticky-card-text" style={{ backgroundColor: card.textBg }}>
                   <span className="step-number">0{index + 1}</span>
                   <h3>{card.title}</h3>
                   <p>{card.desc}</p>
@@ -524,7 +524,7 @@ function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; live
                     {index === 0 ? t('how_it_works.cta1') || 'Find Experts' : index === 1 ? t('how_it_works.cta2') || 'Verify Profile' : index === 2 ? t('how_it_works.cta3') || 'Book Now' : t('how_it_works.cta4') || 'Pay Securely'}
                   </button>
                 </div>
-                <div className="sticky-card-image">
+                <div className="sticky-card-image" style={{ backgroundColor: card.imageBg }}>
                   <img src={card.image} alt={card.title} />
                 </div>
               </div>
