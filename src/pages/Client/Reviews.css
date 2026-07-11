@@ -1,0 +1,72 @@
+/* ==========================================
+   Reviews View
+   ========================================== */
+.reviews-panel-premium {
+  padding: 2rem !important;
+}
+
+.reviews-list-premium {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.review-item-premium {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+}
+
+.review-stars-premium {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.review-stars-premium svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  color: #FBBF24;
+}
+
+.review-stars-premium strong {
+  margin-left: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.review-comment {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0 0 0.6rem 0;
+  font-style: italic;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: block;
+}
+
+.review-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.review-stars-row svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: #FBBF24;
+}
+
+.review-date {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 0.5rem;
+}

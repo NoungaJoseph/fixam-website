@@ -1,0 +1,204 @@
+.service-mini,
+.pro-card,
+.testimonial,
+.blog-card,
+.service-card,
+.category-panel,
+.search-panel,
+.feature-row,
+.about-stats,
+.about-cards article,
+.login-card,
+.metric-card,
+.task-table,
+.right-panel,
+.dashboard-alert {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+}
+
+.metric-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 1.6rem;
+  border-radius: 0.9rem;
+  padding: 1.6rem;
+}
+
+.metric-card div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 1rem;
+  border-right: 1px solid var(--line);
+}
+
+.metric-card div:last-child {
+  border-right: 0;
+}
+
+.metric-card .icon {
+  grid-row: span 2;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  padding: 1rem;
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--teal);
+}
+
+.metric-card strong {
+  font-size: 2rem;
+}
+
+.metric-card span {
+  color: var(--muted);
+}
+
+/* Stats cards always show all 5 in a row on desktop */
+
+.metric-card-premium {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+.metric-card-premium:hover {
+  transform: translateY(-2px);
+}
+
+.metric-card-premium .metric-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.metric-card-premium .metric-card-header span {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.metric-card-premium .metric-icon-box {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-card-premium .metric-icon-box svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Colorful Metric Themes */
+.metric-card-premium.m-bookings .metric-icon-box {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+}
+
+.metric-card-premium.m-active .metric-icon-box {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3B82F6;
+}
+
+.metric-card-premium.m-completed .metric-icon-box {
+  background: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.metric-card-premium.m-coins .metric-icon-box {
+  background: rgba(168, 85, 247, 0.1);
+  color: #A855F7;
+}
+
+.metric-card-premium.m-saved .metric-icon-box {
+  background: rgba(236, 72, 153, 0.1);
+  color: #EC4899;
+}
+
+.metric-card-premium .metric-big-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.metric-card-premium .metric-card-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0.2rem 0 0.5rem 0;
+}
+
+.metric-card-premium .metric-trend {
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.metric-card-premium .metric-trend.trend-up {
+  color: #22C55E;
+}
+
+.metric-card-premium .metric-view-all {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--teal);
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.metric-card-premium .metric-view-all:hover {
+  text-decoration: underline;
+}
+
+.metric-card-premium .coins-plus-btn {
+  border: none;
+  background: rgba(168, 85, 247, 0.15);
+  color: #A855F7;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  position: absolute;
+  bottom: 1.2rem;
+  right: 1.2rem;
+}
+
+.metric-card-premium .coins-plus-btn:hover {
+  background: #A855F7;
+  color: #fff;
+}
+
+/* Remove min-width from cards to allow them to squish appropriately */
+.metric-card-premium {
+  min-width: 0;
+}
+
+/* My Tasks Page Stats Grid */
+.my-tasks-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}

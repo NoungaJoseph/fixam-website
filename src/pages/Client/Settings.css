@@ -1,0 +1,80 @@
+/* ==========================================
+   Settings detailed style
+   ========================================== */
+.settings-panel-premium {
+  padding: 2rem !important;
+}
+
+.settings-form-premium {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  max-width: 650px;
+}
+
+.settings-form-premium label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.settings-form-premium label span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.settings-form-premium input,
+.settings-form-premium select {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.settings-form-premium .form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.settings-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+.settings-checkbox-row input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--teal);
+}
+
+.settings-checkbox-row label {
+  font-size: 0.88rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.btn-settings-submit {
+  background: var(--teal);
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  width: fit-content;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.btn-settings-submit:hover {
+  background: var(--teal-dark);
+}

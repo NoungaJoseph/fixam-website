@@ -665,3 +665,253 @@ html, body, #root, .dashboard-shell-new {
       width: 100% !important;
     }
   }
+}
+
+/* =======================================================
+   DASHBOARD REDESIGN GLOBAL RESPONSIVENESS RULES
+   ======================================================= */
+
+/* 1. Desktop Layout (Grid splits left and right columns side-by-side) */
+@media (min-width: 1025px) {
+  .dash-content-premium.dashboard-tab-active {
+    display: grid !important;
+    grid-template-columns: 1.8fr 1fr !important;
+    gap: 2rem !important;
+    align-items: start !important;
+  }
+  
+  .dash-body-left {
+    min-width: 0;
+  }
+  
+  .dash-body-right {
+    min-width: 0;
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+/* 2. Tablet / Laptop Spacing Adjustments (1024px to 1200px) */
+@media (max-width: 1200px) {
+  .dash-stats-strip {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .stats-summary-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .coin-pkgs-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .my-tasks-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 3. Mid-Tablet Layout (768px to 1024px) */
+@media (max-width: 1024px) {
+  .dash-content-premium.dashboard-tab-active {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  
+  .dash-post-task-hero {
+    padding: 1.8rem !important;
+  }
+  
+  .post-task-text h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .dash-stats-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.8rem !important;
+  }
+}
+
+/* 4. Mobile Viewport Adjustments (Under 768px) */
+@media (max-width: 768px) {
+  .my-tasks-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .dash-stats-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.6rem !important;
+  }
+  
+  .stat-strip-item {
+    padding: 0.8rem !important;
+    gap: 0.6rem !important;
+  }
+  
+  .stat-strip-icon {
+    width: 2.3rem !important;
+    height: 2.3rem !important;
+  }
+  
+  .stat-strip-item strong {
+    font-size: 1.1rem !important;
+  }
+  
+  .stat-strip-item span {
+    font-size: 0.75rem !important;
+  }
+  
+  .stat-strip-trend {
+    display: none !important; /* Hide trends on mobile strip items to fit labels */
+  }
+  
+  .post-task-top-bar {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1.2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .post-task-bottom-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  
+  .hero-coin-balance-widget {
+    justify-content: center !important;
+  }
+  
+  .post-task-text {
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+  
+  .post-task-text p {
+    margin-bottom: 1.2rem !important;
+  }
+  
+  .btn-post-task-hero {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .post-task-quick-icons {
+    justify-content: center !important;
+    gap: 0.8rem !important;
+  }
+  
+  .quick-icon-btn {
+    width: 3.2rem !important;
+    height: 3.2rem !important;
+  }
+  
+  /* Category carousel arrow hide on small touch devices */
+  .cat-arrow {
+    display: none !important;
+  }
+  
+  .categories-carousel-wrapper {
+    margin: 0 -1.2rem;
+    width: calc(100% + 2.4rem);
+  }
+  
+  .popular-scroll-lg {
+    padding: 0.5rem 1.2rem !important;
+  }
+  
+  .popular-service-card-dash.card-lg {
+    width: 180px !important;
+    height: 120px !important;
+  }
+}
+
+/* 5. Very Small Screen Viewports (Under 480px) */
+@media (max-width: 480px) {
+  .dash-stats-strip {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .stats-summary-row {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .coin-pkgs-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .coin-bal-card {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+  }
+  
+  .my-tasks-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive adjustments for news ticker and profile details page */
+@media (max-width: 768px) {
+  .header-news-ticker {
+    margin: 0 0.5rem !important;
+    max-width: 280px !important;
+  }
+  .ticker-static-badge {
+    padding: 3px 6px !important;
+    font-size: 0.6rem !important;
+    margin-right: 6px !important;
+  }
+  .profile-header-main {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin-top: -50px !important;
+    padding: 1.2rem 1.5rem !important;
+    gap: 1.2rem !important;
+  }
+  .profile-avatar-lg {
+    width: 6.5rem !important;
+    height: 6.5rem !important;
+  }
+  .profile-name-row {
+    justify-content: center !important;
+  }
+  .profile-meta-row {
+    justify-content: center !important;
+    gap: 0.8rem !important;
+  }
+  .profile-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  .pro-booking-box {
+    position: static !important;
+  }
+  .profile-stats-strip-new {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.8rem !important;
+  }
+  .pro-stat-card {
+    padding: 0.8rem !important;
+  }
+  .pro-stat-card strong {
+    font-size: 1.15rem !important;
+  }
+  .pro-stat-card span {
+    font-size: 0.68rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-news-ticker {
+    display: none !important;
+  }
+  .profile-stats-strip-new {
+    grid-template-columns: 1fr !important;
+    gap: 0.6rem !important;
+  }
+}

@@ -1,0 +1,363 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Page, Icon, IconName, Footer } from '../App';
+import './Services.css';
+
+const servicesContent = {
+  en: {
+    hero: {
+      title: 'Hire Trusted Local Professionals',
+      subtitle: 'Post your task, browse verified providers, and get the job done — all from your phone.',
+      cta1: 'Post a Task',
+      cta2: 'Browse Providers'
+    },
+    stats: [
+      { value: '1,000+', label: 'Tasks Posted' },
+      { value: '500+', label: 'Verified Providers' },
+      { value: '4.8★', label: 'Client Satisfaction' },
+      { value: 'Douala & Yaoundé', label: 'Coverage Area' }
+    ],
+    howTo: {
+      title: 'How to Hire on Fixam',
+      cards: [
+        {
+          icon: 'briefcase' as IconName,
+          title: 'Post Your Task',
+          desc: 'Describe the service you need, your location, preferred date, and your budget. Posting a task is completely free and takes less than 2 minutes.',
+          link: 'Post a task →'
+        },
+        {
+          icon: 'user' as IconName,
+          title: 'Review Providers',
+          desc: 'Browse provider profiles, read verified client reviews, and compare ratings. Our verification system ensures every provider has a confirmed identity.',
+          link: 'Browse providers →'
+        },
+        {
+          icon: 'check' as IconName,
+          title: 'Get It Done',
+          desc: 'Book your chosen provider with as little as 1 coin, communicate directly through the app, and track your job from start to finish.',
+          link: 'How booking works →'
+        }
+      ]
+    },
+    confidence: {
+      label: 'Hire with confidence',
+      title: 'Know Exactly Who You\'re Hiring',
+      desc: 'Every provider on Fixam has gone through identity verification. You can read real reviews from previous clients, see their rating history, and chat with them directly before making any commitment.',
+      cta: 'Find a Provider'
+    },
+    coins: {
+      title: 'Simple Coin-Based Payments',
+      items: [
+        {
+          title: 'Top Up with Mobile Money',
+          desc: 'Add coins to your Fixam wallet using MTN Mobile Money or Orange Money. No bank account needed — just your mobile phone.'
+        },
+        {
+          title: 'Pay Only What You Need',
+          desc: 'Standard bookings cost 1 coin. Urgent bookings cost 2 coins. Emergency bookings cost 3 coins. No hidden fees.'
+        },
+        {
+          title: 'Secure Every Transaction',
+          desc: 'All payments are processed through secure Mobile Money channels. Your financial information is never stored on Fixam servers.'
+        }
+      ],
+      cta: 'Top Up Now'
+    },
+    faq: {
+      title: 'Frequently Asked Questions',
+      items: [
+        {
+          q: 'How much does it cost to post a task?',
+          a: 'Posting a task on Fixam is completely free. You only pay a small coin fee when you actually book a specific provider.'
+        },
+        {
+          q: 'How do Fixam coins work?',
+          a: 'Coins are the currency used on Fixam to book providers. You can purchase them using Mobile Money. A standard booking costs 1 coin.'
+        },
+        {
+          q: 'How do I pay the provider for their work?',
+          a: 'You pay the provider directly (via cash or Mobile Money) after the service is completed to your satisfaction. The price is agreed upon before they start working.'
+        },
+        {
+          q: 'Are the providers verified?',
+          a: 'Yes, every provider on Fixam goes through an identity verification process. We also encourage you to read their reviews from past clients.'
+        },
+        {
+          q: 'What if I have a problem with a service?',
+          a: 'You can contact our support team 24/7 through the app. We also rely on your honest reviews to maintain the quality of our marketplace.'
+        },
+        {
+          q: 'Do you offer services in my area?',
+          a: 'Fixam currently operates in major cities in Cameroon including Douala and Yaoundé. Enter your location in the app to see providers near you.'
+        }
+      ]
+    },
+    bottomCta: {
+      title: 'Ready to Get Your Task Done?',
+      subtitle: 'Post your first task free today',
+      btn: 'Post a Task Free'
+    }
+  },
+  fr: {
+    hero: {
+      title: 'Engagez des Professionnels Locaux de Confiance',
+      subtitle: 'Publiez votre tâche, parcourez les prestataires vérifiés et faites le travail — tout depuis votre téléphone.',
+      cta1: 'Publier une Tâche',
+      cta2: 'Parcourir les Prestataires'
+    },
+    stats: [
+      { value: '1 000+', label: 'Tâches Publiées' },
+      { value: '500+', label: 'Prestataires Vérifiés' },
+      { value: '4.8★', label: 'Satisfaction Client' },
+      { value: 'Douala & Yaoundé', label: 'Zone de Couverture' }
+    ],
+    howTo: {
+      title: 'Comment Engager sur Fixam',
+      cards: [
+        {
+          icon: 'briefcase' as IconName,
+          title: 'Publiez Votre Tâche',
+          desc: 'Décrivez le service dont vous avez besoin, votre emplacement et votre budget. Publier une tâche est entièrement gratuit et prend moins de 2 minutes.',
+          link: 'Publier une tâche →'
+        },
+        {
+          icon: 'user' as IconName,
+          title: 'Examinez les Prestataires',
+          desc: 'Parcourez les profils, lisez les avis et comparez les notes. Notre système de vérification garantit que chaque prestataire a une identité confirmée.',
+          link: 'Parcourir les prestataires →'
+        },
+        {
+          icon: 'check' as IconName,
+          title: 'C\'est Fait',
+          desc: 'Réservez votre prestataire avec seulement 1 pièce, communiquez directement via l\'application et suivez votre travail du début à la fin.',
+          link: 'Comment fonctionne la réservation →'
+        }
+      ]
+    },
+    confidence: {
+      label: 'Engagez en toute confiance',
+      title: 'Sachez Exactement Qui Vous Engagez',
+      desc: 'Chaque prestataire sur Fixam a subi une vérification d\'identité. Vous pouvez lire de vrais avis de clients précédents, voir leur historique et discuter avec eux avant tout engagement.',
+      cta: 'Trouver un Prestataire'
+    },
+    coins: {
+      title: 'Paiements Simples par Pièces',
+      items: [
+        {
+          title: 'Rechargez avec Mobile Money',
+          desc: 'Ajoutez des pièces à votre portefeuille Fixam avec MTN Mobile Money ou Orange Money. Aucun compte bancaire nécessaire.'
+        },
+        {
+          title: 'Payez Seulement Ce Dont Vous Avez Besoin',
+          desc: 'Les réservations standards coûtent 1 pièce. Les urgentes 2 pièces. Les urgences absolues 3 pièces. Pas de frais cachés.'
+        },
+        {
+          title: 'Sécurisez Chaque Transaction',
+          desc: 'Tous les paiements sont traités via des canaux Mobile Money sécurisés. Vos informations ne sont jamais stockées sur nos serveurs.'
+        }
+      ],
+      cta: 'Recharger Maintenant'
+    },
+    faq: {
+      title: 'Foire Aux Questions',
+      items: [
+        {
+          q: 'Combien coûte la publication d\'une tâche ?',
+          a: 'La publication d\'une tâche sur Fixam est entièrement gratuite. Vous ne payez qu\'une petite somme en pièces lorsque vous réservez un prestataire.'
+        },
+        {
+          q: 'Comment fonctionnent les pièces Fixam ?',
+          a: 'Les pièces sont la monnaie utilisée sur Fixam pour réserver des prestataires. Une réservation standard coûte 1 pièce.'
+        },
+        {
+          q: 'Comment payer le prestataire pour son travail ?',
+          a: 'Vous payez le prestataire directement (en espèces ou Mobile Money) une fois le service terminé à votre satisfaction.'
+        },
+        {
+          q: 'Les prestataires sont-ils vérifiés ?',
+          a: 'Oui, chaque prestataire sur Fixam passe par un processus de vérification d\'identité. Nous vous encourageons également à lire leurs avis.'
+        },
+        {
+          q: 'Que faire en cas de problème avec un service ?',
+          a: 'Vous pouvez contacter notre équipe de support 24/7 via l\'application. Nous comptons sur vos avis honnêtes pour maintenir la qualité.'
+        },
+        {
+          q: 'Proposez-vous des services dans ma région ?',
+          a: 'Fixam opère actuellement dans les grandes villes du Cameroun, dont Douala et Yaoundé. Entrez votre emplacement dans l\'application.'
+        }
+      ]
+    },
+    bottomCta: {
+      title: 'Prêt à Faire Réaliser Votre Tâche ?',
+      subtitle: 'Publiez votre première tâche gratuitement',
+      btn: 'Publier une Tâche Gratuitement'
+    }
+  }
+};
+
+export default function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { i18n } = useTranslation();
+  const lang = i18n.language === 'fr' ? 'fr' : 'en';
+  const c = servicesContent[lang];
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  return (
+    <div className="client-page-premium">
+      
+      {/* SECTION 1 - HERO */}
+      <section className="client-hero-section">
+        <div className="client-hero-container">
+          <div className="client-hero-box">
+            <img 
+              src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1200&auto=format&fit=crop&q=80" 
+              alt="Home professionals" 
+              className="client-hero-img"
+            />
+            <div className="client-hero-overlay">
+              <div className="client-hero-content">
+                <h1>{c.hero.title}</h1>
+                <p>{c.hero.subtitle}</p>
+                <div className="client-hero-actions">
+                  <button className="btn-primary-pill" onClick={() => onNavigate('register')}>
+                    {c.hero.cta1}
+                  </button>
+                  <button className="btn-secondary-pill white-outline" onClick={() => onNavigate('register')}>
+                    {c.hero.cta2}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 2 - STATS BAR */}
+      <section className="client-stats-section">
+        <div className="client-stats-box">
+          <div className="client-stats-grid">
+            {c.stats.map((stat, idx) => (
+              <div className="client-stat-item" key={idx}>
+                <h3>{stat.value}</h3>
+                <span>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3 - HOW TO HIRE */}
+      <section className="client-howto-section">
+        <div className="container">
+          <h2 className="section-heading-left">{c.howTo.title}</h2>
+          <div className="client-howto-cards">
+            {c.howTo.cards.map((card, idx) => (
+              <div className="howto-card" key={idx}>
+                <div className="howto-icon-wrapper">
+                  <Icon name={card.icon} />
+                </div>
+                <h3>{card.title}</h3>
+                <p>{card.desc}</p>
+                <button className="link-teal" onClick={() => onNavigate('register')}>
+                  {card.link}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4 - FEEL CONFIDENT */}
+      <section className="client-split-section bg-light">
+        <div className="container split-layout">
+          <div className="split-left">
+            <span className="split-label">{c.confidence.label}</span>
+            <h2 className="split-heading">{c.confidence.title}</h2>
+            <p className="split-desc">{c.confidence.desc}</p>
+            <button className="btn-primary-pill" onClick={() => onNavigate('register')}>
+              {c.confidence.cta}
+            </button>
+          </div>
+          <div className="split-right">
+            <div className="split-img-box">
+              <img 
+                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80" 
+                alt="Professional provider" 
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 5 - HOW COINS WORK */}
+      <section className="client-split-section">
+        <div className="container split-layout reversed">
+          <div className="split-left">
+            <h2 className="split-heading">{c.coins.title}</h2>
+            <div className="split-list">
+              {c.coins.items.map((item, idx) => (
+                <div className="split-list-item" key={idx}>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              ))}
+            </div>
+            <button className="btn-primary-pill" onClick={() => onNavigate('register')} style={{ marginTop: '2rem' }}>
+              {c.coins.cta}
+            </button>
+          </div>
+          <div className="split-right">
+            <div className="split-img-box mobile-app-mockup">
+              <img 
+                src="https://images.unsplash.com/photo-1616077168079-7e09a6a71142?w=800&auto=format&fit=crop&q=80" 
+                alt="Mobile app wallet" 
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 6 - CLIENT FAQ */}
+      <section className="client-faq-section bg-light">
+        <div className="container split-layout faq-layout">
+          <div className="split-left">
+            <h2 className="section-heading-left">{c.faq.title}</h2>
+          </div>
+          <div className="split-right">
+            <div className="faq-accordion-list">
+              {c.faq.items.map((item, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div className={`faq-accordion-item ${isOpen ? 'open' : ''}`} key={idx}>
+                    <button className="faq-accordion-header" onClick={() => setOpenFaq(isOpen ? null : idx)}>
+                      <span>{item.q}</span>
+                      <Icon name={isOpen ? 'x' : 'menu'} />
+                    </button>
+                    <div className={`faq-accordion-body ${isOpen ? 'open' : ''}`}>
+                      <p>{item.a}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7 - BOTTOM CTA */}
+      <section className="client-bottom-cta">
+        <div className="container">
+          <div className="cta-banner-box">
+            <h2>{c.bottomCta.title}</h2>
+            <p>{c.bottomCta.subtitle}</p>
+            <button className="btn-primary-pill white-variant" onClick={() => onNavigate('register')}>
+              {c.bottomCta.btn}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <Footer onNavigate={onNavigate} />
+    </div>
+  );
+}

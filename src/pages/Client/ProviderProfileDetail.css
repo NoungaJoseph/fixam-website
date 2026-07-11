@@ -1,0 +1,166 @@
+.profile-header-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  box-shadow: var(--shadow);
+  gap: 2rem;
+}
+
+.profile-header-stats-row {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.profile-header-stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.profile-header-stat-box .stat-lbl {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-header-stat-box .stat-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.profile-header-stat-box .stat-val svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--teal);
+}
+
+.profile-header-stat-box .stat-val.status-active {
+  color: #22C55E;
+}
+
+.profile-header-stat-box .stat-val.status-active .dot-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: #22C55E;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.profile-header-stat-box .stat-val.security-strong {
+  color: #22C55E;
+}
+
+.profile-header-card {
+  position: relative;
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.profile-header-card::before {
+  content: '';
+  display: block;
+  height: 140px;
+  background: linear-gradient(135deg, #0D9488, #2563EB);
+}
+
+.profile-header-stats-row {
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.profile-header-stat-box {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  border-right: 1px solid var(--line);
+}
+
+.profile-header-stat-box:last-child {
+  border-right: none;
+}
+
+/* Provider Profile Detail Page */
+.provider-profile-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.btn-profile-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: fit-content;
+  transition: all 0.2s ease;
+}
+
+.btn-profile-back:hover {
+  background: var(--soft);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.profile-banner-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-banner-bg {
+  height: 140px;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  position: relative;
+}
+
+.profile-header-main {
+  display: flex;
+  padding: 1.5rem 2rem;
+  gap: 2rem;
+  align-items: flex-end;
+  position: relative;
+  margin-top: -70px;
+}
+
+.profile-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.badge-verified-pro {
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}

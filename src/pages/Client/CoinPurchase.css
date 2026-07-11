@@ -1,0 +1,97 @@
+/* Coin Purchase Page Layout & Packages Grid */
+.coin-purchase-layout {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+}
+
+.coin-purchase-top {
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.coin-bal-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.2rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: var(--shadow);
+}
+
+.coin-bal-icon {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  background: rgba(20, 184, 166, 0.1);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-bal-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.coin-bal-card div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coin-bal-card span {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.coin-bal-card strong {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.coin-pkgs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+}
+
+.pkg-pop-badge {
+  position: absolute;
+  top: -12px;
+  background: var(--teal);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.2);
+}
+
+.pkg-coins {
+  margin-bottom: 0.8rem;
+}
+
+.pkg-coins strong {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.pkg-coins span {
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.pkg-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--teal);
+  margin-bottom: 1.5rem;
+}

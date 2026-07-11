@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images, Icon } from '../../App';
+import './Auth.css';
 
 export default function ForgotPassword({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { t } = useTranslation();

@@ -1,0 +1,519 @@
+/* Services.css - Premium Client Landing Page Redesign */
+.client-page-premium {
+  min-height: 100vh;
+  background-color: white;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.client-page-premium section {
+  padding: 96px 0;
+}
+
+@media (max-width: 767px) {
+  .client-page-premium section {
+    padding: 56px 0;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-heading-left {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.bg-light {
+  background-color: var(--soft);
+}
+
+/* Base UI Components */
+.btn-primary-pill {
+  background-color: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary-pill:hover {
+  background-color: var(--teal-dark);
+}
+
+.btn-primary-pill.white-variant {
+  background-color: white;
+  color: var(--teal-dark);
+}
+
+.btn-primary-pill.white-variant:hover {
+  background-color: #F8FAFC;
+}
+
+.btn-secondary-pill {
+  background-color: transparent;
+  color: var(--teal);
+  border: 2px solid var(--teal);
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.btn-secondary-pill:hover {
+  background-color: var(--teal);
+  color: white;
+}
+
+.btn-secondary-pill.white-outline {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: white;
+}
+
+.btn-secondary-pill.white-outline:hover {
+  border-color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.link-teal {
+  background: none;
+  border: none;
+  color: var(--teal);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.link-teal:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------
+ * SECTION 1: HERO
+ * ------------------------------------- */
+.client-hero-section {
+  padding-top: 120px !important;
+  padding-bottom: 40px !important;
+  background-color: white;
+}
+
+.client-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.client-hero-box {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: #111827;
+}
+
+.client-hero-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 65%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.client-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #111827 45%, rgba(17, 24, 39, 0) 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 64px;
+}
+
+.client-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+}
+
+.client-hero-content h1 {
+  font-size: 52px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  margin-bottom: 24px;
+}
+
+.client-hero-content p {
+  font-size: 18px;
+  color: #D1D5DB;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.client-hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 767px) {
+  .client-hero-box {
+    min-height: 540px;
+  }
+  .client-hero-img {
+    width: 100%;
+  }
+  .client-hero-overlay {
+    background: linear-gradient(0deg, #111827 60%, rgba(17, 24, 39, 0) 100%);
+    align-items: flex-end;
+    padding: 0 24px 40px;
+  }
+  .client-hero-content h1 {
+    font-size: 34px;
+  }
+  .client-hero-content p {
+    font-size: 16px;
+  }
+}
+
+/* -------------------------------------
+ * SECTION 2: STATS BAR
+ * ------------------------------------- */
+.client-stats-section {
+  padding: 0 !important;
+  margin-top: -20px;
+  position: relative;
+  z-index: 10;
+  background-color: transparent;
+}
+
+.client-stats-box {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: white;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.client-stats-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-stat-item {
+  text-align: center;
+  flex: 1;
+  border-right: 1px solid var(--line);
+}
+
+.client-stat-item:last-child {
+  border-right: none;
+}
+
+.client-stat-item h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+
+.client-stat-item span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 767px) {
+  .client-stats-box {
+    margin: 0 24px;
+    padding: 24px;
+  }
+  .client-stats-grid {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .client-stat-item {
+    flex: 0 0 45%;
+    border-right: none;
+  }
+}
+
+/* -------------------------------------
+ * SECTION 3: HOW TO HIRE CARDS
+ * ------------------------------------- */
+.client-howto-section {
+  background-color: white;
+}
+
+.client-howto-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.howto-card {
+  background-color: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 200ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.howto-card:hover {
+  border-color: var(--teal);
+  border-width: 2px;
+  padding: 31px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.howto-icon-wrapper {
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+
+.howto-icon-wrapper svg {
+  width: 32px;
+  height: 32px;
+  stroke-width: 1.5;
+}
+
+.howto-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.howto-card p {
+  font-size: 15px;
+  color: var(--text-dark);
+  line-height: 1.65;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+@media (max-width: 1023px) {
+  .client-howto-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------------------------------------
+ * SPLIT LAYOUT SECTIONS (4 & 5)
+ * ------------------------------------- */
+.client-split-section {
+  /* inherit bg */
+}
+
+.split-layout {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+.split-layout.reversed {
+  flex-direction: row-reverse;
+}
+
+.split-left {
+  flex: 0 0 40%;
+}
+
+.split-layout.reversed .split-left {
+  flex: 0 0 50%;
+}
+
+.split-right {
+  flex: 1;
+}
+
+.split-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.split-heading {
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 24px;
+}
+
+.split-desc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-dark);
+  margin-bottom: 32px;
+}
+
+.split-img-box {
+  width: 100%;
+  height: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+}
+
+.split-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.split-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.split-list-item h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.split-list-item p {
+  font-size: 15px;
+  color: var(--text-dark);
+  line-height: 1.65;
+}
+
+@media (max-width: 1023px) {
+  .split-layout, .split-layout.reversed {
+    flex-direction: column;
+    gap: 48px;
+  }
+  .split-left, .split-right {
+    flex: 1;
+    width: 100%;
+  }
+  .split-heading {
+    font-size: 32px;
+  }
+}
+
+/* -------------------------------------
+ * SECTION 6: FAQ
+ * ------------------------------------- */
+.client-faq-section {
+  /* bg-light */
+}
+
+.faq-layout {
+  align-items: flex-start;
+}
+
+.faq-accordion-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.faq-accordion-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-accordion-item:last-child {
+  border-bottom: none;
+}
+
+.faq-accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 0;
+  background: none;
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-accordion-header svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.faq-accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+}
+
+.faq-accordion-body.open {
+  max-height: 500px;
+}
+
+.faq-accordion-body p {
+  padding-bottom: 24px;
+  font-size: 15px;
+  color: var(--text-dark);
+  line-height: 1.65;
+}
+
+/* -------------------------------------
+ * SECTION 7: BOTTOM CTA
+ * ------------------------------------- */
+.client-bottom-cta {
+  background-color: white;
+}
+
+.cta-banner-box {
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+  border-radius: 24px;
+  padding: 64px 24px;
+  text-align: center;
+  color: white;
+}
+
+.cta-banner-box h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.cta-banner-box p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  opacity: 0.9;
+}

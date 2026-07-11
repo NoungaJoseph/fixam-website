@@ -1,0 +1,84 @@
+/* ==========================================
+   Wallet & Coins Tab View
+   ========================================== */
+.wallet-tab-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2rem;
+  width: 100%;
+}
+
+.wallet-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.main-wallet-card-premium {
+  background: linear-gradient(135deg, #0B132B 0%, #1c2541 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 2rem !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(11, 19, 43, 0.15);
+}
+
+.main-wallet-card-premium::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(20, 184, 166, 0.08);
+  pointer-events: none;
+}
+
+.card-top-wallet {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.main-wallet-card-premium .wallet-lbl {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.main-wallet-card-premium .wallet-big-val {
+  font-size: 3rem;
+  font-weight: 900;
+  display: block;
+  line-height: 1.1;
+  color: #fff;
+  margin-top: 0.25rem;
+}
+
+.main-wallet-card-premium .wallet-chip {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-wallet-card-premium .wallet-chip svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.main-wallet-card-premium .wallet-pills-row {
+  display: flex;
+  gap: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.2rem;
+}

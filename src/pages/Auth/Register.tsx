@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images, Icon } from '../../App';
+import './Auth.css';
 
 export default function Register({ onNavigate, onRegister }: { onNavigate: (page: Page) => void; onRegister?: (role: 'client' | 'pro') => void }) {
   const { t } = useTranslation();
   const [accountType, setAccountType] = useState<'client' | 'pro'>('client');
+
+  // Scroll form side to top when component mounts
+  useEffect(() => {
+    const formSide = document.querySelector('.auth-form-side');
+    if (formSide) formSide.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, []);
   const [countryCode, setCountryCode] = useState('+237');
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
@@ -92,9 +100,9 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   return (
     <main className="auth-layout">
       <section className="auth-form-side">
-        <div className="auth-form-container" style={{ margin: '2rem 0' }}>
+        <div className="auth-form-container">
           <button className="brand brand-button auth-brand" onClick={() => onNavigate('home')}>
-            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)' }} />
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '64px', marginBottom: '1rem' }} />
           </button>
           
           <div className="auth-header">
@@ -272,6 +280,9 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
               </div>
             </div>
 
+            <p className="auth-legal-text" style={{ fontSize: '0.85rem', color: 'var(--muted)', marginTop: '1rem', textAlign: 'center' }}>
+              By registering, you agree to our <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('terms'); }} style={{ color: 'var(--brand)', textDecoration: 'none' }}>Terms of Service</a> and <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('privacy'); }} style={{ color: 'var(--brand)', textDecoration: 'none' }}>Privacy Policy</a>
+            </p>
             <button type="submit" className="primary-button full-width" style={{ marginTop: '1rem' }}>Create Account</button>
 
             <div className="auth-divider">

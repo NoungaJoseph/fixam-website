@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images } from '../../App';
+import './Auth.css';
 
 export default function OTPVerification({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { t } = useTranslation();

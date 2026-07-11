@@ -1,0 +1,157 @@
+/* About.css - Premium Layout */
+.about-page-premium {
+  min-height: 100vh;
+  background-color: white;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.about-hero {
+  padding: 160px 0 100px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--teal);
+  margin-bottom: 24px;
+}
+
+.about-hero p {
+  font-size: 20px;
+  color: var(--muted);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.about-mission-section {
+  padding: 100px 0;
+  background-color: white;
+  text-align: center;
+}
+
+.about-mission-section h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+
+.about-mission-section p {
+  font-size: 18px;
+  color: var(--text-dark);
+  line-height: 1.8;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-values-section {
+  padding: 100px 0;
+  background-color: var(--soft);
+}
+
+.about-values-section h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 56px;
+  text-align: center;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.value-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.value-number {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--teal);
+  opacity: 0.2;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.value-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.value-card p {
+  font-size: 16px;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+.about-cta-section {
+  padding: 100px 0;
+  background-color: white;
+}
+
+.about-cta-box {
+  background: linear-gradient(135deg, var(--teal) 0%, #0D9488 100%);
+  border-radius: 24px;
+  padding: 80px 40px;
+  text-align: center;
+  color: white;
+}
+
+.about-cta-box h2 {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.about-cta-box p {
+  font-size: 20px;
+  margin-bottom: 40px;
+  opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.white-variant-btn {
+  border-color: white;
+  color: white;
+}
+
+.white-variant-btn:hover {
+  background-color: white;
+  color: var(--teal);
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    padding: 120px 0 80px;
+  }
+  .about-hero h1 {
+    font-size: 40px;
+  }
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-cta-actions {
+    flex-direction: column;
+  }
+}

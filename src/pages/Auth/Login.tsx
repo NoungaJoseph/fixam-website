@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, asset, images, Icon } from '../../App';
+import './Auth.css';
 
 export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page) => void; onLogin?: (role: 'client' | 'pro') => void }) {
   const { t } = useTranslation();
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
   const [role, setRole] = useState<'client' | 'pro'>('client');
+
+  // Scroll form side to top when component mounts
+  useEffect(() => {
+    const formSide = document.querySelector('.auth-form-side');
+    if (formSide) formSide.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, []);
   
   // Custom dropdown state for phone
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,7 +43,7 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
       <section className="auth-form-side">
         <div className="auth-form-container">
           <button className="brand brand-button" onClick={() => onNavigate('home')} aria-label="Go to homepage">
-            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)' }} />
+            <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '64px', marginBottom: '1rem' }} />
           </button>
           
           <div className="auth-header">

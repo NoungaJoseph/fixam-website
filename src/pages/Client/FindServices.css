@@ -1,0 +1,132 @@
+/* ==========================================
+   Find Services Page Styling (Screenshot 2)
+   ========================================== */
+.find-services-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.find-services-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.find-services-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+}
+
+.find-services-header p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0.2rem 0 0 0;
+}
+
+.search-bar-row-fs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: var(--surface);
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.input-wrapper-fs {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-right: 1px solid var(--line);
+  padding-right: 1rem;
+}
+
+.input-wrapper-fs:last-of-type {
+  border-right: none;
+}
+
+.input-wrapper-fs.query-input {
+  flex: 1.4;
+}
+
+.input-wrapper-fs.location-input {
+  flex: 0.9;
+}
+
+.input-wrapper-fs svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--muted);
+}
+
+.input-wrapper-fs input {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.95rem;
+  outline: none;
+  width: 100%;
+}
+
+.btn-search-fs {
+  background: var(--teal-dark);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: none;
+  padding: 0.65rem 1.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-height: auto;
+}
+
+.btn-search-fs:hover {
+  background: var(--teal);
+}
+
+.popular-searches-row-fs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.popular-searches-row-fs span {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.popular-search-tag-fs {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.popular-search-tag-fs:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--soft);
+}
+
+.categories-scroll-row-fs {
+  width: 100%;
+  overflow: hidden;
+}
+
+.categories-scroll-wrapper-fs {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.6rem;
+}
