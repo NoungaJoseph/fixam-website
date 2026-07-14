@@ -4959,9 +4959,7 @@ p {
    My Tasks Tab View
    ========================================== */
 .tasks-container-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 2rem;
+  display: block;
   width: 100%;
 }
 
@@ -6045,9 +6043,7 @@ p {
 }
 
 .fs-directory-layout {
-  display: grid;
-  grid-template-columns: 1fr 310px;
-  gap: 2rem;
+  display: block;
   width: 100%;
 }
 
