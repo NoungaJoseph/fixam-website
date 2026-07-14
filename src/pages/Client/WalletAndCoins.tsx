@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { Icon } from '../../App';
 import Referrals from './Referrals';
 
-export default function WalletAndCoins() {
+interface WalletAndCoinsProps {
+  setActiveTab: (tab: string) => void;
+}
+
+export default function WalletAndCoins({ setActiveTab }: WalletAndCoinsProps) {
   const [activeSubTab, setActiveSubTab] = useState<'wallet' | 'referrals'>('wallet');
 
   const coinPackages = [
@@ -30,10 +34,63 @@ export default function WalletAndCoins() {
         </button>
       </div>
 
+      {/* Reusable Dashboard Metrics Grid */}
+      <div className="dash-metrics-grid" style={{ padding: '0 0.5rem' }}>
+        <div className="metric-card-premium m-bookings" onClick={() => setActiveTab('My Bookings')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Bookings</span>
+            <div className="metric-icon-box"><Icon name="calendar" /></div>
+          </div>
+          <strong className="metric-big-num">12</strong>
+          <span className="metric-card-desc">Total Bookings</span>
+          <span className="metric-trend trend-up">↑ 20% this month</span>
+        </div>
+
+        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Bookings')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Active Tasks</span>
+            <div className="metric-icon-box"><Icon name="briefcase" /></div>
+          </div>
+          <strong className="metric-big-num">4</strong>
+          <span className="metric-card-desc">In Progress</span>
+          <span className="metric-view-all">View all &gt;</span>
+        </div>
+
+        <div className="metric-card-premium m-completed">
+          <div className="metric-card-header">
+            <span>Completed</span>
+            <div className="metric-icon-box"><Icon name="check" /></div>
+          </div>
+          <strong className="metric-big-num">8</strong>
+          <span className="metric-card-desc">Jobs Completed</span>
+          <span className="metric-trend trend-up">↑ 15% this month</span>
+        </div>
+
+        <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Coins Balance</span>
+            <div className="metric-icon-box"><Icon name="wallet" /></div>
+          </div>
+          <strong className="metric-big-num">1,250</strong>
+          <span className="metric-card-desc">Available Coins</span>
+          <button className="coins-plus-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet'); }}>+</button>
+        </div>
+
+        <div className="metric-card-premium m-saved" onClick={() => setActiveTab('Profile Settings')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Saved Providers</span>
+            <div className="metric-icon-box"><Icon name="star" /></div>
+          </div>
+          <strong className="metric-big-num">18</strong>
+          <span className="metric-card-desc">Saved</span>
+          <span className="metric-view-all">View all &gt;</span>
+        </div>
+      </div>
+
       {activeSubTab === 'wallet' ? (
         <div className="wallet-tab-grid">
           <div className="wallet-left-column">
-            <div className="dash-panel-premium main-wallet-card-premium">
+            <div className="dash-panel-premium main-wallet-card-premium" style={{ display: 'none' }}>
               <div className="card-top-wallet">
                 <div>
                   <span className="wallet-lbl">Available Coins</span>
@@ -64,12 +121,12 @@ export default function WalletAndCoins() {
               </div>
               <div className="chart-content-dash">
                 <div className="chart-svg-wrapper">
-                  <svg width="140" height="140" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--line)" strokeWidth="3.5" />
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#14B8A6" strokeWidth="3.5" strokeDasharray="48 52" strokeDashoffset="100" />
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3B82F6" strokeWidth="3.5" strokeDasharray="24 76" strokeDashoffset="52" />
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#F59E0B" strokeWidth="3.5" strokeDasharray="16 84" strokeDashoffset="28" />
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#A855F7" strokeWidth="3.5" strokeDasharray="12 88" strokeDashoffset="12" />
+                  <svg width="140" height="140" viewBox="0 0 38 38" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="19" cy="19" r="15.915" fill="none" stroke="var(--line)" strokeWidth="3.5" />
+                    <circle cx="19" cy="19" r="15.915" fill="none" stroke="#14B8A6" strokeWidth="3.5" strokeDasharray="48 52" strokeDashoffset="100" />
+                    <circle cx="19" cy="19" r="15.915" fill="none" stroke="#3B82F6" strokeWidth="3.5" strokeDasharray="24 76" strokeDashoffset="52" />
+                    <circle cx="19" cy="19" r="15.915" fill="none" stroke="#F59E0B" strokeWidth="3.5" strokeDasharray="16 84" strokeDashoffset="28" />
+                    <circle cx="19" cy="19" r="15.915" fill="none" stroke="#A855F7" strokeWidth="3.5" strokeDasharray="12 88" strokeDashoffset="12" />
                   </svg>
                   <div className="chart-inner-text">
                     <span className="chart-num">25</span>

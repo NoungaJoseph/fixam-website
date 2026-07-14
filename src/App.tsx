@@ -1227,7 +1227,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                   />
                 )}
                 {activeTab === 'Stats' && <Stats />}
-                {activeTab === 'Wallet' && <WalletAndCoins />}
+                {activeTab === 'Wallet' && <WalletAndCoins setActiveTab={setActiveTab} />}
                 {activeTab === 'Coin Purchase' && (
                   <CoinPurchase 
                     setActiveTab={setActiveTab} 

@@ -29,7 +29,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
   return (
     <div className="my-tasks-tab-wrapper animate-fade-in">
       {/* Stats Cards Section - 3 up, 2 down with space */}
-      <div className="my-tasks-metrics-grid" style={{ marginBottom: '2.5rem' }}>
+      <div className="dash-metrics-grid">
         <div className="metric-card-premium m-bookings" onClick={() => setActiveTab('My Bookings')} style={{ cursor: 'pointer' }}>
           <div className="metric-card-header">
             <span>Bookings</span>

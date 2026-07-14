@@ -191,14 +191,6 @@
   color: #fff;
 }
 
-/* Remove min-width from cards to allow them to squish appropriately */
-.metric-card-premium {
-  min-width: 0;
-}
 
-/* My Tasks Page Stats Grid */
-.my-tasks-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
+/* Cleaned up redundant local stats definitions. Managed globally in App.css */
+
