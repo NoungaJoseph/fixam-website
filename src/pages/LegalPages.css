@@ -39,7 +39,7 @@
 }
 
 .legal-brand-suffix {
-  color: #9CA3AF;
+  color: var(--muted);
   font-weight: 400;
   font-size: 16px;
 }
@@ -54,7 +54,7 @@
 .legal-sidebar {
   width: 260px;
   flex-shrink: 0;
-  border-right: 1px solid #E5E7EB;
+  border-right: 1px solid var(--line);
   padding: 32px 24px;
   position: sticky;
   top: 56px; /* Below the header bar */
@@ -64,7 +64,7 @@
 
 .legal-nav-label {
   font-size: 12px;
-  color: #9CA3AF;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 500;
@@ -160,7 +160,7 @@
 
 .legal-divider {
   border: 0;
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid var(--line);
   margin: 32px 0;
 }
 
@@ -266,7 +266,7 @@
     border-radius: 50px;
     padding: 6px 16px;
     font-size: 13px;
-    border-left: 1px solid #E5E7EB;
+    border-left: 1px solid var(--line);
   }
 
   .legal-nav-link.active {

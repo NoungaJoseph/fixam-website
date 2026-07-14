@@ -93,7 +93,7 @@
 
 .category-card:hover {
   border-color: var(--teal-light);
-  background: #f8fafc;
+  background: var(--soft);
 }
 
 .category-card.selected {

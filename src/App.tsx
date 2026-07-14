@@ -354,6 +354,16 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileHowOpen, setMobileHowOpen] = useState(false);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
+
   const serviceCategories: Record<string, Array<{ name: string; desc: string; icon: string }>> = {
     'Home Services': [
       { name: 'House Cleaning', desc: 'Clean your home professionally', icon: '🧹' },

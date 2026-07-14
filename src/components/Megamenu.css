@@ -242,17 +242,18 @@
 /* Mobile Accordions */
 .mobile-nav-accordion-btn {
   width: 100%;
-  padding: 0.8rem 1.5rem;
+  padding: 1.2rem 1.5rem;
   background: transparent;
   border: none;
   text-align: left;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--ink);
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--line);
+  cursor: pointer;
 }
 
 .mobile-nav-accordion-content {
@@ -265,31 +266,35 @@
 
 .mobile-nav-accordion-content.open {
   max-height: 2000px;
-  padding: 1rem 1.5rem;
+  padding: 1.2rem 1.5rem;
   border-bottom: 1px solid var(--line);
 }
 
 .mobile-cat-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .mobile-cat-title {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: var(--teal-dark);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .mobile-service-item {
   display: block;
   width: 100%;
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
   text-align: left;
   background: transparent;
   border: none;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
 }
 
 .mobile-how-section {

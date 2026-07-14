@@ -19,7 +19,7 @@
 .skill-section-alt {
   padding: 80px 0;
   background-color: var(--soft);
-  border-top: 1px solid #E5E7EB;
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
@@ -173,7 +173,7 @@
   border-radius: 50%;
   object-fit: cover;
   background-color: #E2E8F0;
-  border: 2px solid #E5E7EB;
+  border: 2px solid var(--line);
 }
 
 .pro-card-name {
