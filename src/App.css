@@ -8595,6 +8595,39 @@ p {
   background: rgba(20, 184, 166, 0.05);
 }
 
+/* Reusable dashboard subtabs navigation styling */
+.dash-subtabs-header {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+}
+
+.subtab-btn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.subtab-btn:hover {
+  color: var(--teal);
+  background: var(--soft);
+}
+
+.subtab-btn.active {
+  color: var(--teal);
+  background: var(--soft);
+  box-shadow: inset 0 -2px 0 var(--teal);
+}
+
+
 
 
 

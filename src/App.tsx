@@ -902,22 +902,16 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
       { name: 'Find Services', icon: 'search' as IconName },
       { name: 'My Bookings', icon: 'calendar' as IconName },
       { name: 'Messages', icon: 'chat' as IconName, badge: 3 },
-      { name: 'Saved Providers', icon: 'star' as IconName },
-      { name: 'My Tasks', icon: 'briefcase' as IconName },
-      { name: 'Stats', icon: 'chart' as IconName },
-      { name: 'Reviews', icon: 'check' as IconName },
-      { name: 'Wallet & Coins', icon: 'wallet' as IconName, walletBadge: '1,250' },
-      { name: 'Coin Purchase', icon: 'wallet' as IconName },
-      { name: 'My Referrals', icon: 'user' as IconName },
-      { name: 'Notifications', icon: 'bell' as IconName, badge: 8 },
-      { name: 'Settings', icon: 'wrench' as IconName },
-      { name: 'Help Center', icon: 'message' as IconName }
+      { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '1,250' },
+      { name: 'Reviews', icon: 'star' as IconName },
+      { name: 'Profile Settings', icon: 'user' as IconName },
+      { name: 'Support', icon: 'message' as IconName }
     ];
 
     const handleNavClick = (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
-      if (itemName === 'Help Center') {
+      if (itemName === 'Support') {
         alert('Support flow coming soon!');
       } else {
         setActiveTab(itemName);
@@ -1098,7 +1092,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                               <Icon name="chat" />
                               <span className="badge-indicator">3</span>
                             </button>
-                            <button className="quick-icon-btn" onClick={() => setActiveTab('Wallet & Coins')} title="Wallet">
+                            <button className="quick-icon-btn" onClick={() => setActiveTab('Wallet')} title="Wallet">
                               <Icon name="wallet" />
                             </button>
                             <button className="quick-icon-btn" onClick={() => setActiveTab('My Bookings')} title="Bookings">
@@ -1108,17 +1102,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                         </div>
                         
                         <div className="post-task-bottom-bar">
-                          <button className="btn-post-task-hero" onClick={() => setActiveTab('My Tasks')}>
+                          <button className="btn-post-task-hero" onClick={() => setActiveTab('My Bookings')}>
                             <Icon name="briefcase" /> Post a Task
                           </button>
                           
-                          <div className="hero-coin-balance-widget" onClick={() => setActiveTab('Wallet & Coins')} style={{ cursor: 'pointer' }}>
+                          <div className="hero-coin-balance-widget" onClick={() => setActiveTab('Wallet')} style={{ cursor: 'pointer' }}>
                             <span className="hero-coin-icon"><Icon name="wallet" /></span>
                             <div className="hero-coin-info-text">
                               <span className="hero-coin-lbl">Available Coins</span>
                               <strong className="hero-coin-num">1,250</strong>
                             </div>
-                            <button className="hero-coin-add-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }} title="Top up Coins">+</button>
+                            <button className="hero-coin-add-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet'); }} title="Top up Coins">+</button>
                           </div>
                         </div>
                       </div>
@@ -1211,6 +1205,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                   <MyBookings 
                     clientBookings={clientBookings} 
                     setClientBookings={setClientBookings} 
+                    clientTasks={clientTasks}
+                    setClientTasks={setClientTasks}
                     setActiveTab={setActiveTab} 
                     setActiveChatUser={setActiveChatUser} 
                   />
@@ -1231,7 +1227,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                   />
                 )}
                 {activeTab === 'Stats' && <Stats />}
-                {activeTab === 'Wallet & Coins' && <WalletAndCoins />}
+                {activeTab === 'Wallet' && <WalletAndCoins />}
                 {activeTab === 'Coin Purchase' && (
                   <CoinPurchase 
                     setActiveTab={setActiveTab} 
@@ -1248,7 +1244,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                 )}
                 {activeTab === 'Reviews' && <Reviews />}
                 {activeTab === 'My Referrals' && <Referrals />}
-                {activeTab === 'Settings' && <Settings />}
+                {activeTab === 'Profile Settings' && (
+                  <Settings 
+                    savedProsState={savedProsState} 
+                    setSavedProsState={setSavedProsState} 
+                    setActiveTab={setActiveTab} 
+                    setActiveChatUser={setActiveChatUser} 
+                  />
+                )}
                 {activeTab === 'My Profile' && (
                   <MyProfile 
                     setActiveTab={setActiveTab} 
