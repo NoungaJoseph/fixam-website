@@ -264,7 +264,7 @@
 }
 
 .mobile-nav-accordion-content.open {
-  max-height: 800px;
+  max-height: 2000px;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--line);
 }

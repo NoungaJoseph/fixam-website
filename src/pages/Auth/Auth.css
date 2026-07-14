@@ -1,18 +1,18 @@
-/* Fixam Premium Auth Pages Styling */
+/* Fixam Premium Auth Pages Styling with Adaptive Dark/Light Mode Variables */
 
 .auth-page-wrapper {
-  background-color: #FFFFFF;
+  background-color: var(--soft);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  color: #1F2937;
+  color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* MINIMAL HEADER */
 .auth-header-bar {
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #E5E7EB;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--line);
   height: 56px;
   padding: 0 40px;
   display: flex;
@@ -34,7 +34,7 @@
   align-items: center;
   gap: 12px;
   font-size: 14px;
-  color: #6B7280;
+  color: var(--muted);
 }
 
 .auth-header-btn {
@@ -62,17 +62,17 @@
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  background-color: #FFFFFF;
+  background-color: var(--soft);
 }
 
 .auth-card {
   max-width: 480px;
   width: 100%;
   padding: 48px 40px;
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: #FFFFFF;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  background: var(--surface);
+  box-shadow: var(--shadow);
   box-sizing: border-box;
   margin: 40px auto;
   transition: opacity 300ms ease;
@@ -81,14 +81,14 @@
 .auth-card-title {
   font-size: 26px;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--ink);
   text-align: center;
   margin: 0 0 8px 0;
 }
 
 .auth-card-subtitle {
   font-size: 14px;
-  color: #6B7280;
+  color: var(--muted);
   text-align: center;
   margin: 0 0 28px 0;
 }
@@ -103,7 +103,7 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--ink);
   margin-bottom: 6px;
 }
 
@@ -117,12 +117,12 @@
 .input-container input,
 .input-container select {
   height: 52px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0 16px;
   font-size: 15px;
-  color: #1F2937;
-  background: #FFFFFF;
+  color: var(--ink);
+  background: var(--soft);
   width: 100%;
   box-sizing: border-box;
   transition: border-color 200ms, box-shadow 200ms;
@@ -147,7 +147,7 @@
 }
 
 .input-container input::placeholder {
-  color: #9CA3AF;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -157,7 +157,7 @@
   left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9CA3AF;
+  color: var(--muted);
   width: 18px;
   height: 18px;
   pointer-events: none;
@@ -173,7 +173,7 @@
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9CA3AF;
+  color: var(--muted);
   cursor: pointer;
   width: 18px;
   height: 18px;
@@ -214,7 +214,9 @@
   width: 80px !important;
   border-radius: 8px 0 0 8px !important;
   border-right: none !important;
-  background-color: #F9FAFB !important;
+  background-color: var(--soft) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink) !important;
   padding: 0 8px !important;
   height: 52px;
 }
@@ -248,7 +250,8 @@
 
 /* ACCOUNT TYPE SELECTOR */
 .account-type-tabs {
-  background: #F3F4F6;
+  background: var(--soft);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 4px;
   display: flex;
@@ -266,12 +269,12 @@
   text-align: center;
   border: none;
   background: transparent;
-  color: #6B7280;
+  color: var(--muted);
   user-select: none;
 }
 
 .account-type-tab.active {
-  background: #FFFFFF;
+  background: var(--surface);
   color: #14B8A6;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -280,7 +283,7 @@
 /* PASSWORD STRENGTH INDICATOR */
 .strength-bar-container {
   display: flex;
-  background: #E5E7EB;
+  background: var(--line);
   height: 4px;
   border-radius: 2px;
   margin-top: 8px;
@@ -316,7 +319,7 @@
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  color: #6B7280;
+  color: var(--muted);
   transition: color 200ms ease;
 }
 
@@ -328,7 +331,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #D1D5DB;
+  background-color: var(--line);
   transition: background-color 200ms ease;
 }
 
@@ -353,15 +356,15 @@
 }
 
 .auth-alert-banner.error {
-  background-color: #FEF2F2;
-  border-color: #FECACA;
-  color: #991B1B;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: #EF4444;
+  color: #F87171;
 }
 
 .auth-alert-banner.success {
-  background-color: #F0FDF4;
-  border-color: #BBF7D0;
-  color: #166534;
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: #22C55E;
+  color: #4ADE80;
 }
 
 /* BUTTONS */
@@ -396,9 +399,9 @@
 }
 
 .btn-auth-outline {
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  color: #374151;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
   border-radius: 8px;
   height: 52px;
   font-size: 15px;
@@ -415,7 +418,7 @@
 .btn-auth-outline:hover {
   border-color: #14B8A6;
   color: #14B8A6;
-  background: #F9FAFA;
+  background: var(--soft);
 }
 
 /* DIVIDER */
@@ -429,12 +432,12 @@
 .auth-or-line {
   flex: 1;
   height: 1px;
-  background-color: #E5E7EB;
+  background-color: var(--line);
 }
 
 .auth-or-text {
   font-size: 13px;
-  color: #9CA3AF;
+  color: var(--muted);
 }
 
 /* FORGOT PASSWORD LINK */
@@ -485,8 +488,8 @@
   left: 0;
   height: 18px;
   width: 18px;
-  background-color: #FFFFFF;
-  border: 2px solid #D1D5DB;
+  background-color: var(--soft);
+  border: 2px solid var(--line);
   border-radius: 4px;
   box-sizing: border-box;
   transition: all 200ms ease;
@@ -518,7 +521,7 @@
 .checkbox-label {
   font-size: 13px;
   line-height: 1.4;
-  color: #374151;
+  color: var(--muted);
   cursor: pointer;
   user-select: none;
 }
@@ -549,7 +552,7 @@
 /* BOTTOM SWITCH TEXT */
 .auth-bottom-switch {
   font-size: 14px;
-  color: #6B7280;
+  color: var(--muted);
   margin-top: 24px;
   text-align: center;
 }
@@ -596,6 +599,7 @@
     padding: 24px 16px;
     border-radius: 0;
     margin: 0;
+    background: transparent;
   }
   
   .auth-card-title {
@@ -625,14 +629,14 @@
 .quick-login-sandbox {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px dashed #E5E7EB;
+  border-top: 1px dashed var(--line);
   text-align: center;
 }
 .quick-login-title {
   display: block;
   font-size: 11px;
   font-weight: 700;
-  color: #9CA3AF;
+  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
@@ -653,9 +657,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #E5E7EB;
-  background-color: #F9FAFB;
-  color: #4B5563;
+  border: 1px solid var(--line);
+  background-color: var(--soft);
+  color: var(--ink);
 }
 .btn-quick-login.client:hover {
   border-color: #14B8A6;
@@ -674,4 +678,3 @@
     gap: 8px;
   }
 }
-

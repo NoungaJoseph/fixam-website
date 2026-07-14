@@ -883,24 +883,95 @@
   margin: 0;
 }
 
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+/* Testimonial Carousel styles */
+.testimonial-carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.testimonial-carousel-track {
+  flex: 1;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 24px;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 200ms ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.carousel-nav-btn:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.15);
+}
+
+.carousel-indicator-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--line);
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.indicator-dot.active {
+  background-color: var(--teal);
+  width: 18px;
+  border-radius: 4px;
+}
+
+@media (max-width: 576px) {
+  .testimonial-carousel-container {
+    gap: 12px;
+  }
+  .carousel-nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
 }
 
 .testimonial-card {
   background: var(--surface);
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 2rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .testimonial-card:hover {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   border-left: 4px solid var(--teal);
 }
 
@@ -915,8 +986,8 @@
 
 .testimonial-card .quote-text {
   font-style: italic;
-  font-size: 0.95rem;
-  color: #374151;
+  font-size: 0.98rem;
+  color: var(--ink);
   line-height: 1.7;
   flex: 1;
   margin-bottom: 1.5rem;
@@ -924,7 +995,7 @@
 
 .testimonial-divider {
   height: 1px;
-  background: #E5E7EB;
+  background: var(--line);
   margin-bottom: 1.5rem;
 }
 
@@ -933,6 +1004,7 @@
   align-items: center;
   gap: 1rem;
 }
+
 
 .author-avatar {
   width: 44px;
