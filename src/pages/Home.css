@@ -883,6 +883,27 @@
   margin: 0;
 }
 
+/* Desktop: 3-column testimonials grid */
+.testimonials-grid-desktop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+/* Mobile carousel wrapper - hidden on desktop */
+.testimonial-carousel-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .testimonials-grid-desktop {
+    display: none !important;
+  }
+  .testimonial-carousel-mobile {
+    display: block !important;
+  }
+}
+
 /* Testimonial Carousel styles */
 .testimonial-carousel-container {
   display: flex;

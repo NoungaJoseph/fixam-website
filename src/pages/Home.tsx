@@ -551,65 +551,79 @@ export default function Home({ onNavigate, livePros, onSelectSkill }: { onNaviga
           <h2>{tContent.testimonials.title}</h2>
         </div>
 
-        <div className="testimonial-carousel-container">
-          <button 
-            type="button"
-            className="carousel-nav-btn prev" 
-            onClick={() => {
-              setActiveTestimonial((prev) => (prev === 0 ? tContent.testimonials.cards.length - 1 : prev - 1));
-            }}
-            aria-label="Previous Testimonial"
-          >
-            ‹
-          </button>
-          
-          <div className="testimonial-carousel-track">
-            {tContent.testimonials.cards.map((card, idx) => (
-              <div 
-                className={`testimonial-card ${activeTestimonial === idx ? 'active' : 'inactive'}`} 
-                key={idx}
-                style={{ display: activeTestimonial === idx ? 'flex' : 'none' }}
-              >
-                <span className="quote-mark">“</span>
-                <p className="quote-text">{card.quote}</p>
-                <div className="testimonial-divider"></div>
-                <div className="testimonial-author">
-                  <div className="author-avatar" style={{ backgroundColor: card.avatarBg }}>
-                    {card.initials}
-                  </div>
-                  <div className="author-info">
-                    <span className="author-name">{card.name}</span>
-                    <span className="author-role">{card.role}</span>
-                  </div>
+        {/* Desktop: 3-column grid (hidden on mobile) */}
+        <div className="testimonials-grid-desktop">
+          {tContent.testimonials.cards.map((card, idx) => (
+            <div className="testimonial-card" key={idx}>
+              <span className="quote-mark">"</span>
+              <p className="quote-text">{card.quote}</p>
+              <div className="testimonial-divider"></div>
+              <div className="testimonial-author">
+                <div className="author-avatar" style={{ backgroundColor: card.avatarBg }}>
+                  {card.initials}
+                </div>
+                <div className="author-info">
+                  <span className="author-name">{card.name}</span>
+                  <span className="author-role">{card.role}</span>
                 </div>
               </div>
-            ))}
-          </div>
-          
-          <button 
-            type="button"
-            className="carousel-nav-btn next" 
-            onClick={() => {
-              setActiveTestimonial((prev) => (prev === tContent.testimonials.cards.length - 1 ? 0 : prev + 1));
-            }}
-            aria-label="Next Testimonial"
-          >
-            ›
-          </button>
-        </div>
-
-        {/* Carousel Dots */}
-        <div className="carousel-indicator-dots">
-          {tContent.testimonials.cards.map((_, idx) => (
-            <span 
-              key={idx} 
-              className={`indicator-dot ${activeTestimonial === idx ? 'active' : ''}`}
-              onClick={() => setActiveTestimonial(idx)}
-              title={`Go to testimonial ${idx + 1}`}
-            ></span>
+            </div>
           ))}
         </div>
+
+        {/* Mobile: single-card carousel with arrows (hidden on desktop) */}
+        <div className="testimonial-carousel-mobile">
+          <div className="testimonial-carousel-container">
+            <button
+              type="button"
+              className="carousel-nav-btn prev"
+              onClick={() => setActiveTestimonial((prev) => (prev === 0 ? tContent.testimonials.cards.length - 1 : prev - 1))}
+              aria-label="Previous Testimonial"
+            >‹</button>
+
+            <div className="testimonial-carousel-track">
+              {tContent.testimonials.cards.map((card, idx) => (
+                <div
+                  className={`testimonial-card ${activeTestimonial === idx ? 'active' : 'inactive'}`}
+                  key={idx}
+                  style={{ display: activeTestimonial === idx ? 'flex' : 'none' }}
+                >
+                  <span className="quote-mark">"</span>
+                  <p className="quote-text">{card.quote}</p>
+                  <div className="testimonial-divider"></div>
+                  <div className="testimonial-author">
+                    <div className="author-avatar" style={{ backgroundColor: card.avatarBg }}>
+                      {card.initials}
+                    </div>
+                    <div className="author-info">
+                      <span className="author-name">{card.name}</span>
+                      <span className="author-role">{card.role}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="carousel-nav-btn next"
+              onClick={() => setActiveTestimonial((prev) => (prev === tContent.testimonials.cards.length - 1 ? 0 : prev + 1))}
+              aria-label="Next Testimonial"
+            >›</button>
+          </div>
+
+          <div className="carousel-indicator-dots">
+            {tContent.testimonials.cards.map((_, idx) => (
+              <span
+                key={idx}
+                className={`indicator-dot ${activeTestimonial === idx ? 'active' : ''}`}
+                onClick={() => setActiveTestimonial(idx)}
+              ></span>
+            ))}
+          </div>
+        </div>
       </section>
+
 
       {/* Categorized Sticky FAQ Section */}
       <section className="faq-section-upgraded">
