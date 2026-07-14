@@ -55,7 +55,7 @@
 }
 
 .btn-primary-pill.white-variant {
-  background-color: white;
+  background-color: var(--surface);
   color: var(--teal-dark);
 }
 
@@ -102,7 +102,7 @@
 .prov-hero-section {
   padding-top: 120px !important;
   padding-bottom: 40px !important;
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .prov-hero-container {
@@ -197,7 +197,7 @@
 .prov-stats-box {
   max-width: 1000px;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 24px 40px;
@@ -259,7 +259,7 @@
  * SECTION 3: HOW TO FIND JOBS CARDS
  * ------------------------------------- */
 .prov-howto-section {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .prov-howto-cards {
@@ -269,7 +269,7 @@
 }
 
 .howto-card {
-  background-color: white;
+  background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 32px;
@@ -322,7 +322,7 @@
  * SPLIT LAYOUT SECTIONS (4 & 5)
  * ------------------------------------- */
 .prov-split-section {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .split-layout {
@@ -434,7 +434,7 @@
  * SECTION 6: SHOW YOUR BEST WORK
  * ------------------------------------- */
 .prov-show-work-section {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .show-work-cards {
@@ -444,7 +444,7 @@
 }
 
 .work-service-card {
-  background-color: white;
+  background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
   overflow: hidden;
@@ -612,7 +612,7 @@
  * SECTION 8: BOTTOM CTA
  * ------------------------------------- */
 .prov-bottom-cta {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .cta-banner-box {

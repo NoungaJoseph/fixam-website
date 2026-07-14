@@ -1,7 +1,7 @@
 /* About.css - Premium Layout */
 .about-page-premium {
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--surface);
   color: var(--ink);
   font-family: inherit;
 }
@@ -29,7 +29,7 @@
 
 .about-mission-section {
   padding: 100px 0;
-  background-color: white;
+  background-color: var(--surface);
   text-align: center;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .value-card {
-  background: white;
+  background: var(--surface);
   padding: 40px;
   border-radius: 16px;
   border: 1px solid var(--line);
@@ -99,7 +99,7 @@
 
 .about-cta-section {
   padding: 100px 0;
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .about-cta-box {
@@ -137,7 +137,7 @@
 }
 
 .white-variant-btn:hover {
-  background-color: white;
+  background-color: var(--surface);
   color: var(--teal);
 }
 

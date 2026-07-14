@@ -345,7 +345,7 @@
 }
 
 .outline-light:hover {
-  background: white;
+  background: var(--surface);
   color: var(--ink);
 }
 

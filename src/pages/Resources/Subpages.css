@@ -8,7 +8,7 @@
 
 .subpage-hero {
   padding: 140px 0 60px;
-  background-color: white;
+  background-color: var(--surface);
   border-bottom: 1px solid var(--line);
   text-align: center;
 }
@@ -38,7 +38,7 @@
 }
 
 .placeholder-card {
-  background: white;
+  background: var(--surface);
   border-radius: 16px;
   padding: 48px;
   border: 1px solid var(--line);

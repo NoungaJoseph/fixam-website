@@ -779,9 +779,9 @@ p {
 
 .store-row button {
   min-height: 2.7rem;
-  border: 1px solid #cdd9e7;
+  border: 1px solid var(--line);
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--surface);
   padding: 0 1.2rem;
   font-weight: 900;
 }
@@ -1688,7 +1688,7 @@ p {
 .floating-benefits .small-trust {
   border-radius: 0.7rem;
   padding: 1rem 1.2rem;
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 
@@ -1710,7 +1710,7 @@ p {
   grid-template-columns: repeat(4, 1fr);
   border-radius: 0.9rem;
   padding: 1.6rem;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
   box-shadow: var(--shadow);
 }
@@ -1803,9 +1803,9 @@ p {
 .social-row button {
   flex: 1;
   min-height: 3.6rem;
-  border: 1px solid #cfd9e8;
+  border: 1px solid var(--line);
   border-radius: 0.55rem;
-  background: #fff;
+  background: var(--surface);
   font-weight: 900;
 }
 
@@ -8594,7 +8594,6 @@ p {
 .btn-message-pro-outline:hover {
   background: rgba(20, 184, 166, 0.05);
 }
-
 
 
 

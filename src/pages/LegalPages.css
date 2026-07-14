@@ -247,7 +247,7 @@
     flex-direction: row;
     overflow-x: auto;
     gap: 8px;
-    background: white;
+    background: var(--surface);
     z-index: 99;
   }
 

@@ -1,7 +1,7 @@
 /* Services.css - Premium Client Landing Page Redesign */
 .client-page-premium {
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--surface);
   color: var(--ink);
   font-family: inherit;
 }
@@ -55,7 +55,7 @@
 }
 
 .btn-primary-pill.white-variant {
-  background-color: white;
+  background-color: var(--surface);
   color: var(--teal-dark);
 }
 
@@ -112,7 +112,7 @@
 .client-hero-section {
   padding-top: 120px !important;
   padding-bottom: 40px !important;
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .client-hero-container {
@@ -213,7 +213,7 @@
 .client-stats-box {
   max-width: 1000px;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 32px 40px;
@@ -267,7 +267,7 @@
  * SECTION 3: HOW TO HIRE CARDS
  * ------------------------------------- */
 .client-howto-section {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .client-howto-cards {
@@ -277,7 +277,7 @@
 }
 
 .howto-card {
-  background-color: white;
+  background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 32px;
@@ -495,7 +495,7 @@
  * SECTION 7: BOTTOM CTA
  * ------------------------------------- */
 .client-bottom-cta {
-  background-color: white;
+  background-color: var(--surface);
 }
 
 .cta-banner-box {
