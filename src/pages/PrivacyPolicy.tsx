@@ -20,7 +20,7 @@ export default function PrivacyPolicy({ onNavigate }: { onNavigate: (page: Page)
             <li>{isFr ? "Photo de profil (facultatif)" : "Profile photo (optional)"}</li>
             <li>{isFr ? "Documents d'identité gouvernementaux (pour la vérification)" : "Government ID documents (for verification)"}</li>
             <li>{isFr ? "Informations de localisation (lors de l'utilisation de l'application)" : "Location information (when using the app)"}</li>
-            <li>{isFr ? "Données de transaction de paiement (montants et références uniquement — pas votre code PIN ni votre mot de passe)" : "Payment transaction data (amounts and references only — not your PIN or password)"}</li>
+            <li>{isFr ? "Données de transaction de réservation (achats de pièces — montants et références uniquement)" : "Booking transaction data (coin purchases — amounts and references only)"}</li>
             <li>{isFr ? "Messages et communications via l'application" : "Messages and communications through the app"}</li>
             <li>{isFr ? "Avis et notes que vous soumettez" : "Reviews and ratings you submit"}</li>
           </ul>
@@ -53,7 +53,7 @@ export default function PrivacyPolicy({ onNavigate }: { onNavigate: (page: Page)
           <p className="legal-body-text">{isFr ? "Nous partageons vos informations uniquement dans ces circonstances :" : "We share your information only in these circumstances:"}</p>
           <ul className="legal-list">
             <li>{isFr ? "Avec les Prestataires ou Clients : nous partageons votre nom et votre zone générale lorsqu'une réservation est confirmée. Nous ne partageons pas votre numéro de téléphone tant que les deux parties n'ont pas convenu d'une réservation." : "With Providers or Clients: we share your name and general area when a booking is confirmed. We do not share your phone number until both parties have agreed to a booking."}</li>
-            <li>{isFr ? "Avec les processeurs de paiement : données de transaction limitées avec MTN et Orange pour traiter les paiements Mobile Money" : "With payment processors: limited transaction data with MTN and Orange to process Mobile Money payments"}</li>
+            <li>{isFr ? "Avec les processeurs de paiement : données de transaction limitées avec MTN et Orange pour traiter les recharges de pièces Mobile Money" : "With payment processors: limited transaction data with MTN and Orange to process Mobile Money coin top-ups"}</li>
             <li>{isFr ? "Avec les forces de l'ordre : lorsque requis par la loi camerounaise" : "With law enforcement: when required by Cameroonian law"}</li>
             <li>{isFr ? "Nous ne vendons jamais vos données personnelles à des tiers à des fins publicitaires." : "We never sell your personal data to third parties for advertising."}</li>
           </ul>

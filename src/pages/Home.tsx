@@ -28,7 +28,7 @@ const contentLocales = {
         {
           num: '02',
           title: 'Choose Your Provider',
-          desc: 'Browse verified local providers, read their reviews, and book the one that fits your needs using just 1 coin.'
+          desc: 'Browse verified local providers, read their reviews, and book the one that fits your needs. Just 1 coin to reserve your booking.'
         },
         {
           num: '03',
@@ -74,8 +74,8 @@ const contentLocales = {
           icon: 'chat' as IconName
         },
         {
-          title: 'Secure Coin Payments',
-          desc: 'Our coin-based system gives you control. Top up with MTN or Orange Mobile Money and only spend what you need.',
+          title: 'Simple Booking System',
+          desc: 'Use coins to book providers instantly. Pay your provider directly in cash after the job is done — no middleman.',
           icon: 'wallet' as IconName
         }
       ]
@@ -108,7 +108,7 @@ const contentLocales = {
     },
     faq: {
       title: 'Frequently Asked Questions',
-      categories: ['Getting Started', 'For Clients', 'For Providers', 'Payments & Coins', 'Safety & Trust', 'Account & Profile']
+      categories: ['Getting Started', 'For Clients', 'For Providers', 'Booking & Coins', 'Safety & Trust', 'Account & Profile']
     },
     cta: {
       title: 'Ready to get started with Fixam?',
@@ -141,7 +141,7 @@ const contentLocales = {
         {
           num: '02',
           title: 'Choisissez Votre Prestataire',
-          desc: 'Parcourez les prestataires locaux vérifiés, lisez leurs avis et réservez celui qui correspond à vos besoins en utilisant seulement 1 pièce.'
+          desc: 'Parcourez les prestataires locaux vérifiés, lisez leurs avis et réservez celui qui correspond à vos besoins. Seulement 1 pièce pour réserver.'
         },
         {
           num: '03',
@@ -187,8 +187,8 @@ const contentLocales = {
           icon: 'chat' as IconName
         },
         {
-          title: 'Paiements Sécurisés par Pièces',
-          desc: 'Notre système de pièces vous donne le contrôle. Rechargez avec MTN ou Orange Money et ne dépensez que ce dont vous avez besoin.',
+          title: 'Système de Réservation Simple',
+          desc: 'Utilisez des pièces pour réserver des prestataires instantanément. Payez votre prestataire directement en espèces après le travail — sans intermédiaire.',
           icon: 'wallet' as IconName
         }
       ]
@@ -221,7 +221,7 @@ const contentLocales = {
     },
     faq: {
       title: 'Questions Fréquemment Posées',
-      categories: ['Démarrage', 'Pour les Clients', 'Pour les Prestataires', 'Paiements et Pièces', 'Sécurité et Confiance', 'Compte et Profil']
+      categories: ['Démarrage', 'Pour les Clients', 'Pour les Prestataires', 'Réservation et Pièces', 'Sécurité et Confiance', 'Compte et Profil']
     },
     cta: {
       title: 'Prêt à commencer avec Fixam ?',
@@ -238,8 +238,8 @@ const faqQuestions = [
     categoryFr: 'Démarrage',
     qEn: 'Is it free to create an account on Fixam?',
     qFr: 'Est-il gratuit de créer un compte sur Fixam ?',
-    aEn: 'Yes, creating an account on Fixam is completely free for both clients and service providers. Clients can post tasks and browse providers at no cost. Providers can create their profile, list their services, and apply to jobs for free. You only use coins when booking a provider or applying to certain jobs.',
-    aFr: 'Oui, la création d\'un compte sur Fixam est entièrement gratuite pour les clients et les prestataires de services. Les clients peuvent publier des tâches et parcourir les prestataires gratuitement. Les prestataires peuvent créer leur profil, lister leurs services et postuler à des emplois gratuitement. Vous n\'utilisez des pièces que lors de la réservation d\'un prestataire ou de la candidature à certaines tâches.'
+    aEn: 'Yes, creating an account on Fixam is completely free for both clients and service providers. Clients can post tasks and browse providers at no cost. Providers can create their profile, list their services, and apply to jobs for free. You only use coins to book a provider — the actual service payment is made directly in cash to the provider.',
+    aFr: 'Oui, la création d\'un compte sur Fixam est entièrement gratuite pour les clients et les prestataires de services. Les clients peuvent publier des tâches et parcourir les prestataires gratuitement. Les prestataires peuvent créer leur profil, lister leurs services et postuler à des emplois gratuitement. Vous n\'utilisez des pièces que pour réserver un prestataire — le paiement du service se fait directement en espèces au prestataire.'
   },
   {
     categoryEn: 'Getting Started',
@@ -262,16 +262,16 @@ const faqQuestions = [
     categoryFr: 'Pour les Clients',
     qEn: 'How does the coin system work for clients?',
     qFr: 'Comment fonctionne le système de pièces pour les clients ?',
-    aEn: 'Coins are Fixam\'s in-app currency. As a client, you receive 1 free coin when you join. You use coins to book service providers — standard bookings cost 1 coin, urgent bookings cost 2 coins, and emergency bookings cost 3 coins. You can top up your coin balance anytime using MTN Mobile Money or Orange Money.',
-    aFr: 'Les pièces sont la monnaie intégrée de Fixam. En tant que client, vous recevez 1 pièce gratuite à l\'inscription. Vous utilisez des pièces pour réserver des prestataires : les réservations standard coûtent 1 pièce, les urgentes 2 pièces et les urgences absolues 3 pièces. Vous pouvez recharger votre solde de pièces à tout moment avec MTN Mobile Money ou Orange Money.'
+    aEn: 'Coins are used as a small booking fee to reserve a provider on Fixam. As a client, you receive 1 free coin when you join. Standard bookings cost 1 coin, urgent bookings cost 2 coins, and emergency bookings cost 3 coins. You can top up your coin balance anytime using MTN Mobile Money or Orange Money. The actual payment for the service is made directly in cash to the provider after the job is completed.',
+    aFr: 'Les pièces servent de petits frais de réservation pour réserver un prestataire sur Fixam. En tant que client, vous recevez 1 pièce gratuite à l\'inscription. Les réservations standard coûtent 1 pièce, les urgentes 2 pièces et les urgences absolues 3 pièces. Vous pouvez recharger votre solde de pièces à tout moment avec MTN Mobile Money ou Orange Money. Le paiement du service se fait directement en espèces au prestataire après la fin du travail.'
   },
   {
     categoryEn: 'For Clients',
     categoryFr: 'Pour les Clients',
     qEn: 'How do I book a provider?',
     qFr: 'Comment réserver un prestataire ?',
-    aEn: 'Browse provider profiles, read their reviews and ratings, then tap the Book Now button on their profile. The booking will deduct coins from your wallet based on your urgency level. The provider will receive a notification and confirm the booking.',
-    aFr: 'Parcourez les profils des prestataires, lisez leurs avis et notes, puis appuyez sur le bouton Réserver. La réservation déduira des pièces de votre portefeuille en fonction du niveau d\'urgence. Le prestataire recevra une notification et confirmera la réservation.'
+    aEn: 'Browse provider profiles, read their reviews and ratings, then tap the Book Now button on their profile. A small coin booking fee is deducted from your wallet based on your urgency level. The provider will receive a notification and confirm the booking. You then pay the provider directly in cash once the job is completed.',
+    aFr: 'Parcourez les profils des prestataires, lisez leurs avis et notes, puis appuyez sur le bouton Réserver. Un petit frais de réservation en pièces est déduit de votre portefeuille en fonction du niveau d\'urgence. Le prestataire recevra une notification et confirmera la réservation. Vous payez ensuite le prestataire directement en espèces une fois le travail terminé.'
   },
   {
     categoryEn: 'For Clients',
@@ -306,24 +306,24 @@ const faqQuestions = [
     aFr: 'Terminez les tâches à temps, communiquez clairement avec les clients et fournissez un travail de qualité. Les clients satisfaits laissent des avis et des notes qui renforcent votre réputation publique. Les prestataires bien notés bénéficient de plus de visibilité et sont plus souvent recommandés.'
   },
   {
-    categoryEn: 'Payments & Coins',
-    categoryFr: 'Paiements et Pièces',
+    categoryEn: 'Booking & Coins',
+    categoryFr: 'Réservation et Pièces',
     qEn: 'How do I add coins to my wallet?',
     qFr: 'Comment ajouter des pièces à mon portefeuille ?',
-    aEn: 'Open the Fixam app, go to your Wallet, and tap Top Up. Select your preferred Mobile Money provider — MTN or Orange Money — enter your phone number and the amount, and approve the payment prompt on your phone. Coins are added to your wallet instantly after payment confirmation.',
-    aFr: 'Ouvrez l\'application Fixam, allez dans votre Portefeuille et appuyez sur Recharger. Sélectionnez votre fournisseur Mobile Money préféré — MTN ou Orange Money — entrez votre numéro de téléphone et le montant, puis validez l\'invitation de paiement sur votre téléphone. Les pièces sont ajoutées instantanément après confirmation.'
+    aEn: 'Open the Fixam app, go to your Wallet, and tap Top Up. Select your preferred Mobile Money provider — MTN or Orange Money — enter your phone number and the amount, and approve the prompt on your phone. Coins are added to your wallet instantly after confirmation.',
+    aFr: 'Ouvrez l\'application Fixam, allez dans votre Portefeuille et appuyez sur Recharger. Sélectionnez votre fournisseur Mobile Money préféré — MTN ou Orange Money — entrez votre numéro de téléphone et le montant, puis validez l\'invitation sur votre téléphone. Les pièces sont ajoutées instantanément après confirmation.'
   },
   {
-    categoryEn: 'Payments & Coins',
-    categoryFr: 'Paiements et Pièces',
-    qEn: 'What Mobile Money providers are supported?',
-    qFr: 'Quels fournisseurs Mobile Money sont supportés ?',
+    categoryEn: 'Booking & Coins',
+    categoryFr: 'Réservation et Pièces',
+    qEn: 'What Mobile Money providers are supported for coin top-ups?',
+    qFr: 'Quels fournisseurs Mobile Money sont supportés pour les recharges de pièces ?',
     aEn: 'Fixam currently supports MTN Mobile Money and Orange Money for coin top-ups. Both are available for Cameroon phone numbers. Simply select your provider when topping up and make sure to use the phone number registered with that provider.',
     aFr: 'Fixam prend actuellement en charge MTN Mobile Money et Orange Money pour les recharges de pièces. Les deux sont disponibles pour les numéros de téléphone du Cameroun. Sélectionnez simplement votre fournisseur lors de la recharge et assurez-vous d\'utiliser le numéro enregistré chez ce fournisseur.'
   },
   {
-    categoryEn: 'Payments & Coins',
-    categoryFr: 'Paiements et Pièces',
+    categoryEn: 'Booking & Coins',
+    categoryFr: 'Réservation et Pièces',
     qEn: 'What is the minimum and maximum top-up amount?',
     qFr: 'Quel est le montant minimum et maximum de recharge ?',
     aEn: 'The minimum top-up amount is 100 FCFA and the maximum per single transaction is 10,000 FCFA. You can make multiple top-ups to add more coins to your wallet.',
@@ -342,12 +342,12 @@ const faqQuestions = [
     categoryFr: 'Sécurité et Confiance',
     qEn: 'Is my personal information safe on Fixam?',
     qFr: 'Mes informations personnelles sont-elles sécurisées ?',
-    aEn: 'Yes. Fixam takes your privacy seriously. Your personal information is encrypted and stored securely. We never share your contact details with providers or clients without your consent. All payments are processed through secure Mobile Money channels.',
-    aFr: 'Oui. Fixam prend votre vie privée au sérieux. Vos informations personnelles sont chiffrées et stockées en toute sécurité. Nous ne partageons jamais vos coordonnées sans votre consentement. Tous les paiements sont traités via des canaux Mobile Money sécurisés.'
+    aEn: 'Yes. Fixam takes your privacy seriously. Your personal information is encrypted and stored securely. We never share your contact details with providers or clients without your consent. Coin top-ups are processed through secure Mobile Money channels.',
+    aFr: 'Oui. Fixam prend votre vie privée au sérieux. Vos informations personnelles sont chiffrées et stockées en toute sécurité. Nous ne partageons jamais vos coordonnées sans votre consentement. Les recharges de pièces sont traitées via des canaux Mobile Money sécurisés.'
   }
 ];
 
-export default function Home({ onNavigate, livePros }: { onNavigate: (page: Page) => void; livePros: any[] }) {
+export default function Home({ onNavigate, livePros, onSelectSkill }: { onNavigate: (page: Page) => void; livePros: any[]; onSelectSkill?: (skill: string) => void }) {
   const { t, i18n } = useTranslation();
   const proGridRef = useRef<HTMLDivElement>(null);
   
@@ -386,8 +386,14 @@ export default function Home({ onNavigate, livePros }: { onNavigate: (page: Page
 
   const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
 
-  const handlePillClick = () => {
-    onNavigate('services');
+  const handlePillClick = (pill: string) => {
+    const cleanPill = pill.replace(/→$/, '').trim();
+    if (onSelectSkill) {
+      onSelectSkill(cleanPill);
+      onNavigate('skill_detail');
+    } else {
+      onNavigate('services');
+    }
   };
 
   const filteredFaq = faqQuestions.filter(faq => {
@@ -423,7 +429,7 @@ export default function Home({ onNavigate, livePros }: { onNavigate: (page: Page
             <div className="hero-pills-row">
               <span className="pills-label">{i18n.language === 'fr' ? 'Populaire :' : 'Popular:'}</span>
               {tContent.hero.pills.map((pill, idx) => (
-                <button key={idx} className="hero-pill-btn" onClick={handlePillClick}>
+                <button key={idx} className="hero-pill-btn" onClick={() => handlePillClick(pill)}>
                   {pill} →
                 </button>
               ))}

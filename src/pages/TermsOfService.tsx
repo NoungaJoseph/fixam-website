@@ -129,13 +129,13 @@ export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page
         <>
           <p className="legal-body-text">
             {isFr
-              ? "Tous les paiements sur Fixam sont traités par le système de pièces utilisant MTN Mobile Money ou Orange Money."
-              : "All payments on Fixam are processed through the coin system using MTN Mobile Money or Orange Money."}
+              ? "Fixam est une plateforme de mise en relation et ne traite pas les paiements pour les services rendus. Les Clients paient les Prestataires directement en espèces une fois le service terminé."
+              : "Fixam is a connection platform and does not process payments for services rendered. Clients pay Providers directly in cash once the service is completed."}
           </p>
           <p className="legal-body-text">
             {isFr
-              ? "Le montant minimum de recharge est de 100 FCFA et le maximum par transaction unique est de 10 000 FCFA. Fixam ne stocke pas vos identifiants Mobile Money."
-              : "The minimum top-up amount is 100 FCFA and the maximum per single transaction is 10,000 FCFA. Fixam does not store your Mobile Money credentials."}
+              ? "Le système de pièces sur l'application est utilisé uniquement comme frais de réservation. Le montant minimum de recharge est de 100 FCFA et le maximum par transaction unique est de 10 000 FCFA via MTN Mobile Money ou Orange Money. Fixam ne stocke pas vos identifiants Mobile Money."
+              : "The in-app coin system is used strictly as a booking fee. The minimum top-up amount is 100 FCFA and the maximum per single transaction is 10,000 FCFA via MTN Mobile Money or Orange Money. Fixam does not store your Mobile Money credentials."}
           </p>
           <p className="legal-body-text">
             {isFr
@@ -150,7 +150,7 @@ export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page
       title: isFr ? "Système de Pièces" : "Coin System",
       content: (
         <>
-          <p className="legal-body-text">{isFr ? "Fixam utilise un système de pièces virtuelles propriétaire pour les transactions de la plateforme :" : "Fixam uses a proprietary virtual coin system for platform transactions:"}</p>
+          <p className="legal-body-text">{isFr ? "Fixam utilise un système de pièces virtuelles pour les frais de réservation de la plateforme :" : "Fixam uses a virtual coin system for platform booking fees:"}</p>
           <ul className="legal-list">
             <li>{isFr ? "1 pièce = 5 000 FCFA (sujet à changement)" : "1 coin = 5,000 FCFA (subject to change)"}</li>
             <li>{isFr ? "Bonus de bienvenue : 1 pièce gratuite à l'inscription" : "Welcome bonus: 1 free coin on registration"}</li>
@@ -174,7 +174,7 @@ export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page
           <ul className="legal-list">
             <li>{isFr ? "Publier des tâches ou des profils de prestataires faux, trompeurs ou frauduleux" : "Post false, misleading, or fraudulent tasks or provider profiles"}</li>
             <li>{isFr ? "Harceler, menacer ou abuser d'autres utilisateurs" : "Harass, threaten, or abuse other users"}</li>
-            <li>{isFr ? "Tenter de contourner le système de paiement par pièces" : "Attempt to bypass the coin payment system"}</li>
+            <li>{isFr ? "Tenter de contourner le système de frais de réservation par pièces" : "Attempt to bypass the coin booking fee system"}</li>
             <li>{isFr ? "Partager les informations personnelles d'un autre utilisateur sans son consentement" : "Share another user's personal information without consent"}</li>
             <li>{isFr ? "Publier des tâches impliquant des services illégaux" : "Post tasks involving illegal services"}</li>
             <li>{isFr ? "Créer plusieurs comptes pour abuser de notre système de bonus" : "Create multiple accounts to abuse our welcome or referral bonus system"}</li>
@@ -214,8 +214,8 @@ export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page
           </ul>
           <p className="legal-body-text">
             {isFr
-              ? "Notre responsabilité totale envers vous ne dépassera pas la valeur des pièces dans votre portefeuille au moment de toute réclamation."
-              : "Our total liability to you shall not exceed the value of coins in your wallet at the time of any claim."}
+              ? "Notre responsabilité totale envers vous concernant l'utilisation de la plateforme ne dépassera pas la valeur des pièces achetées et inutilisées dans votre portefeuille."
+              : "Our total liability to you regarding platform use shall not exceed the value of purchased and unused coins in your wallet."}
           </p>
         </>
       )

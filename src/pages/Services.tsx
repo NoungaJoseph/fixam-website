@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Page, Icon, IconName, Footer } from '../App';
+import { Page, Icon, IconName, Footer, asset } from '../App';
 import './Services.css';
 
 const servicesContent = {
@@ -35,7 +35,7 @@ const servicesContent = {
         {
           icon: 'check' as IconName,
           title: 'Get It Done',
-          desc: 'Book your chosen provider with as little as 1 coin, communicate directly through the app, and track your job from start to finish.',
+          desc: 'Book your chosen provider with just 1 coin as a booking fee, communicate directly through the app, and track your job from start to finish.',
           link: 'How booking works →'
         }
       ]
@@ -47,37 +47,37 @@ const servicesContent = {
       cta: 'Find a Provider'
     },
     coins: {
-      title: 'Simple Coin-Based Payments',
+      title: 'How Booking & Payment Works',
       items: [
         {
-          title: 'Top Up with Mobile Money',
-          desc: 'Add coins to your Fixam wallet using MTN Mobile Money or Orange Money. No bank account needed — just your mobile phone.'
+          title: 'Book with Coins',
+          desc: 'Use coins as a small booking fee to reserve your provider. Top up your wallet using MTN Mobile Money or Orange Money — no bank account needed.'
         },
         {
-          title: 'Pay Only What You Need',
-          desc: 'Standard bookings cost 1 coin. Urgent bookings cost 2 coins. Emergency bookings cost 3 coins. No hidden fees.'
+          title: 'Pay Your Provider in Cash',
+          desc: 'Once the job is completed to your satisfaction, you pay your provider directly in cash. The price is agreed upon before they start working.'
         },
         {
-          title: 'Secure Every Transaction',
-          desc: 'All payments are processed through secure Mobile Money channels. Your financial information is never stored on Fixam servers.'
+          title: 'Transparent & Simple',
+          desc: 'Standard bookings cost 1 coin. Urgent bookings cost 2 coins. Emergency bookings cost 3 coins. No hidden fees. Fixam only charges the booking fee.'
         }
       ],
-      cta: 'Top Up Now'
+      cta: 'Get Started'
     },
     faq: {
       title: 'Frequently Asked Questions',
       items: [
         {
           q: 'How much does it cost to post a task?',
-          a: 'Posting a task on Fixam is completely free. You only pay a small coin fee when you actually book a specific provider.'
+          a: 'Posting a task on Fixam is completely free. You only pay a small coin booking fee when you actually book a specific provider.'
         },
         {
           q: 'How do Fixam coins work?',
-          a: 'Coins are the currency used on Fixam to book providers. You can purchase them using Mobile Money. A standard booking costs 1 coin.'
+          a: 'Coins are used as a booking fee to reserve a provider on Fixam. You can purchase them using Mobile Money. A standard booking costs 1 coin. The actual payment for the service is made directly in cash to the provider.'
         },
         {
           q: 'How do I pay the provider for their work?',
-          a: 'You pay the provider directly (via cash or Mobile Money) after the service is completed to your satisfaction. The price is agreed upon before they start working.'
+          a: 'You pay the provider directly in cash after the service is completed to your satisfaction. The price is agreed upon before they start working. Fixam does not handle or transfer service payments.'
         },
         {
           q: 'Are the providers verified?',
@@ -130,7 +130,7 @@ const servicesContent = {
         {
           icon: 'check' as IconName,
           title: 'C\'est Fait',
-          desc: 'Réservez votre prestataire avec seulement 1 pièce, communiquez directement via l\'application et suivez votre travail du début à la fin.',
+          desc: 'Réservez votre prestataire avec seulement 1 pièce comme frais de réservation, communiquez directement via l\'application et suivez votre travail du début à la fin.',
           link: 'Comment fonctionne la réservation →'
         }
       ]
@@ -142,37 +142,37 @@ const servicesContent = {
       cta: 'Trouver un Prestataire'
     },
     coins: {
-      title: 'Paiements Simples par Pièces',
+      title: 'Comment Fonctionnent la Réservation et le Paiement',
       items: [
         {
-          title: 'Rechargez avec Mobile Money',
-          desc: 'Ajoutez des pièces à votre portefeuille Fixam avec MTN Mobile Money ou Orange Money. Aucun compte bancaire nécessaire.'
+          title: 'Réservez avec des Pièces',
+          desc: 'Utilisez des pièces comme petit frais de réservation pour réserver votre prestataire. Rechargez votre portefeuille avec MTN Mobile Money ou Orange Money — aucun compte bancaire nécessaire.'
         },
         {
-          title: 'Payez Seulement Ce Dont Vous Avez Besoin',
-          desc: 'Les réservations standards coûtent 1 pièce. Les urgentes 2 pièces. Les urgences absolues 3 pièces. Pas de frais cachés.'
+          title: 'Payez Votre Prestataire en Espèces',
+          desc: 'Une fois le travail terminé à votre satisfaction, vous payez votre prestataire directement en espèces. Le prix est convenu avant le début du travail.'
         },
         {
-          title: 'Sécurisez Chaque Transaction',
-          desc: 'Tous les paiements sont traités via des canaux Mobile Money sécurisés. Vos informations ne sont jamais stockées sur nos serveurs.'
+          title: 'Transparent et Simple',
+          desc: 'Les réservations standards coûtent 1 pièce. Les urgentes 2 pièces. Les urgences absolues 3 pièces. Pas de frais cachés. Fixam ne facture que les frais de réservation.'
         }
       ],
-      cta: 'Recharger Maintenant'
+      cta: 'Commencer'
     },
     faq: {
       title: 'Foire Aux Questions',
       items: [
         {
           q: 'Combien coûte la publication d\'une tâche ?',
-          a: 'La publication d\'une tâche sur Fixam est entièrement gratuite. Vous ne payez qu\'une petite somme en pièces lorsque vous réservez un prestataire.'
+          a: 'La publication d\'une tâche sur Fixam est entièrement gratuite. Vous ne payez qu\'un petit frais de réservation en pièces lorsque vous réservez un prestataire.'
         },
         {
           q: 'Comment fonctionnent les pièces Fixam ?',
-          a: 'Les pièces sont la monnaie utilisée sur Fixam pour réserver des prestataires. Une réservation standard coûte 1 pièce.'
+          a: 'Les pièces servent de frais de réservation pour réserver un prestataire sur Fixam. Une réservation standard coûte 1 pièce. Le paiement du service se fait directement en espèces au prestataire.'
         },
         {
           q: 'Comment payer le prestataire pour son travail ?',
-          a: 'Vous payez le prestataire directement (en espèces ou Mobile Money) une fois le service terminé à votre satisfaction.'
+          a: 'Vous payez le prestataire directement en espèces une fois le service terminé à votre satisfaction. Fixam ne gère pas et ne transfère pas les paiements de services.'
         },
         {
           q: 'Les prestataires sont-ils vérifiés ?',
@@ -309,7 +309,7 @@ export default function Services({ onNavigate }: { onNavigate: (page: Page) => v
           <div className="split-right">
             <div className="split-img-box mobile-app-mockup">
               <img 
-                src="https://images.unsplash.com/photo-1616077168079-7e09a6a71142?w=800&auto=format&fit=crop&q=80" 
+                src={asset('booking-payment-screenshot.png')} 
                 alt="Mobile app wallet" 
               />
             </div>

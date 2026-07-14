@@ -94,7 +94,7 @@ const resources = {
         "cta1": "Find Experts",
         "cta2": "Verify Profile",
         "cta3": "Book Now",
-        "cta4": "Pay Securely"
+        "cta4": "Get It Done"
       },
       "guide": {
         "hero_title": "How It Works",
@@ -106,7 +106,7 @@ const resources = {
         "find_provider_step1": "Post a Task: Describe what you need, set your budget, and let verified professionals send you proposals.",
         "find_provider_step2": "Direct Booking: Browse through our 'Explore' page, view profiles, read reviews, and hire a specific professional directly.",
         "safety_title": "Safety and Verification",
-        "safety_desc": "Your safety is our absolute priority. Every professional on Fixam undergoes a rigorous background check, identity verification, and skills assessment before they are allowed to offer services on the platform. Payments are also held securely until the job is completed to your satisfaction.",
+        "safety_desc": "Your safety is our absolute priority. Every professional on Fixam undergoes a rigorous background check, identity verification, and skills assessment before they are allowed to offer services on the platform.",
         "get_started_btn": "Get Started Now"
       }
     }
@@ -203,7 +203,7 @@ const resources = {
         "cta1": "Trouver des experts",
         "cta2": "Vérifier le profil",
         "cta3": "Réserver maintenant",
-        "cta4": "Payer en sécurité"
+        "cta4": "C'est Fait"
       },
       "guide": {
         "hero_title": "Comment ça marche",
@@ -215,7 +215,7 @@ const resources = {
         "find_provider_step1": "Publier une tâche : Décrivez ce dont vous avez besoin, fixez votre budget et laissez des professionnels vérifiés vous envoyer des propositions.",
         "find_provider_step2": "Réservation directe : Parcourez notre page d'exploration, consultez les profils, lisez les avis et embauchez directement un professionnel spécifique.",
         "safety_title": "Sécurité et vérification",
-        "safety_desc": "Votre sécurité est notre priorité absolue. Chaque professionnel sur Fixam subit une vérification rigoureuse des antécédents, une vérification d'identité et une évaluation des compétences avant d'être autorisé à proposer des services sur la plateforme. Les paiements sont également conservés en toute sécurité jusqu'à ce que le travail soit effectué à votre satisfaction.",
+        "safety_desc": "Votre sécurité est notre priorité absolue. Chaque professionnel sur Fixam est soumis à une vérification rigoureuse de ses antécédents, de son identité et à une évaluation de ses compétences avant d'être autorisé à proposer des services sur la plateforme.",
         "get_started_btn": "Commencer maintenant"
       }
     }

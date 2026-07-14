@@ -49,15 +49,15 @@ const guideContent = {
       cta: 'Find Jobs'
     },
     payments: {
-      title: 'How Payments Work on Fixam',
+      title: 'How You Get Paid on Fixam',
       items: [
         {
-          title: 'Secure Coin System',
-          desc: 'Clients use Fixam coins to book your services. Each coin has a fixed value in FCFA, giving you clarity on your earnings before you start any job.'
+          title: 'Direct Cash Payment',
+          desc: 'Clients pay you directly in cash once the job is completed to their satisfaction. Fixam does not handle or hold your money.'
         },
         {
-          title: 'Top Up with Mobile Money',
-          desc: 'Clients top up their coins using MTN Mobile Money or Orange Money — the most popular payment methods in Cameroon.'
+          title: 'You Set Your Price',
+          desc: 'You agree on the price with the client before starting the work. Fixam does not take any cut of your earnings.'
         },
         {
           title: 'Build Your Income Over Time',
@@ -105,7 +105,7 @@ const guideContent = {
         },
         {
           q: 'How do I get paid for my services?',
-          a: 'Clients pay you directly after the job is completed. You agree on the price with the client before starting the work. Fixam does not take a cut of your earnings from completed jobs.'
+          a: 'Clients pay you directly in cash after the job is completed. You agree on the price with the client before starting the work. Fixam does not take a cut of your earnings.'
         },
         {
           q: 'Can I choose which jobs to accept?',
@@ -172,15 +172,15 @@ const guideContent = {
       cta: 'Trouver des emplois'
     },
     payments: {
-      title: 'Comment Fonctionnent les Paiements sur Fixam',
+      title: 'Comment Vous Êtes Payé sur Fixam',
       items: [
         {
-          title: 'Système de Pièces Sécurisé',
-          desc: 'Les clients utilisent des pièces Fixam pour réserver vos services. Chaque pièce a une valeur fixe en FCFA, vous donnant une clarté sur vos gains avant de commencer tout travail.'
+          title: 'Paiement Direct en Espèces',
+          desc: 'Les clients vous paient directement en espèces une fois le travail terminé à leur satisfaction. Fixam ne gère ni ne conserve votre argent.'
         },
         {
-          title: 'Rechargez avec Mobile Money',
-          desc: 'Les clients rechargent leurs pièces via MTN Mobile Money ou Orange Money — les méthodes de paiement les plus populaires au Cameroun.'
+          title: 'Vous Fixez Votre Prix',
+          desc: 'Vous convenez du prix avec le client avant de commencer le travail. Fixam ne prend aucune commission sur vos gains.'
         },
         {
           title: 'Construisez Votre Revenu au Fil du Temps',
@@ -228,7 +228,7 @@ const guideContent = {
         },
         {
           q: 'Comment suis-je payé pour mes services ?',
-          a: 'Les clients vous paient directement après la fin du travail. Vous convenez du prix avec le client avant de commencer le travail. Fixam ne prend pas de commission sur vos gains provenant des travaux terminés.'
+          a: 'Les clients vous paient directement en espèces après la fin du travail. Vous convenez du prix avec le client avant de commencer. Fixam ne prend pas de commission sur vos gains.'
         },
         {
           q: 'Puis-je choisir quels emplois accepter ?',

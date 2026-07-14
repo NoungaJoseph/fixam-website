@@ -1,0 +1,43 @@
+/* Responsive Grid and styles for Provider Pages */
+.provider-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+}
+
+.provider-reviews-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 24px;
+}
+
+.provider-support-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .provider-dashboard-grid,
+  .provider-reviews-grid,
+  .provider-support-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .provider-dashboard-grid > div:last-child {
+    border-left: none !important;
+    padding-left: 0 !important;
+  }
+
+  .provider-reviews-grid > div:first-child {
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+
+  .provider-support-grid > div:first-child {
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+}

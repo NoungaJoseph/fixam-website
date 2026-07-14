@@ -23,6 +23,14 @@ import Reviews from './pages/Client/Reviews'
 import MyProfile from './pages/Client/MyProfile'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 
+// Provider Subpages
+import MyJobs from './pages/Provider/MyJobs'
+import JobLeads from './pages/Provider/JobLeads'
+import ProviderWallet from './pages/Provider/ProviderWallet'
+import ProviderReviews from './pages/Provider/ProviderReviews'
+import ProfileSettings from './pages/Provider/ProfileSettings'
+import ProviderSupport from './pages/Provider/ProviderSupport'
+
 // Public landing pages
 import Home from './pages/Home'
 import Services from './pages/Services'
@@ -36,12 +44,13 @@ import Updates from './pages/WhatsNew/Updates'
 import Research from './pages/WhatsNew/Research'
 import Blog from './pages/WhatsNew/Blog'
 import ReleaseNotes from './pages/WhatsNew/ReleaseNotes'
+import SkillDetail from './pages/Resources/SkillDetail'
 
 import './App.css'
 import './marketplace.css'
 import './components/Megamenu.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -51,7 +60,7 @@ export type IconName =
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
-const getApiUrl = () => {
+export const getApiUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
@@ -190,6 +199,7 @@ function MaintenanceScreen({ message }: { message: string }) {
 
 function App() {
   const [page, setPage] = useState<Page>('home')
+  const [selectedSkill, setSelectedSkill] = useState<string>('')
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
   const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
@@ -214,9 +224,12 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes'];
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail'];
+      const pathPage = window.location.pathname.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
       if (validPages.includes(hash as Page)) {
         setPage(hash as Page);
+      } else if (validPages.includes(pathPage as Page)) {
+        setPage(pathPage as Page);
       } else if (!hash) {
         setPage('home');
       }
@@ -230,12 +243,13 @@ function App() {
   // Update hash when page changes
   useEffect(() => {
     const currentHash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+    const currentPathPage = window.location.pathname.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
     if (page === 'home') {
       if (currentHash && currentHash !== 'home') {
         window.history.pushState('', document.title, window.location.pathname + window.location.search);
       }
     } else {
-      if (currentHash !== page) {
+      if (currentHash !== page && currentPathPage !== page) {
         window.location.hash = page;
       }
     }
@@ -312,12 +326,13 @@ function App() {
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
             {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
             {page === 'success_stories' && <SuccessStories onNavigate={setPage} />}
-            {page === 'reviews' && <ReviewsPage onNavigate={setPage} />}
+            {page === 'reviews' && <ReviewsPage onNavigate={setPage} onSelectSkill={setSelectedSkill} />}
+            {page === 'skill_detail' && <SkillDetail onNavigate={setPage} skillName={selectedSkill} onSelectSkill={setSelectedSkill} livePros={livePros} />}
             {page === 'updates' && <Updates onNavigate={setPage} />}
             {page === 'research' && <Research onNavigate={setPage} />}
             {page === 'blog' && <Blog onNavigate={setPage} />}
             {page === 'release_notes' && <ReleaseNotes onNavigate={setPage} />}
-            {page === 'home' && <Home onNavigate={setPage} livePros={livePros} />}
+            {page === 'home' && <Home onNavigate={setPage} livePros={livePros} onSelectSkill={setSelectedSkill} />}
           </main>
         </>
       )}
@@ -789,6 +804,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [searchVal, setSearchVal] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
+  
+  useEffect(() => {
+    setActiveTab('Dashboard');
+    setSelectedProvider(null);
+  }, [userRole]);
+
   const [tickerItems, setTickerItems] = useState<Array<{ isNews: boolean; badgeText: string; text: string }>>([
     { isNews: false, badgeText: 'SPORTS', text: '⚽ Cameroon 2 - 0 Egypt (LIVE)' },
     { isNews: false, badgeText: 'SPORTS', text: '📅 Upcoming: Nigeria vs Ghana (19:00)' },
@@ -1251,203 +1272,313 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
     );
   }
 
-  // Fallback / Pro Dashboard (keep the original one)
-  const proLinks = ['Dashboard', 'My Jobs', 'Messages', 'Job Leads', 'Payments', 'Wallet', 'Reviews', 'Profile Settings', 'Support', 'Log Out'];
-  const proIcons: IconName[] = ['home', 'briefcase', 'chat', 'search', 'briefcase', 'wallet', 'star', 'user', 'message', 'menu'];
+  // Fallback / Pro Dashboard (integrated with the premium responsive shell)
+  const providerNavItems = [
+    { name: 'Dashboard', icon: 'home' as IconName },
+    { name: 'My Jobs', icon: 'briefcase' as IconName },
+    { name: 'Messages', icon: 'chat' as IconName, badge: 2 },
+    { name: 'Job Leads', icon: 'search' as IconName },
+    { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '85K XAF' },
+    { name: 'Reviews', icon: 'star' as IconName },
+    { name: 'Profile Settings', icon: 'user' as IconName },
+    { name: 'Support', icon: 'message' as IconName }
+  ];
+
+  const handleNavClick = (itemName: string) => {
+    setIsSidebarOpen(false);
+    if (itemName === 'Log Out') {
+      onNavigate('home');
+    } else {
+      setActiveTab(itemName);
+    }
+  };
 
   return (
-    <main className="dashboard-page">
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <button className="brand brand-button" onClick={() => onNavigate('home')}><Logo /></button>
-          <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="Close sidebar">
+    <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setIsSidebarOpen(false)} 
+          style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
+        ></div>
+      )}
+      {/* Left Sidebar */}
+      <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="brand-header">
+          <button className="brand brand-button dash-brand-compact" onClick={() => onNavigate('home')}>
+            <span className="logo-mark-dash">F</span>
+            <span className="logo-text-dash">Fixam</span>
+          </button>
+          <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+            {isSidebarCollapsed ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            )}
+          </button>
+          <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
             <Icon name="x" />
           </button>
         </div>
-        
-        <div className="sidebar-links-container">
-          {proLinks.map((item, index) => (
-            <button className={index === 0 ? 'side-link active' : 'side-link'} key={item}>
-              <Icon name={proIcons[index]} />
-              <span>{item}</span>
-              {item === 'Messages' && <span className="badge">2</span>}
-              {item === 'Wallet' && <span className="badge-text">85K XAF</span>}
+
+        <div className="user-card-new" style={{ cursor: 'pointer' }}>
+          <img src={images.proSamuel} alt="User Avatar" />
+          <div className="user-info-new">
+            <h3>Pro Nounga</h3>
+            <div className="role-row">
+              <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1' }}>Provider</span>
+              <span className="verified-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.7rem', height: '0.7rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Verified
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <nav className="sidebar-links-new">
+          {providerNavItems.map((item) => (
+            <button 
+              key={item.name} 
+              className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
+              onClick={() => handleNavClick(item.name)}
+            >
+              <Icon name={item.icon} />
+              <span>{item.name}</span>
+              {item.badge && <span className="badge-count">{item.badge}</span>}
+              {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
             </button>
           ))}
-        </div>
-        
-        <div className="sidebar-cta">
-          <h3>Find Job Leads</h3>
-          <p>Browse recent client requests and make offers.</p>
-          <button onClick={() => alert('Find Leads flow coming soon!')}>Browse Leads →</button>
-        </div>
+          
+          {onRoleChange && (
+            <button className="side-link-new" onClick={() => onRoleChange('client')}>
+              <Icon name="user" />
+              <span>Client View</span>
+            </button>
+          )}
+
+          <button className="side-link-new" onClick={() => onNavigate('home')}>
+            <Icon name="x" />
+            <span>Logout</span>
+          </button>
+        </nav>
       </aside>
-      
-      <section className="dashboard-main">
-        <header className="dashboard-topbar">
-          <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+
+      {/* Main Dashboard Area */}
+      <section className="dash-main-new">
+        <header className="dash-header-premium">
+          <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu" style={{ display: 'none' }}>
             <Icon name="menu" />
           </button>
-          <label className="search-bar">
-            <Icon name="search" />
-            <input placeholder="Search leads, contracts..." />
-          </label>
-          <div className="dash-icons">
-            <button 
-              className="dash-theme-btn" 
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              style={{ background: 'transparent', border: 'none', color: 'var(--muted)', cursor: 'pointer', padding: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-              aria-label="Toggle Theme"
-            >
-              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-            </button>
-            <Icon name="bell" />
-            <Icon name="chat" />
-          </div>
-          <button className="profile-chip" onClick={() => onNavigate('home')}>
-            <ImageSlot src={images.proSamuel} alt="" label="NJ" />
-            <span>Nounga Joseph<small>Professional</small></span>
-          </button>
-        </header>
-        
-        <div className="dashboard-content">
-          <div className="dashboard-left">
-            <div className="welcome-header">
-              <div>
-                <h1>Welcome back, Pro Nounga! 🚀</h1>
-                <p>What would you like to do today?</p>
-              </div>
-              {onRoleChange && (
-                <button 
-                  className="outline-button role-switch-btn"
-                  onClick={() => onRoleChange('client')}
-                >
-                  Switch to Client View
-                </button>
-              )}
-            </div>
-            
-            <div className="quick-actions">
-              {[
-                ['Browse Leads', 'Find matching tasks', 'search'],
-                ['Active Contracts', 'Manage ongoing work', 'briefcase'],
-                ['Messages', 'Chat with clients', 'chat'],
-                ['Earnings', 'View payouts & rewards', 'wallet'],
-              ].map(([title, desc, icon]) => (
-                <button key={title}>
-                  <Icon name={icon as IconName} />
-                  <strong>{title}</strong>
-                  <span>{desc}</span>
-                  <b>→</b>
-                </button>
-              ))}
-            </div>
-            
-            <div className="metric-card">
-              {[
-                ['85,000 XAF', 'Total Earnings', 'wallet'],
-                ['3', 'Active Jobs', 'briefcase'],
-                ['28', 'Completed Jobs', 'check'],
-                ['4.9', 'Average Rating', 'star'],
-              ].map(([value, label, icon]) => (
-                <div key={label}>
-                  <Icon name={icon as IconName} />
-                  <strong>{value}</strong>
-                  <span>{label}</span>
-                </div>
-              ))}
-            </div>
-            
-            <section className="task-table">
-              <div className="task-head">
-                <h2>Job Leads Near You</h2>
-                <button>Filter Leads</button>
-              </div>
-              <div className="tabs">
-                <span className="active">All Leads (3)</span>
-                <span>Plumbing (1)</span>
-                <span>Electrical (1)</span>
-                <span>Cleaning (1)</span>
-              </div>
-              {leads.map((lead) => (
-                <article className="task-row pro-lead-row" key={lead.title}>
-                  <ImageSlot src={lead.image} alt="" label={lead.tag} />
-                  <div className="task-info">
-                    <span>{lead.tag}</span>
-                    <h3>{lead.title}</h3>
-                    <p>Douala, Cameroon • 2.4 km away</p>
-                  </div>
-                  <strong>{lead.price}</strong>
-                  <button 
-                    className="primary-button send-proposal-btn"
-                    onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
-                    style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
-                  >
-                    Send Proposal
-                  </button>
-                </article>
-              ))}
-              <button className="wide-button">View All Leads →</button>
-            </section>
-            
-            <div className="dashboard-alert">
-              <Icon name="shield" />
-              <span><strong>Safety guidelines for service delivery.</strong> Please follow community rules and verify locations.</span>
-              <button>Learn More</button>
-            </div>
+          <div className="mobile-logo-dash" style={{ display: 'none', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--ink)' }}>
+            <span className="logo-mark-dash" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>F</span>
+            Fixam
           </div>
           
-          <aside className="dashboard-right">
-            <div className="wallet-card">
-              <span>Total Earnings</span>
-              <strong>85,000 XAF</strong>
-              <p>Payout pending: 15,000 XAF</p>
-              <button>Request Payout →</button>
-            </div>
-            
-            <ActivityCard />
-            
-            <section className="right-panel">
-              <div className="panel-title">
-                <h2>New Client Proposals</h2>
-                <button>View All</button>
-              </div>
-              <div className="mini-pros">
-                {activeProposals.map((proposal) => (
-                  <article className="premium-pro-card mini" key={proposal.name}>
-                    <div className="pro-card-cover" style={{ height: '75px' }}>
-                      <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
-                    </div>
-                    <div className="pro-card-content" style={{ padding: '0.8rem' }}>
-                      <div className="pro-header">
-                        <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
-                        <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
-                          <Icon name="star" /> {proposal.rating}
-                        </span>
-                      </div>
-                      <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
-                        <button 
-                          className="primary-button" 
-                          style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
-                          onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
-                        >
-                          Accept
-                        </button>
-                        <button 
-                          className="outline-button" 
-                          style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
-                          onClick={() => alert(`Declined proposal from ${proposal.name}`)}
-                        >
-                          Decline
-                        </button>
-                      </div>
-                    </div>
-                  </article>
+          {/* Live Ticker */}
+          <div className="header-news-ticker">
+            <span className="ticker-static-badge">Live Scores</span>
+            <div className="ticker-scroll-container">
+              <div className="ticker-marquee-track">
+                {tickerItems.map((item, index) => (
+                  <span className="ticker-track-item" key={index}>
+                    <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
+                    <span>{item.text}</span>
+                  </span>
+                ))}
+                {tickerItems.map((item, index) => (
+                  <span className="ticker-track-item" key={`dup-${index}`}>
+                    <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
+                    <span>{item.text}</span>
+                  </span>
                 ))}
               </div>
-            </section>
-          </aside>
+            </div>
+          </div>
+
+          <div className="actions-right-dash">
+            <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
+              <Icon name="chat" />
+              <span className="badge-indicator">2</span>
+            </button>
+            <button className="icon-btn-dash" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle Theme">
+              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+            </button>
+
+            <button className="profile-chip-dash">
+              <img src={images.proSamuel} alt="Nounga profile" />
+              <div className="profile-details-dash">
+                <span className="profile-name-dash">
+                  Pro Nounga
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+                <span className="profile-role-dash">Provider</span>
+              </div>
+            </button>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <div className={`dash-content-premium ${activeTab === 'Dashboard' ? 'dashboard-tab-active' : ''}`}>
+          {activeTab === 'Dashboard' && (
+            <>
+              {/* Left/Middle Column */}
+              <div className="dash-body-left">
+                <div className="dash-greeting-row">
+                  <div>
+                    <h1>Welcome back, Pro Nounga! 🚀</h1>
+                    <p>What would you like to do today?</p>
+                  </div>
+                  {onRoleChange && (
+                    <button 
+                      className="btn-browse-services"
+                      onClick={() => onRoleChange('client')}
+                      style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
+                    >
+                      <Icon name="user" />
+                      Switch to Client View
+                    </button>
+                  )}
+                </div>
+
+                {/* Quick Action Buttons */}
+                <div className="quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                  {[
+                    ['Browse Leads', 'Find matching tasks', 'search', 'Job Leads'],
+                    ['Active Contracts', 'Manage ongoing work', 'briefcase', 'My Jobs'],
+                    ['Messages', 'Chat with clients', 'chat', 'Messages'],
+                    ['Earnings', 'View payouts & rewards', 'wallet', 'Wallet'],
+                  ].map(([title, desc, icon, tabName]) => (
+                    <button key={title} onClick={() => setActiveTab(tabName)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '16px', border: '1px solid #E5E7EB', borderRadius: '12px', background: '#FFFFFF', cursor: 'pointer', transition: 'all 200ms ease', textAlign: 'left' }}>
+                      <span style={{ color: '#14B8A6', marginBottom: '8px', display: 'inline-flex' }}><Icon name={icon as IconName} /></span>
+                      <strong style={{ fontSize: '15px', color: '#1F2937' }}>{title}</strong>
+                      <span style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>{desc}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Metric Panel Grid */}
+                <div className="metric-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                  {[
+                    ['85,000 XAF', 'Total Earnings', 'wallet'],
+                    ['3', 'Active Jobs', 'briefcase'],
+                    ['28', 'Completed Jobs', 'check'],
+                    ['4.9', 'Average Rating', 'star'],
+                  ].map(([value, label, icon]) => (
+                    <div key={label} style={{ display: 'flex', flexDirection: 'column', padding: '16px', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '12px' }}>
+                      <span style={{ color: '#14B8A6', marginBottom: '6px', display: 'inline-flex' }}><Icon name={icon as IconName} /></span>
+                      <strong style={{ fontSize: '18px', color: '#1F2937' }}>{value}</strong>
+                      <span style={{ fontSize: '12px', color: '#6B7280' }}>{label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Leads List table */}
+                <section className="task-table">
+                  <div className="task-head">
+                    <h2>Job Leads Near You</h2>
+                    <button className="panel-link" onClick={() => setActiveTab('Job Leads')}>Filter Leads</button>
+                  </div>
+                  <div className="tabs">
+                    <span className="active">All Leads (3)</span>
+                    <span>Plumbing (1)</span>
+                    <span>Electrical (1)</span>
+                    <span>Cleaning (1)</span>
+                  </div>
+                  {leads.map((lead) => (
+                    <article className="task-row pro-lead-row" key={lead.title}>
+                      <ImageSlot src={lead.image} alt="" label={lead.tag} />
+                      <div className="task-info">
+                        <span>{lead.tag}</span>
+                        <h3>{lead.title}</h3>
+                        <p>Douala, Cameroon • 2.4 km away</p>
+                      </div>
+                      <strong>{lead.price}</strong>
+                      <button 
+                        className="primary-button send-proposal-btn"
+                        onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
+                        style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
+                      >
+                        Send Proposal
+                      </button>
+                    </article>
+                  ))}
+                  <button className="wide-button" onClick={() => setActiveTab('Job Leads')}>View All Leads →</button>
+                </section>
+              </div>
+
+              {/* Right/Sidebar Column */}
+              <div className="dash-body-right">
+                <div className="wallet-card" style={{ padding: '24px', background: 'linear-gradient(135deg, #14B8A6, #0D9488)', color: '#FFFFFF', borderRadius: '16px', marginBottom: '24px' }}>
+                  <span style={{ opacity: 0.9, fontSize: '13px' }}>Total Earnings Tracked</span>
+                  <strong style={{ fontSize: '28px', display: 'block', margin: '4px 0' }}>85,000 XAF</strong>
+                  <p style={{ opacity: 0.8, fontSize: '12px', margin: '0 0 16px 0' }}>Cash received from 28 jobs</p>
+                  <button onClick={() => setActiveTab('Wallet')} style={{ backgroundColor: '#FFFFFF', color: '#14B8A6', border: 'none', borderRadius: '24px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>View Job History →</button>
+                </div>
+
+                <ActivityCard />
+
+                <section className="right-panel" style={{ marginTop: '24px' }}>
+                  <div className="panel-title">
+                    <h2>New Client Proposals</h2>
+                  </div>
+                  <div className="mini-pros">
+                    {activeProposals.map((proposal) => (
+                      <article className="premium-pro-card mini" key={proposal.name}>
+                        <div className="pro-card-cover" style={{ height: '75px' }}>
+                          <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
+                        </div>
+                        <div className="pro-card-content" style={{ padding: '0.8rem' }}>
+                          <div className="pro-header">
+                            <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
+                            <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
+                              <Icon name="star" /> {proposal.rating}
+                            </span>
+                          </div>
+                          <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
+                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
+                            <button 
+                              className="primary-button" 
+                              style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
+                              onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
+                            >
+                              Accept
+                            </button>
+                            <button 
+                              className="outline-button" 
+                              style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
+                              onClick={() => alert(`Declined proposal from ${proposal.name}`)}
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'My Jobs' && (
+            <MyJobs 
+              setActiveTab={setActiveTab} 
+              setActiveChatUser={setActiveChatUser} 
+            />
+          )}
+          {activeTab === 'Job Leads' && <JobLeads />}
+          {activeTab === 'Wallet' && <ProviderWallet />}
+          {activeTab === 'Reviews' && <ProviderReviews />}
+          {activeTab === 'Profile Settings' && <ProfileSettings />}
+          {activeTab === 'Support' && <ProviderSupport />}
+          {activeTab === 'Messages' && (
+            <Messages 
+              chatMessages={chatMessages} 
+              setChatMessages={setChatMessages} 
+              activeChatUser={activeChatUser} 
+              setActiveChatUser={setActiveChatUser} 
+            />
+          )}
         </div>
       </section>
     </main>
@@ -1619,7 +1750,7 @@ function FeatureRow() {
       {[
         ['Verified Professionals', 'Every professional is background checked and verified.', 'shield'],
         ['Quality Guaranteed', 'We ensure top-quality service on every job.', 'star'],
-        ['Secure Payments', 'Pay safely through our secure payment system.', 'wallet'],
+        ['Direct Payment', 'Pay your provider directly in cash after the job is done.', 'wallet'],
         ['24/7 Support', 'We’re here to help you anytime, any day.', 'bell'],
       ].map(([title, desc, icon]) => (
         <div key={title}>
@@ -1640,7 +1771,7 @@ function ActivityCard() {
         ['Task Completed', 'House deep cleaning', '2 hours ago', 'check'],
         ['New Proposal Received', 'Fix leaking pipe in kitchen', '5 hours ago', 'chat'],
         ['Task In Progress', 'Fixing faulty wiring', '1 day ago', 'bell'],
-        ['Payment Successful', 'Paid 25,000 XAF', '2 days ago', 'wallet'],
+        ['Booking Confirmed', 'Booking fee: 1 coin', '2 days ago', 'wallet'],
       ].map(([title, desc, time, icon]) => (
         <div className="activity" key={title}>
           <Icon name={icon as IconName} />
@@ -1675,7 +1806,7 @@ function AppTrust({ simple = false }: { simple?: boolean }) {
     <section className={simple ? 'app-trust simple' : 'app-trust'}>
       <div>
         <h2>Trusted by Thousands</h2>
-        <div className="brand-cloud"><strong>MTN</strong><strong>VISA</strong><strong>orange</strong><strong>MoMo</strong><strong>PayPal</strong></div>
+        <div className="brand-cloud"><strong>MTN</strong><strong>orange</strong><strong>MoMo</strong></div>
       </div>
       <div>
         <h2>Get the Fixam App</h2>
