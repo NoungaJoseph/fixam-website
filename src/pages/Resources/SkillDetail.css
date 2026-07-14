@@ -1,8 +1,8 @@
 /* SkillDetail Page Styles */
 
 .skill-detail-page {
-  background-color: #FFFFFF;
-  color: #1F2937;
+  background-color: var(--surface);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -18,9 +18,9 @@
 
 .skill-section-alt {
   padding: 80px 0;
-  background-color: #F9FAFB;
+  background-color: var(--soft);
   border-top: 1px solid #E5E7EB;
-  border-bottom: 1px solid #E5E7EB;
+  border-bottom: 1px solid var(--line);
 }
 
 /* HERO SECTION */
@@ -72,12 +72,12 @@
 
 /* STORY SECTION (THE CHALLENGE & SOLUTION) */
 .story-section {
-  background-color: #FFFFFF;
+  background-color: var(--surface);
 }
 
 .story-box {
-  background-color: #F9FAFB;
-  border: 1px solid #E5E7EB;
+  background-color: var(--soft);
+  border: 1px solid var(--line);
   border-radius: 20px;
   padding: 48px;
 }
@@ -85,7 +85,7 @@
 .story-title {
   font-size: 24px;
   font-weight: 800;
-  color: #1F2937;
+  color: var(--ink);
   margin-bottom: 32px;
   text-align: center;
 }
@@ -117,7 +117,7 @@
 .story-challenge-card p,
 .story-solution-card p {
   font-size: 15px;
-  color: #4B5563;
+  color: var(--muted);
   line-height: 1.7;
   margin: 0;
 }
@@ -126,13 +126,13 @@
 .skill-section-title {
   font-size: 28px;
   font-weight: 800;
-  color: #1F2937;
+  color: var(--ink);
   margin-bottom: 8px;
 }
 
 .skill-section-subtitle {
   font-size: 16px;
-  color: #6B7280;
+  color: var(--muted);
   margin-bottom: 40px;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .skill-pro-card {
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--line);
   border-radius: 16px;
   padding: 28px;
   background-color: white;
@@ -179,7 +179,7 @@
 .pro-card-name {
   font-size: 18px;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--ink);
   margin: 0;
 }
 
@@ -199,7 +199,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #4B5563;
+  color: var(--muted);
 }
 
 .pro-stars {
@@ -209,16 +209,16 @@
 
 .pro-rating-num {
   font-weight: 700;
-  color: #1F2937;
+  color: var(--ink);
 }
 
 .pro-distance {
-  color: #6B7280;
+  color: var(--muted);
 }
 
 /* PROVIDER FEATURED REVIEW */
 .pro-featured-review {
-  background-color: #F8FAFC;
+  background-color: var(--soft);
   border-left: 3px solid #14B8A6;
   padding: 16px;
   border-radius: 0 8px 8px 0;
@@ -238,7 +238,7 @@
 
 .review-quote-text {
   font-size: 13.5px;
-  color: #4B5563;
+  color: var(--muted);
   line-height: 1.6;
   font-style: italic;
   margin: 0;
@@ -249,7 +249,7 @@
 
 .review-quote-author {
   font-size: 12px;
-  color: #6B7280;
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -272,7 +272,7 @@
 }
 
 .skill-review-item {
-  border: 1px solid #E5E7EB;
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 24px;
   background-color: white;
@@ -288,7 +288,7 @@
 .review-item-header h4 {
   font-size: 16px;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--ink);
   margin: 0;
 }
 
@@ -299,20 +299,20 @@
 
 .review-text {
   font-size: 15px;
-  color: #4B5563;
+  color: var(--muted);
   line-height: 1.6;
   margin: 0 0 12px 0;
 }
 
 .review-author {
   font-size: 13px;
-  color: #9CA3AF;
+  color: var(--muted);
   font-weight: 500;
 }
 
 .skill-no-reviews {
   font-size: 15px;
-  color: #6B7280;
+  color: var(--muted);
 }
 
 /* GUIDE GRID */
@@ -323,8 +323,8 @@
 }
 
 .guide-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E5E7EB;
+  background-color: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 16px;
   padding: 32px;
   transition: border-color 0.2s;
@@ -333,13 +333,13 @@
 .guide-card h3 {
   font-size: 17px;
   font-weight: 700;
-  color: #1F2937;
+  color: var(--ink);
   margin-bottom: 12px;
 }
 
 .guide-card p {
   font-size: 14px;
-  color: #4B5563;
+  color: var(--muted);
   line-height: 1.65;
   margin: 0;
 }

@@ -60,7 +60,7 @@
 }
 
 .btn-primary-pill.white-variant:hover {
-  background-color: #F8FAFC;
+  background-color: var(--soft);
 }
 
 .btn-secondary-pill {
@@ -127,7 +127,7 @@
   min-height: 480px;
   border-radius: 24px;
   overflow: hidden;
-  background-color: #111827;
+  background-color: var(--ink);
 }
 
 .client-hero-img {

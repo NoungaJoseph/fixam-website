@@ -1200,7 +1200,7 @@
 }
 
 .cta-pill-btn.client:hover {
-  background: #f8fafc;
+  background: var(--soft);
 }
 
 .cta-pill-btn.pro {
