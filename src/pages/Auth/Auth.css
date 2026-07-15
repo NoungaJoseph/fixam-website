@@ -11,6 +11,38 @@
   overflow: hidden;
 }
 
+/* LIGHT MODE ADAPTIVE OVERRIDES */
+.light .auth-page-wrapper {
+  background: radial-gradient(circle at 50% 50%, #F8FAFC 0%, #E2E8F0 100%) !important;
+  color: #0F172A !important;
+}
+.light .auth-header-bar {
+  background-color: rgba(255, 255, 255, 0.45) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+.light .auth-header-right {
+  color: rgba(15, 23, 42, 0.8) !important;
+}
+.light .auth-card {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05) !important;
+}
+.light .quick-login-sandbox {
+  border-top: 1px dashed rgba(15, 23, 42, 0.1) !important;
+}
+.light .stepper-container::before {
+  background-color: rgba(15, 23, 42, 0.1) !important;
+}
+.light .step-number {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  color: #64748B !important;
+}
+.light .auth-or-line {
+  background-color: rgba(15, 23, 42, 0.08) !important;
+}
+
 /* MINIMAL HEADER */
 .auth-header-bar {
   background-color: rgba(13, 21, 39, 0.4) !important;

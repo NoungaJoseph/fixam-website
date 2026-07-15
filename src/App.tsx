@@ -320,7 +320,7 @@ function App() {
         <OTPVerification onNavigate={setPage} />
       ) : (
         <>
-          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} />
+          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} onSearch={setServiceSearchQuery} />
           <main>
             {page === 'services' && (
               <Services 
@@ -488,13 +488,23 @@ export const translateServiceHelper = (name: string, desc: string, lang: string)
   return { name, desc };
 };
 
-function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
+function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void; onSearch: (query: string) => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileHowOpen, setMobileHowOpen] = useState(false);
+
+  const [mobileSearchVal, setMobileSearchVal] = useState('');
+  const handleMobileSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobileSearchVal.trim()) {
+      onSearch(mobileSearchVal.trim());
+      onNavigate('services');
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   const [tickerIndex, setTickerIndex] = useState(0);
   const tickerMessages = [
@@ -735,11 +745,15 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
 
         {/* Mobile Navigation Drawer */}
         <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <div className="mobile-news-ticker-banner">
-            <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--ink)', textAlign: 'center', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(20, 184, 166, 0.08)', borderRadius: '8px', padding: '8px 12px', border: '1px solid rgba(20, 184, 166, 0.15)', marginBottom: '16px' }}>
-              📢 {tickerMessages[tickerIndex]}
-            </div>
-          </div>
+          <form className="mobile-search-wrapper" onSubmit={handleMobileSearchSubmit}>
+            <input 
+              type="text" 
+              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
+              value={mobileSearchVal}
+              onChange={(e) => setMobileSearchVal(e.target.value)}
+            />
+            <button type="submit" className="search-btn">{t('search.btn') || 'Search'}</button>
+          </form>
           <button className="nav-link" onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
           
           {/* Mobile Accordion for Explore Services */}
