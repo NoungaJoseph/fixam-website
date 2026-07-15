@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../App';
+import FloatingParticles from '../../components/FloatingParticles';
 import './Auth.css';
 
 export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page) => void; onLogin?: (role: 'client' | 'pro') => void }) {
@@ -130,6 +131,7 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
 
   return (
     <div className="auth-page-wrapper">
+      <FloatingParticles />
       {/* HEADER */}
       <header className="auth-header-bar">
         <span className="auth-header-logo" onClick={() => onNavigate('home')}>Fixam</span>

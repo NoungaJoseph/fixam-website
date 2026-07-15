@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../App';
+import FloatingParticles from '../../components/FloatingParticles';
 import './Auth.css';
 
 export default function ForgotPassword({ onNavigate }: { onNavigate: (page: Page) => void }) {
@@ -48,6 +49,7 @@ export default function ForgotPassword({ onNavigate }: { onNavigate: (page: Page
 
   return (
     <div className="auth-page-wrapper">
+      <FloatingParticles />
       {/* HEADER */}
       <header className="auth-header-bar">
         <span className="auth-header-logo" onClick={() => onNavigate('home')}>Fixam</span>
