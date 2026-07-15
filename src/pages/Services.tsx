@@ -196,11 +196,60 @@ const servicesContent = {
   }
 };
 
-export default function Services({ onNavigate }: { onNavigate: (page: Page) => void }) {
+export default function Services({ 
+  onNavigate,
+  searchQuery = '',
+  setSearchQuery = () => {},
+  serviceCategories = {},
+  translateService = (name, desc) => ({ name, desc }),
+  translateCat = (cat) => cat
+}: { 
+  onNavigate: (page: Page) => void;
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
+  serviceCategories?: Record<string, Array<{ name: string; desc: string; icon: string }>>;
+  translateService?: (name: string, desc: string) => { name: string; desc: string };
+  translateCat?: (cat: string) => string;
+}) {
   const { i18n } = useTranslation();
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = servicesContent[lang];
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const matchingServices: Array<{ cat: string; name: string; desc: string; icon: string }> = [];
+  
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase().trim();
+    Object.keys(serviceCategories).forEach((cat) => {
+      serviceCategories[cat].forEach((svc) => {
+        const enName = svc.name.toLowerCase();
+        const enDesc = svc.desc.toLowerCase();
+        
+        const frTrans = translateService(svc.name, svc.desc);
+        const frName = frTrans.name.toLowerCase();
+        const frDesc = frTrans.desc.toLowerCase();
+        
+        const catTrans = translateCat(cat).toLowerCase();
+        const catEn = cat.toLowerCase();
+
+        if (
+          enName.includes(q) || 
+          enDesc.includes(q) || 
+          frName.includes(q) || 
+          frDesc.includes(q) ||
+          catEn.includes(q) ||
+          catTrans.includes(q)
+        ) {
+          matchingServices.push({
+            cat,
+            name: svc.name,
+            desc: svc.desc,
+            icon: svc.icon
+          });
+        }
+      });
+    });
+  }
 
   return (
     <div className="client-page-premium">
@@ -231,6 +280,84 @@ export default function Services({ onNavigate }: { onNavigate: (page: Page) => v
           </div>
         </div>
       </section>
+
+      {searchQuery && (
+        <section className="search-results-section" style={{ padding: '3rem 0', background: 'var(--bg-alt, #F8FAFC)' }}>
+          <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid rgba(20,184,166,0.1)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: '800', color: 'var(--ink)' }}>
+                  {lang === 'fr' ? 'Résultats de recherche pour :' : 'Search results for:'} <span style={{ color: '#14B8A6' }}>"{searchQuery}"</span>
+                </h2>
+                <p style={{ color: 'var(--ink-secondary)', fontSize: '0.9rem', marginTop: '0.4rem' }}>
+                  {lang === 'fr' 
+                    ? `${matchingServices.length} service(s) trouvé(s)` 
+                    : `${matchingServices.length} service(s) found`}
+                </p>
+              </div>
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="btn-secondary-pill"
+                style={{ minHeight: 'auto', padding: '0.5rem 1.2rem', fontSize: '0.85rem', cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--ink)' }}
+              >
+                {lang === 'fr' ? 'Effacer la recherche' : 'Clear Search'}
+              </button>
+            </div>
+
+            {matchingServices.length > 0 ? (
+              <div className="services-search-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+                {matchingServices.map((svc) => {
+                  const translated = translateService(svc.name, svc.desc);
+                  const catLabel = translateCat(svc.cat);
+                  return (
+                    <div 
+                      key={svc.name} 
+                      className="search-result-card" 
+                      onClick={() => onNavigate('register')}
+                      style={{ 
+                        display: 'flex', 
+                        gap: '1rem', 
+                        padding: '1.2rem', 
+                        borderRadius: '12px', 
+                        background: 'var(--card-bg, #FFF)', 
+                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', 
+                        border: '1px solid var(--line, rgba(0,0,0,0.05))',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <span style={{ fontSize: '2rem', display: 'flex', alignItems: 'center' }}>{svc.icon}</span>
+                      <div>
+                        <span style={{ display: 'inline-block', fontSize: '0.75rem', fontWeight: '700', color: '#14B8A6', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+                          {catLabel}
+                        </span>
+                        <h4 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--ink)', margin: '0 0 0.3rem 0' }}>
+                          {translated.name}
+                        </h4>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--ink-secondary)', margin: 0, lineHeight: '1.3' }}>
+                          {translated.desc}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '3rem 1rem', background: 'var(--card-bg, #FFF)', borderRadius: '16px', border: '1px dashed var(--line, rgba(0,0,0,0.1))' }}>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', color: 'var(--ink)' }}>
+                  {lang === 'fr' ? 'Aucun service trouvé' : 'No services found'}
+                </h3>
+                <p style={{ color: 'var(--ink-secondary)', fontSize: '0.9rem', marginTop: '0.5rem', maxWidth: '400px', marginInline: 'auto' }}>
+                  {lang === 'fr' 
+                    ? 'Essayez de rechercher des termes comme "ménage", "plomberie", "électricité", "coiffure" ou parcourez nos catégories ci-dessous.'
+                    : 'Try searching for terms like "cleaning", "plumbing", "electrical", "hair" or browse our categories below.'}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* SECTION 2 - STATS BAR */}
       <section className="client-stats-section">

@@ -34,7 +34,7 @@ html, body, #root, .dashboard-shell-new {
     padding: 0.8rem 1.5rem;
   }
 
-  .header-search-bar,
+  .header-news-ticker-slider,
   .header-socials-desktop {
     display: none !important;
   }

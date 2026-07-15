@@ -199,6 +199,8 @@ function MaintenanceScreen({ message }: { message: string }) {
 
 function App() {
   const [page, setPage] = useState<Page>('home')
+  const [serviceSearchQuery, setServiceSearchQuery] = useState('');
+  const { i18n } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState<string>('')
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
@@ -320,7 +322,16 @@ function App() {
         <>
           <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} />
           <main>
-            {page === 'services' && <Services onNavigate={setPage} />}
+            {page === 'services' && (
+              <Services 
+                onNavigate={setPage} 
+                searchQuery={serviceSearchQuery} 
+                setSearchQuery={setServiceSearchQuery} 
+                serviceCategories={serviceCategories}
+                translateService={(name, desc) => translateServiceHelper(name, desc, i18n.language)}
+                translateCat={(cat) => translateCatHelper(cat, i18n.language)}
+              />
+            )}
             {page === 'guide' && <Guide onNavigate={setPage} />}
             {page === 'about' && <About onNavigate={setPage} />}
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
@@ -332,7 +343,14 @@ function App() {
             {page === 'research' && <Research onNavigate={setPage} />}
             {page === 'blog' && <Blog onNavigate={setPage} />}
             {page === 'release_notes' && <ReleaseNotes onNavigate={setPage} />}
-            {page === 'home' && <Home onNavigate={setPage} livePros={livePros} onSelectSkill={setSelectedSkill} />}
+            {page === 'home' && (
+              <Home 
+                onNavigate={setPage} 
+                livePros={livePros} 
+                onSelectSkill={setSelectedSkill} 
+                setSearchQuery={setServiceSearchQuery}
+              />
+            )}
           </main>
         </>
       )}
@@ -345,14 +363,164 @@ function App() {
 
 
 
+export const serviceCategories: Record<string, Array<{ name: string; desc: string; icon: string }>> = {
+  'Home Services': [
+    { name: 'House Cleaning', desc: 'Clean your home professionally', icon: '🧹' },
+    { name: 'Garden & Outdoor', desc: 'Lawn mowing and outdoor maintenance', icon: '🌱' },
+    { name: 'Interior Decoration', desc: 'Transform your living space', icon: '🎨' },
+    { name: 'Pest Control', desc: 'Eliminate insects and rodents', icon: '🐜' },
+    { name: 'Pool Maintenance', desc: 'Keep your pool clean and safe', icon: '🏊' }
+  ],
+  'Electrical & Plumbing': [
+    { name: 'Pipe Leakage', desc: 'Fix water leaks instantly', icon: '💧' },
+    { name: 'Rewiring', desc: 'Full house electrical wiring', icon: '⚡' },
+    { name: 'Appliance Setup', desc: 'Install major electronics', icon: '🔌' },
+    { name: 'Water Heater', desc: 'Installation and repair', icon: '🔥' },
+    { name: 'Lighting Setup', desc: 'Indoor and outdoor fixtures', icon: '💡' }
+  ],
+  'Cleaning & Hygiene': [
+    { name: 'Deep Cleaning', desc: 'Intensive sanitization', icon: '🧼' },
+    { name: 'Office Cleaning', desc: 'Professional commercial cleaning', icon: '🏢' },
+    { name: 'Disinfection', desc: 'Virus and pest control', icon: '🦠' },
+    { name: 'Carpet Cleaning', desc: 'Stain and odor removal', icon: '🧶' },
+    { name: 'Window Cleaning', desc: 'Streak-free exterior washing', icon: '🪟' }
+  ],
+  'Moving & Delivery': [
+    { name: 'Home Moving', desc: 'Safely pack and move furniture', icon: '📦' },
+    { name: 'Express Delivery', desc: 'Fast local courier service', icon: '🛵' },
+    { name: 'Cargo Transport', desc: 'Large vehicle hauling', icon: '🚚' },
+    { name: 'Furniture Assembly', desc: 'Build flat-pack items', icon: '🪑' },
+    { name: 'Heavy Lifting', desc: 'Labor for loading/unloading', icon: '💪' }
+  ],
+  'Beauty & Wellness': [
+    { name: 'Hair Styling', desc: 'Modern haircuts at home', icon: '💇' },
+    { name: 'Massage Therapy', desc: 'Professional relaxation', icon: '💆' },
+    { name: 'Nail Care', desc: 'Manicure and pedicure services', icon: '💅' },
+    { name: 'Makeup Artist', desc: 'Event and bridal makeup', icon: '💄' },
+    { name: 'Personal Trainer', desc: 'Custom fitness sessions', icon: '🏋️' }
+  ],
+  'Repairs & Maintenance': [
+    { name: 'AC Repair', desc: 'Air conditioner fixing', icon: '❄️' },
+    { name: 'Wood Repair', desc: 'Carpenter and cabinet maintenance', icon: '🪓' },
+    { name: 'Masonry Work', desc: 'Tile and brick repair', icon: '🧱' },
+    { name: 'Roof Repair', desc: 'Fix leaks and shingles', icon: '🏠' },
+    { name: 'Generator Service', desc: 'Maintenance and repair', icon: '🔋' }
+  ],
+  'Security & Safety': [
+    { name: 'CCTV Setup', desc: 'Camera installation & configuration', icon: '🛡️' },
+    { name: 'Smart Lock', desc: 'Digital security lock installation', icon: '🔒' },
+    { name: 'Fire Alarm', desc: 'Smoke detector setups', icon: '🚨' },
+    { name: 'Security Guard', desc: 'Personal or event security', icon: '👮' },
+    { name: 'Electric Fence', desc: 'Perimeter protection setup', icon: '⚡' }
+  ],
+  'Education & Tutoring': [
+    { name: 'School Support', desc: 'Homework help for kids', icon: '📚' },
+    { name: 'Language Class', desc: 'Learn English/French', icon: '🗣️' },
+    { name: 'IT Basics', desc: 'Essential computer training', icon: '💻' },
+    { name: 'Music Lessons', desc: 'Piano, guitar, and vocal', icon: '🎵' },
+    { name: 'Math Tutoring', desc: 'Advanced mathematics prep', icon: '📐' }
+  ]
+};
+
+export const translateCatHelper = (cat: string, lang: string) => {
+  if (lang === 'fr') {
+    switch (cat) {
+      case 'Home Services': return 'Services Ménagers';
+      case 'Electrical & Plumbing': return 'Électricité & Plomberie';
+      case 'Cleaning & Hygiene': return 'Nettoyage & Hygiène';
+      case 'Moving & Delivery': return 'Déménagement & Livraison';
+      case 'Beauty & Wellness': return 'Beauté & Bien-être';
+      case 'Repairs & Maintenance': return 'Réparations & Entretien';
+      case 'Security & Safety': return 'Sécurité & Sûreté';
+      case 'Education & Tutoring': return 'Éducation & Tutorat';
+      default: return cat;
+    }
+  }
+  return cat;
+};
+
+export const translateServiceHelper = (name: string, desc: string, lang: string) => {
+  if (lang === 'fr') {
+    switch (name) {
+      case 'House Cleaning': return { name: 'Nettoyage de Maison', desc: 'Nettoyez votre maison de manière professionnelle' };
+      case 'Garden & Outdoor': return { name: 'Jardin & Extérieur', desc: 'Tonte de pelouse et entretien extérieur' };
+      case 'Interior Decoration': return { name: 'Décoration Intérieure', desc: 'Transformez votre espace de vie' };
+      case 'Pest Control': return { name: 'Lutte Antiparasitaire', desc: 'Éliminez les insectes et rongeurs' };
+      case 'Pool Maintenance': return { name: 'Entretien de Piscine', desc: 'Gardez votre piscine propre et sûre' };
+      case 'Pipe Leakage': return { name: 'Fuite de Tuyau', desc: 'Réparez les fuites d\'eau instantanément' };
+      case 'Rewiring': return { name: 'Recâblage', desc: 'Câblage électrique complet de la maison' };
+      case 'Appliance Setup': return { name: 'Installation d\'Appareils', desc: 'Installez vos appareils électroniques majeurs' };
+      case 'Water Heater': return { name: 'Chauffe-eau', desc: 'Installation et réparation' };
+      case 'Lighting Setup': return { name: 'Éclairage', desc: 'Luminaires intérieurs et extérieurs' };
+      case 'Deep Cleaning': return { name: 'Nettoyage en Profondeur', desc: 'Désinfection intensive' };
+      case 'Office Cleaning': return { name: 'Nettoyage de Bureau', desc: 'Nettoyage commercial professionnel' };
+      case 'Disinfection': return { name: 'Désinfection', desc: 'Contrôle des virus et des nuisibles' };
+      case 'Carpet Cleaning': return { name: 'Nettoyage de Tapis', desc: 'Élimination des taches et odeurs' };
+      case 'Window Cleaning': return { name: 'Nettoyage de Vitres', desc: 'Lavage extérieur sans traces' };
+      case 'Home Moving': return { name: 'Déménagement de Maison', desc: 'Emballez et déplacez vos meubles en toute sécurité' };
+      case 'Express Delivery': return { name: 'Livraison Express', desc: 'Service de messagerie local rapide' };
+      case 'Cargo Transport': return { name: 'Transport de Fret', desc: 'Transport par grand véhicule' };
+      case 'Furniture Assembly': return { name: 'Montage de Meubles', desc: 'Assemblez des articles en kit' };
+      case 'Heavy Lifting': return { name: 'Manutention Lourde', desc: 'Main-d\'œuvre pour chargement/déchargement' };
+      case 'Hair Styling': return { name: 'Coiffure', desc: 'Coupes de cheveux modernes à domicile' };
+      case 'Massage Therapy': return { name: 'Massage', desc: 'Relaxation professionnelle' };
+      case 'Nail Care': return { name: 'Soin des Ongles', desc: 'Services de manucure et pédicure' };
+      case 'Makeup Artist': return { name: 'Maquilleur(se)', desc: 'Maquillage d\'événement et de mariage' };
+      case 'Personal Trainer': return { name: 'Entraîneur Personnel', desc: 'Séances de fitness personnalisées' };
+      case 'AC Repair': return { name: 'Réparation de Clim', desc: 'Réparation de climatiseur' };
+      case 'Wood Repair': return { name: 'Réparation de Bois', desc: 'Entretien des armoires et menuiserie' };
+      case 'Masonry Work': return { name: 'Maçonnerie', desc: 'Réparation de carreaux et de briques' };
+      case 'Roof Repair': return { name: 'Réparation de Toiture', desc: 'Réparation de fuites et bardeaux' };
+      case 'Generator Service': return { name: 'Service de Groupe Électrogène', desc: 'Entretien et réparation' };
+      case 'CCTV Setup': return { name: 'Installation de Vidéosurveillance', desc: 'Installation et configuration de caméras' };
+      case 'Smart Lock': return { name: 'Serrure Intelligente', desc: 'Installation de serrure numérique' };
+      case 'Fire Alarm': return { name: 'Alarme Incendie', desc: 'Installation de détecteurs de fumée' };
+      case 'Security Guard': return { name: 'Agent de Sécurité', desc: 'Sécurité personnelle ou événementielle' };
+      case 'Electric Fence': return { name: 'Clôture Électrique', desc: 'Installation de protection périmétrique' };
+      case 'School Support': return { name: 'Soutien Scolaire', desc: 'Aide aux devoirs pour enfants' };
+      case 'Language Class': return { name: 'Cours de Langue', desc: 'Apprenez l\'anglais/le français' };
+      case 'IT Basics': return { name: 'Bases de l\'Informatique', desc: 'Formation informatique essentielle' };
+      case 'Music Lessons': return { name: 'Cours de Musique', desc: 'Piano, guitare et chant' };
+      case 'Math Tutoring': return { name: 'Tutorat en Mathématiques', desc: 'Préparation avancée en mathématiques' };
+      default: return { name, desc };
+    }
+  }
+  return { name, desc };
+};
+
 function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchVal, setSearchVal] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileHowOpen, setMobileHowOpen] = useState(false);
+
+  const [tickerIndex, setTickerIndex] = useState(0);
+  const tickerMessages = [
+    i18n.language === 'fr' 
+      ? "« Maison nettoyée à Yaoundé en 2 heures ! Excellent travail du prestataire Fixam ! » — Amélia N."
+      : "“Cleaned my house in Yaoundé in 2 hours! Excellent job by Fixam provider!” — Amélia N.",
+    i18n.language === 'fr'
+      ? "Fixam vous connecte à plus de 10 000 professionnels vérifiés au Cameroun."
+      : "Fixam connects you to over 10,000 verified plumbing, electrical, and cleaning pros in Cameroon.",
+    i18n.language === 'fr'
+      ? "Besoin d'un électricien à Douala ? Trouvez des pros locaux sur Fixam en quelques minutes !"
+      : "Need an electrician in Douala? Find and book local pros on Fixam in minutes!",
+    i18n.language === 'fr'
+      ? "Fixam aide les prestataires à augmenter leurs revenus en obtenant des demandes directes."
+      : "Fixam helps service providers boost their earnings by getting direct job requests daily.",
+    i18n.language === 'fr'
+      ? "« Super service ! J'ai trouvé un menuisier fiable à Bamenda en 10 minutes. » — Marc T."
+      : "“Great service! Found a reliable carpenter in Bamenda within 10 minutes of posting.” — Marc T."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTickerIndex((prev) => (prev + 1) % tickerMessages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [tickerMessages.length]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -364,130 +532,8 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
     return () => { document.body.style.overflow = ''; };
   }, [isMobileMenuOpen]);
 
-  const serviceCategories: Record<string, Array<{ name: string; desc: string; icon: string }>> = {
-    'Home Services': [
-      { name: 'House Cleaning', desc: 'Clean your home professionally', icon: '🧹' },
-      { name: 'Garden & Outdoor', desc: 'Lawn mowing and outdoor maintenance', icon: '🌱' },
-      { name: 'Interior Decoration', desc: 'Transform your living space', icon: '🎨' },
-      { name: 'Pest Control', desc: 'Eliminate insects and rodents', icon: '🐜' },
-      { name: 'Pool Maintenance', desc: 'Keep your pool clean and safe', icon: '🏊' }
-    ],
-    'Electrical & Plumbing': [
-      { name: 'Pipe Leakage', desc: 'Fix water leaks instantly', icon: '💧' },
-      { name: 'Rewiring', desc: 'Full house electrical wiring', icon: '⚡' },
-      { name: 'Appliance Setup', desc: 'Install major electronics', icon: '🔌' },
-      { name: 'Water Heater', desc: 'Installation and repair', icon: '🔥' },
-      { name: 'Lighting Setup', desc: 'Indoor and outdoor fixtures', icon: '💡' }
-    ],
-    'Cleaning & Hygiene': [
-      { name: 'Deep Cleaning', desc: 'Intensive sanitization', icon: '🧼' },
-      { name: 'Office Cleaning', desc: 'Professional commercial cleaning', icon: '🏢' },
-      { name: 'Disinfection', desc: 'Virus and pest control', icon: '🦠' },
-      { name: 'Carpet Cleaning', desc: 'Stain and odor removal', icon: '🧶' },
-      { name: 'Window Cleaning', desc: 'Streak-free exterior washing', icon: '🪟' }
-    ],
-    'Moving & Delivery': [
-      { name: 'Home Moving', desc: 'Safely pack and move furniture', icon: '📦' },
-      { name: 'Express Delivery', desc: 'Fast local courier service', icon: '🛵' },
-      { name: 'Cargo Transport', desc: 'Large vehicle hauling', icon: '🚚' },
-      { name: 'Furniture Assembly', desc: 'Build flat-pack items', icon: '🪑' },
-      { name: 'Heavy Lifting', desc: 'Labor for loading/unloading', icon: '💪' }
-    ],
-    'Beauty & Wellness': [
-      { name: 'Hair Styling', desc: 'Modern haircuts at home', icon: '💇' },
-      { name: 'Massage Therapy', desc: 'Professional relaxation', icon: '💆' },
-      { name: 'Nail Care', desc: 'Manicure and pedicure services', icon: '💅' },
-      { name: 'Makeup Artist', desc: 'Event and bridal makeup', icon: '💄' },
-      { name: 'Personal Trainer', desc: 'Custom fitness sessions', icon: '🏋️' }
-    ],
-    'Repairs & Maintenance': [
-      { name: 'AC Repair', desc: 'Air conditioner fixing', icon: '❄️' },
-      { name: 'Wood Repair', desc: 'Carpenter and cabinet maintenance', icon: '🪓' },
-      { name: 'Masonry Work', desc: 'Tile and brick repair', icon: '🧱' },
-      { name: 'Roof Repair', desc: 'Fix leaks and shingles', icon: '🏠' },
-      { name: 'Generator Service', desc: 'Maintenance and repair', icon: '🔋' }
-    ],
-    'Security & Safety': [
-      { name: 'CCTV Setup', desc: 'Camera installation & configuration', icon: '🛡️' },
-      { name: 'Smart Lock', desc: 'Digital security lock installation', icon: '🔒' },
-      { name: 'Fire Alarm', desc: 'Smoke detector setups', icon: '🚨' },
-      { name: 'Security Guard', desc: 'Personal or event security', icon: '👮' },
-      { name: 'Electric Fence', desc: 'Perimeter protection setup', icon: '⚡' }
-    ],
-    'Education & Tutoring': [
-      { name: 'School Support', desc: 'Homework help for kids', icon: '📚' },
-      { name: 'Language Class', desc: 'Learn English/French', icon: '🗣️' },
-      { name: 'IT Basics', desc: 'Essential computer training', icon: '💻' },
-      { name: 'Music Lessons', desc: 'Piano, guitar, and vocal', icon: '🎵' },
-      { name: 'Math Tutoring', desc: 'Advanced mathematics prep', icon: '📐' }
-    ]
-  };
-
-  const translateCat = (cat: string) => {
-    if (i18n.language === 'fr') {
-      switch (cat) {
-        case 'Home Services': return 'Services Ménagers';
-        case 'Electrical & Plumbing': return 'Électricité & Plomberie';
-        case 'Cleaning & Hygiene': return 'Nettoyage & Hygiène';
-        case 'Moving & Delivery': return 'Déménagement & Livraison';
-        case 'Beauty & Wellness': return 'Beauté & Bien-être';
-        case 'Repairs & Maintenance': return 'Réparations & Entretien';
-        case 'Security & Safety': return 'Sécurité & Sûreté';
-        case 'Education & Tutoring': return 'Éducation & Tutorat';
-        default: return cat;
-      }
-    }
-    return cat;
-  };
-
-  const translateService = (name: string, desc: string) => {
-    if (i18n.language === 'fr') {
-      switch (name) {
-        case 'House Cleaning': return { name: 'Nettoyage de Maison', desc: 'Nettoyez votre maison de manière professionnelle' };
-        case 'Garden & Outdoor': return { name: 'Jardin & Extérieur', desc: 'Tonte de pelouse et entretien extérieur' };
-        case 'Interior Decoration': return { name: 'Décoration Intérieure', desc: 'Transformez votre espace de vie' };
-        case 'Pest Control': return { name: 'Lutte Antiparasitaire', desc: 'Éliminez les insectes et rongeurs' };
-        case 'Pool Maintenance': return { name: 'Entretien de Piscine', desc: 'Gardez votre piscine propre et sûre' };
-        case 'Pipe Leakage': return { name: 'Fuite de Tuyau', desc: 'Réparez les fuites d\'eau instantanément' };
-        case 'Rewiring': return { name: 'Recâblage', desc: 'Câblage électrique complet de la maison' };
-        case 'Appliance Setup': return { name: 'Installation d\'Appareils', desc: 'Installez vos appareils électroniques majeurs' };
-        case 'Water Heater': return { name: 'Chauffe-eau', desc: 'Installation et réparation' };
-        case 'Lighting Setup': return { name: 'Éclairage', desc: 'Luminaires intérieurs et extérieurs' };
-        case 'Deep Cleaning': return { name: 'Nettoyage en Profondeur', desc: 'Désinfection intensive' };
-        case 'Office Cleaning': return { name: 'Nettoyage de Bureau', desc: 'Nettoyage commercial professionnel' };
-        case 'Disinfection': return { name: 'Désinfection', desc: 'Contrôle des virus et des nuisibles' };
-        case 'Carpet Cleaning': return { name: 'Nettoyage de Tapis', desc: 'Élimination des taches et odeurs' };
-        case 'Window Cleaning': return { name: 'Nettoyage de Vitres', desc: 'Lavage extérieur sans traces' };
-        case 'Home Moving': return { name: 'Déménagement de Maison', desc: 'Emballez et déplacez vos meubles en toute sécurité' };
-        case 'Express Delivery': return { name: 'Livraison Express', desc: 'Service de messagerie local rapide' };
-        case 'Cargo Transport': return { name: 'Transport de Fret', desc: 'Transport par grand véhicule' };
-        case 'Furniture Assembly': return { name: 'Montage de Meubles', desc: 'Assemblez des articles en kit' };
-        case 'Heavy Lifting': return { name: 'Manutention Lourde', desc: 'Main-d\'œuvre pour chargement/déchargement' };
-        case 'Hair Styling': return { name: 'Coiffure', desc: 'Coupes de cheveux modernes à domicile' };
-        case 'Massage Therapy': return { name: 'Massage', desc: 'Relaxation professionnelle' };
-        case 'Nail Care': return { name: 'Soin des Ongles', desc: 'Services de manucure et pédicure' };
-        case 'Makeup Artist': return { name: 'Maquilleur(se)', desc: 'Maquillage d\'événement et de mariage' };
-        case 'Personal Trainer': return { name: 'Entraîneur Personnel', desc: 'Séances de fitness personnalisées' };
-        case 'AC Repair': return { name: 'Réparation de Clim', desc: 'Réparation de climatiseur' };
-        case 'Wood Repair': return { name: 'Réparation de Bois', desc: 'Entretien des armoires et menuiserie' };
-        case 'Masonry Work': return { name: 'Maçonnerie', desc: 'Réparation de carreaux et de briques' };
-        case 'Roof Repair': return { name: 'Réparation de Toiture', desc: 'Réparation de fuites et bardeaux' };
-        case 'Generator Service': return { name: 'Service de Groupe Électrogène', desc: 'Entretien et réparation' };
-        case 'CCTV Setup': return { name: 'Installation de Vidéosurveillance', desc: 'Installation et configuration de caméras' };
-        case 'Smart Lock': return { name: 'Serrure Intelligente', desc: 'Installation de serrure numérique' };
-        case 'Fire Alarm': return { name: 'Alarme Incendie', desc: 'Installation de détecteurs de fumée' };
-        case 'Security Guard': return { name: 'Agent de Sécurité', desc: 'Sécurité personnelle ou événementielle' };
-        case 'Electric Fence': return { name: 'Clôture Électrique', desc: 'Installation de protection périmétrique' };
-        case 'School Support': return { name: 'Soutien Scolaire', desc: 'Aide aux devoirs pour enfants' };
-        case 'Language Class': return { name: 'Cours de Langue', desc: 'Apprenez l\'anglais/le français' };
-        case 'IT Basics': return { name: 'Bases de l\'Informatique', desc: 'Formation informatique essentielle' };
-        case 'Music Lessons': return { name: 'Cours de Musique', desc: 'Piano, guitare et chant' };
-        case 'Math Tutoring': return { name: 'Tutorat en Mathématiques', desc: 'Préparation avancée en mathématiques' };
-        default: return { name, desc };
-      }
-    }
-    return { name, desc };
-  };
+  const translateCat = (cat: string) => translateCatHelper(cat, i18n.language);
+  const translateService = (name: string, desc: string) => translateServiceHelper(name, desc, i18n.language);
 
   const handleNavigate = (newPage: Page) => {
     setIsMobileMenuOpen(false);
@@ -495,12 +541,7 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
     onNavigate(newPage);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchVal.trim()) {
-      alert(`Searching for: ${searchVal}`);
-    }
-  };
+  // Removed handleSearchSubmit
 
   return (
     <div className="header-wrapper">
@@ -513,15 +554,14 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
             </button>
           </div>
 
-          <form className="header-search-bar desktop-only" onSubmit={handleSearchSubmit}>
-            <input 
-              type="text" 
-              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
-              value={searchVal}
-              onChange={(e) => setSearchVal(e.target.value)}
-            />
-            <button type="submit" className="search-btn">{t('search.btn') || 'Search'}</button>
-          </form>
+          <div className="header-news-ticker-slider desktop-only">
+            <div className="ticker-slider-icon">📢</div>
+            <div className="ticker-slider-content">
+              <span className="ticker-slider-text" key={tickerIndex}>
+                {tickerMessages[tickerIndex]}
+              </span>
+            </div>
+          </div>
 
           <div className="header-right-actions">
             <div className="header-socials-desktop desktop-only">
@@ -695,14 +735,10 @@ function Header({ page, onNavigate, theme, setTheme }: { page: Page; onNavigate:
 
         {/* Mobile Navigation Drawer */}
         <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <div className="mobile-search-wrapper">
-            <input 
-              type="text" 
-              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
-              value={searchVal}
-              onChange={(e) => setSearchVal(e.target.value)}
-            />
-            <button onClick={handleSearchSubmit} className="search-btn">{t('search.btn') || 'Search'}</button>
+          <div className="mobile-news-ticker-banner">
+            <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--ink)', textAlign: 'center', minHeight: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(20, 184, 166, 0.08)', borderRadius: '8px', padding: '8px 12px', border: '1px solid rgba(20, 184, 166, 0.15)', marginBottom: '16px' }}>
+              📢 {tickerMessages[tickerIndex]}
+            </div>
           </div>
           <button className="nav-link" onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
           

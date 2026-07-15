@@ -3220,38 +3220,55 @@ p {
   padding: 1rem 0;
 }
 
-.header-search-bar {
+.header-news-ticker-slider {
   display: flex;
   align-items: center;
+  gap: 12px;
   flex: 0 1 500px;
-  border: 1px solid var(--line);
+  background-color: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.18);
   border-radius: 999px;
-  overflow: hidden;
-  background: var(--surface);
+  padding: 8px 20px;
+  height: 38px;
+  box-sizing: border-box;
 }
 
-.header-search-bar input {
+.ticker-slider-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.ticker-slider-content {
   flex: 1;
-  border: none;
-  background: transparent;
-  padding: 0.6rem 1.2rem;
+  overflow: hidden;
+  position: relative;
+  height: 20px;
+}
+
+.ticker-slider-text {
+  font-size: 13px;
+  font-weight: 500;
   color: var(--ink);
-  font-size: 0.95rem;
-  outline: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+  animation: tickerSliderFadeInUp 400ms ease forwards;
 }
 
-.header-search-bar .search-btn {
-  border: none;
-  background: var(--teal-dark);
-  color: #fff;
-  padding: 0.6rem 1.5rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.header-search-bar .search-btn:hover {
-  background: var(--teal);
+@keyframes tickerSliderFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header-right-actions {

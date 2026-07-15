@@ -347,7 +347,7 @@ const faqQuestions = [
   }
 ];
 
-export default function Home({ onNavigate, livePros, onSelectSkill }: { onNavigate: (page: Page) => void; livePros: any[]; onSelectSkill?: (skill: string) => void }) {
+export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQuery }: { onNavigate: (page: Page) => void; livePros: any[]; onSelectSkill?: (skill: string) => void; setSearchQuery: (query: string) => void }) {
   const { t, i18n } = useTranslation();
   const proGridRef = useRef<HTMLDivElement>(null);
   
@@ -355,11 +355,20 @@ export default function Home({ onNavigate, livePros, onSelectSkill }: { onNaviga
   const tContent = contentLocales[currentLang];
 
   // Interactivity States
+  const [localSearch, setLocalSearch] = useState('');
   const [workToggle, setWorkToggle] = useState<'clients' | 'providers'>('clients');
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const [faqCategory, setFaqCategory] = useState<string>(currentLang === 'fr' ? 'Démarrage' : 'Getting Started');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (localSearch.trim()) {
+      setSearchQuery(localSearch.trim());
+      onNavigate('services');
+    }
+  };
 
   // Sync FAQ category when language changes
   useEffect(() => {
@@ -416,16 +425,18 @@ export default function Home({ onNavigate, livePros, onSelectSkill }: { onNaviga
             </h1>
             
             {/* Search Input */}
-            <div className="hero-search-wrapper">
+            <form onSubmit={handleSearchSubmit} className="hero-search-wrapper">
               <input 
                 type="text" 
                 placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
                 className="hero-search-input" 
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
               />
-              <button className="hero-search-btn" onClick={() => onNavigate('services')}>
+              <button type="submit" className="hero-search-btn">
                 {i18n.language === 'fr' ? 'Rechercher' : 'Search'}
               </button>
-            </div>
+            </form>
 
             {/* Popular Pills */}
             <div className="hero-pills-row">
