@@ -45,12 +45,13 @@ import Research from './pages/WhatsNew/Research'
 import Blog from './pages/WhatsNew/Blog'
 import ReleaseNotes from './pages/WhatsNew/ReleaseNotes'
 import SkillDetail from './pages/Resources/SkillDetail'
+import CareerPathways from './pages/Resources/CareerPathways'
 
 import './App.css'
 import './marketplace.css'
 import './components/Megamenu.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -226,7 +227,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail'];
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways'];
       const pathPage = window.location.pathname.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
       if (validPages.includes(hash as Page)) {
         setPage(hash as Page);
@@ -343,6 +344,7 @@ function App() {
             {page === 'research' && <Research onNavigate={setPage} />}
             {page === 'blog' && <Blog onNavigate={setPage} />}
             {page === 'release_notes' && <ReleaseNotes onNavigate={setPage} />}
+            {page === 'career_pathways' && <CareerPathways onNavigate={setPage} />}
             {page === 'home' && (
               <Home 
                 onNavigate={setPage} 
@@ -734,6 +736,10 @@ function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; o
             </div>
 
             <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'career_pathways' ? 'active' : ''}`} onClick={() => handleNavigate('career_pathways')}>
+              {i18n.language === 'fr' ? 'PARCOURS PRO' : 'CAREER PATHWAYS'}
+            </button>
+            <span className="nav-divider">|</span>
             <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           </nav>
           
@@ -818,6 +824,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; o
             </div>
           </div>
 
+          <button className="nav-link" onClick={() => handleNavigate('career_pathways')}>{i18n.language === 'fr' ? 'PARCOURS PROFESSIONNELS' : 'CAREER PATHWAYS'}</button>
           <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
           <button className="nav-link" onClick={() => handleNavigate('register')} style={{ color: '#14B8A6' }}>GET STARTED</button>
