@@ -961,6 +961,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
       { name: 'Messages', icon: 'chat' as IconName, badge: 3 },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '1,250' },
       { name: 'Reviews', icon: 'star' as IconName },
+      { name: 'Career Pathways', icon: 'briefcase' as IconName },
       { name: 'Profile Settings', icon: 'user' as IconName },
       { name: 'Support', icon: 'message' as IconName }
     ];
@@ -970,6 +971,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
       setSelectedProvider(null);
       if (itemName === 'Support') {
         alert('Support flow coming soon!');
+      } else if (itemName === 'Career Pathways') {
+        onNavigate('career_pathways');
       } else {
         setActiveTab(itemName);
       }
@@ -1339,6 +1342,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
     { name: 'Job Leads', icon: 'search' as IconName },
     { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '85K XAF' },
     { name: 'Reviews', icon: 'star' as IconName },
+    { name: 'Career Pathways', icon: 'briefcase' as IconName },
     { name: 'Profile Settings', icon: 'user' as IconName },
     { name: 'Support', icon: 'message' as IconName }
   ];
@@ -1347,6 +1351,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
     setIsSidebarOpen(false);
     if (itemName === 'Log Out') {
       onNavigate('home');
+    } else if (itemName === 'Career Pathways') {
+      onNavigate('career_pathways');
     } else {
       setActiveTab(itemName);
     }
