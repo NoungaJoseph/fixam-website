@@ -202,7 +202,8 @@ function App() {
   const [page, setPage] = useState<Page>('home')
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   const { i18n } = useTranslation();
-  const [selectedSkill, setSelectedSkill] = useState<string>('')
+  const [selectedSkill, setSelectedSkill] = useState('')
+  const [selectedPathway, setSelectedPathway] = useState('')
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
   const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
@@ -321,7 +322,7 @@ function App() {
         <OTPVerification onNavigate={setPage} />
       ) : (
         <>
-          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} onSearch={setServiceSearchQuery} />
+          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
           <main>
             {page === 'services' && (
               <Services 
@@ -344,7 +345,7 @@ function App() {
             {page === 'research' && <Research onNavigate={setPage} />}
             {page === 'blog' && <Blog onNavigate={setPage} />}
             {page === 'release_notes' && <ReleaseNotes onNavigate={setPage} />}
-            {page === 'career_pathways' && <CareerPathways onNavigate={setPage} />}
+            {page === 'career_pathways' && <CareerPathways onNavigate={setPage} selectedPathway={selectedPathway} setSelectedPathway={setSelectedPathway} />}
             {page === 'home' && (
               <Home 
                 onNavigate={setPage} 
@@ -490,10 +491,10 @@ export const translateServiceHelper = (name: string, desc: string, lang: string)
   return { name, desc };
 };
 
-function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void; onSearch: (query: string) => void }) {
+function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | 'pathways' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileHowOpen, setMobileHowOpen] = useState(false);
@@ -736,9 +737,41 @@ function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; o
             </div>
 
             <span className="nav-divider">|</span>
-            <button className={`nav-link-new ${page === 'career_pathways' ? 'active' : ''}`} onClick={() => handleNavigate('career_pathways')}>
-              {i18n.language === 'fr' ? 'PARCOURS PRO' : 'CAREER PATHWAYS'}
-            </button>
+            
+            {/* Career Pathways Dropdown */}
+            <div 
+              className="nav-item-with-dropdown"
+              onMouseEnter={() => setActiveDropdown('pathways')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              <button className={`nav-link-new ${page === 'career_pathways' ? 'active' : ''}`} onClick={() => handleNavigate('career_pathways')}>
+                {i18n.language === 'fr' ? 'Parcours Pro' : 'Career Pathways'}
+              </button>
+              
+              {activeDropdown === 'pathways' && (
+                <div className="megamenu-overlay" style={{ width: '600px' }}>
+                  <div className="megamenu-body">
+                    <div className="megamenu-how-left" style={{ width: '100%' }}>
+                      <h3>{i18n.language === 'fr' ? 'PARCOURS POPULAIRES' : 'POPULAR PATHWAYS'}</h3>
+                      <div className="megamenu-how-col" style={{ marginTop: '1.5rem', width: '100%' }}>
+                        <button className="megamenu-how-link" onClick={() => { handleNavigate('career_pathways'); setSelectedPathway('plumbing-pro'); }}>
+                          <span className="megamenu-how-link-title">🛠️ {i18n.language === 'fr' ? 'Réparation Professionnelle de Robinet' : 'Professional Faucet Repair'}</span>
+                          <span className="megamenu-how-link-subtitle">{i18n.language === 'fr' ? 'Pour prestataires : apprenez le changement de cartouche et l\'éthique' : 'For providers: learn cartridge replacement & client relation standards'}</span>
+                        </button>
+                        <button className="megamenu-how-link" onClick={() => { handleNavigate('career_pathways'); setSelectedPathway('plumbing-diy'); }}>
+                          <span className="megamenu-how-link-title">🏠 {i18n.language === 'fr' ? 'Diagnostic de Fuite d\'Eau' : 'Household Water Leak Diagnosis'}</span>
+                          <span className="megamenu-how-link-subtitle">{i18n.language === 'fr' ? 'Pour clients : trouvez les fuites sous évier et déterminez les réparations simples' : 'For clients: trace leaks under the basin & learn simple connection fixes'}</span>
+                        </button>
+                        <button className="megamenu-how-link" onClick={() => handleNavigate('career_pathways')} style={{ borderTop: '1px solid var(--line)', paddingTop: '1rem', marginTop: '0.5rem' }}>
+                          <span className="megamenu-how-link-title" style={{ color: '#14B8A6' }}>{i18n.language === 'fr' ? 'Voir tous les parcours →' : 'View All Pathways →'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <span className="nav-divider">|</span>
             <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           </nav>
@@ -824,7 +857,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch }: { page: Page; o
             </div>
           </div>
 
-          <button className="nav-link" onClick={() => handleNavigate('career_pathways')}>{i18n.language === 'fr' ? 'PARCOURS PROFESSIONNELS' : 'CAREER PATHWAYS'}</button>
+          <button className="nav-link" onClick={() => handleNavigate('career_pathways')}>{i18n.language === 'fr' ? 'Parcours Professionnels' : 'Career Pathways'}</button>
           <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
           <button className="nav-link" onClick={() => handleNavigate('register')} style={{ color: '#14B8A6' }}>GET STARTED</button>
