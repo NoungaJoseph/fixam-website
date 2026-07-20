@@ -345,6 +345,13 @@ html, body, #root, .dashboard-shell-new {
 @media (max-width: 768px) {
   .dashboard-shell-new, .dashboard-shell-new.sidebar-collapsed {
     grid-template-columns: 1fr;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .dash-main-new {
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .dash-sidebar-new {
@@ -667,7 +674,6 @@ html, body, #root, .dashboard-shell-new {
       width: 100% !important;
     }
   }
-}
 
 /* =======================================================
    DASHBOARD REDESIGN GLOBAL RESPONSIVENESS RULES
