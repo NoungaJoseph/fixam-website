@@ -19,7 +19,7 @@ export default function JobLeads() {
     <div className="dash-panel-premium full-width-panel animate-fade-in">
       <div className="dash-panel-header-new">
         <h2>Job Leads Near You</h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {['All', 'Plumbing', 'Electrical', 'Cleaning', 'Repairs'].map(tag => (
             <button
               key={tag}

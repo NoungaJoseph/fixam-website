@@ -936,3 +936,59 @@ html, body, #root, .dashboard-shell-new {
     gap: 0.6rem !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* Wallet & Coins Grid Responsive stack */
+  .wallet-tab-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  /* Find Services directory cards stack */
+  .fs-provider-card {
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+    padding: 1.2rem !important;
+  }
+
+  .fs-provider-card .prov-avatar {
+    width: 4.5rem !important;
+    height: 4.5rem !important;
+  }
+
+  .fs-provider-card .prov-card-middle {
+    width: 100% !important;
+  }
+
+  .fs-provider-card .prov-card-right {
+    width: 100% !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: left !important;
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .fs-provider-card .btn-view-prov {
+    margin-bottom: 0 !important;
+    width: auto !important;
+    padding: 0.5rem 1.2rem !important;
+  }
+
+  /* Inbox chat layout stack */
+  .messages-grid-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    gap: 1rem !important;
+  }
+
+  .chat-sidebar-panel {
+    max-height: 250px !important;
+  }
+
+  .chat-viewport-panel {
+    height: 450px !important;
+  }
+}
