@@ -344,19 +344,32 @@
   margin: 0;
 }
 
-/* WARNING/CASH HIGHLIGHT CARD */
+/* Default: Dark mode cash highlight card */
 .guide-card.cash-highlight {
-  border-color: #F59E0B; /* warm warning yellow */
-  background-color: #FFFBEB;
+  border-color: #F59E0B;
+  background-color: rgba(245, 158, 11, 0.15);
 }
 
 .guide-card.cash-highlight h3 {
-  color: #B45309;
+  color: #FBBF24;
 }
 
 .guide-card.cash-highlight p {
-  color: #78350F;
+  color: #FDE68A;
   font-weight: 500;
+}
+
+/* Light mode overrides */
+:root.light .guide-card.cash-highlight {
+  background-color: #FFFBEB;
+}
+
+:root.light .guide-card.cash-highlight h3 {
+  color: #B45309;
+}
+
+:root.light .guide-card.cash-highlight p {
+  color: #78350F;
 }
 
 /* RESPONSIVE STYLES */

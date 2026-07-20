@@ -75,8 +75,8 @@ const resources = {
         "refund": "Refund Policy"
       },
       "pros": {
-        "title": "Top Rated Professionals",
-        "subtitle": "Hire trusted experts in your area.",
+        "title": "Verified Service Providers",
+        "subtitle": "Vetted local professionals ready to help with your home maintenance and repair needs.",
         "book": "Book Now",
         "view_all": "View All Professionals"
       },
@@ -184,8 +184,8 @@ const resources = {
         "refund": "Politique de remboursement"
       },
       "pros": {
-        "title": "Professionnels les mieux notés",
-        "subtitle": "Engagez des experts de confiance dans votre région.",
+        "title": "Prestataires de Services Vérifiés",
+        "subtitle": "Des professionnels locaux vérifiés, prêts à vous aider pour vos besoins de maintenance et de réparation.",
         "book": "Réserver",
         "view_all": "Voir tous les professionnels"
       },

@@ -15,7 +15,7 @@ const servicesContent = {
       { value: '1,000+', label: 'Tasks Posted' },
       { value: '500+', label: 'Verified Providers' },
       { value: '4.8★', label: 'Client Satisfaction' },
-      { value: 'Douala & Yaoundé', label: 'Coverage Area' }
+      { value: 'Global Presence', label: 'Coverage Area' }
     ],
     howTo: {
       title: 'How to Hire on Fixam',
@@ -89,7 +89,7 @@ const servicesContent = {
         },
         {
           q: 'Do you offer services in my area?',
-          a: 'Fixam currently operates in major cities in Cameroon including Douala and Yaoundé. Enter your location in the app to see providers near you.'
+          a: 'Fixam currently operates in multiple cities internationally. Enter your location in the app to see verified providers near you.'
         }
       ]
     },
@@ -110,7 +110,7 @@ const servicesContent = {
       { value: '1 000+', label: 'Tâches Publiées' },
       { value: '500+', label: 'Prestataires Vérifiés' },
       { value: '4.8★', label: 'Satisfaction Client' },
-      { value: 'Douala & Yaoundé', label: 'Zone de Couverture' }
+      { value: 'Présence Globale', label: 'Zone de Couverture' }
     ],
     howTo: {
       title: 'Comment Engager sur Fixam',
@@ -184,7 +184,7 @@ const servicesContent = {
         },
         {
           q: 'Proposez-vous des services dans ma région ?',
-          a: 'Fixam opère actuellement dans les grandes villes du Cameroun, dont Douala et Yaoundé. Entrez votre emplacement dans l\'application.'
+          a: 'Fixam opère actuellement dans plusieurs villes à l\'international. Entrez votre emplacement dans l\'application pour voir les prestataires disponibles.'
         }
       ]
     },

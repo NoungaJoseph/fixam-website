@@ -304,8 +304,8 @@
 
 /* Improve Hero Text */
 .hero-title {
-  font-size: 3.5rem;
-  line-height: 1.1;
+  font-size: 3.2rem;
+  line-height: 1.25;
   color: white;
   margin-bottom: 2rem;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -313,8 +313,7 @@
 
 .hero-title span {
   color: var(--teal) !important;
-  font-style: italic;
-  font-family: serif;
+  font-weight: 800;
 }
 
 .popular-searches-hero {

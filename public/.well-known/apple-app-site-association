@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "8K6S93D2LK.com.fixam.app.iosapp",
+        "paths": [
+          "/profile/*",
+          "/job/*",
+          "/download"
+        ]
+      }
+    ]
+  }
+}

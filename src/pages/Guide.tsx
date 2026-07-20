@@ -117,7 +117,7 @@ const guideContent = {
         },
         {
           q: 'What areas does Fixam cover?',
-          a: 'Fixam is currently available in Douala and Yaoundé, with plans to expand to more cities across Cameroon. If you are a provider in these areas, you can start finding clients today.'
+          a: 'Fixam is currently available in multiple active cities, with plans to expand internationally to more regions. If you are a provider in these areas, you can start finding clients today.'
         }
       ]
     },
@@ -240,7 +240,7 @@ const guideContent = {
         },
         {
           q: 'Quelles zones Fixam couvre-t-il ?',
-          a: 'Fixam est actuellement disponible à Douala et Yaoundé, avec des projets d\'expansion vers d\'autres villes du Cameroun. Si vous êtes prestataire dans ces zones, vous pouvez commencer à trouver des clients dès aujourd\'hui.'
+          a: 'Fixam est actuellement disponible dans plusieurs villes actives, avec des projets d\'expansion internationale vers d\'autres régions. Si vous êtes prestataire dans ces zones, vous pouvez commencer à trouver des clients dès aujourd\'hui.'
         }
       ]
     },

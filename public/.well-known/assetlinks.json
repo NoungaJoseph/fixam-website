@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.fixam.app.android",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:83:C5:EC:37:01:71:7A:17:C3:FF:78:E8:4A:8D:1C:18:24:43:0E:94:0E:94:C3:2F:A0:6B:42:01:A0"
+      ]
+    }
+  }
+]

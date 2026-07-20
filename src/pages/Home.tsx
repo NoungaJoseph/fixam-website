@@ -12,7 +12,7 @@ const contentLocales = {
       providers: 'Verified Providers',
       tasks: 'Tasks Completed',
       rating: 'Average Rating',
-      coverage: 'Douala & Yaoundé'
+      coverage: 'Active Regions'
     },
     howItWorks: {
       title: 'How Fixam Works',
@@ -23,7 +23,7 @@ const contentLocales = {
         {
           num: '01',
           title: 'Post Your Task',
-          desc: 'Describe what service you need, your location in Cameroon, and your budget. It takes less than 2 minutes.'
+          desc: 'Describe what service you need, your location, and your budget. It takes less than 2 minutes.'
         },
         {
           num: '02',
@@ -86,21 +86,21 @@ const contentLocales = {
         {
           quote: 'I posted a task for electrical repairs and had a qualified provider at my door the next morning. Fast, professional, and affordable.',
           name: 'Marie T.',
-          role: 'Client, Douala',
+          role: 'Verified Client',
           avatarBg: '#14B8A6',
           initials: 'MT'
         },
         {
           quote: 'Fixam helped me grow my cleaning business from 2 clients to over 20 in just 3 months. The platform is easy to use and clients are serious.',
           name: 'Jean-Paul N.',
-          role: 'Cleaning Provider, Yaoundé',
+          role: 'Cleaning Expert',
           avatarBg: '#F97316',
           initials: 'JN'
         },
         {
           quote: "I love that I can see the provider's rating and reviews before booking. I feel safe using Fixam because I know exactly who is coming to my home.",
           name: 'Fatima A.',
-          role: 'Client, Douala',
+          role: 'Verified Client',
           avatarBg: '#14B8A6',
           initials: 'FA'
         }
@@ -125,7 +125,7 @@ const contentLocales = {
       providers: 'Prestataires Vérifiés',
       tasks: 'Tâches Accomplies',
       rating: 'Note Moyenne',
-      coverage: 'Douala & Yaoundé'
+      coverage: 'Régions Actives'
     },
     howItWorks: {
       title: 'Comment Fixam Fonctionne',
@@ -136,7 +136,7 @@ const contentLocales = {
         {
           num: '01',
           title: 'Publiez Votre Tâche',
-          desc: 'Décrivez le service dont vous avez besoin, votre emplacement au Cameroun et votre budget. Cela prend moins de 2 minutes.'
+          desc: 'Décrivez le service dont vous avez besoin, votre emplacement et votre budget. Cela prend moins de 2 minutes.'
         },
         {
           num: '02',
@@ -199,21 +199,21 @@ const contentLocales = {
         {
           quote: "J'ai publié une tâche pour des réparations électriques et j'avais un prestataire qualifié à ma porte le lendemain matin. Rapide, professionnel et abordable.",
           name: 'Marie T.',
-          role: 'Client, Douala',
+          role: 'Client Vérifié',
           avatarBg: '#14B8A6',
           initials: 'MT'
         },
         {
           quote: "Fixam m'a aidé à faire passer mon activité de nettoyage de 2 à plus de 20 clients en seulement 3 mois. La plateforme est facile à utiliser.",
           name: 'Jean-Paul N.',
-          role: 'Prestataire de Nettoyage, Yaoundé',
+          role: 'Expert de Nettoyage',
           avatarBg: '#F97316',
           initials: 'JN'
         },
         {
           quote: "J'aime pouvoir voir la note et les avis du prestataire avant de réserver. Je me sens en sécurité avec Fixam car je sais exactement qui vient chez moi.",
           name: 'Fatima A.',
-          role: 'Client, Douala',
+          role: 'Client Vérifié',
           avatarBg: '#14B8A6',
           initials: 'FA'
         }
@@ -254,8 +254,8 @@ const faqQuestions = [
     categoryFr: 'Démarrage',
     qEn: 'What areas does Fixam currently serve?',
     qFr: 'Dans quelles zones Fixam est-il disponible ?',
-    aEn: 'Fixam is currently available in major cities in Cameroon including Douala and Yaoundé, with plans to expand to more cities soon. Check the app to see if providers are available in your area.',
-    aFr: 'Fixam est actuellement disponible dans les grandes villes du Cameroun, notamment Douala et Yaoundé, avec des projets d\'expansion vers d\'autres villes prochainement. Consultez l\'application pour voir si des prestataires sont disponibles dans votre région.'
+    aEn: 'Fixam is currently available in multiple cities, with plans to expand internationally to more regions soon. Check the app to see if providers are active in your specific area.',
+    aFr: 'Fixam est actuellement disponible dans plusieurs villes, avec des projets d\'expansion internationale vers d\'autres régions prochainement. Consultez l\'application pour voir si des prestataires sont actifs dans votre zone.'
   },
   {
     categoryEn: 'For Clients',
@@ -419,34 +419,34 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         <div className="hero-video-container">
           <img src={images.heroBg} alt="" className="hero-bg-image" />
           <div className="hero-video-overlay-premium"></div>
-          <div className="hero-copy video-copy reveal">
-            <h1 className="hero-title">
-              {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
-            </h1>
-            
-            {/* Search Input */}
-            <form onSubmit={handleSearchSubmit} className="hero-search-wrapper">
-              <input 
-                type="text" 
-                placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
-                className="hero-search-input" 
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
-              />
-              <button type="submit" className="hero-search-btn">
-                {i18n.language === 'fr' ? 'Rechercher' : 'Search'}
-              </button>
-            </form>
+        </div>
+        <div className="hero-copy video-copy reveal">
+          <h1 className="hero-title">
+            {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
+          </h1>
+          
+          {/* Search Input */}
+          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper">
+            <input 
+              type="text" 
+              placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
+              className="hero-search-input" 
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+            />
+            <button type="submit" className="hero-search-btn">
+              {i18n.language === 'fr' ? 'Rechercher' : 'Search'}
+            </button>
+          </form>
 
-            {/* Popular Pills */}
-            <div className="hero-pills-row">
-              <span className="pills-label">{i18n.language === 'fr' ? 'Populaire :' : 'Popular:'}</span>
-              {tContent.hero.pills.map((pill, idx) => (
-                <button key={idx} className="hero-pill-btn" onClick={() => handlePillClick(pill)}>
-                  {pill} →
-                </button>
-              ))}
-            </div>
+          {/* Popular Pills */}
+          <div className="hero-pills-row">
+            <span className="pills-label">{i18n.language === 'fr' ? 'Populaire :' : 'Popular:'}</span>
+            {tContent.hero.pills.map((pill, idx) => (
+              <button key={idx} className="hero-pill-btn" onClick={() => handlePillClick(pill)}>
+                {pill} →
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -470,7 +470,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           </div>
           <span className="social-proof-divider">|</span>
           <div className="social-proof-item">
-            <h3>Yaoundé & Douala</h3>
+            <h3>Global Reach</h3>
             <span>{tContent.stats.coverage}</span>
           </div>
         </div>
