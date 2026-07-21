@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer } from '../App';
+import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
 import './Home.css';
 
 const contentLocales = {
@@ -425,8 +425,14 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
           </h1>
           
-          {/* Search Input */}
-          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper">
+          {/* Audience Toggle (Mobile Only) */}
+          <div className="segmented-toggle-wrapper mobile-only" style={{ maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
+            <button className="segmented-toggle-btn active">{i18n.language === 'fr' ? 'Je cherche un service' : 'I need a service'}</button>
+            <button className="segmented-toggle-btn">{i18n.language === 'fr' ? 'Je propose un service' : 'I provide a service'}</button>
+          </div>
+
+          {/* Search Input (Desktop) */}
+          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper desktop-only">
             <input 
               type="text" 
               placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
@@ -439,8 +445,21 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             </button>
           </form>
 
-          {/* Popular Pills */}
-          <div className="hero-pills-row">
+          {/* Search Input (Mobile) */}
+          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper-mobile mobile-flex" style={{ display: 'none' }}>
+            <input 
+              type="text" 
+              placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+            />
+            <button type="submit" className="hero-search-btn-circle" aria-label="Search">
+              <Icon name="search" />
+            </button>
+          </form>
+
+          {/* Popular Pills (Desktop) */}
+          <div className="hero-pills-row desktop-only">
             <span className="pills-label">{i18n.language === 'fr' ? 'Populaire :' : 'Popular:'}</span>
             {tContent.hero.pills.map((pill, idx) => (
               <button key={idx} className="hero-pill-btn" onClick={() => handlePillClick(pill)}>
@@ -448,6 +467,31 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
               </button>
             ))}
           </div>
+
+          {/* Quick Filter Chips (Mobile) */}
+          <div className="quick-filter-chips mobile-flex" style={{ display: 'none' }}>
+            {tContent.hero.pills.map((pill, idx) => (
+              <button key={idx} className="quick-chip" onClick={() => handlePillClick(pill)}>
+                {pill} →
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile Category Grid (Mobile Only) */}
+      <section className="mobile-category-grid-container mobile-only">
+        <h2 className="mobile-category-grid-title">{i18n.language === 'fr' ? 'Trouvez de l\'aide pour chaque type de travail' : 'Find help for every type of job'}</h2>
+        <div className="mobile-category-grid">
+          {Object.keys(serviceCategories).slice(0, 6).map((catKey) => {
+            const firstSvc = serviceCategories[catKey][0];
+            return (
+              <a href="#" key={catKey} className="mobile-category-card" onClick={(e) => { e.preventDefault(); handlePillClick(firstSvc.name); }}>
+                <span className="mobile-category-card-name">{i18n.language === 'fr' ? catKey : catKey}</span>
+                <span className="mobile-category-card-icon">{firstSvc?.icon || '🔧'}</span>
+              </a>
+            );
+          })}
         </div>
       </section>
 
@@ -476,8 +520,8 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
-      {/* Premium How It Works Section */}
-      <section className="how-it-works-premium">
+      {/* Premium How It Works Section (Desktop) */}
+      <section className="how-it-works-premium desktop-only">
         <div className="how-it-works-header-row">
           <div className="how-it-works-title-block">
             <h2>{tContent.howItWorks.title}</h2>
@@ -516,6 +560,45 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
                   <h3>{card.title}</h3>
                   <p>{card.desc}</p>
                 </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Mobile How It Works Carousel (Mobile Only) */}
+      <section className="mobile-how-it-works-container mobile-only">
+        <h2 className="mobile-how-title">{tContent.howItWorks.title}</h2>
+        <div className="segmented-toggle-wrapper" style={{ margin: '0 1.5rem 1rem 1.5rem', width: 'auto' }}>
+          <button 
+            className={`segmented-toggle-btn ${workToggle === 'clients' ? 'active' : ''}`}
+            onClick={() => setWorkToggle('clients')}
+          >
+            {tContent.howItWorks.toggleClients}
+          </button>
+          <button 
+            className={`segmented-toggle-btn ${workToggle === 'providers' ? 'active' : ''}`}
+            onClick={() => setWorkToggle('providers')}
+          >
+            {tContent.howItWorks.toggleProviders}
+          </button>
+        </div>
+
+        <div className="how-carousel-scroll">
+          {(workToggle === 'clients' ? tContent.howItWorks.clients : tContent.howItWorks.providers).map((card, idx) => {
+            const cardImages = [
+              images.onboardingExperts,
+              images.onboardingVerified,
+              images.onboardingBook
+            ];
+            return (
+              <div className="how-carousel-card" key={idx}>
+                <img src={cardImages[idx]} alt={card.title} className="how-card-image" />
+                <h3 className="how-card-title">{card.num}. {card.title}</h3>
+                <p className="how-card-desc">{card.desc}</p>
+                <button className="how-card-btn" onClick={() => onNavigate(workToggle === 'clients' ? 'services' : 'register')}>
+                  {workToggle === 'clients' ? (i18n.language === 'fr' ? 'Trouver un prestataire' : 'Find a Pro') : (i18n.language === 'fr' ? 'Devenir prestataire' : 'Become a Pro')}
+                </button>
               </div>
             );
           })}

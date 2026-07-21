@@ -3,7 +3,7 @@ import { Icon } from '../../App';
 
 export default function Notifications() {
   return (
-    <div className="dash-panel-premium full-width-panel animate-fade-in">
+    <div className="bg-transparent border-0 p-0 w-full animate-fade-in">
       <div className="dash-panel-header-new">
         <h2>Notifications Log</h2>
         <button className="panel-link" onClick={() => alert('All notifications marked as read')}>Mark all as read</button>

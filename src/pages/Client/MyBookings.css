@@ -9,15 +9,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
-  transition: box-shadow 0.2s;
-}
-
-.booking-detailed-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  padding: 1.2rem 0;
 }
 
 .booking-detailed-card .booking-card-left {

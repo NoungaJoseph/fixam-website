@@ -21,6 +21,7 @@ import Settings from './pages/Client/Settings'
 import Referrals from './pages/Client/Referrals'
 import Reviews from './pages/Client/Reviews'
 import MyProfile from './pages/Client/MyProfile'
+import ClientDashboard from './pages/Client/ClientDashboard'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 
 // Provider Subpages
@@ -30,6 +31,7 @@ import ProviderWallet from './pages/Provider/ProviderWallet'
 import ProviderReviews from './pages/Provider/ProviderReviews'
 import ProfileSettings from './pages/Provider/ProfileSettings'
 import ProviderSupport from './pages/Provider/ProviderSupport'
+import ProviderDashboard from './pages/Provider/ProviderDashboard'
 
 // Public landing pages
 import Home from './pages/Home'
@@ -52,6 +54,7 @@ import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
 import './App.css'
 import './marketplace.css'
 import './components/Megamenu.css'
+import './mobile-upgrades.css'
 
 export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view'
 
@@ -59,6 +62,7 @@ export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
+  | 'chevron-up' | 'chevron-down'
   | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
@@ -598,9 +602,24 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
   return (
     <div className="header-wrapper">
       <header className="site-header-new">
+        {/* Mobile Promo Banner */}
+        <div className="mobile-promo-banner mobile-only">
+          {i18n.language === 'fr' ? 'Nouveau : Obtenez une certification et commencez à gagner.' : 'New: Get certified in a skill and start earning on Fixam.'}
+          <a href="#" onClick={(e) => { e.preventDefault(); handleNavigate('career_pathways'); }}>
+            {i18n.language === 'fr' ? 'Commencer' : 'Get started'}
+          </a>
+        </div>
+
         {/* Upper Row */}
         <div className="header-upper-row">
           <div className="header-left">
+            <button 
+              className="mobile-menu-btn" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <Icon name="menu" />
+            </button>
             <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
               <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
             </button>
@@ -643,13 +662,15 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
               <Icon name={theme === 'light' ? 'moon' : 'sun'} />
             </button>
 
-            <button 
-              className="mobile-menu-btn" 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <Icon name={isMobileMenuOpen ? "x" : "menu"} />
-            </button>
+            {/* Mobile Header Right */}
+            <div className="mobile-header-right mobile-only">
+              <button 
+                className="mobile-header-signup" 
+                onClick={() => handleNavigate('register')}
+              >
+                {t('nav.signin') || 'Sign Up'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -794,94 +815,99 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
 
         {/* Mobile Navigation Drawer */}
         <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <form className="mobile-search-wrapper" onSubmit={handleMobileSearchSubmit}>
-            <input 
-              type="text" 
-              placeholder={t('search.placeholder') || 'Enter Keywords...'} 
-              value={mobileSearchVal}
-              onChange={(e) => setMobileSearchVal(e.target.value)}
-            />
-            <button type="submit" className="search-btn">{t('search.btn') || 'Search'}</button>
-          </form>
-          <button className="nav-link" onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
           
-          {/* Mobile Accordion for Explore Services */}
-          <div>
-            <button className="mobile-nav-accordion-btn" onClick={() => setMobileServicesOpen(!mobileServicesOpen)}>
-              {i18n.language === 'fr' ? 'EXPLORER LES SERVICES' : 'EXPLORE SERVICES'}
-              <span>{mobileServicesOpen ? '−' : '+'}</span>
+          <div className="mobile-menu-header">
+            <button className="brand brand-button" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('home'); }} aria-label="Go to homepage">
+              <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '28px', transform: 'scale(5)', transformOrigin: 'left center' }} />
             </button>
-            <div className={`mobile-nav-accordion-content ${mobileServicesOpen ? 'open' : ''}`}>
-              {Object.keys(serviceCategories).map((cat) => (
-                <div key={cat} className="mobile-cat-group">
-                  <div className="mobile-cat-title">{translateCat(cat)}</div>
-                  {serviceCategories[cat].map((svc) => {
-                    const translated = translateService(svc.name, svc.desc);
-                    return (
-                      <button key={svc.name} className="mobile-service-item" onClick={() => handleNavigate('services')}>
-                        {svc.icon} {translated.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
+                <Icon name="search" />
+              </button>
+              <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
+                <Icon name="x" />
+              </button>
             </div>
           </div>
 
-          {/* Mobile Accordion for How It Works */}
-          <div>
-            <button className="mobile-nav-accordion-btn" onClick={() => setMobileHowOpen(!mobileHowOpen)}>
-              How it works
-              <span>{mobileHowOpen ? '−' : '+'}</span>
-            </button>
-            <div className={`mobile-nav-accordion-content ${mobileHowOpen ? 'open' : ''}`}>
-              <div className="mobile-how-section">
-                <div className="mobile-cat-title">{i18n.language === 'fr' ? 'RESSOURCES' : 'RESOURCES'}</div>
-                <button className="mobile-service-item" onClick={() => handleNavigate('success_stories')}>
-                  🌟 {i18n.language === 'fr' ? 'Histoires de succès' : 'Success stories'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('reviews')}>
-                  ⭐ {i18n.language === 'fr' ? 'Avis' : 'Reviews'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('services')}>
-                  🤝 {i18n.language === 'fr' ? 'Comment engager' : 'How to hire'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('guide')}>
-                  💼 {i18n.language === 'fr' ? 'Comment trouver du travail' : 'How to find work'}
-                </button>
-                
-                <div className="mobile-cat-title" style={{ marginTop: '1rem' }}>{i18n.language === 'fr' ? 'QUOI DE NEUF' : 'WHAT\'S NEW'}</div>
-                <button className="mobile-service-item" onClick={() => handleNavigate('updates')}>
-                  🚀 {i18n.language === 'fr' ? 'Mises à jour Fixam' : 'Fixam Updates'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('research')}>
-                  📊 {i18n.language === 'fr' ? 'Institut de Recherche' : 'Research Institute'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('blog')}>
-                  📰 {i18n.language === 'fr' ? 'Blog' : 'Blog'}
-                </button>
-                <button className="mobile-service-item" onClick={() => handleNavigate('release_notes')}>
-                  📝 {i18n.language === 'fr' ? 'Notes de mise à jour' : 'Release notes'}
-                </button>
+          <div className="mobile-menu-content">
+            {/* Mobile Accordion for Explore Services */}
+            <div>
+              <button className="mobile-nav-accordion-btn" onClick={() => setMobileServicesOpen(!mobileServicesOpen)}>
+                {i18n.language === 'fr' ? 'Explorer les services' : 'Explore Services'}
+                <Icon name={mobileServicesOpen ? "chevron-up" : "chevron-down"} />
+              </button>
+              <div className={`mobile-nav-accordion-content ${mobileServicesOpen ? 'open' : ''}`}>
+                {Object.keys(serviceCategories).map((cat) => (
+                  <div key={cat} className="mobile-cat-group" style={{ marginBottom: '1rem' }}>
+                    <div className="mobile-cat-title" style={{ fontWeight: 700, padding: '0.5rem 0', color: 'var(--ink)' }}>{translateCat(cat)}</div>
+                    {serviceCategories[cat].map((svc) => {
+                      const translated = translateService(svc.name, svc.desc);
+                      return (
+                        <button key={svc.name} className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('services'); }}>
+                          <span className="mobile-nav-subitem-title">{translated.name}</span>
+                          <span className="mobile-nav-subitem-desc">{translated.desc}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             </div>
+
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('career_pathways'); }}>
+              {i18n.language === 'fr' ? 'Parcours Professionnels' : 'Career Pathways'}
+            </button>
+
+            {/* Mobile Accordion for Resources */}
+            <div>
+              <button className="mobile-nav-accordion-btn" onClick={() => setMobileHowOpen(!mobileHowOpen)}>
+                {i18n.language === 'fr' ? 'Ressources' : 'Resources'}
+                <Icon name={mobileHowOpen ? "chevron-up" : "chevron-down"} />
+              </button>
+              <div className={`mobile-nav-accordion-content ${mobileHowOpen ? 'open' : ''}`}>
+                <div className="mobile-how-section">
+                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('success_stories'); }}>
+                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Histoires de succès' : 'Success stories'}</span>
+                  </button>
+                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('reviews'); }}>
+                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Avis' : 'Reviews'}</span>
+                  </button>
+                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('services'); }}>
+                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Comment engager' : 'How to hire'}</span>
+                  </button>
+                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('guide'); }}>
+                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Comment trouver du travail' : 'How to find work'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('about'); }}>
+              {t('nav.about') || 'About Us'}
+            </button>
+
+            {/* Settings (Language / Theme) inside menu */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 0', marginTop: '1rem', borderTop: '1px solid var(--line)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Icon name="user" />
+                <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--ink)' }}>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                </select>
+              </div>
+              <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
+                <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+              </button>
+            </div>
           </div>
 
-          <button className="nav-link" onClick={() => handleNavigate('career_pathways')}>{i18n.language === 'fr' ? 'Parcours Professionnels' : 'Career Pathways'}</button>
-          <button className="nav-link" onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
-          <button className="nav-link" onClick={() => handleNavigate('login')}>{t('nav.signin') || 'SIGN IN'}</button>
-          <button className="nav-link" onClick={() => handleNavigate('register')} style={{ color: '#14B8A6' }}>GET STARTED</button>
-
-          <div className="mobile-menu-settings" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 2rem', borderTop: '1px solid var(--line)', marginTop: 'auto' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Icon name="user" />
-              <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 800, color: 'var(--ink)' }}>
-                  <option value="en">EN</option>
-                  <option value="fr">FR</option>
-              </select>
-            </div>
-            <button className="theme-toggle-btn-new" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
-              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
+          <div className="mobile-menu-bottom-bar">
+            <a href="#" className="login-link" onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); handleNavigate('login'); }}>
+              {t('nav.signin') || 'Log In'}
+            </a>
+            <button className="signup-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('register'); }}>
+              Sign Up
             </button>
           </div>
         </nav>
@@ -978,9 +1004,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
     { id: 3, title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', bids: 0 }
   ]);
   const [clientBookings, setClientBookings] = useState([
-    { id: 1, service: 'Plumbing Service', provider: 'Jeff Thomson', date: 'May 21', time: '9:00 AM', status: 'Confirmed', price: '25,000 XAF', image: images.proJeff },
-    { id: 2, service: 'Electrical Installation', provider: 'Samuel Bright', date: 'May 22', time: '2:30 PM', status: 'Pending', price: '15,000 XAF', image: images.proSamuel },
-    { id: 3, service: 'House deep cleaning', provider: 'Mary Clean', date: 'May 24', time: '11:00 AM', status: 'Confirmed', price: '20,000 XAF', image: images.proMary }
+    { id: '1', service: 'Plumbing Service', provider: 'Jeff Thomson', date: 'May 21', time: '9:00 AM', status: 'Confirmed', price: '25,000 XAF', image: images.proJeff },
+    { id: '2', service: 'Electrical Installation', provider: 'Samuel Bright', date: 'May 22', time: '2:30 PM', status: 'Pending', price: '15,000 XAF', image: images.proSamuel },
+    { id: '3', service: 'House deep cleaning', provider: 'Mary Clean', date: 'May 24', time: '11:00 AM', status: 'Confirmed', price: '20,000 XAF', image: images.proMary }
   ]);
 
   const [chatMessages, setChatMessages] = useState([
@@ -1139,7 +1165,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
               </button>
 
               <button className="profile-chip-dash" onClick={() => setActiveTab('My Profile')}>
-                <img src={images.proJeff} alt="Nounga profile" />
+                <img src={images.proJeff} alt="Nounga profile" className="desktop-only" />
                 <div className="profile-details-dash">
                   <span className="profile-name-dash">
                     Nounga
@@ -1152,7 +1178,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
           </header>
 
           {/* Main Content Columns */}
-          <div className={`dash-content-premium ${(activeTab === 'Dashboard' && !selectedProvider) ? 'dashboard-tab-active' : ''}`}>
+          <div className={`dash-content-premium`}>
             {selectedProvider ? (
               <ProviderProfileDetail
                 selectedProvider={selectedProvider}
@@ -1165,143 +1191,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
             ) : (
               <>
                 {activeTab === 'Dashboard' && (
-                  <>
-                    {/* Left/Middle Column */}
-                    <div className="dash-body-left">
-                      {/* Greeting row */}
-                      <div className="dash-greeting-row">
-                        <div>
-                          <h1>Good evening, Nounga! 👋</h1>
-                          <p>Here's what's happening with your account today.</p>
-                        </div>
-                        <button className="btn-browse-services" onClick={() => setActiveTab('Find Services')}>
-                          <Icon name="search" />
-                          Browse Services
-                        </button>
-                      </div>
-
-                      {/* Post Task Hero Section */}
-                      <div className="dash-post-task-hero">
-                        <div className="post-task-top-bar">
-                          <div className="post-task-text">
-                            <h2>What do you need help with?</h2>
-                            <p>Post a task and get offers from verified professionals near you.</p>
-                          </div>
-                          <div className="post-task-quick-icons">
-                            <button className="quick-icon-btn" onClick={() => setActiveTab('Find Services')} title="Browse Services">
-                              <Icon name="search" />
-                            </button>
-                            <button className="quick-icon-btn" onClick={() => setActiveTab('Messages')} title="Messages">
-                              <Icon name="chat" />
-                              <span className="badge-indicator">3</span>
-                            </button>
-                            <button className="quick-icon-btn" onClick={() => setActiveTab('Wallet')} title="Wallet">
-                              <Icon name="wallet" />
-                            </button>
-                            <button className="quick-icon-btn" onClick={() => setActiveTab('My Bookings')} title="Bookings">
-                              <Icon name="calendar" />
-                            </button>
-                          </div>
-                        </div>
-                        
-                        <div className="post-task-bottom-bar">
-                          <button className="btn-post-task-hero" onClick={() => setActiveTab('My Bookings')}>
-                            <Icon name="briefcase" /> Post a Task
-                          </button>
-                          
-                          <div className="hero-coin-balance-widget" onClick={() => setActiveTab('Wallet')} style={{ cursor: 'pointer' }}>
-                            <span className="hero-coin-icon"><Icon name="wallet" /></span>
-                            <div className="hero-coin-info-text">
-                              <span className="hero-coin-lbl">Available Coins</span>
-                              <strong className="hero-coin-num">1,250</strong>
-                            </div>
-                            <button className="hero-coin-add-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet'); }} title="Top up Coins">+</button>
-                          </div>
-                        </div>
-                      </div>
-
-
-                      {/* 1. Top Categories - No Background */}
-                      <div className="top-categories-section" style={{ marginBottom: '2rem' }}>
-                        <div className="dash-panel-header-new">
-                          <h2>Top Categories</h2>
-                          <button className="panel-link" onClick={() => setActiveTab('Find Services')}>View All</button>
-                        </div>
-                        <div className="categories-carousel-wrapper">
-                          <button className="cat-arrow cat-arrow-left" onClick={() => { if (catScrollRef.current) catScrollRef.current.scrollBy({ left: -300, behavior: 'smooth' }); }} aria-label="Scroll left">‹</button>
-                          <div className="popular-scroll-dash popular-scroll-lg" ref={catScrollRef}>
-                            {services.slice(0, 15).map(service => (
-                              <div key={service.id} className="popular-service-card-dash card-lg" onClick={() => setActiveTab('Find Services')}>
-                                <img src={service.image} alt={service.title} />
-                                <div className="overlay">
-                                  <span className="title">{service.title}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <button className="cat-arrow cat-arrow-right" onClick={() => { if (catScrollRef.current) catScrollRef.current.scrollBy({ left: 300, behavior: 'smooth' }); }} aria-label="Scroll right">›</button>
-                        </div>
-                      </div>
-
-                      {/* 2. Recommended For You Panel - Backgroundless */}
-                      <div className="recommended-section-dash" style={{ marginBottom: '2rem' }}>
-                        <div className="dash-panel-header-new">
-                          <h2>Recommended for You</h2>
-                          <button className="panel-link" onClick={() => setActiveTab('Marketplace')}>View All</button>
-                        </div>
-                        <div className="recommended-carousel-dash">
-                          {displayedPros.slice(0, 5).map((pro, idx) => (
-                            <div className="recommended-card-dash" key={idx}>
-                              <button className="btn-heart-save" onClick={() => alert(`${pro.name} saved!`)}>
-                                <Icon name="star" />
-                              </button>
-                              <img src={pro.image} alt={pro.name} />
-                              <h4>{pro.name}</h4>
-                              <div className="rating-row">
-                                <Icon name="star" />
-                                <span>{pro.rating}</span>
-                                <span className="review-count">({Math.floor(Math.random() * 100 + 50)})</span>
-                              </div>
-                              <span className="provider-cat">{pro.role}</span>
-                              <button className="btn-view-profile-dash" onClick={() => setSelectedProvider(pro)}>View Profile</button>
-                            </div>
-                          ))}
-                          <button className="carousel-arrow" onClick={() => setActiveTab('Find Services')} aria-label="View more">&gt;</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right-hand Column */}
-                    <div className="dash-body-right">
-                      {/* Upcoming Bookings Section - Backgroundless */}
-                      <div className="bookings-section-dash-new">
-                        <div className="dash-panel-header-new">
-                          <h2>Upcoming Bookings</h2>
-                          <button className="panel-link" onClick={() => setActiveTab('My Bookings')}>View Calendar</button>
-                        </div>
-                        <div className="bookings-list-dash">
-                          {clientBookings.map((bk) => (
-                            <div className="booking-item-row-dash" key={bk.id}>
-                              <div className="date-badge-dash">
-                                <span className="date-month">{bk.date.split(' ')[0]}</span>
-                                <span className="date-day">{bk.date.split(' ')[1]}</span>
-                              </div>
-                              <div className="booking-item-details">
-                                <h4>{bk.service}</h4>
-                                <div className="booking-time">{bk.date} • {bk.time}</div>
-                                <div className="booking-customer">Provider: {bk.provider}</div>
-                              </div>
-                              <span className={`booking-status-badge ${bk.status.toLowerCase()}`}>{bk.status}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <button className="btn-view-all-bookings" onClick={() => setActiveTab('My Bookings')}>
-                          View All Bookings &rarr;
-                        </button>
-                      </div>
-
-                    </div>
-                  </>
+                  <ClientDashboard 
+                    setActiveTab={setActiveTab}
+                    setSelectedProvider={setSelectedProvider}
+                    services={services}
+                    displayedPros={displayedPros}
+                    clientBookings={clientBookings}
+                  />
                 )}
 
                 {activeTab === 'My Bookings' && (
@@ -1526,146 +1422,16 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
         </header>
 
         {/* Main Content Area */}
-        <div className={`dash-content-premium ${activeTab === 'Dashboard' ? 'dashboard-tab-active' : ''}`}>
+        <div className={`dash-content-premium`}>
           {activeTab === 'Dashboard' && (
-            <>
-              {/* Left/Middle Column */}
-              <div className="dash-body-left">
-                <div className="dash-greeting-row">
-                  <div>
-                    <h1>Welcome back, Pro Nounga! 🚀</h1>
-                    <p>What would you like to do today?</p>
-                  </div>
-                  {onRoleChange && (
-                    <button 
-                      className="btn-browse-services"
-                      onClick={() => onRoleChange('client')}
-                      style={{ display: 'flex', gap: '6px', alignItems: 'center' }}
-                    >
-                      <Icon name="user" />
-                      Switch to Client View
-                    </button>
-                  )}
-                </div>
-
-                {/* Quick Action Buttons */}
-                <div className="quick-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                  {[
-                    ['Browse Leads', 'Find matching tasks', 'search', 'Job Leads'],
-                    ['Active Contracts', 'Manage ongoing work', 'briefcase', 'My Jobs'],
-                    ['Messages', 'Chat with clients', 'chat', 'Messages'],
-                    ['Earnings', 'View payouts & rewards', 'wallet', 'Wallet'],
-                  ].map(([title, desc, icon, tabName]) => (
-                    <button key={title} onClick={() => setActiveTab(tabName)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '16px', border: '1px solid #E5E7EB', borderRadius: '12px', background: '#FFFFFF', cursor: 'pointer', transition: 'all 200ms ease', textAlign: 'left' }}>
-                      <span style={{ color: '#14B8A6', marginBottom: '8px', display: 'inline-flex' }}><Icon name={icon as IconName} /></span>
-                      <strong style={{ fontSize: '15px', color: '#1F2937' }}>{title}</strong>
-                      <span style={{ fontSize: '12px', color: '#6B7280', marginTop: '2px' }}>{desc}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Metric Panel Grid */}
-                <div className="metric-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                  {[
-                    ['85,000 XAF', 'Total Earnings', 'wallet'],
-                    ['3', 'Active Jobs', 'briefcase'],
-                    ['28', 'Completed Jobs', 'check'],
-                    ['4.9', 'Average Rating', 'star'],
-                  ].map(([value, label, icon]) => (
-                    <div key={label} style={{ display: 'flex', flexDirection: 'column', padding: '16px', background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: '12px' }}>
-                      <span style={{ color: '#14B8A6', marginBottom: '6px', display: 'inline-flex' }}><Icon name={icon as IconName} /></span>
-                      <strong style={{ fontSize: '18px', color: '#1F2937' }}>{value}</strong>
-                      <span style={{ fontSize: '12px', color: '#6B7280' }}>{label}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Leads List table */}
-                <section className="task-table">
-                  <div className="task-head">
-                    <h2>Job Leads Near You</h2>
-                    <button className="panel-link" onClick={() => setActiveTab('Job Leads')}>Filter Leads</button>
-                  </div>
-                  <div className="tabs">
-                    <span className="active">All Leads (3)</span>
-                    <span>Plumbing (1)</span>
-                    <span>Electrical (1)</span>
-                    <span>Cleaning (1)</span>
-                  </div>
-                  {leads.map((lead) => (
-                    <article className="task-row pro-lead-row" key={lead.title}>
-                      <ImageSlot src={lead.image} alt="" label={lead.tag} />
-                      <div className="task-info">
-                        <span>{lead.tag}</span>
-                        <h3>{lead.title}</h3>
-                        <p>Douala, Cameroon • 2.4 km away</p>
-                      </div>
-                      <strong>{lead.price}</strong>
-                      <button 
-                        className="primary-button send-proposal-btn"
-                        onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
-                        style={{ padding: '0.5rem 1rem', fontSize: '0.9rem', minHeight: 'auto', borderRadius: '6px' }}
-                      >
-                        Send Proposal
-                      </button>
-                    </article>
-                  ))}
-                  <button className="wide-button" onClick={() => setActiveTab('Job Leads')}>View All Leads →</button>
-                </section>
-              </div>
-
-              {/* Right/Sidebar Column */}
-              <div className="dash-body-right">
-                <div className="wallet-card" style={{ padding: '24px', background: 'linear-gradient(135deg, #14B8A6, #0D9488)', color: '#FFFFFF', borderRadius: '16px', marginBottom: '24px' }}>
-                  <span style={{ opacity: 0.9, fontSize: '13px' }}>Total Earnings Tracked</span>
-                  <strong style={{ fontSize: '28px', display: 'block', margin: '4px 0' }}>85,000 XAF</strong>
-                  <p style={{ opacity: 0.8, fontSize: '12px', margin: '0 0 16px 0' }}>Cash received from 28 jobs</p>
-                  <button onClick={() => setActiveTab('Wallet')} style={{ backgroundColor: '#FFFFFF', color: '#14B8A6', border: 'none', borderRadius: '24px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>View Job History →</button>
-                </div>
-
-                <ActivityCard />
-
-                <section className="right-panel" style={{ marginTop: '24px' }}>
-                  <div className="panel-title">
-                    <h2>New Client Proposals</h2>
-                  </div>
-                  <div className="mini-pros">
-                    {activeProposals.map((proposal) => (
-                      <article className="premium-pro-card mini" key={proposal.name}>
-                        <div className="pro-card-cover" style={{ height: '75px' }}>
-                          <img src={proposal.image} alt={proposal.name} className="pro-cover-img" />
-                        </div>
-                        <div className="pro-card-content" style={{ padding: '0.8rem' }}>
-                          <div className="pro-header">
-                            <h3 style={{ fontSize: '0.95rem' }}>{proposal.name}</h3>
-                            <span className="pro-rating" style={{ fontSize: '0.8rem' }}>
-                              <Icon name="star" /> {proposal.rating}
-                            </span>
-                          </div>
-                          <p className="pro-role" style={{ fontSize: '0.8rem', margin: '0.2rem 0' }}>{proposal.role}</p>
-                          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.6rem' }}>
-                            <button 
-                              className="primary-button" 
-                              style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px' }}
-                              onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
-                            >
-                              Accept
-                            </button>
-                            <button 
-                              className="outline-button" 
-                              style={{ flex: 1, padding: '0.3rem 0.5rem', fontSize: '0.75rem', minHeight: 'auto', borderRadius: '4px', border: '1px solid var(--line)', color: 'var(--ink)' }}
-                              onClick={() => alert(`Declined proposal from ${proposal.name}`)}
-                            >
-                              Decline
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </section>
-              </div>
-            </>
+            <ProviderDashboard 
+              setActiveTab={setActiveTab}
+              onRoleChange={onRoleChange}
+              leads={leads}
+              activeProposals={activeProposals}
+              ActivityCard={ActivityCard}
+              ImageSlot={ImageSlot}
+            />
           )}
 
           {activeTab === 'My Jobs' && (
@@ -2098,6 +1864,8 @@ export function Icon({ name }: { name: IconName }) {
     instagram: 'M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5z M12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10z M17.5 6.51a.12.12 0 0 1 0-.24.12.12 0 0 1 0 .24',
     linkedin: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z M2 9h4v12H2z M4 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z',
     chart: 'M4 20h16 M4 20V10 M9 20V6 M14 20V12 M19 20V8',
+    'chevron-up': 'M18 15l-6-6-6 6',
+    'chevron-down': 'M6 9l6 6 6-6'
   }
 
   return (

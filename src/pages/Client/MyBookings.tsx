@@ -41,7 +41,7 @@ export default function MyBookings({
       </div>
 
       {activeSubTab === 'bookings' ? (
-        <div className="dash-panel-premium full-width-panel">
+        <div className="bg-transparent border-0 p-0 w-full">
           <div className="dash-panel-header-new">
             <h2>Bookings List</h2>
             <button className="btn-tab-action" onClick={() => {

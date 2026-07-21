@@ -82,7 +82,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
       </div>
 
       <div className="tasks-container-grid">
-        <div className="dash-panel-premium task-list-panel">
+        <div className="bg-transparent border-0 p-0 w-full task-list-panel">
           <div className="dash-panel-header-new">
             <h2>My Posted Tasks</h2>
           </div>

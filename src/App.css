@@ -4988,10 +4988,9 @@ p {
 }
 
 .task-detailed-card {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1.2rem 1.5rem;
+  background: transparent;
+  border-bottom: 1px solid var(--line);
+  padding: 1.2rem 0;
 }
 
 .task-detailed-card .task-card-header {
