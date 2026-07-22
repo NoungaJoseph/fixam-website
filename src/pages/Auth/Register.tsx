@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../App';
 import FloatingParticles from '../../components/FloatingParticles';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 // 10 regions of Cameroon with their major cities/quarters
@@ -34,6 +36,7 @@ const regionData: Record<string, { nameEn: string; nameFr: string; cities: strin
 };
 
 export default function Register({ onNavigate, onRegister }: { onNavigate: (page: Page) => void; onRegister?: (role: 'client' | 'pro') => void }) {
+  const { login, refreshUser } = useAuth();
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
 
@@ -61,6 +64,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   const [fullNameError, setFullNameError] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [apiError, setApiError] = useState('');
   const [regionError, setRegionError] = useState('');
   const [cityError, setCityError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -233,29 +237,50 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     }
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateStep3()) {
       return;
     }
 
     setIsLoading(true);
+    setApiError(''); // Assuming you have apiError state, if not it will just throw
 
-    // Mock API register
-    setTimeout(() => {
+    try {
+      const cleanPhone = phone.replace(/\s+/g, '');
+      const prefix = countryCode.replace('+', '');
+      const formattedPhone = cleanPhone.startsWith(prefix) ? cleanPhone : prefix + cleanPhone;
+
+      await api.post('/auth/register', {
+        fullName,
+        email,
+        phone: formattedPhone,
+        country: countries.find(c => c.code === countryCode)?.name || 'Cameroon',
+        password,
+        role: accountType === 'client' ? 'CLIENT' : 'PROVIDER',
+        referralCode: referralCode || undefined,
+        language: isFr ? 'fr' : 'en'
+      });
+
       setIsLoading(false);
       setSuccessBanner(
         isFr
           ? 'Compte créé! Vérifiez votre téléphone pour un code de vérification.'
-          : 'Account created! Check your phone for a verification code.'
+          : 'Account created! Check your phone pour un code de vérification.'
       );
       
+      sessionStorage.setItem('pendingOTPIdentifier', formattedPhone || email);
+
       // Redirect after 2 seconds
       setTimeout(() => {
         onRegister?.(accountType);
         onNavigate('otp');
       }, 2000);
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      const msg = error.response?.data?.message || 'Failed to register. Please try again.';
+      alert(msg); // fallback alert if no error state
+    }
   };
 
   // Translations

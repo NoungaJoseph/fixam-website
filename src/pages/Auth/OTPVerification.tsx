@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../App';
 import FloatingParticles from '../../components/FloatingParticles';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 export default function OTPVerification({ onNavigate }: { onNavigate: (page: Page) => void }) {
@@ -32,18 +34,33 @@ export default function OTPVerification({ onNavigate }: { onNavigate: (page: Pag
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { login, refreshUser } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.join('').length !== 6) return;
+    const otp = code.join('');
+    if (otp.length !== 6) return;
 
     setIsLoading(true);
     setErrorText('');
 
-    setTimeout(() => {
+    try {
+      const identifier = sessionStorage.getItem('pendingOTPIdentifier');
+      if (!identifier) {
+        throw new Error('No pending registration found. Please try registering again.');
+      }
+      
+      const response = await api.post('/auth/verify-otp', { identifier, otp });
+      
+      login(response.data.token, response.data.user);
+      await refreshUser();
+      
       setIsLoading(false);
-      // Simulate code validation success
-      onNavigate('login');
-    }, 1500);
+      onNavigate('login'); // or navigate to 'dashboard' if we auto login
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrorText(error.response?.data?.message || 'Invalid or expired OTP. Please try again.');
+    }
   };
 
   const t = {

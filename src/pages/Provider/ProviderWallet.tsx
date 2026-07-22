@@ -1,14 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../../services/api';
 import './ProviderDashboard.css';
 
 export default function ProviderWallet() {
   const [momoNumber, setMomoNumber] = useState('677890123');
   const [provider, setProvider] = useState('MTN');
-  const [payouts, setPayouts] = useState([
-    { id: 1, date: 'May 12', type: 'MOMO Payout', status: 'Completed', amount: '25,000 XAF' },
-    { id: 2, date: 'May 06', type: 'MOMO Payout', status: 'Completed', amount: '40,000 XAF' },
-    { id: 3, date: 'April 28', type: 'MOMO Payout', status: 'Completed', amount: '20,000 XAF' }
-  ]);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [stats, setStats] = useState<any>({ balance: 0, thisMonthEarned: 0 });
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      try {
+        const [balRes, txRes] = await Promise.all([
+          api.get('/wallet/balance'),
+          api.get('/wallet/transactions')
+        ]);
+        setStats(balRes.data?.data || { balance: 0, thisMonthEarned: 0 });
+        setTransactions(txRes.data?.transactions || []);
+      } catch (err) {
+        console.error("Failed to fetch wallet info", err);
+      }
+    };
+    fetchWallet();
+  }, []);
 
   const handleSaveMomo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,43 +40,46 @@ export default function ProviderWallet() {
         {/* Stats widget grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <div style={{ padding: '20px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}>
-            <span style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase', fontWeight: 600 }}>Total Earned</span>
-            <h3 style={{ fontSize: '24px', margin: '4px 0 0 0', color: '#1F2937' }}>85,000 XAF</h3>
+            <span style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase', fontWeight: 600 }}>Available Balance</span>
+            <h3 style={{ fontSize: '24px', margin: '4px 0 0 0', color: '#1F2937' }}>{stats.balance} Coins</h3>
             <span style={{ fontSize: '11px', color: '#10B981' }}>✓ Checked from cash receipts</span>
           </div>
           <div style={{ padding: '20px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}>
-            <span style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase', fontWeight: 600 }}>Available Payout</span>
-            <h3 style={{ fontSize: '24px', margin: '4px 0 0 0', color: '#14B8A6' }}>25,000 XAF</h3>
+            <span style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase', fontWeight: 600 }}>Earned This Month</span>
+            <h3 style={{ fontSize: '24px', margin: '4px 0 0 0', color: '#14B8A6' }}>{stats.thisMonthSpent} Coins</h3>
             <span style={{ fontSize: '11px', color: '#6B7280' }}>Processing next Monday</span>
           </div>
         </div>
 
         <div className="bookings-detailed-list">
-          {payouts.map(p => (
-            <div className="booking-detailed-card" key={p.id} style={{ padding: '16px 20px' }}>
+          {transactions.length === 0 && <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--gray-500)' }}>No transactions found.</p>}
+          {transactions.map(p => {
+            const isEarn = p.type === 'EARN' || p.type === 'TOP_UP' || p.amount > 0;
+            return (
+            <div className="booking-detailed-card" key={p.id || p._id} style={{ padding: '16px 20px' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <div style={{
-                  width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#10B981',
+                  width: '40px', height: '40px', borderRadius: '50%', backgroundColor: isEarn ? '#ECFDF5' : '#FEF2F2', color: isEarn ? '#10B981' : '#EF4444',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
                 }}>
                   💸
                 </div>
                 <div style={{ marginLeft: '16px' }}>
-                  <h4 style={{ margin: 0, fontSize: '15px' }}>{p.type}</h4>
-                  <span style={{ fontSize: '12px', color: '#6B7280' }}>{p.date}</span>
+                  <h4 style={{ margin: 0, fontSize: '15px' }}>{p.description || p.reason || 'Transaction'}</h4>
+                  <span style={{ fontSize: '12px', color: '#6B7280' }}>{new Date(p.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <strong style={{ color: '#1F2937' }}>{p.amount}</strong>
+                <strong style={{ color: '#1F2937' }}>{p.amount > 0 ? `+${p.amount}` : p.amount} coins</strong>
                 <span style={{
                   padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600,
                   backgroundColor: '#DEF7EC', color: '#03543F'
                 }}>
-                  {p.status}
+                  {p.status || 'COMPLETED'}
                 </span>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 

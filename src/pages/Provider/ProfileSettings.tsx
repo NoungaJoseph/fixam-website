@@ -1,14 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
+import { getMediaUrl } from '../../App';
 
 export default function ProfileSettings() {
+  const { user, refreshUser } = useAuth();
+  
   const [category, setCategory] = useState('Plumbing');
   const [experience, setExperience] = useState('3-5 years');
-  const [bio, setBio] = useState('Experienced plumbing professional in your area. Specialized in leak detection, emergency kitchen repairs, and complete bathroom refurbishments.');
+  const [bio, setBio] = useState('');
   const [availability, setAvailability] = useState('Available');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user?.providerProfile) {
+      setBio(user.providerProfile.bio || '');
+      setExperience(user.providerProfile.experienceLevel || '3-5 years');
+      setCategory(user.providerProfile.skills?.[0] || 'Plumbing');
+      const isOnline = user.isOnline; // simplistic proxy for availability
+      setAvailability(isOnline ? 'Available' : 'Offline');
+    }
+  }, [user]);
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Profile settings saved successfully!');
+    setIsSubmitting(true);
+    try {
+      await api.put('/users/profile', {
+        bio,
+        experienceLevel: experience,
+        skills: [category],
+      });
+      await refreshUser();
+      alert('Profile settings saved successfully!');
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -20,15 +49,19 @@ export default function ProfileSettings() {
       <form onSubmit={handleSave} style={{ marginTop: '24px' }}>
         {/* Profile photo placeholder */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '24px' }}>
+          {user?.avatar ? (
+            <img src={getMediaUrl(user.avatar)} alt="Avatar" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover' }} />
+          ) : (
           <div style={{
             width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#E2E8F0',
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '32px'
           }}>
             👨‍🔧
           </div>
+          )}
           <div>
-            <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>Nounga Joseph</h4>
-            <span style={{ fontSize: '13px', color: '#6B7280', display: 'block', marginBottom: '8px' }}>Your Area</span>
+            <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>{user?.fullName || 'Provider'}</h4>
+            <span style={{ fontSize: '13px', color: '#6B7280', display: 'block', marginBottom: '8px' }}>{user?.location || 'Your Area'}</span>
             <button
               type="button"
               onClick={() => alert('Photo upload flow coming soon!')}
@@ -112,12 +145,13 @@ export default function ProfileSettings() {
 
         <button
           type="submit"
+          disabled={isSubmitting}
           style={{
-            marginTop: '28px', width: '100%', height: '48px', backgroundColor: '#14B8A6', color: 'white',
-            border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '15px', cursor: 'pointer', transition: 'all 200ms ease'
+            marginTop: '28px', width: '100%', height: '48px', backgroundColor: isSubmitting ? '#9CA3AF' : '#14B8A6', color: 'white',
+            border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '15px', cursor: isSubmitting ? 'not-allowed' : 'pointer', transition: 'all 200ms ease'
           }}
         >
-          Save Profile Changes
+          {isSubmitting ? 'Saving...' : 'Save Profile Changes'}
         </button>
       </form>
     </div>

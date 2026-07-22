@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page } from '../../App';
 import FloatingParticles from '../../components/FloatingParticles';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './Auth.css';
 
 export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page) => void; onLogin?: (role: 'client' | 'pro') => void }) {
-  const { api } = require('../../services/api');
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
 
@@ -83,6 +84,8 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
     return isValid;
   };
 
+  const { login, refreshUser } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -91,12 +94,20 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
     setApiError('');
 
     try {
-      const identifier = loginMethod === 'phone' ? phone : email;
-      const response = await api.post('/web-auth/login', { identifier, password });
+      let identifier = email;
+      if (loginMethod === 'phone') {
+        const cleanPhone = phone.replace(/\s+/g, '');
+        const prefix = countryCode.replace('+', '');
+        identifier = cleanPhone.startsWith(prefix) ? cleanPhone : prefix + cleanPhone;
+      }
+      const response = await api.post('/auth/login', { phone: loginMethod === 'phone' ? identifier : undefined, email: loginMethod === 'email' ? identifier : undefined, password });
       
       setIsLoading(false);
-      // Determine role from backend response if available, else default to 'client'
       const role = response.data?.user?.role?.toLowerCase() === 'provider' ? 'pro' : 'client';
+      
+      login(response.data.token, response.data.user);
+      await refreshUser();
+      
       onLogin?.(role);
       onNavigate('dashboard');
     } catch (error: any) {

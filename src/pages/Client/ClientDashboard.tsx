@@ -1,4 +1,5 @@
 import { Icon } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 
 interface Service {
   id: string;
@@ -38,12 +39,21 @@ export default function ClientDashboard({
   displayedPros,
   clientBookings,
 }: ClientDashboardProps) {
+  const { user } = useAuth();
+  
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="max-w-7xl mx-auto w-full pt-6">
       {/* Greeting row */}
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Good evening, Nounga! 👋</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">{getGreeting()}, {user?.firstName || 'User'}! 👋</h1>
           <p className="text-sm text-gray-500">Here's what's happening with your account today.</p>
         </div>
         <button className="bg-[#14B8A6] text-white text-sm px-4 py-2 rounded font-medium hover:bg-[#0F9788] transition flex items-center gap-2 w-full md:w-auto justify-center" onClick={() => setActiveTab('Find Services')}>

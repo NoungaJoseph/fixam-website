@@ -2,29 +2,39 @@ import './MyTasks.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
 import PostTaskFlow from '../../components/PostTaskFlow';
+import { api } from '../../services/api';
 
 interface MyTasksProps {
   clientTasks: any[];
   setClientTasks: (tasks: any[]) => void;
   setActiveTab: (tab: string) => void;
+  walletBalance?: number;
+  clientBookings?: any[];
 }
 
-export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: MyTasksProps) {
+export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [] }: MyTasksProps) {
   const [isPostTaskOpen, setIsPostTaskOpen] = useState(false);
 
-  const handlePostTaskSubmit = (taskData: any) => {
-    const newT = {
-      id: Date.now(),
-      title: taskData.title,
-      tag: taskData.category,
-      price: taskData.budget + (taskData.budgetType === 'fixed' ? ' XAF' : ''),
-      status: 'Pending Offers',
-      bids: 0
-    };
-    setClientTasks([newT, ...clientTasks]);
-    setIsPostTaskOpen(false);
-    alert("Task published successfully!");
+  const handlePostTaskSubmit = async (taskData: any) => {
+    try {
+      const res = await api.post('/jobs', {
+        title: taskData.title,
+        description: taskData.description || 'New task',
+        budget: Number(taskData.budget),
+        categoryId: taskData.category,
+        location: 'Remote',
+        urgencyLevel: 'NORMAL'
+      });
+      setClientTasks([res.data.job, ...clientTasks]);
+      setIsPostTaskOpen(false);
+      alert("Task published successfully!");
+    } catch (err: any) {
+      alert("Failed to publish task: " + err.response?.data?.message);
+    }
   };
+
+  const activeTasksCount = clientTasks.filter((t: any) => t.status === 'PENDING' || t.status === 'IN_PROGRESS').length;
+  const completedCount = clientTasks.filter((t: any) => t.status === 'COMPLETED').length;
 
   return (
     <div className="my-tasks-tab-wrapper animate-fade-in">
@@ -35,9 +45,8 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <span>Bookings</span>
             <div className="metric-icon-box"><Icon name="calendar" /></div>
           </div>
-          <strong className="metric-big-num">12</strong>
+          <strong className="metric-big-num">{clientBookings.length}</strong>
           <span className="metric-card-desc">Total Bookings</span>
-          <span className="metric-trend trend-up">↑ 20% this month</span>
         </div>
 
         <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Tasks')} style={{ cursor: 'pointer' }}>
@@ -45,8 +54,8 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <span>Active Tasks</span>
             <div className="metric-icon-box"><Icon name="briefcase" /></div>
           </div>
-          <strong className="metric-big-num">4</strong>
-          <span className="metric-card-desc">In Progress</span>
+          <strong className="metric-big-num">{activeTasksCount}</strong>
+          <span className="metric-card-desc">In Progress/Pending</span>
           <span className="metric-view-all">View all &gt;</span>
         </div>
 
@@ -55,9 +64,8 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <span>Completed</span>
             <div className="metric-icon-box"><Icon name="check" /></div>
           </div>
-          <strong className="metric-big-num">8</strong>
+          <strong className="metric-big-num">{completedCount}</strong>
           <span className="metric-card-desc">Jobs Completed</span>
-          <span className="metric-trend trend-up">↑ 15% this month</span>
         </div>
 
         <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet & Coins')} style={{ cursor: 'pointer' }}>
@@ -65,7 +73,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <span>Coins Balance</span>
             <div className="metric-icon-box"><Icon name="wallet" /></div>
           </div>
-          <strong className="metric-big-num">1,250</strong>
+          <strong className="metric-big-num">{walletBalance.toLocaleString()}</strong>
           <span className="metric-card-desc">Available Coins</span>
           <button className="coins-plus-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>+</button>
         </div>
@@ -75,7 +83,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <span>Saved Providers</span>
             <div className="metric-icon-box"><Icon name="star" /></div>
           </div>
-          <strong className="metric-big-num">18</strong>
+          <strong className="metric-big-num">0</strong>
           <span className="metric-card-desc">Saved</span>
           <span className="metric-view-all">View all &gt;</span>
         </div>
@@ -87,35 +95,49 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab }: M
             <h2>My Posted Tasks</h2>
           </div>
           <div className="posted-tasks-list">
-            {clientTasks.map((tk) => (
-              <div className="task-detailed-card" key={tk.id}>
+            {clientTasks.map((tk) => {
+              const tkId = tk.id || tk._id;
+              const tag = tk.category?.name || tk.categoryId || 'General';
+              const price = tk.budget ? `${tk.budget} XAF` : 'Open';
+              const bids = tk.applications?.length || 0;
+              const status = tk.status || 'PENDING';
+
+              return (
+              <div className="task-detailed-card" key={tkId}>
                 <div className="task-card-header">
-                  <span className="task-tag">{tk.tag}</span>
-                  <strong className="task-price">{tk.price}</strong>
+                  <span className="task-tag">{tag}</span>
+                  <strong className="task-price">{price}</strong>
                 </div>
                 <h3>{tk.title}</h3>
                 <div className="task-card-footer">
-                  <span className={`task-status-pill ${tk.status.toLowerCase().replace(' ', '-')}`}>
-                    {tk.status}
+                  <span className={`task-status-pill ${status.toLowerCase().replace(' ', '-')}`}>
+                    {status}
                   </span>
                   <span className="task-bids-count">
-                    <Icon name="user" /> {tk.bids} offers received
+                    <Icon name="user" /> {bids} offers received
                   </span>
                 </div>
                 <div className="task-actions-row">
-                  {tk.bids > 0 && (
-                    <button className="btn-view-offers" onClick={() => alert(`Viewing ${tk.bids} offers from local professionals.`)}>
+                  {bids > 0 && (
+                    <button className="btn-view-offers" onClick={() => alert(`Viewing ${bids} offers from local professionals.`)}>
                       View Offers
                     </button>
                   )}
-                  <button className="btn-delete-task" onClick={() => {
+                  {status !== 'COMPLETED' && status !== 'CANCELLED' && (
+                  <button className="btn-delete-task" onClick={async () => {
                     if (confirm("Are you sure you want to remove this task?")) {
-                      setClientTasks(clientTasks.filter(t => t.id !== tk.id));
+                      try {
+                        await api.patch(`/jobs/${tkId}/status`, { status: 'CANCELLED' });
+                        setClientTasks(clientTasks.map(t => (t.id || t._id) === tkId ? {...t, status: 'CANCELLED'} : t));
+                      } catch (err) {
+                        alert("Failed to cancel task");
+                      }
                     }
                   }}>Cancel Task</button>
+                  )}
                 </div>
               </div>
-            ))}
+            )})}
           </div>
           <div className="dash-panel-premium full-width-panel" style={{ marginTop: '2rem' }}>
             <div className="dash-panel-header-new">

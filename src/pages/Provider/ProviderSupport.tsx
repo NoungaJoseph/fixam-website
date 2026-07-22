@@ -1,15 +1,48 @@
 import { useState } from 'react';
+import { api } from '../../services/api';
 import './ProviderDashboard.css';
 
-export default function ProviderSupport() {
+interface ProviderSupportProps {
+  setActiveTab?: (tab: string) => void;
+  setActiveChatUser?: (user: string) => void;
+}
+
+export default function ProviderSupport({ setActiveTab, setActiveChatUser }: ProviderSupportProps) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Support ticket submitted successfully! A support agent will contact you soon.');
-    setSubject('');
-    setMessage('');
+    setIsSubmitting(true);
+    try {
+      // Create support chat
+      const res = await api.post('/chat/support');
+      const supportConvId = res.data?.data?.id;
+      
+      // Send the initial message
+      if (supportConvId && message) {
+        await api.post('/chat/send', {
+          conversationId: supportConvId,
+          content: `Subject: ${subject}\n\n${message}`
+        });
+        
+        alert('Support ticket submitted successfully!');
+        if (setActiveTab && setActiveChatUser) {
+          setActiveChatUser(supportConvId);
+          setActiveTab('Messages');
+        }
+      } else {
+        alert('Support chat created. A support agent will contact you soon.');
+      }
+      setSubject('');
+      setMessage('');
+    } catch (err: any) {
+      console.error("Failed to submit support ticket", err);
+      alert(err.response?.data?.message || 'Failed to submit ticket');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const faqs = [
@@ -74,12 +107,13 @@ export default function ProviderSupport() {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             style={{
-              width: '100%', height: '44px', backgroundColor: '#14B8A6', color: 'white',
-              border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', transition: 'all 200ms ease'
+              width: '100%', height: '44px', backgroundColor: isSubmitting ? '#9CA3AF' : '#14B8A6', color: 'white',
+              border: 'none', borderRadius: '6px', fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', transition: 'all 200ms ease'
             }}
           >
-            Submit Ticket
+            {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
           </button>
         </form>
       </div>

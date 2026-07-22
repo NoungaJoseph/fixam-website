@@ -1,48 +1,51 @@
 import './Reviews.css';
+import { useState, useEffect } from 'react';
 import { Icon } from '../../App';
+import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Reviews() {
+  const { user } = useAuth();
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user?.id) {
+      api.get(`/reviews/users/${user.id}`).then(res => {
+        setReviews(res.data.reviews || []);
+      }).catch(err => {
+        console.error("Failed to fetch reviews", err);
+      });
+    }
+  }, [user]);
   return (
     <div className="dash-panel-premium reviews-panel-premium animate-fade-in">
       <h2>My Service Reviews</h2>
       <div className="reviews-list-premium">
-        <div className="review-item-premium">
-          <div className="review-header">
-            <div>
-              <h4>Jeff Thomson</h4>
-              <span>Plumbing Service</span>
+        {reviews.length > 0 ? reviews.map(rev => {
+          const revId = rev.id || rev._id;
+          const reviewerName = rev.reviewer ? `${rev.reviewer.firstName || ''} ${rev.reviewer.lastName || ''}`.trim() : 'Anonymous';
+          const role = rev.reviewer?.role === 'PROVIDER' ? 'Provider' : 'Client';
+          const rating = rev.rating || 5;
+          const stars = Array(rating).fill(0);
+          
+          return (
+          <div className="review-item-premium" key={revId}>
+            <div className="review-header">
+              <div>
+                <h4>{reviewerName}</h4>
+                <span>{role}</span>
+              </div>
+              <div className="review-stars-premium">
+                {stars.map((_, i) => <Icon key={i} name="star" />)}
+                <strong>{rating}.0</strong>
+              </div>
             </div>
-            <div className="review-stars-premium">
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <strong>5.0</strong>
-            </div>
+            <p className="review-comment">"{rev.comment || 'No comment provided.'}"</p>
+            <span className="review-date">{new Date(rev.createdAt).toLocaleDateString()}</span>
           </div>
-          <p className="review-comment">"Excellent work! Jeff was very professional and fixed the leak in my kitchen pipe quickly. Highly recommended!"</p>
-          <span className="review-date">May 10, 2026</span>
-        </div>
-
-        <div className="review-item-premium">
-          <div className="review-header">
-            <div>
-              <h4>Mary Clean</h4>
-              <span>Cleaning Expert</span>
-            </div>
-            <div className="review-stars-premium">
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <Icon name="star" />
-              <strong>4.8</strong>
-            </div>
-          </div>
-          <p className="review-comment">"Mary and her team did a fantastic job deep cleaning my house. It was spotless. Only small issue was they arrived 10 mins late, but overall great."</p>
-          <span className="review-date">April 28, 2026</span>
-        </div>
+        )}) : (
+          <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-500)' }}>No reviews yet.</p>
+        )}
       </div>
     </div>
   );

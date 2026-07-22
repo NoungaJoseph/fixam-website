@@ -1,6 +1,6 @@
 import './FindServices.css';
 import { useState } from 'react';
-import { Icon, IconName, images } from '../../App';
+import { Icon, IconName, images, getMediaUrl } from '../../App';
 
 interface FindServicesProps {
   setSelectedProvider: (pro: any) => void;
@@ -8,6 +8,7 @@ interface FindServicesProps {
   clientBookings: any[];
   setClientBookings: (bookings: any[]) => void;
   setActiveChatUser: (user: string) => void;
+  displayedPros?: any[];
 }
 
 export default function FindServices({
@@ -15,7 +16,8 @@ export default function FindServices({
   setActiveTab,
   clientBookings,
   setClientBookings,
-  setActiveChatUser
+  setActiveChatUser,
+  displayedPros = []
 }: FindServicesProps) {
   // Find Services interactive states (relocated locally)
   const [findServicesSearch, setFindServicesSearch] = useState('');
@@ -29,72 +31,20 @@ export default function FindServices({
   const [serviceTypeRemote, setServiceTypeRemote] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'loc' | 'cat' | 'price' | 'rating' | 'avail' | 'type' | null>(null);
 
-  // Mock providers list matching original inline code
-  const providersList = [
-    {
-      name: 'CleanMaster',
-      role: 'Cleaning Service',
-      rating: '4.8',
-      reviews: 124,
-      location: 'Nearby',
-      badge: 'Top Rated',
-      desc: 'Professional cleaning services for homes, offices and commercial spaces.',
-      tags: ['House Cleaning', 'Office Cleaning', 'Deep Cleaning'],
-      price: '1 coin',
-      image: images.proMary,
-      verified: true
-    },
-    {
-      name: 'ElectroFix',
-      role: 'Electrical Service',
-      rating: '4.9',
-      reviews: 98,
-      location: 'London, UK',
-      badge: 'Top Rated',
-      desc: 'All electrical installation, repair and maintenance services.',
-      tags: ['Installation', 'Wiring', 'Repair'],
-      price: '1 coin',
-      image: images.proSamuel,
-      verified: true
-    },
-    {
-      name: 'Plumber Pro',
-      role: 'Plumbing Service',
-      rating: '4.7',
-      reviews: 86,
-      location: 'London, UK',
-      badge: 'Popular',
-      desc: 'Expert plumbing services for residential and commercial needs.',
-      tags: ['Pipe Repair', 'Installation', 'Leak Fix'],
-      price: '1 coin',
-      image: images.proJeff,
-      verified: true
-    },
-    {
-      name: 'PaintPro',
-      role: 'Painting Service',
-      rating: '4.6',
-      reviews: 72,
-      location: 'London, UK',
-      badge: 'Rising Star',
-      desc: 'Professional painting services with quality finishing.',
-      tags: ['Interior Painting', 'Exterior Painting', 'Wall Painting'],
-      price: '1 coin',
-      image: images.proPeter,
-      verified: true
-    }
-  ];
-
   // Filter logic simulation
-  const filteredProviders = providersList.filter(p => {
-    if (findServicesSearch && !p.name.toLowerCase().includes(findServicesSearch.toLowerCase()) && !p.role.toLowerCase().includes(findServicesSearch.toLowerCase())) {
+  const filteredProviders = displayedPros.filter(p => {
+    const fullName = `${p.firstName || ''} ${p.lastName || ''}`.trim();
+    const serviceRole = p.services ? p.services.join(', ') : (p.role || '');
+    
+    if (findServicesSearch && !fullName.toLowerCase().includes(findServicesSearch.toLowerCase()) && !serviceRole.toLowerCase().includes(findServicesSearch.toLowerCase())) {
       return false;
     }
-    if (findServicesCat !== 'All Categories' && p.role.toLowerCase() !== findServicesCat.toLowerCase()) {
+    if (findServicesCat !== 'All Categories' && !serviceRole.toLowerCase().includes(findServicesCat.toLowerCase())) {
       return false;
     }
-    if (findServicesRating === '4.5 & up' && Number(p.rating) < 4.5) return false;
-    if (findServicesRating === '4.0 & up' && Number(p.rating) < 4.0) return false;
+    const currentRating = p.rating || 0;
+    if (findServicesRating === '4.5 & up' && Number(currentRating) < 4.5) return false;
+    if (findServicesRating === '4.0 & up' && Number(currentRating) < 4.0) return false;
     
     return true;
   });
@@ -375,30 +325,41 @@ export default function FindServices({
           </div>
 
           <div className="fs-providers-list">
-            {filteredProviders.map((p, idx) => (
+            {filteredProviders.map((p, idx) => {
+              const fullName = `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Provider';
+              const serviceRole = p.services && p.services.length > 0 ? p.services[0] : (p.role || 'Service Professional');
+              const displayImage = p.image ? getMediaUrl(p.image) : images.proJeff;
+              const displayRating = p.rating || 'New';
+              const numReviews = p.reviews || 0;
+              const displayLoc = p.location || p.city || 'Nearby';
+              const isVerified = p.isVerified || p.verified;
+              const tags = p.services || [];
+              const priceLabel = p.hourlyRate ? `${p.hourlyRate} XAF` : 'Contact for price';
+              const displayDesc = p.bio || p.desc || 'Professional service provider ready to help you with your needs.';
+
+              return (
               <div className="fs-provider-card" key={idx}>
-                <img src={p.image} alt={p.name} className="prov-avatar" />
+                <img src={displayImage} alt={fullName} className="prov-avatar" />
                 
                 <div className="prov-card-middle">
                   <div className="prov-header-row">
-                    <h3>{p.name}</h3>
-                    {p.verified && <span className="verified-check-fs"><Icon name="shield" /></span>}
-                    {p.badge && <span className={`badge-prov ${p.badge.toLowerCase().replace(' ', '-')}`}>{p.badge}</span>}
+                    <h3>{fullName}</h3>
+                    {isVerified && <span className="verified-check-fs"><Icon name="shield" /></span>}
                   </div>
-                  <p className="prov-role-desc">{p.role}</p>
+                  <p className="prov-role-desc">{serviceRole}</p>
                   
                   <div className="prov-rating-row">
                     <Icon name="star" />
-                    <strong>{p.rating}</strong>
-                    <span>({p.reviews} reviews)</span>
+                    <strong>{displayRating}</strong>
+                    <span>({numReviews} reviews)</span>
                     <span className="dot-sep">•</span>
-                    <span className="loc-text"><Icon name="location" /> {p.location}</span>
+                    <span className="loc-text"><Icon name="location" /> {displayLoc}</span>
                   </div>
                   
-                  <p className="prov-summary-desc">{p.desc}</p>
+                  <p className="prov-summary-desc">{displayDesc}</p>
                   
                   <div className="prov-tags-row">
-                    {p.tags.map((tag, tIdx) => (
+                    {tags.map((tag: string, tIdx: number) => (
                       <span key={tIdx} className="prov-tag-badge">{tag}</span>
                     ))}
                   </div>
@@ -407,18 +368,18 @@ export default function FindServices({
                 <div className="prov-card-right">
                   <div className="prov-price-box">
                     <span>From</span>
-                    <strong>{p.price} <small>/ hour</small></strong>
+                    <strong>{priceLabel} <small>/ hour</small></strong>
                   </div>
                   <button className="btn-view-prov" style={{ marginBottom: '0.4rem' }} onClick={() => {
                     setSelectedProvider(p);
                   }}>View Profile</button>
                   <button className="btn-view-prov" style={{ background: 'var(--soft)', color: 'var(--teal)', border: '1px solid var(--teal)' }} onClick={() => {
                     setActiveTab('Messages');
-                    setActiveChatUser(p.name);
+                    setActiveChatUser(fullName);
                   }}>Chat</button>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
 
           {/* Promo Card Banner at the bottom */}

@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../../services/api';
 
 export default function JobLeads() {
   const [filterTag, setFilterTag] = useState('All');
-  const [leads, setLeads] = useState([
-    { id: 1, title: 'Need emergency plumber to fix toilet leakage', tag: 'Plumbing', price: '15,000 XAF', location: 'Central District', distance: '1.2 km away' },
-    { id: 2, title: 'Installing new LED light tracks in boutique', tag: 'Electrical', price: '25,000 XAF', location: 'Metro Area', distance: '3.1 km away' },
-    { id: 3, title: 'Home deep cleaning before moving in', tag: 'Cleaning', price: '20,000 XAF', location: 'North District', distance: '4.5 km away' },
-    { id: 4, title: 'AC unit making loud noise and not cooling', tag: 'Repairs', price: '30,000 XAF', location: 'East District', distance: '5.2 km away' }
-  ]);
+  const [leads, setLeads] = useState<any[]>([]);
 
-  const handleSendProposal = (title: string) => {
-    alert(`Proposal submitted successfully for task: "${title}"`);
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const res = await api.get('/jobs/available');
+        setLeads(res.data.jobs || []);
+      } catch (err) {
+        console.error("Failed to fetch available jobs", err);
+      }
+    };
+    fetchJobs();
+  }, []);
+
+  const handleSendProposal = async (jobId: string, title: string) => {
+    try {
+      await api.post(`/jobs/${jobId}/apply`);
+      alert(`Proposal submitted successfully for task: "${title}"`);
+      // remove from list optimistically
+      setLeads(prev => prev.filter(l => l.id !== jobId));
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to submit proposal');
+    }
   };
 
-  const filtered = filterTag === 'All' ? leads : leads.filter(l => l.tag === filterTag);
+  const filtered = filterTag === 'All' ? leads : leads.filter(l => l.serviceCategory === filterTag || l.tag === filterTag);
 
   return (
     <div className="dash-panel-premium full-width-panel animate-fade-in">
@@ -38,6 +53,7 @@ export default function JobLeads() {
       </div>
 
       <div className="bookings-detailed-list" style={{ marginTop: '20px' }}>
+        {filtered.length === 0 && <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--gray-500)' }}>No available jobs found in this category.</p>}
         {filtered.map((lead) => (
           <div className="booking-detailed-card" key={lead.id}>
             <div className="booking-card-left">
@@ -48,23 +64,23 @@ export default function JobLeads() {
                 💼
               </div>
               <div className="booking-info-details" style={{ marginLeft: '16px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#14B8A6', textTransform: 'uppercase' }}>{lead.tag}</span>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#14B8A6', textTransform: 'uppercase' }}>{lead.serviceCategory || lead.tag}</span>
                 <h3 style={{ margin: '2px 0 6px 0' }}>{lead.title}</h3>
                 <p className="provider-name" style={{ margin: 0, fontSize: '13px', color: '#6B7280' }}>
-                  📍 {lead.location} • <span>{lead.distance}</span>
+                  📍 {lead.location} • <span>{new Date(lead.createdAt).toLocaleDateString()}</span>
                 </p>
               </div>
             </div>
             <div className="booking-card-mid">
               <div style={{ textAlign: 'right' }}>
                 <span style={{ fontSize: '12px', color: '#6B7280', display: 'block' }}>Estimated Budget</span>
-                <strong style={{ fontSize: '16px', color: '#1F2937' }}>{lead.price}</strong>
+                <strong style={{ fontSize: '16px', color: '#1F2937' }}>{lead.budget ? `${lead.budget.toLocaleString()} XAF` : lead.price}</strong>
               </div>
             </div>
             <div className="booking-card-actions">
               <button
                 className="btn-auth-primary"
-                onClick={() => handleSendProposal(lead.title)}
+                onClick={() => handleSendProposal(lead.id, lead.title)}
                 style={{
                   height: '40px', padding: '0 16px', fontSize: '13px', fontWeight: 600,
                   backgroundColor: '#14B8A6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'

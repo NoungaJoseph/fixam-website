@@ -50,13 +50,15 @@ import SkillDetail from './pages/Resources/SkillDetail'
 import CareerPathways from './pages/Resources/CareerPathways'
 import CareerPathwaysBrowsePage from './pages/Resources/CareerPathwaysBrowsePage'
 import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
+import { useAuth } from './context/AuthContext'
+import { api } from './services/api'
 
 import './App.css'
 import './marketplace.css'
 import './components/Megamenu.css'
 import './mobile-upgrades.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'admin'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -74,7 +76,7 @@ export const getApiUrl = () => {
     : 'https://api.usefixam.com/api';
 };
 
-const getMediaUrl = (path?: string) => {
+export const getMediaUrl = (path?: string) => {
   if (!path) return 'https://via.placeholder.com/150';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
   const API_URL = getApiUrl();
@@ -150,16 +152,6 @@ const tasks = [
   { title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', image: images.taskCleaning },
 ]
 
-const leads = [
-  { title: 'Emergency kitchen plumbing fix', tag: 'Plumbing', price: '35,000 XAF', status: 'Active', image: images.taskPlumbing },
-  { title: 'Install ceiling fans & rewiring', tag: 'Electrical', price: '20,000 XAF', status: 'Active', image: images.taskElectrical },
-  { title: 'Move out deep cleaning service', tag: 'Cleaning', price: '25,000 XAF', status: 'Active', image: images.taskCleaning },
-]
-
-const activeProposals = [
-  { name: 'Theresa May', role: 'Plumbing Request', rating: '5.0', distance: '1.2 km away', image: images.proMary },
-  { name: 'John Doe', role: 'Electrical Repair', rating: '4.9', distance: '3.4 km away', image: images.proJeff },
-]
 
 const useMaintenanceCheck = () => {
   const [appReady, setAppReady] = useState(false);
@@ -214,7 +206,25 @@ function App() {
   const [jobId, setJobId] = useState('');
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
-  const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
+  
+  const { isLoggedIn, isLoading, user } = useAuth();
+  
+  const [userRole, setUserRole] = useState<'client' | 'pro'>(user?.role === 'PROVIDER' ? 'pro' : 'client');
+
+  // Enforce auth
+  useEffect(() => {
+    if (!isLoading) {
+      if (page === 'dashboard' && !isLoggedIn) {
+        setPage('login');
+      } else if (isLoggedIn && (page === 'login' || page === 'register' || page === 'otp')) {
+        setPage('dashboard');
+      }
+      if (user) {
+        setUserRole(user.role === 'PROVIDER' ? 'pro' : 'client');
+      }
+    }
+  }, [page, isLoggedIn, isLoading, user]);
+
   const [theme] = useState<'light'>('light');
 
   useEffect(() => {
@@ -247,7 +257,7 @@ function App() {
         return;
       }
 
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'admin'];
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
       const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
       if (validPages.includes(hash as Page)) {
         setPage(hash as Page);
@@ -379,11 +389,6 @@ function App() {
             {page === 'download' && <DownloadPage />}
             {page === 'profile_view' && <ProfileViewPage profileId={profileId} />}
             {page === 'job_view' && <JobViewPage jobId={jobId} />}
-            {page === 'admin' && (
-              <React.Suspense fallback={<div className="p-8">Loading Admin...</div>}>
-                {React.createElement(React.lazy(() => import('./pages/Admin/AdminDashboard')))}
-              </React.Suspense>
-            )}
             {page === 'home' && (
               <Home 
                 onNavigate={setPage} 
@@ -947,13 +952,8 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
   );
 }
 
-
-
-
-
-// Removed Login and Register to src/pages/Auth/
-
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
+  const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1026,7 +1026,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, []);
 
   const catScrollRef = useRef<HTMLDivElement>(null);
-  const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
+  const [localLivePros, setLocalLivePros] = useState<any[]>([]);
+  const displayedPros = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : pros);
 
   // Client-specific interactive state hooks
   const [clientTasks, setClientTasks] = useState([
@@ -1034,11 +1035,45 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { id: 2, title: 'Installing ceiling fan in bedroom', tag: 'Electrical', price: '15,000 XAF', status: 'Pending Offers', bids: 5 },
     { id: 3, title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', bids: 0 }
   ]);
-  const [clientBookings, setClientBookings] = useState([
-    { id: '1', service: 'Plumbing Service', provider: 'Jeff Thomson', date: 'May 21', time: '9:00 AM', status: 'Confirmed', price: '25,000 XAF', image: images.proJeff },
-    { id: '2', service: 'Electrical Installation', provider: 'Samuel Bright', date: 'May 22', time: '2:30 PM', status: 'Pending', price: '15,000 XAF', image: images.proSamuel },
-    { id: '3', service: 'House deep cleaning', provider: 'Mary Clean', date: 'May 24', time: '11:00 AM', status: 'Confirmed', price: '20,000 XAF', image: images.proMary }
-  ]);
+  const [clientBookings, setClientBookings] = useState<any[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [activeProposals, setActiveProposals] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchData = async () => {
+        try {
+          if (userRole === 'client') {
+            const [jobsRes, walletRes, providersRes, bookingsRes] = await Promise.all([
+              api.get('/jobs/client'),
+              api.get('/wallet/balance'),
+              api.get('/users/providers'),
+              api.get('/bookings/mine')
+            ]);
+            setClientBookings(bookingsRes.data.bookings || []);
+            setClientTasks(jobsRes.data.jobs || []);
+            setWalletBalance(walletRes.data.balance || 0);
+            if (providersRes.data.providers) {
+               setLocalLivePros(providersRes.data.providers);
+            }
+          } else if (userRole === 'pro') {
+            const [leadsRes, proposalsRes, walletRes] = await Promise.all([
+              api.get('/jobs/pro/matches'), 
+              api.get('/jobs/pro/proposals'),
+              api.get('/wallet/balance')
+            ]);
+            setLeads(leadsRes.data.jobs || leadsRes.data.matches || []);
+            setActiveProposals(proposalsRes.data.proposals || []);
+            setWalletBalance(walletRes.data.balance || 0);
+          }
+        } catch (err) {
+          console.error(`Failed to fetch ${userRole} dashboard data`, err);
+        }
+      };
+      fetchData();
+    }
+  }, [isLoggedIn, userRole]);
 
   const [chatMessages, setChatMessages] = useState([
     { id: 1, sender: 'pro', text: 'Hello Nounga, I can come over tomorrow at 9:00 AM. Does that work?', time: 'Yesterday' },
@@ -1066,11 +1101,19 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Support', icon: 'message' as IconName }
     ];
 
-    const handleNavClick = (itemName: string) => {
+    const handleNavClick = async (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
       if (itemName === 'Support') {
-        alert('Support flow coming soon!');
+        try {
+          const res = await api.post('/chat/support');
+          const supportConvId = res.data?.data?.id;
+          setActiveChatUser(supportConvId || 'Support');
+          setActiveTab('Messages');
+        } catch (err) {
+          console.error("Failed to open support chat", err);
+          alert('Failed to connect to support.');
+        }
       } else if (itemName === 'Career Pathways') {
         onNavigate('career_pathways');
       } else {
@@ -1107,9 +1150,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           </div>
 
           <div className="user-card-new" onClick={() => setActiveTab('My Profile')} style={{ cursor: 'pointer' }}>
-            <img src={images.proJeff} alt="User Avatar" />
+            <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User Avatar" />
             <div className="user-info-new">
-              <h3>Nounga</h3>
+              <h3>{user?.firstName || 'User'}</h3>
               <div className="role-row">
                 <span className="role-text">Client</span>
                 <span className="verified-badge">
@@ -1244,6 +1287,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientTasks={clientTasks} 
                     setClientTasks={setClientTasks} 
                     setActiveTab={setActiveTab} 
+                    walletBalance={walletBalance}
+                    clientBookings={clientBookings}
                   />
                 )}
                 {activeTab === 'Saved Providers' && (
@@ -1255,7 +1300,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   />
                 )}
                 {activeTab === 'Stats' && <Stats />}
-                {activeTab === 'Wallet' && <WalletAndCoins setActiveTab={setActiveTab} />}
+                {activeTab === 'Wallet' && (
+                  <WalletAndCoins 
+                    setActiveTab={setActiveTab} 
+                    walletBalance={walletBalance} 
+                    clientBookings={clientBookings}
+                    clientTasks={clientTasks}
+                  />
+                )}
                 {activeTab === 'Coin Purchase' && (
                   <CoinPurchase 
                     setActiveTab={setActiveTab} 
@@ -1292,6 +1344,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientBookings={clientBookings} 
                     setClientBookings={setClientBookings} 
                     setActiveChatUser={setActiveChatUser}
+                    displayedPros={displayedPros}
                   />
                 )}
               </>
@@ -1337,34 +1390,40 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       )}
       {/* Left Sidebar */}
       <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="brand-header">
-          <button className="brand brand-button dash-brand-compact" onClick={() => onNavigate('home')}>
-            <span className="logo-mark-dash">F</span>
-            <span className="logo-text-dash">Fixam</span>
-          </button>
-          <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
-            {isSidebarCollapsed ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        <div className="brand-header" style={{ justifyContent: 'space-between' }}>
+          <div 
+            className="user-card-new" 
+            style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
+            onClick={() => handleNavClick(userRole === 'pro' ? 'Profile Settings' : 'My Profile')}
+          >
+            <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
+            {!isSidebarCollapsed && (
+              <div className="user-info-new">
+                <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || (userRole === 'pro' ? 'Provider' : 'Client')}</h3>
+                <div className="role-row" style={{ marginTop: '2px' }}>
+                  <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>
+                    {userRole === 'pro' ? 'Provider' : 'Client'}
+                  </span>
+                  <span className="verified-badge" style={{ fontSize: '10px' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Verified
+                  </span>
+                </div>
+              </div>
             )}
-          </button>
-          <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
-            <Icon name="x" />
-          </button>
-        </div>
+          </div>
 
-        <div className="user-card-new" style={{ cursor: 'pointer' }}>
-          <img src={images.proSamuel} alt="User Avatar" />
-          <div className="user-info-new">
-            <h3>Pro Nounga</h3>
-            <div className="role-row">
-              <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1' }}>Provider</span>
-              <span className="verified-badge">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.7rem', height: '0.7rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Verified
-              </span>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+              {isSidebarCollapsed ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              )}
+            </button>
+            <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
+              <Icon name="x" />
+            </button>
           </div>
         </div>
 
@@ -1431,18 +1490,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div className="actions-right-dash">
             <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
               <Icon name="chat" />
-              <span className="badge-indicator">2</span>
             </button>
 
 
             <button className="profile-chip-dash">
-              <img src={images.proSamuel} alt="Nounga profile" />
+              <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="Profile" />
               <div className="profile-details-dash">
                 <span className="profile-name-dash">
-                  Pro Nounga
+                  {user?.firstName || 'User'}
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </span>
-                <span className="profile-role-dash">Provider</span>
+                <span className="profile-role-dash">{userRole === 'pro' ? 'Provider' : 'Client'}</span>
               </div>
             </button>
           </div>
@@ -1471,7 +1529,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           {activeTab === 'Wallet' && <ProviderWallet />}
           {activeTab === 'Reviews' && <ProviderReviews />}
           {activeTab === 'Profile Settings' && <ProfileSettings />}
-          {activeTab === 'Support' && <ProviderSupport />}
+          {activeTab === 'Support' && (
+            <ProviderSupport 
+              setActiveTab={setActiveTab} 
+              setActiveChatUser={setActiveChatUser} 
+            />
+          )}
           {activeTab === 'Messages' && (
             <Messages 
               chatMessages={chatMessages} 

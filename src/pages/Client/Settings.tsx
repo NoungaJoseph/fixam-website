@@ -2,6 +2,8 @@ import './Settings.css';
 import React, { useState, useEffect } from 'react';
 import SavedProviders from './SavedProviders';
 import Stats from './Stats';
+import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 
 interface SettingsProps {
   savedProsState: any[];
@@ -11,6 +13,7 @@ interface SettingsProps {
 }
 
 export default function Settings({ savedProsState, setSavedProsState, setActiveTab, setActiveChatUser }: SettingsProps) {
+  const { user, refreshUser } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState<'profile' | 'saved' | 'stats'>('profile');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileOverlay, setMobileOverlay] = useState<'profile' | 'saved' | 'stats' | null>(null);
@@ -127,25 +130,43 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
               {mobileOverlay === 'profile' && (
                 <div className="dash-panel-premium settings-panel-premium">
                   <h2>Client Settings</h2>
-                  <form className="settings-form-premium" onSubmit={(e) => { e.preventDefault(); alert('Settings saved successfully!'); setMobileOverlay(null); }}>
+                  <form className="settings-form-premium" onSubmit={async (e) => { 
+                    e.preventDefault(); 
+                    const formData = new FormData(e.currentTarget);
+                    const updates = {
+                      fullName: formData.get('fullName'),
+                      email: formData.get('email'),
+                      phone: formData.get('phone'),
+                      preferredLanguage: formData.get('language'),
+                      location: formData.get('location')
+                    };
+                    try {
+                      await api.patch('/users/profile', updates);
+                      if (refreshUser) await refreshUser();
+                      alert('Settings saved successfully!');
+                      setMobileOverlay(null);
+                    } catch (err) {
+                      alert('Failed to update settings');
+                    }
+                  }}>
                     <div className="form-grid-2">
                       <label>
                         <span>Full Name</span>
-                        <input type="text" defaultValue="Nounga Joseph" />
+                        <input type="text" name="fullName" defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`.trim()} />
                       </label>
                       <label>
                         <span>Email Address</span>
-                        <input type="email" defaultValue="joseph.nounga@gmail.com" />
+                        <input type="email" name="email" defaultValue={user?.email || ''} />
                       </label>
                     </div>
                     <div className="form-grid-2">
                       <label>
                         <span>Phone Number</span>
-                        <input type="text" defaultValue="+237 677 88 99 00" />
+                        <input type="text" name="phone" defaultValue={user?.phone || ''} />
                       </label>
                       <label>
                         <span>Language preference</span>
-                        <select defaultValue="English">
+                        <select name="language" defaultValue={user?.preferredLanguage || 'English'}>
                           <option value="English">English</option>
                           <option value="French">French</option>
                         </select>
@@ -153,7 +174,7 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
                     </div>
                     <label>
                       <span>Address / Location Area</span>
-                      <input type="text" defaultValue="Your Area" />
+                      <input type="text" name="location" defaultValue={user?.location || ''} />
                     </label>
                     
                     <div className="settings-checkbox-row">
@@ -166,6 +187,34 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
                     </div>
 
                     <button type="submit" className="btn-settings-submit" style={{ width: '100%', marginTop: '1rem' }}>Save Preferences</button>
+                  </form>
+
+                  <h2 style={{ marginTop: '2rem' }}>Security Settings</h2>
+                  <form className="settings-form-premium" onSubmit={async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    const currentPassword = formData.get('currentPassword');
+                    const newPassword = formData.get('newPassword');
+                    if (!currentPassword || !newPassword) return alert("Please fill both password fields");
+                    try {
+                      await api.post('/users/change-password', { currentPassword, newPassword });
+                      alert('Password updated successfully!');
+                      e.currentTarget.reset();
+                    } catch (err: any) {
+                      alert(err.response?.data?.message || 'Failed to update password');
+                    }
+                  }}>
+                    <div className="form-grid-2">
+                      <label>
+                        <span>Current Password</span>
+                        <input type="password" name="currentPassword" required />
+                      </label>
+                      <label>
+                        <span>New Password</span>
+                        <input type="password" name="newPassword" required />
+                      </label>
+                    </div>
+                    <button type="submit" className="btn-settings-submit" style={{ width: '100%', marginTop: '1rem', background: 'var(--red)', borderColor: 'var(--red)' }}>Update Password</button>
                   </form>
                 </div>
               )}
@@ -217,25 +266,42 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
       {activeSubTab === 'profile' && (
         <div className="dash-panel-premium settings-panel-premium">
           <h2>Client Settings</h2>
-          <form className="settings-form-premium" onSubmit={(e) => { e.preventDefault(); alert('Settings saved successfully!'); }}>
+          <form className="settings-form-premium" onSubmit={async (e) => { 
+            e.preventDefault(); 
+            const formData = new FormData(e.currentTarget);
+            const updates = {
+              fullName: formData.get('fullName'),
+              email: formData.get('email'),
+              phone: formData.get('phone'),
+              preferredLanguage: formData.get('language'),
+              location: formData.get('location')
+            };
+            try {
+              await api.patch('/users/profile', updates);
+              if (refreshUser) await refreshUser();
+              alert('Settings saved successfully!');
+            } catch (err) {
+              alert('Failed to update settings');
+            }
+          }}>
             <div className="form-grid-2">
               <label>
                 <span>Full Name</span>
-                <input type="text" defaultValue="Nounga Joseph" />
+                <input type="text" name="fullName" defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`.trim()} />
               </label>
               <label>
                 <span>Email Address</span>
-                <input type="email" defaultValue="joseph.nounga@gmail.com" />
+                <input type="email" name="email" defaultValue={user?.email || ''} />
               </label>
             </div>
             <div className="form-grid-2">
               <label>
                 <span>Phone Number</span>
-                <input type="text" defaultValue="+237 677 88 99 00" />
+                <input type="text" name="phone" defaultValue={user?.phone || ''} />
               </label>
               <label>
                 <span>Language preference</span>
-                <select defaultValue="English">
+                <select name="language" defaultValue={user?.preferredLanguage || 'English'}>
                   <option value="English">English</option>
                   <option value="French">French</option>
                 </select>
@@ -243,7 +309,7 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
             </div>
             <label>
               <span>Address / Location Area</span>
-              <input type="text" defaultValue="London, UK" />
+              <input type="text" name="location" defaultValue={user?.location || ''} />
             </label>
             
             <div className="settings-checkbox-row">
@@ -256,6 +322,34 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
             </div>
 
             <button type="submit" className="btn-settings-submit">Save Preferences</button>
+          </form>
+
+          <h2 style={{ marginTop: '2rem' }}>Security Settings</h2>
+          <form className="settings-form-premium" onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            if (!currentPassword || !newPassword) return alert("Please fill both password fields");
+            try {
+              await api.post('/users/change-password', { currentPassword, newPassword });
+              alert('Password updated successfully!');
+              e.currentTarget.reset();
+            } catch (err: any) {
+              alert(err.response?.data?.message || 'Failed to update password');
+            }
+          }}>
+            <div className="form-grid-2">
+              <label>
+                <span>Current Password</span>
+                <input type="password" name="currentPassword" required />
+              </label>
+              <label>
+                <span>New Password</span>
+                <input type="password" name="newPassword" required />
+              </label>
+            </div>
+            <button type="submit" className="btn-settings-submit" style={{ background: 'var(--red)', borderColor: 'var(--red)' }}>Update Password</button>
           </form>
         </div>
       )}

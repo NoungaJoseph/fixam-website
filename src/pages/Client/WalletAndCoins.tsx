@@ -2,13 +2,30 @@ import './WalletAndCoins.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
 import Referrals from './Referrals';
+import { api } from '../../services/api';
 
 interface WalletAndCoinsProps {
   setActiveTab: (tab: string) => void;
+  walletBalance?: number;
+  clientBookings?: any[];
+  clientTasks?: any[];
 }
 
-export default function WalletAndCoins({ setActiveTab }: WalletAndCoinsProps) {
+export default function WalletAndCoins({ setActiveTab, walletBalance = 0, clientBookings = [], clientTasks = [] }: WalletAndCoinsProps) {
   const [activeSubTab, setActiveSubTab] = useState<'wallet' | 'referrals'>('wallet');
+  const [transactions, setTransactions] = useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchTx = async () => {
+      try {
+        const res = await api.get('/wallet/transactions');
+        setTransactions(res.data.transactions || []);
+      } catch (err) {
+        console.error("Failed to fetch transactions", err);
+      }
+    };
+    fetchTx();
+  }, []);
 
   const coinPackages = [
     { name: 'Starter Pack', coins: 10, price: '5,000 XAF', popular: false },
@@ -41,17 +58,16 @@ export default function WalletAndCoins({ setActiveTab }: WalletAndCoinsProps) {
             <span>Bookings</span>
             <div className="metric-icon-box"><Icon name="calendar" /></div>
           </div>
-          <strong className="metric-big-num">12</strong>
+          <strong className="metric-big-num">{clientBookings.length}</strong>
           <span className="metric-card-desc">Total Bookings</span>
-          <span className="metric-trend trend-up">↑ 20% this month</span>
         </div>
 
-        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Bookings')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Tasks')} style={{ cursor: 'pointer' }}>
           <div className="metric-card-header">
             <span>Active Tasks</span>
             <div className="metric-icon-box"><Icon name="briefcase" /></div>
           </div>
-          <strong className="metric-big-num">4</strong>
+          <strong className="metric-big-num">{clientTasks.filter((t: any) => t.status === 'PENDING' || t.status === 'IN_PROGRESS').length}</strong>
           <span className="metric-card-desc">In Progress</span>
           <span className="metric-view-all">View all &gt;</span>
         </div>
@@ -61,27 +77,26 @@ export default function WalletAndCoins({ setActiveTab }: WalletAndCoinsProps) {
             <span>Completed</span>
             <div className="metric-icon-box"><Icon name="check" /></div>
           </div>
-          <strong className="metric-big-num">8</strong>
+          <strong className="metric-big-num">{clientTasks.filter((t: any) => t.status === 'COMPLETED').length}</strong>
           <span className="metric-card-desc">Jobs Completed</span>
-          <span className="metric-trend trend-up">↑ 15% this month</span>
         </div>
 
-        <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet & Coins')} style={{ cursor: 'pointer' }}>
           <div className="metric-card-header">
             <span>Coins Balance</span>
             <div className="metric-icon-box"><Icon name="wallet" /></div>
           </div>
-          <strong className="metric-big-num">1,250</strong>
+          <strong className="metric-big-num">{walletBalance.toLocaleString()}</strong>
           <span className="metric-card-desc">Available Coins</span>
-          <button className="coins-plus-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet'); }}>+</button>
+          <button className="coins-plus-btn" onClick={(e) => { e.stopPropagation(); setActiveTab('Wallet & Coins'); }}>+</button>
         </div>
 
-        <div className="metric-card-premium m-saved" onClick={() => setActiveTab('Profile Settings')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card-premium m-saved" onClick={() => setActiveTab('Saved Providers')} style={{ cursor: 'pointer' }}>
           <div className="metric-card-header">
             <span>Saved Providers</span>
             <div className="metric-icon-box"><Icon name="star" /></div>
           </div>
-          <strong className="metric-big-num">18</strong>
+          <strong className="metric-big-num">0</strong>
           <span className="metric-card-desc">Saved</span>
           <span className="metric-view-all">View all &gt;</span>
         </div>
@@ -171,30 +186,22 @@ export default function WalletAndCoins({ setActiveTab }: WalletAndCoinsProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>May 20, 2026</td>
-                      <td>Booked Plumber Pro</td>
-                      <td><span className="tx-type spend">Spend</span></td>
-                      <td>-3 coins</td>
-                    </tr>
-                    <tr>
-                      <td>May 18, 2026</td>
-                      <td>Referral Bonus (Roman)</td>
-                      <td><span className="tx-type earn">Earn</span></td>
-                      <td>+1 coin</td>
-                    </tr>
-                    <tr>
-                      <td>May 15, 2026</td>
-                      <td>Coins Top Up (Starter Pack)</td>
-                      <td><span className="tx-type topup">Top Up</span></td>
-                      <td>+10 coins</td>
-                    </tr>
-                    <tr>
-                      <td>May 10, 2026</td>
-                      <td>Booked CleanMaster</td>
-                      <td><span className="tx-type spend">Spend</span></td>
-                      <td>-5 coins</td>
-                    </tr>
+                    {transactions.length > 0 ? (
+                      transactions.map((tx) => (
+                        <tr key={tx.id || tx._id}>
+                          <td>{new Date(tx.createdAt).toLocaleDateString()}</td>
+                          <td>{tx.description || tx.reason || 'Transaction'}</td>
+                          <td>
+                            <span className={`tx-type ${(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? 'earn' : 'spend'}`}>
+                              {(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? 'Earn' : 'Spend'}
+                            </span>
+                          </td>
+                          <td>{tx.amount > 0 ? `+${tx.amount}` : tx.amount} coins</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr><td colSpan={4} style={{ textAlign: 'center', padding: '1rem' }}>No recent transactions.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>

@@ -1,4 +1,5 @@
 import { Icon, IconName } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 
 interface ProviderDashboardProps {
   setActiveTab: (tab: string) => void;
@@ -17,12 +18,14 @@ export default function ProviderDashboard({
   ActivityCard,
   ImageSlot
 }: ProviderDashboardProps) {
+  const { user } = useAuth();
+  
   return (
     <div className="max-w-7xl mx-auto w-full pt-6">
       {/* Greeting row */}
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back, Pro Nounga! 🚀</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back, {user?.firstName || 'Pro'}! 🚀</h1>
           <p className="text-sm text-gray-500">What would you like to do today?</p>
         </div>
         {onRoleChange && (

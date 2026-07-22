@@ -1,13 +1,17 @@
 import './MyProfile.css';
 import { useState } from 'react';
-import { Icon, images } from '../../App';
+import { Icon, images, getMediaUrl } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 
 interface MyProfileProps {
   setActiveTab: (tab: string) => void;
 }
 
 export default function MyProfile({ setActiveTab }: MyProfileProps) {
+  const { user } = useAuth();
   const [profileActiveSubTab, setProfileActiveSubTab] = useState('Overview');
+
+  const fullName = user?.fullName || `${user?.firstName} ${user?.lastName}`.trim() || 'Client';
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in w-full">
@@ -15,14 +19,14 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
       <div className="mb-8 relative bg-transparent">
         <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 relative">
           <div className="relative flex-shrink-0">
-            <img src={images.proJeff} alt="Nounga" className="w-28 h-28 rounded-full shadow-md object-cover bg-gray-100" />
+            <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt={fullName} className="w-28 h-28 rounded-full shadow-md object-cover bg-gray-100" />
             <button className="absolute bottom-0 right-0 bg-[#14B8A6] text-white p-1.5 rounded-full shadow-sm hover:bg-[#0F9788] transition" aria-label="Change Avatar" onClick={() => alert('Change avatar flow coming soon!')}>
               <Icon name="user" />
             </button>
           </div>
           <div className="flex-1 pb-1 w-full">
             <div className="flex flex-col md:flex-row items-center gap-3 mb-1">
-              <h2 className="text-2xl font-bold text-gray-900">Nounga</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{fullName}</h2>
               <span className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-bold">
                 <Icon name="shield" /> Verified
               </span>
@@ -30,13 +34,13 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
             
             {/* Displaying contact info */}
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-sm text-gray-500 mt-4 w-full">
-              <p className="flex items-center gap-1.5"><Icon name="message" /> nounga@gmail.com</p>
-              <p className="flex items-center gap-1.5"><Icon name="bell" /> +237 6 98 76 54 32</p>
-              <p className="flex items-center gap-1.5"><Icon name="location" /> Your Area</p>
+              <p className="flex items-center gap-1.5"><Icon name="message" /> {user?.email || 'No email provided'}</p>
+              <p className="flex items-center gap-1.5"><Icon name="bell" /> {user?.phone || 'No phone provided'}</p>
+              <p className="flex items-center gap-1.5"><Icon name="location" /> {user?.location || 'Your Area'}</p>
             </div>
           </div>
           <div className="pb-1 mt-4 md:mt-0">
-            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center gap-2" onClick={() => alert('Edit Profile modal coming soon!')}>
+            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center gap-2" onClick={() => setActiveTab('Profile Settings')}>
               <Icon name="wrench" /> Edit Profile
             </button>
           </div>
@@ -88,25 +92,22 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="user" /> Full Name</span>
-                  <strong className="text-sm font-semibold text-gray-800">Nounga</strong>
+                  <strong className="text-sm font-semibold text-gray-800">{fullName}</strong>
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="message" /> Email Address</span>
                   <div className="flex items-center gap-2">
-                    <strong className="text-sm font-semibold text-gray-800">nounga@gmail.com</strong>
+                    <strong className="text-sm font-semibold text-gray-800">{user?.email}</strong>
                     <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold"><Icon name="check" /> Verified</span>
                   </div>
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="bell" /> Phone Number</span>
-                  <div className="flex items-center gap-2">
-                    <strong className="text-sm font-semibold text-gray-800">+237 6 98 76 54 32</strong>
-                    <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded flex items-center gap-1 font-bold"><Icon name="check" /> Verified</span>
-                  </div>
+                  <strong className="text-sm font-semibold text-gray-800">{user?.phone || 'Not set'}</strong>
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="location" /> Location</span>
-                  <strong className="text-sm font-semibold text-gray-800">London, UK</strong>
+                  <strong className="text-sm font-semibold text-gray-800">{user?.location || 'Not set'}</strong>
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="calendar" /> Date of Birth</span>
