@@ -54,8 +54,8 @@ const getSkillStory = (name: string, isFr: boolean) => {
   if (n.includes('clean') || n.includes('ménage') || n.includes('nettoyage')) {
     return {
       challenge: isFr 
-        ? "Trouver une femme de ménage honnête et méticuleuse à Douala ou Yaoundé relevait du parcours du combattant. De nombreux foyers devaient faire face à des retards constants, à une tarification obscure ou à des soucis de sécurité."
-        : "Finding a trustworthy, detailed house cleaner in Douala or Yaoundé has historically been a stressful gamble. Clients faced unpredictable pricing, late arrivals, and constant safety concerns when inviting strangers in.",
+        ? "Trouver une femme de ménage honnête et méticuleuse relevait du parcours du combattant. De nombreux foyers devaient faire face à des retards constants, à une tarification obscure ou à des soucis de sécurité."
+        : "Finding a trustworthy, detailed house cleaner has historically been a stressful gamble. Clients faced unpredictable pricing, late arrivals, and constant safety concerns when inviting strangers in.",
       solution: isFr
         ? "Fixam a changé la donne en vérifiant minutieusement l'identité de chaque femme de ménage. Les clients réservent en toute sécurité et les prestataires accèdent à un flux régulier de clients, triplant ainsi leurs revenus mensuels."
         : "Fixam solved this by introducing verified, pre-screened cleaners. Clients can book with total peace of mind, while professional cleaners gain a consistent client pipeline, doubling or tripling their monthly income.",
@@ -228,8 +228,8 @@ export default function SkillDetail({ onNavigate, skillName, onSelectSkill, live
   const t = {
     back: isFr ? '← Retour aux avis' : '← Back to Reviews',
     heroSub: isFr 
-      ? `Trouvez les meilleurs experts vérifiés en ${displaySkill} à Douala et Yaoundé.`
-      : `Hire the best verified ${displaySkill} professionals in Douala & Yaoundé.`,
+      ? `Trouvez les meilleurs experts vérifiés en ${displaySkill}.`
+      : `Hire the best verified ${displaySkill} professionals.`,
     
     storyTitle: isFr ? 'Le Défi & La Solution Fixam' : 'The Challenge & The Fixam Solution',
     storyChallengeLabel: isFr ? 'Le Problème :' : 'The Challenge:',

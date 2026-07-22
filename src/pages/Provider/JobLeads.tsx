@@ -3,10 +3,10 @@ import { useState } from 'react';
 export default function JobLeads() {
   const [filterTag, setFilterTag] = useState('All');
   const [leads, setLeads] = useState([
-    { id: 1, title: 'Need emergency plumber to fix toilet leakage', tag: 'Plumbing', price: '15,000 XAF', location: 'Douala, Bonapriso', distance: '1.2 km away' },
-    { id: 2, title: 'Installing new LED light tracks in boutique', tag: 'Electrical', price: '25,000 XAF', location: 'Douala, Akwa', distance: '3.1 km away' },
-    { id: 3, title: 'Home deep cleaning before moving in', tag: 'Cleaning', price: '20,000 XAF', location: 'Yaoundé, Bastos', distance: '4.5 km away' },
-    { id: 4, title: 'AC unit making loud noise and not cooling', tag: 'Repairs', price: '30,000 XAF', location: 'Yaoundé, Tsinga', distance: '5.2 km away' }
+    { id: 1, title: 'Need emergency plumber to fix toilet leakage', tag: 'Plumbing', price: '15,000 XAF', location: 'Central District', distance: '1.2 km away' },
+    { id: 2, title: 'Installing new LED light tracks in boutique', tag: 'Electrical', price: '25,000 XAF', location: 'Metro Area', distance: '3.1 km away' },
+    { id: 3, title: 'Home deep cleaning before moving in', tag: 'Cleaning', price: '20,000 XAF', location: 'North District', distance: '4.5 km away' },
+    { id: 4, title: 'AC unit making loud noise and not cooling', tag: 'Repairs', price: '30,000 XAF', location: 'East District', distance: '5.2 km away' }
   ]);
 
   const handleSendProposal = (title: string) => {

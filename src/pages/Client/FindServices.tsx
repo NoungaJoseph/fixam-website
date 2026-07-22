@@ -19,7 +19,7 @@ export default function FindServices({
 }: FindServicesProps) {
   // Find Services interactive states (relocated locally)
   const [findServicesSearch, setFindServicesSearch] = useState('');
-  const [findServicesLoc, setFindServicesLoc] = useState('Douala, Cameroon');
+  const [findServicesLoc, setFindServicesLoc] = useState('Nearby');
   const [findServicesRating, setFindServicesRating] = useState('All');
   const [findServicesCat, setFindServicesCat] = useState('All Categories');
   const [findServicesPrice, setFindServicesPrice] = useState(5);
@@ -36,7 +36,7 @@ export default function FindServices({
       role: 'Cleaning Service',
       rating: '4.8',
       reviews: 124,
-      location: 'Douala, Cameroon',
+      location: 'Nearby',
       badge: 'Top Rated',
       desc: 'Professional cleaning services for homes, offices and commercial spaces.',
       tags: ['House Cleaning', 'Office Cleaning', 'Deep Cleaning'],
@@ -49,7 +49,7 @@ export default function FindServices({
       role: 'Electrical Service',
       rating: '4.9',
       reviews: 98,
-      location: 'Douala, Cameroon',
+      location: 'London, UK',
       badge: 'Top Rated',
       desc: 'All electrical installation, repair and maintenance services.',
       tags: ['Installation', 'Wiring', 'Repair'],
@@ -62,7 +62,7 @@ export default function FindServices({
       role: 'Plumbing Service',
       rating: '4.7',
       reviews: 86,
-      location: 'Douala, Cameroon',
+      location: 'London, UK',
       badge: 'Popular',
       desc: 'Expert plumbing services for residential and commercial needs.',
       tags: ['Pipe Repair', 'Installation', 'Leak Fix'],
@@ -75,7 +75,7 @@ export default function FindServices({
       role: 'Painting Service',
       rating: '4.6',
       reviews: 72,
-      location: 'Douala, Cameroon',
+      location: 'London, UK',
       badge: 'Rising Star',
       desc: 'Professional painting services with quality finishing.',
       tags: ['Interior Painting', 'Exterior Painting', 'Wall Painting'],
@@ -189,8 +189,8 @@ export default function FindServices({
             <div className="fs-dropdown-menu-card animate-fade-in">
               <h4>Select Location</h4>
               <select value={findServicesLoc} onChange={(e) => { setFindServicesLoc(e.target.value); setActiveDropdown(null); }}>
-                <option value="Douala, Cameroon">Douala, Cameroon</option>
-                <option value="Yaoundé, Cameroon">Yaoundé, Cameroon</option>
+                <option value="Nearby">Nearby</option>
+                <option value="Remote">Remote</option>
               </select>
               <button type="button" className="btn-apply-dropdown" onClick={() => setActiveDropdown(null)}>Apply</button>
             </div>

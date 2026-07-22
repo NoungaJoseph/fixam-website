@@ -123,7 +123,7 @@ export default function ProviderProfileDetail({
             </div>
             <p className="profile-role-sub">{selectedProvider.role}</p>
             <div className="profile-meta-row">
-              <span className="meta-item"><Icon name="location" /> Yaoundé</span>
+              <span className="meta-item"><Icon name="location" /> Nearby</span>
               <span className="meta-item rating"><Icon name="star" /> {selectedProvider.rating} ({details.completedJobs} jobs)</span>
               <span className="meta-item trust-badge">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: '0.9rem', height: '0.9rem', marginRight: '0.25rem', color: '#10B981' }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>

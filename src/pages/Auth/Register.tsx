@@ -6,55 +6,30 @@ import './Auth.css';
 
 // 10 regions of Cameroon with their major cities/quarters
 const regionData: Record<string, { nameEn: string; nameFr: string; cities: string[] }> = {
-  littoral: {
-    nameEn: 'Littoral',
-    nameFr: 'Littoral',
-    cities: ['Douala', 'Edéa', 'Nkongsamba', 'Yabassi', 'Mouanko']
-  },
-  centre: {
-    nameEn: 'Centre',
-    nameFr: 'Centre',
-    cities: ['Yaoundé', 'Mbalmayo', 'Bafia', 'Eseka', 'Akonolinga']
-  },
-  west: {
-    nameEn: 'West',
-    nameFr: 'Ouest',
-    cities: ['Bafoussam', 'Foumban', 'Dschang', 'Mbouda', 'Bangangté']
-  },
-  southwest: {
-    nameEn: 'South West',
-    nameFr: 'Sud-Ouest',
-    cities: ['Buea', 'Limbe', 'Kumba', 'Tiko', 'Mamfe']
-  },
-  northwest: {
-    nameEn: 'North West',
-    nameFr: 'Nord-Ouest',
-    cities: ['Bamenda', 'Wum', 'Kumbo', 'Nkambe', 'Mbengwi']
-  },
-  south: {
-    nameEn: 'South',
-    nameFr: 'Sud',
-    cities: ['Ebolowa', 'Kribi', 'Sangmélima', 'Ambam', 'Campo']
-  },
-  east: {
-    nameEn: 'East',
-    nameFr: 'Est',
-    cities: ['Bertoua', 'Batouri', 'Yokadouma', 'Abong-Mbang', 'Belabo']
-  },
-  adamawa: {
-    nameEn: 'Adamawa',
-    nameFr: 'Adamaoua',
-    cities: ['Ngaoundéré', 'Tibati', 'Banyo', 'Meiganga', 'Tignère']
+  central: {
+    nameEn: 'Central Region',
+    nameFr: 'Région Centrale',
+    cities: ['Downtown', 'Metro Area', 'City Center', 'Suburbs', 'North District']
   },
   north: {
-    nameEn: 'North',
-    nameFr: 'Nord',
-    cities: ['Garoua', 'Guider', 'Lagdo', 'Poli', 'Figuil']
+    nameEn: 'Northern Region',
+    nameFr: 'Région Nord',
+    cities: ['North Metro', 'Highland Area', 'Lakeside', 'North Valley', 'Eastside']
   },
-  farnorth: {
-    nameEn: 'Far North',
-    nameFr: 'Extrême-Nord',
-    cities: ['Maroua', 'Kousséri', 'Mokolo', 'Yagoua', 'Mora']
+  south: {
+    nameEn: 'Southern Region',
+    nameFr: 'Région Sud',
+    cities: ['South Harbor', 'Coastal Area', 'Bay District', 'South Metro', 'Valley District']
+  },
+  east: {
+    nameEn: 'Eastern Region',
+    nameFr: 'Région Est',
+    cities: ['East Metro', 'River District', 'East Hills', 'Parkside', 'Summit']
+  },
+  west: {
+    nameEn: 'Western Region',
+    nameFr: 'Région Ouest',
+    cities: ['West Metro', 'Sunset District', 'West Valley', 'Highland Park', 'Oakridge']
   }
 };
 

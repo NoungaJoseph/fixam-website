@@ -53,8 +53,11 @@ input {
   font: inherit;
 }
 
-button {
-  cursor: pointer;
+html.body-scroll-lock,
+body.body-scroll-lock {
+  overflow: hidden !important;
+  touch-action: none !important;
+  height: 100% !important;
 }
 
 .app {

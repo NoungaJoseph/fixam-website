@@ -152,7 +152,7 @@ export default function PostTaskFlow({ isOpen, onClose, onSubmit }: PostTaskFlow
                 <input 
                   type="text" 
                   className="input-field" 
-                  placeholder="e.g. Bonamoussadi, Douala" 
+                  placeholder="e.g. Your neighborhood or area" 
                   value={location}
                   onChange={e => setLocation(e.target.value)}
                 />

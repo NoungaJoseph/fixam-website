@@ -157,16 +157,17 @@
     transition: all 0.2s ease;
   }
   .segmented-toggle-btn.active {
-    background: #fff;
+    background: var(--surface);
     color: var(--ink);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    border: 1px solid var(--line);
   }
 
   /* Hero Search Input Restyle */
   .hero-search-wrapper-mobile {
     display: flex;
     align-items: center;
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 9999px;
     padding: 5px;
@@ -238,7 +239,7 @@
     gap: 1rem;
   }
   .mobile-category-card {
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 1rem;
@@ -247,15 +248,16 @@
     justify-content: space-between;
     text-decoration: none;
     color: var(--ink);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   .mobile-category-card-name {
     font-size: 0.9rem;
     font-weight: 600;
     line-height: 1.2;
+    color: var(--ink);
   }
   .mobile-category-card-icon {
-    color: var(--gray-dark);
+    color: var(--muted);
     font-size: 1.2rem;
   }
 
@@ -289,13 +291,12 @@
   .how-carousel-card {
     scroll-snap-align: center;
     min-width: 85vw; /* peek next card */
-    background: #fff;
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     display: flex;
-    flex-flex-direction: column;
     flex-direction: column;
   }
   .how-card-image {
@@ -368,5 +369,49 @@
   .header-left {
     display: flex;
     align-items: center;
+  }
+
+  /* Sticky Auth Bar for Mobile Page Bottom */
+  .mobile-sticky-auth-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 900;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.12);
+    box-sizing: border-box;
+  }
+  .mobile-sticky-auth-bar .sticky-btn-signin {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-weight: 700;
+    padding: 0.7rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .mobile-sticky-auth-bar .sticky-btn-signup {
+    flex: 1;
+    background: #14B8A6;
+    border: none;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    padding: 0.7rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  /* Scroll clearing bottom padding for footer so sticky bar never covers footer content */
+  .simple-footer {
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)) !important;
   }
 }

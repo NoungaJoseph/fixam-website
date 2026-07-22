@@ -3,7 +3,7 @@ import { useState } from 'react';
 export default function ProfileSettings() {
   const [category, setCategory] = useState('Plumbing');
   const [experience, setExperience] = useState('3-5 years');
-  const [bio, setBio] = useState('Experienced plumbing professional in Douala. Specialized in leak detection, emergency kitchen repairs, and complete bathroom refurbishments.');
+  const [bio, setBio] = useState('Experienced plumbing professional in your area. Specialized in leak detection, emergency kitchen repairs, and complete bathroom refurbishments.');
   const [availability, setAvailability] = useState('Available');
 
   const handleSave = (e: React.FormEvent) => {
@@ -28,7 +28,7 @@ export default function ProfileSettings() {
           </div>
           <div>
             <h4 style={{ margin: '0 0 4px 0', fontSize: '16px' }}>Nounga Joseph</h4>
-            <span style={{ fontSize: '13px', color: '#6B7280', display: 'block', marginBottom: '8px' }}>Douala, Cameroon</span>
+            <span style={{ fontSize: '13px', color: '#6B7280', display: 'block', marginBottom: '8px' }}>Your Area</span>
             <button
               type="button"
               onClick={() => alert('Photo upload flow coming soon!')}

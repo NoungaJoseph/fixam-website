@@ -58,7 +58,10 @@ export default function CareerPathwayOverview({
       // Cities / Countries
       'Douala': 'Douala',
       'Yaoundé': 'Yaoundé',
-      'Cameroon': 'Cameroun'
+      'Cameroon': 'Cameroun',
+      'London': 'Londres',
+      'Paris': 'Paris',
+      'Berlin': 'Berlin'
     };
 
     let translated = clean;

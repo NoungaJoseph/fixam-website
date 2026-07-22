@@ -153,7 +153,7 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
                     </div>
                     <label>
                       <span>Address / Location Area</span>
-                      <input type="text" defaultValue="Douala, Cameroon" />
+                      <input type="text" defaultValue="Your Area" />
                     </label>
                     
                     <div className="settings-checkbox-row">
@@ -243,7 +243,7 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
             </div>
             <label>
               <span>Address / Location Area</span>
-              <input type="text" defaultValue="Douala, Cameroon" />
+              <input type="text" defaultValue="London, UK" />
             </label>
             
             <div className="settings-checkbox-row">

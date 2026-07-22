@@ -8,7 +8,7 @@ const reviewsContent = {
   en: {
     hero: {
       title: "Reviews on Fixam: From Real Users, For Real Users",
-      subtext: "From Douala to Yaoundé, discover how clients and providers have transformed their lives using Fixam's trusted service marketplace.",
+      subtext: "Discover how clients and providers worldwide have transformed their lives using Fixam's trusted service marketplace.",
       cta: "Join Fixam",
       stats: {
         starsLabel: "5/5",
@@ -53,7 +53,7 @@ const reviewsContent = {
           img: "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?w=800&auto=format&fit=crop&q=80"
         },
         {
-          title: "How Marie Ngo found reliable home cleaning services she could actually trust for her family in Douala",
+          title: "How Marie Ngo found reliable home cleaning services she could actually trust for her family",
           img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80"
         },
         {
@@ -156,12 +156,12 @@ const reviewsContent = {
           reviewer: "Celestine A."
         },
         {
-          title: "Best way to find cleaning services in Douala",
+          title: "Best way to find reliable cleaning services",
           rating: 5,
           date: "May 2026",
           category: "Cleaning",
           isPro: false,
-          text: "I use Fixam every month for house cleaning. The providers are always verified and I can see their real reviews before booking. The coin system makes it so easy to pay — I just top up with MTN Mobile Money and book directly from the app. Highly recommend to any family in Douala looking for reliable home services.",
+          text: "I use Fixam every month for house cleaning. The providers are always verified and I can see their real reviews before booking. The coin system makes it so easy to pay (I just top up with MTN Mobile Money and book directly from the app). Highly recommend to any family looking for reliable home services.",
           reviewer: "Paulette M."
         },
         {
@@ -299,7 +299,7 @@ const reviewsContent = {
   fr: {
     hero: {
       title: "Avis sur Fixam: De Vrais Utilisateurs, Pour de Vrais Utilisateurs",
-      subtext: "De Douala à Yaoundé, découvrez comment les clients et prestataires ont transformé leur vie grâce à Fixam.",
+      subtext: "Découvrez comment les clients et prestataires à travers le monde ont transformé leur vie grâce à Fixam.",
       cta: "Rejoindre Fixam",
       stats: {
         starsLabel: "5/5",
@@ -447,12 +447,12 @@ const reviewsContent = {
           reviewer: "Celestine A."
         },
         {
-          title: "La meilleure façon de trouver des services de nettoyage à Douala",
+          title: "La meilleure façon de trouver des services de nettoyage fiables",
           rating: 5,
           date: "Mai 2026",
           category: "Cleaning",
           isPro: false,
-          text: "J'utilise Fixam chaque mois pour le ménage. Les prestataires sont toujours vérifiés et je peux voir les vrais avis avant de réserver. Le système de pièces facilite la réservation — je recharge avec MTN Mobile Money et je réserve. Je recommande vivement.",
+          text: "J'utilise Fixam chaque mois pour le ménage. Les prestataires sont toujours vérifiés et je peux voir les vrais avis avant de réserver. Le système de pièces facilite la réservation (je recharge avec MTN Mobile Money et je réserve). Je recommande vivement.",
           reviewer: "Paulette M."
         },
         {

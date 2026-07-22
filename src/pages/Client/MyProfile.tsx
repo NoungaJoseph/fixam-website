@@ -32,7 +32,7 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-sm text-gray-500 mt-4 w-full">
               <p className="flex items-center gap-1.5"><Icon name="message" /> nounga@gmail.com</p>
               <p className="flex items-center gap-1.5"><Icon name="bell" /> +237 6 98 76 54 32</p>
-              <p className="flex items-center gap-1.5"><Icon name="location" /> Douala, Cameroon</p>
+              <p className="flex items-center gap-1.5"><Icon name="location" /> Your Area</p>
             </div>
           </div>
           <div className="pb-1 mt-4 md:mt-0">
@@ -79,7 +79,7 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
             <section className="bg-transparent border-0 rounded-none p-0 mb-8">
               <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">About Me</h3>
               <p className="text-gray-600 leading-relaxed text-sm">
-                I'm a business owner based in Douala. I use Fixam to find reliable and verified professionals for all my home and office needs. Quality service and trust are my top priorities.
+                I'm a local business owner. I use Fixam to find reliable and verified professionals for all my home and office needs. Quality service and trust are my top priorities.
               </p>
             </section>
 
@@ -106,7 +106,7 @@ export default function MyProfile({ setActiveTab }: MyProfileProps) {
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="location" /> Location</span>
-                  <strong className="text-sm font-semibold text-gray-800">Douala, Cameroon</strong>
+                  <strong className="text-sm font-semibold text-gray-800">London, UK</strong>
                 </div>
                 <div className="flex flex-col py-2 border-b border-gray-100">
                   <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="calendar" /> Date of Birth</span>

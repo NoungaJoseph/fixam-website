@@ -310,7 +310,7 @@ function App() {
             const name = item.user?.fullName || 'Anonymous Provider';
             const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
             const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-            const distance = item.serviceArea || 'Douala';
+            const distance = item.serviceArea || 'Nearby';
             
             let image = images.proJeff;
             if (item.user?.avatar) {
@@ -398,13 +398,26 @@ function App() {
               />
             )}
           </main>
+          <MobileStickyAuthBar onNavigate={setPage} />
         </>
       )}
 
-
-
     </div>
   )
+}
+
+function MobileStickyAuthBar({ onNavigate }: { onNavigate: (page: Page) => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="mobile-sticky-auth-bar mobile-only">
+      <button className="sticky-btn-signin" onClick={() => onNavigate('login')}>
+        {t('nav.signin') || 'Sign In'}
+      </button>
+      <button className="sticky-btn-signup" onClick={() => onNavigate('register')}>
+        Sign Up
+      </button>
+    </div>
+  );
 }
 
 
@@ -555,20 +568,20 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
   const [tickerIndex, setTickerIndex] = useState(0);
   const tickerMessages = [
     i18n.language === 'fr' 
-      ? "« Maison nettoyée à Yaoundé en 2 heures ! Excellent travail du prestataire Fixam ! » — Amélia N."
-      : "“Cleaned my house in Yaoundé in 2 hours! Excellent job by Fixam provider!” — Amélia N.",
+      ? "« Maison nettoyée en 2 heures ! Excellent travail du prestataire Fixam ! » (Amélia N.)"
+      : "“Cleaned my house in 2 hours! Excellent job by Fixam provider!” (Amélia N.)",
     i18n.language === 'fr'
-      ? "Fixam vous connecte à plus de 10 000 professionnels vérifiés au Cameroun."
-      : "Fixam connects you to over 10,000 verified plumbing, electrical, and cleaning pros in Cameroon.",
+      ? "Fixam vous connecte à plus de 10 000 professionnels vérifiés à l'échelle internationale."
+      : "Fixam connects you to over 10,000 verified plumbing, electrical, and cleaning pros globally.",
     i18n.language === 'fr'
-      ? "Besoin d'un électricien à Douala ? Trouvez des pros locaux sur Fixam en quelques minutes !"
-      : "Need an electrician in Douala? Find and book local pros on Fixam in minutes!",
+      ? "Besoin d'un électricien ? Trouvez des pros locaux sur Fixam en quelques minutes !"
+      : "Need an electrician? Find and book local pros on Fixam in minutes!",
     i18n.language === 'fr'
       ? "Fixam aide les prestataires à augmenter leurs revenus en obtenant des demandes directes."
       : "Fixam helps service providers boost their earnings by getting direct job requests daily.",
     i18n.language === 'fr'
-      ? "« Super service ! J'ai trouvé un menuisier fiable à Bamenda en 10 minutes. » — Marc T."
-      : "“Great service! Found a reliable carpenter in Bamenda within 10 minutes of posting.” — Marc T."
+      ? "« Super service ! J'ai trouvé un menuisier fiable en 10 minutes. » (Marc T.)"
+      : "“Great service! Found a reliable carpenter within 10 minutes of posting.” (Marc T.)"
   ];
 
   useEffect(() => {
@@ -582,10 +595,24 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      document.documentElement.classList.add('body-scroll-lock');
+      document.body.classList.add('body-scroll-lock');
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.classList.remove('body-scroll-lock');
+      document.body.classList.remove('body-scroll-lock');
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.documentElement.classList.remove('body-scroll-lock');
+      document.body.classList.remove('body-scroll-lock');
+    };
   }, [isMobileMenuOpen]);
 
   const translateCat = (cat: string) => translateCatHelper(cat, i18n.language);
@@ -936,9 +963,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
   }, [userRole]);
 
   const [tickerItems, setTickerItems] = useState<Array<{ isNews: boolean; badgeText: string; text: string }>>([
-    { isNews: false, badgeText: 'SPORTS', text: '⚽ Cameroon 2 - 0 Egypt (LIVE)' },
+    { isNews: false, badgeText: 'SPORTS', text: '⚽ Match Result: 2 - 0 (LIVE)' },
     { isNews: false, badgeText: 'SPORTS', text: '📅 Upcoming: Nigeria vs Ghana (19:00)' },
-    { isNews: true, badgeText: 'NEWS', text: '📰 50+ New Verified Plumbers joined Fixam in Douala this week!' },
+    { isNews: true, badgeText: 'NEWS', text: '📰 50+ New Verified Plumbers joined Fixam this week!' },
     { isNews: false, badgeText: 'SPORTS', text: '⚽ Real Madrid 3 - 1 Barcelona (FINISHED)' },
     { isNews: true, badgeText: 'NEWS', text: '⚡ Wallet top-up via Mobile Money now processed 2x faster!' },
   ]);
@@ -1536,7 +1563,7 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <button onClick={() => onNavigate?.('login')}>{t('nav.signin') || 'Sign In'}</button>
       </div>
       
-      <p className="footer-subtext">Fixam — Trusted Professional Services Platform</p>
+      <p className="footer-subtext">Fixam: Trusted Professional Services Platform</p>
 
       <div className="footer-bottom-bar">
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>

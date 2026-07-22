@@ -23,7 +23,7 @@ export default function BookingFormModal({
 }: BookingFormModalProps) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [location, setLocation] = useState('Douala, Cameroon');
+  const [location, setLocation] = useState('Nearby');
   const [urgency, setUrgency] = useState<'NORMAL' | 'URGENT' | 'EMERGENCY'>('NORMAL');
   const [notes, setNotes] = useState('');
 
@@ -89,7 +89,7 @@ export default function BookingFormModal({
               className="input-field" 
               value={location} 
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Akwa, Douala"
+              placeholder="e.g. Your neighborhood or city"
               required
             />
           </div>

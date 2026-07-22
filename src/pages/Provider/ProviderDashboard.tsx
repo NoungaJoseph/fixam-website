@@ -86,7 +86,7 @@ export default function ProviderDashboard({
                   <div className="flex-1">
                     <span className="text-[10px] font-bold text-[#14B8A6] uppercase bg-teal-50 px-2 py-0.5 rounded">{lead.tag}</span>
                     <h3 className="text-sm font-bold text-gray-800 mt-1">{lead.title}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Douala, Cameroon • 2.4 km away</p>
+                    <p className="text-xs text-gray-500 mt-0.5">Nearby • 2.4 km away</p>
                   </div>
                   <div className="text-right flex flex-col items-end gap-2">
                     <strong className="text-sm text-gray-900">{lead.price}</strong>
