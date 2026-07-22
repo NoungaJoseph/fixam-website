@@ -19,7 +19,7 @@
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 20;
 }
 
 .legal-brand {
@@ -248,7 +248,7 @@
     overflow-x: auto;
     gap: 8px;
     background: var(--surface);
-    z-index: 99;
+    z-index: 15;
   }
 
   .legal-nav-label {

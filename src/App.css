@@ -1,33 +1,14 @@
-:root {
-  --ink: #F9FAFB;
-  --muted: #9CA3AF;
-  --line: #1F2937;
-  --soft: #0B1120;
-  --surface: #111827;
-  --header-bg: rgba(17, 24, 39, 0.85);
-  --teal: #14B8A6;
-  --teal-dark: #0D9488;
-  --blue: #2563EB;
-  --green: #22C55E;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-  --logo-filter: none;
-  --card-bg-1: #115E59;
-  --card-bg-2: #7C2D12;
-  --card-bg-3: #312E81;
-  --card-bg-4: #064E3B;
-  --card-img-bg-1: #0A0F1D;
-  --card-img-bg-2: #1A120B;
-  --card-img-bg-3: #1D0E2B;
-  --card-img-bg-4: #0C1E12;
-}
-
-:root.light {
+:root, :root.light {
   --ink: #0F172A;
   --muted: #475569;
   --line: #E2E8F0;
   --soft: #F8FAFC;
   --surface: #FFFFFF;
   --header-bg: rgba(255, 255, 255, 0.85);
+  --teal: #14B8A6;
+  --teal-dark: #0D9488;
+  --blue: #2563EB;
+  --green: #22C55E;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   --logo-filter: invert(1);
   --card-bg-1: #CCFBF1;

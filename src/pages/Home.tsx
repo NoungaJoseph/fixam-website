@@ -427,8 +427,8 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           
           {/* Audience Toggle (Mobile Only) */}
           <div className="segmented-toggle-wrapper mobile-only" style={{ maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
-            <button className="segmented-toggle-btn active">{i18n.language === 'fr' ? 'Je cherche un service' : 'I need a service'}</button>
-            <button className="segmented-toggle-btn">{i18n.language === 'fr' ? 'Je propose un service' : 'I provide a service'}</button>
+            <button className={`segmented-toggle-btn ${workToggle === 'clients' ? 'active' : ''}`} onClick={() => setWorkToggle('clients')}>{i18n.language === 'fr' ? 'Je cherche un service' : 'I need a service'}</button>
+            <button className={`segmented-toggle-btn ${workToggle === 'providers' ? 'active' : ''}`} onClick={() => { setWorkToggle('providers'); onNavigate('register'); }}>{i18n.language === 'fr' ? 'Je propose un service' : 'I provide a service'}</button>
           </div>
 
           {/* Search Input (Desktop) */}
@@ -446,7 +446,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           </form>
 
           {/* Search Input (Mobile) */}
-          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper-mobile mobile-flex" style={{ display: 'none' }}>
+          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper-mobile mobile-flex">
             <input 
               type="text" 
               placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
@@ -469,7 +469,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           </div>
 
           {/* Quick Filter Chips (Mobile) */}
-          <div className="quick-filter-chips mobile-flex" style={{ display: 'none' }}>
+          <div className="quick-filter-chips mobile-flex">
             {tContent.hero.pills.map((pill, idx) => (
               <button key={idx} className="quick-chip" onClick={() => handlePillClick(pill)}>
                 {pill} →

@@ -215,22 +215,12 @@ function App() {
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
   const [userRole, setUserRole] = useState<'client' | 'pro'>('client');
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
-    }
-    return 'light';
-  });
+  const [theme] = useState<'light'>('light');
 
   useEffect(() => {
-    if (theme === 'light') {
-      document.documentElement.classList.add('light');
-      localStorage.setItem('theme', 'light');
-    } else {
-      document.documentElement.classList.remove('light');
-      localStorage.setItem('theme', 'dark');
-    }
-  }, [theme]);
+    document.documentElement.classList.add('light');
+    localStorage.setItem('theme', 'light');
+  }, []);
 
   // Synchronize initial hash on load and on hash change
   useEffect(() => {
@@ -349,7 +339,7 @@ function App() {
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} theme={theme} setTheme={setTheme} />
+        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} />
       ) : page === 'login' ? (
         <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
@@ -360,7 +350,7 @@ function App() {
         <OTPVerification onNavigate={setPage} />
       ) : (
         <>
-          <Header page={page} onNavigate={setPage} theme={theme} setTheme={setTheme} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
+          <Header page={page} onNavigate={setPage} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
           <main>
             {page === 'services' && (
               <Services 
@@ -547,13 +537,14 @@ export const translateServiceHelper = (name: string, desc: string, lang: string)
   return { name, desc };
 };
 
-function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
+function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
   const { t, i18n } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | 'pathways' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [mobileHowOpen, setMobileHowOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const [mobileSearchVal, setMobileSearchVal] = useState('');
   const handleMobileSearchSubmit = (e: React.FormEvent) => {
@@ -680,14 +671,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
               </select>
             </div>
 
-            <button 
-              className="theme-toggle-btn-new desktop-only" 
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-              aria-label="Toggle Theme"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', border: 'none', background: 'transparent', cursor: 'pointer' }}
-            >
-              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-            </button>
+
 
             {/* Mobile Header Right */}
             <div className="mobile-header-right mobile-only">
@@ -848,7 +832,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
               <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '28px', transform: 'scale(5)', transformOrigin: 'left center' }} />
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <button style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
+              <button onClick={() => setMobileSearchOpen(!mobileSearchOpen)} style={{ background: 'transparent', border: 'none', color: 'var(--ink)', cursor: 'pointer' }}>
                 <Icon name="search" />
               </button>
               <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
@@ -856,6 +840,23 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
               </button>
             </div>
           </div>
+
+          {/* Mobile Search Bar (toggled by search icon) */}
+          {mobileSearchOpen && (
+            <form onSubmit={handleMobileSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '0.75rem 1.5rem', gap: '0.5rem', borderBottom: '1px solid var(--line)', background: 'var(--soft)' }}>
+              <input
+                type="text"
+                placeholder={i18n.language === 'fr' ? 'Rechercher un service...' : 'Search for a service...'}
+                value={mobileSearchVal}
+                onChange={(e) => setMobileSearchVal(e.target.value)}
+                autoFocus
+                style={{ flex: 1, border: '1px solid var(--line)', borderRadius: '9999px', padding: '0.6rem 1rem', fontSize: '0.95rem', outline: 'none', background: 'var(--surface)', color: 'var(--ink)' }}
+              />
+              <button type="submit" style={{ background: '#14B8A6', color: '#fff', border: 'none', borderRadius: '9999px', padding: '0.6rem 1.2rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
+                {i18n.language === 'fr' ? 'Chercher' : 'Search'}
+              </button>
+            </form>
+          )}
 
           <div className="mobile-menu-content">
             {/* Mobile Accordion for Explore Services */}
@@ -923,9 +924,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
                     <option value="fr">Français</option>
                 </select>
               </div>
-              <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} style={{ background: 'transparent', border: 'none', color: 'var(--ink)' }}>
-                <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-              </button>
+
             </div>
           </div>
 
@@ -949,7 +948,7 @@ function Header({ page, onNavigate, theme, setTheme, onSearch, setSelectedPathwa
 
 // Removed Login and Register to src/pages/Auth/
 
-function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setTheme }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void; theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) {
+function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1187,9 +1186,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
                 <Icon name="bell" />
                 <span className="badge-indicator">8</span>
               </button>
-              <button className="icon-btn-dash" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle Theme">
-                <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-              </button>
+
 
               <button className="profile-chip-dash" onClick={() => setActiveTab('My Profile')}>
                 <img src={images.proJeff} alt="Nounga profile" className="desktop-only" />
@@ -1431,9 +1428,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange, theme, setThe
               <Icon name="chat" />
               <span className="badge-indicator">2</span>
             </button>
-            <button className="icon-btn-dash" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle Theme">
-              <Icon name={theme === 'light' ? 'moon' : 'sun'} />
-            </button>
+
 
             <button className="profile-chip-dash">
               <img src={images.proSamuel} alt="Nounga profile" />

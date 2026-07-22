@@ -4,6 +4,9 @@
 .mobile-only {
   display: none !important;
 }
+.mobile-flex {
+  display: none !important;
+}
 
 @media (max-width: 768px) {
   .desktop-only {
@@ -19,15 +22,17 @@
   /* Top Nav Promo Banner */
   .mobile-promo-banner {
     width: 100%;
-    background-color: #E6F8F6; /* light teal tint */
+    background-color: #E6F8F6;
     padding: 10px 15px;
     text-align: center;
     font-size: 0.85rem;
-    color: var(--ink);
+    color: #0F172A;
+    border-bottom: 1px solid var(--line);
+    box-sizing: border-box;
   }
   .mobile-promo-banner a {
-    color: #14B8A6;
-    font-weight: 600;
+    color: #0D9488;
+    font-weight: 700;
     text-decoration: underline;
     margin-left: 5px;
   }
@@ -35,6 +40,8 @@
   /* Full Screen Menu Adjustments */
   .main-nav-mobile {
     padding: 0 !important; /* Remove original padding */
+    z-index: 99999 !important;
+    background: var(--surface) !important;
   }
   .mobile-menu-header {
     display: flex;
@@ -139,21 +146,25 @@
     background: var(--soft);
     border: 1px solid var(--line);
     border-radius: 9999px;
-    display: inline-flex;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     padding: 4px;
     margin-bottom: 1.5rem;
     width: 100%;
+    box-sizing: border-box;
   }
   .segmented-toggle-btn {
     flex: 1;
     text-align: center;
-    padding: 0.6rem 1rem;
+    padding: 0.55rem 0.5rem;
     border-radius: 9999px;
     border: none;
     background: transparent;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--gray-dark);
+    font-size: 0.82rem;
+    white-space: nowrap;
+    color: var(--muted);
     transition: all 0.2s ease;
   }
   .segmented-toggle-btn.active {
@@ -167,26 +178,31 @@
   .hero-search-wrapper-mobile {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 9999px;
-    padding: 5px;
-    padding-left: 1rem;
+    padding: 4px 6px 4px 1rem;
     margin-bottom: 1rem;
     width: 100%;
+    box-sizing: border-box;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
   .hero-search-wrapper-mobile input {
     flex: 1;
+    min-width: 0;
     border: none;
     outline: none;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    padding-right: 0.5rem;
     background: transparent;
     color: var(--ink);
   }
   .hero-search-wrapper-mobile .hero-search-btn-circle {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    flex-shrink: 0;
     border-radius: 50%;
     background: #14B8A6;
     color: #fff;
@@ -194,6 +210,7 @@
     align-items: center;
     justify-content: center;
     border: none;
+    cursor: pointer;
   }
 
   /* Quick Filter Chips (Horizontal Scroll) */
@@ -201,9 +218,12 @@
     display: flex;
     overflow-x: auto;
     gap: 0.5rem;
-    padding-bottom: 1rem; /* space for scrollbar/shadow */
+    padding: 0.25rem 0.5rem 0.75rem 0.5rem;
     margin-bottom: 1rem;
     scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    box-sizing: border-box;
   }
   .quick-filter-chips::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
@@ -338,7 +358,7 @@
   .header-wrapper {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 10000 !important;
   }
   .site-header-new {
     border-bottom: 1px solid var(--line);
@@ -373,41 +393,53 @@
 
   /* Sticky Auth Bar for Mobile Page Bottom */
   .mobile-sticky-auth-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    z-index: 900;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.12);
-    box-sizing: border-box;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background: var(--surface) !important;
+    border-top: 1px solid var(--line) !important;
+    padding: 0.75rem 1.25rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 1rem !important;
+    z-index: 9900 !important;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.12) !important;
+    box-sizing: border-box !important;
   }
   .mobile-sticky-auth-bar .sticky-btn-signin {
-    flex: 1;
-    background: transparent;
-    border: 1px solid var(--line);
-    color: var(--ink);
-    font-weight: 700;
-    padding: 0.7rem 1rem;
-    border-radius: 9999px;
-    font-size: 0.9rem;
-    cursor: pointer;
+    flex: 1 1 0% !important;
+    width: 48% !important;
+    text-align: center !important;
+    background: transparent !important;
+    border: 1px solid var(--line) !important;
+    color: var(--ink) !important;
+    font-weight: 700 !important;
+    padding: 0.75rem 0.5rem !important;
+    border-radius: 9999px !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .mobile-sticky-auth-bar .sticky-btn-signup {
-    flex: 1;
-    background: #14B8A6;
-    border: none;
+    flex: 1 1 0% !important;
+    width: 48% !important;
+    text-align: center !important;
+    background: #14B8A6 !important;
+    border: none !important;
     color: #FFFFFF !important;
-    font-weight: 700;
-    padding: 0.7rem 1rem;
-    border-radius: 9999px;
-    font-size: 0.9rem;
-    cursor: pointer;
+    font-weight: 700 !important;
+    padding: 0.75rem 0.5rem !important;
+    border-radius: 9999px !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Scroll clearing bottom padding for footer so sticky bar never covers footer content */
