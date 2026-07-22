@@ -5,6 +5,7 @@ import FloatingParticles from '../../components/FloatingParticles';
 import './Auth.css';
 
 export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page) => void; onLogin?: (role: 'client' | 'pro') => void }) {
+  const { api } = require('../../services/api');
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
 
@@ -82,31 +83,28 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
     setApiError('');
 
-    // Simulate login loading delay
-    setTimeout(() => {
-      // Mock validation failure for demo purposes if wrong credentials are used
-      if (password === 'wrong') {
-        setApiError(
-          isFr
-            ? 'Téléphone ou mot de passe incorrect. Veuillez réessayer.'
-            : 'Incorrect credentials. Please try again.'
-        );
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        // Auto-detect role: if password has 'pro' or phone has '677', log in as provider
-        const detectedRole = password.toLowerCase().includes('pro') || phone.includes('677') ? 'pro' : 'client';
-        onLogin?.(detectedRole);
-        onNavigate('dashboard');
-      }
-    }, 1200);
+    try {
+      const identifier = loginMethod === 'phone' ? phone : email;
+      const response = await api.post('/web-auth/login', { identifier, password });
+      
+      setIsLoading(false);
+      // Determine role from backend response if available, else default to 'client'
+      const role = response.data?.user?.role?.toLowerCase() === 'provider' ? 'pro' : 'client';
+      onLogin?.(role);
+      onNavigate('dashboard');
+    } catch (error: any) {
+      setIsLoading(false);
+      setApiError(
+        error.response?.data?.message || (isFr ? 'Téléphone ou mot de passe incorrect. Veuillez réessayer.' : 'Incorrect credentials. Please try again.')
+      );
+    }
   };
 
   // Translations object
