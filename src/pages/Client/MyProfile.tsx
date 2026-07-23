@@ -24,7 +24,9 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       // api.get('/users/saved-providers').then((res: any) => setSavedPros(res.data)).catch(console.error);
     }
     if (profileActiveSubTab === 'Reviews') {
-      api.get('/reviews/mine').then((res: any) => setReviews(res.data)).catch(console.error);
+      if (user?.id) {
+        api.get(`/reviews/users/${user.id}`).then((res: any) => setReviews(res.data?.data || [])).catch(console.error);
+      }
     }
     if (profileActiveSubTab === 'Preferences') {
       const savedPrefs = localStorage.getItem('fixam_preferences');

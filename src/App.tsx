@@ -18,6 +18,7 @@ import Notifications from './pages/Client/Notifications'
 import Messages from './pages/Client/Messages'
 import SavedProviders from './pages/Client/SavedProviders'
 import Settings from './pages/Client/Settings'
+import Support from './pages/Client/Support'
 import Referrals from './pages/Client/Referrals'
 import Reviews from './pages/Client/Reviews'
 import MyProfile from './pages/Client/MyProfile'
@@ -1113,8 +1114,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'My Bookings', icon: 'calendar' as IconName },
       { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
-      { name: 'Reviews', icon: 'star' as IconName },
-      { name: 'Career Pathways', icon: 'briefcase' as IconName },
       { name: 'Settings', icon: 'user' as IconName },
       { name: 'Support', icon: 'message' as IconName }
     ];
@@ -1373,6 +1372,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setClientBookings={setClientBookings} 
                     setActiveChatUser={setActiveChatUser}
                     displayedPros={displayedPros}
+                  />
+                )}
+                {activeTab === 'Support' && (
+                  <Support 
+                    setActiveTab={setActiveTab} 
+                    setActiveChatUser={setActiveChatUser} 
                   />
                 )}
               </>
