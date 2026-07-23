@@ -1361,6 +1361,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 {activeTab === 'My Profile' && (
                   <MyProfile 
                     setActiveTab={setActiveTab} 
+                    onRoleChange={setUserRole}
+                    userRole={userRole}
                   />
                 )}
                 {activeTab === 'Find Services' && (
