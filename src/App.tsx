@@ -1030,6 +1030,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const displayedPros = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : pros);
 
   // Client-specific interactive state hooks
+  // Client-specific interactive state hooks
   const [clientTasks, setClientTasks] = useState([
     { id: 1, title: 'Fix leaking pipe in kitchen', tag: 'Plumbing', price: '25,000 XAF', status: 'In Progress', bids: 3 },
     { id: 2, title: 'Installing ceiling fan in bedroom', tag: 'Electrical', price: '15,000 XAF', status: 'Pending Offers', bids: 5 },
@@ -1037,6 +1038,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   ]);
   const [clientBookings, setClientBookings] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [leads, setLeads] = useState<any[]>([]);
   const [activeProposals, setActiveProposals] = useState<any[]>([]);
 
@@ -1044,28 +1047,42 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     if (isLoggedIn) {
       const fetchData = async () => {
         try {
+          // Fetch badge & notification metrics
+          const [convsRes, notifsRes] = await Promise.all([
+            api.get('/chat/conversations').catch(() => null),
+            api.get('/notifications').catch(() => null)
+          ]);
+
+          if (convsRes?.data?.data) {
+            const totalUnread = convsRes.data.data.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
+            setUnreadMessagesCount(totalUnread);
+          }
+          if (notifsRes?.data?.notifications || notifsRes?.data?.data) {
+            const list = notifsRes.data.notifications || notifsRes.data.data || [];
+            const unreadNotifs = list.filter((n: any) => !n.isRead && !n.read).length;
+            setUnreadNotificationsCount(unreadNotifs);
+          }
+
           if (userRole === 'client') {
             const [jobsRes, walletRes, providersRes, bookingsRes] = await Promise.all([
-              api.get('/jobs/client'),
-              api.get('/wallet/balance'),
-              api.get('/users/providers'),
-              api.get('/bookings/mine')
+              api.get('/jobs/client').catch(() => null),
+              api.get('/wallet/balance').catch(() => null),
+              api.get('/users/providers').catch(() => null),
+              api.get('/bookings/mine').catch(() => null)
             ]);
-            setClientBookings(bookingsRes.data.bookings || []);
-            setClientTasks(jobsRes.data.jobs || []);
-            setWalletBalance(walletRes.data.balance || 0);
-            if (providersRes.data.providers) {
-               setLocalLivePros(providersRes.data.providers);
-            }
+            if (bookingsRes?.data?.bookings) setClientBookings(bookingsRes.data.bookings);
+            if (jobsRes?.data?.jobs) setClientTasks(jobsRes.data.jobs);
+            if (walletRes?.data?.balance !== undefined) setWalletBalance(walletRes.data.balance || 0);
+            if (providersRes?.data?.providers) setLocalLivePros(providersRes.data.providers);
           } else if (userRole === 'pro') {
             const [leadsRes, proposalsRes, walletRes] = await Promise.all([
-              api.get('/jobs/pro/matches'), 
-              api.get('/jobs/pro/proposals'),
-              api.get('/wallet/balance')
+              api.get('/jobs/pro/matches').catch(() => null), 
+              api.get('/jobs/pro/proposals').catch(() => null),
+              api.get('/wallet/balance').catch(() => null)
             ]);
-            setLeads(leadsRes.data.jobs || leadsRes.data.matches || []);
-            setActiveProposals(proposalsRes.data.proposals || []);
-            setWalletBalance(walletRes.data.balance || 0);
+            if (leadsRes?.data) setLeads(leadsRes.data.jobs || leadsRes.data.matches || []);
+            if (proposalsRes?.data?.proposals) setActiveProposals(proposalsRes.data.proposals);
+            if (walletRes?.data?.balance !== undefined) setWalletBalance(walletRes.data.balance || 0);
           }
         } catch (err) {
           console.error(`Failed to fetch ${userRole} dashboard data`, err);
@@ -1093,8 +1110,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Dashboard', icon: 'home' as IconName },
       { name: 'Find Services', icon: 'search' as IconName },
       { name: 'My Bookings', icon: 'calendar' as IconName },
-      { name: 'Messages', icon: 'chat' as IconName, badge: 3 },
-      { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '1,250' },
+      { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
+      { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Reviews', icon: 'star' as IconName },
       { name: 'Career Pathways', icon: 'briefcase' as IconName },
       { name: 'Profile Settings', icon: 'user' as IconName },
@@ -1132,34 +1149,41 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         )}
         {/* Left Sidebar */}
         <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
-          <div className="brand-header">
-            <button className="brand brand-button dash-brand-compact" onClick={() => onNavigate('home')}>
-              <span className="logo-mark-dash">F</span>
-              <span className="logo-text-dash">Fixam</span>
-            </button>
-            <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
-              {isSidebarCollapsed ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <div className="brand-header" style={{ justifyContent: 'space-between' }}>
+            <div 
+              className="user-card-new" 
+              style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
+              onClick={() => {
+                setIsSidebarOpen(false);
+                setActiveTab('My Profile');
+              }}
+            >
+              <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
+              {!isSidebarCollapsed && (
+                <div className="user-info-new">
+                  <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || 'Client'}</h3>
+                  <div className="role-row" style={{ marginTop: '2px' }}>
+                    <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>Client</span>
+                    <span className="verified-badge" style={{ fontSize: '10px' }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      Verified
+                    </span>
+                  </div>
+                </div>
               )}
-            </button>
-            <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
-              <Icon name="x" />
-            </button>
-          </div>
+            </div>
 
-          <div className="user-card-new" onClick={() => setActiveTab('My Profile')} style={{ cursor: 'pointer' }}>
-            <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User Avatar" />
-            <div className="user-info-new">
-              <h3>{user?.firstName || 'User'}</h3>
-              <div className="role-row">
-                <span className="role-text">Client</span>
-                <span className="verified-badge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.7rem', height: '0.7rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Verified
-                </span>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+                {isSidebarCollapsed ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                )}
+              </button>
+              <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
+                <Icon name="x" />
+              </button>
             </div>
           </div>
 
@@ -1172,7 +1196,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               >
                 <Icon name={item.icon} />
                 <span>{item.name}</span>
-                {item.badge && <span className="badge-count">{item.badge}</span>}
+                {item.badge !== undefined && <span className="badge-count">{item.badge}</span>}
                 {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
               </button>
             ))}
@@ -1228,19 +1252,19 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             <div className="actions-right-dash">
               <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
                 <Icon name="chat" />
-                <span className="badge-indicator">3</span>
+                {unreadMessagesCount > 0 && <span className="badge-indicator">{unreadMessagesCount}</span>}
               </button>
               <button className="icon-btn-dash" onClick={() => setActiveTab('Notifications')} aria-label="Notifications">
                 <Icon name="bell" />
-                <span className="badge-indicator">8</span>
+                {unreadNotificationsCount > 0 && <span className="badge-indicator">{unreadNotificationsCount}</span>}
               </button>
 
 
               <button className="profile-chip-dash" onClick={() => setActiveTab('My Profile')}>
-                <img src={images.proJeff} alt="Nounga profile" className="desktop-only" />
+                <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User profile" className="desktop-only" />
                 <div className="profile-details-dash">
                   <span className="profile-name-dash">
-                    Nounga
+                    {user?.firstName || 'User'}
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                   </span>
                   <span className="profile-role-dash">Client</span>
