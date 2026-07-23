@@ -2,7 +2,7 @@ import './MyProfile.css';
 import { useState, useRef, useEffect } from 'react';
 import { Icon, images, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
+import { api } from '../../services/api';
 
 interface MyProfileProps {
   setActiveTab: (tab: string) => void;
@@ -11,7 +11,7 @@ interface MyProfileProps {
 }
 
 export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyProfileProps) {
-  const { user, checkAuth } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [profileActiveSubTab, setProfileActiveSubTab] = useState('Overview');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preferences, setPreferences] = useState({ providerType: 'all' });
@@ -21,10 +21,10 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
 
   useEffect(() => {
     if (profileActiveSubTab === 'Saved Providers') {
-      // api.get('/users/saved-providers').then(res => setSavedPros(res.data)).catch(console.error);
+      // api.get('/users/saved-providers').then((res: any) => setSavedPros(res.data)).catch(console.error);
     }
     if (profileActiveSubTab === 'Reviews') {
-      api.get('/reviews/mine').then(res => setReviews(res.data)).catch(console.error);
+      api.get('/reviews/mine').then((res: any) => setReviews(res.data)).catch(console.error);
     }
     if (profileActiveSubTab === 'Preferences') {
       const savedPrefs = localStorage.getItem('fixam_preferences');
@@ -45,7 +45,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       await api.post('/upload/profile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      await checkAuth(); // Refresh user data to get new image URL
+      await refreshUser(); // Refresh user data to get new image URL
       alert('Profile picture updated successfully!');
     } catch (error) {
       console.error('Error uploading profile picture:', error);
@@ -91,7 +91,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
           <div className="flex-1 pb-1 w-full">
             <div className="flex flex-col md:flex-row items-center gap-3 mb-1">
               <h2 className="text-2xl font-bold text-gray-900">{fullName}</h2>
-              {user?.isVerified && (
+              {(user as any)?.isVerified && (
                 <span className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-bold">
                   <Icon name="shield" /> Verified
                 </span>
@@ -110,10 +110,10 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
                 className="bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-medium hover:bg-orange-200 transition flex items-center justify-center gap-2" 
                 onClick={toggleRole}
               >
-                <Icon name="refresh" /> Switch to {userRole === 'client' ? 'Provider' : 'Client'}
+                <Icon name="user" /> Switch to {userRole === 'client' ? 'Provider' : 'Client'}
               </button>
             )}
-            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2" onClick={() => setActiveTab('Profile Settings')}>
+            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2" onClick={() => setActiveTab('Settings')}>
               <Icon name="wrench" /> Edit Profile
             </button>
           </div>
@@ -122,7 +122,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
           <div className="text-center md:text-left">
             <span className="block text-xs text-gray-400 mb-1">Member Since</span>
-            <strong className="flex items-center justify-center md:justify-start gap-2 text-gray-800 text-sm"><Icon name="calendar" /> {new Date(user?.createdAt || Date.now()).toLocaleDateString()}</strong>
+            <strong className="flex items-center justify-center md:justify-start gap-2 text-gray-800 text-sm"><Icon name="calendar" /> {new Date((user as any)?.createdAt || Date.now()).toLocaleDateString()}</strong>
           </div>
           <div className="text-center md:text-left">
             <span className="block text-xs text-gray-400 mb-1">Account Status</span>
@@ -216,15 +216,15 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
 
             <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200 shadow-sm flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${user?.isVerified ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${(user as any)?.isVerified ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
                   <Icon name="shield" />
                 </div>
                 <div>
                   <span className="block text-base font-bold text-gray-800">ID Document</span>
-                  <span className="block text-sm text-gray-500">{user?.isVerified ? 'Verified' : 'Not Verified'}</span>
+                  <span className="block text-sm text-gray-500">{(user as any)?.isVerified ? 'Verified' : 'Not Verified'}</span>
                 </div>
               </div>
-              {!user?.isVerified ? (
+              {!(user as any)?.isVerified ? (
                 <a href="https://fixam.verify.usefixam.com" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] px-4 py-2 border border-[#14B8A6] rounded hover:bg-teal-50 transition whitespace-nowrap">
                   Verify Now
                 </a>
