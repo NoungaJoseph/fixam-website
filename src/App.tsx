@@ -1098,7 +1098,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { id: 2, sender: 'client', text: 'Yes, that works perfectly. Please bring your tools for piping.', time: 'Yesterday' },
     { id: 3, sender: 'pro', text: 'Great, see you then!', time: 'Yesterday' }
   ]);
-  const [activeChatUser, setActiveChatUser] = useState('Jeff Thomson');
+  const [activeChatUser, setActiveChatUser] = useState<string>('');
   
   const [savedProsState, setSavedProsState] = useState([
     { id: 1, name: 'Jeff Thomson', role: 'Plumbing Specialist', rating: '4.8', distance: '4.2 km away', image: images.proJeff },
@@ -1384,9 +1384,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const providerNavItems = [
     { name: 'Dashboard', icon: 'home' as IconName },
     { name: 'My Jobs', icon: 'briefcase' as IconName },
-    { name: 'Messages', icon: 'chat' as IconName, badge: 2 },
+    { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
     { name: 'Job Leads', icon: 'search' as IconName },
-    { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: '85K XAF' },
+    { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', icon: 'star' as IconName },
     { name: 'Career Pathways', icon: 'briefcase' as IconName },
     { name: 'Profile Settings', icon: 'user' as IconName },
@@ -1515,6 +1515,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div className="actions-right-dash">
             <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
               <Icon name="chat" />
+              {unreadMessagesCount > 0 && <span className="badge-indicator">{unreadMessagesCount}</span>}
+            </button>
+            <button className="icon-btn-dash" onClick={() => setActiveTab('Notifications')} aria-label="Notifications">
+              <Icon name="bell" />
+              {unreadNotificationsCount > 0 && <span className="badge-indicator">{unreadNotificationsCount}</span>}
             </button>
 
 

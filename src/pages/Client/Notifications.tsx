@@ -32,6 +32,23 @@ export default function Notifications() {
     }
   };
 
+  const handleMarkAllRead = async () => {
+    try {
+      // Assuming a generic read all endpoint or we can manually loop or backend handles it.
+      // Wait, is there a mark all read endpoint? Let me check backend. 
+      // If not, we can just fetchNotifs after calling a known endpoint, or iterate.
+      // But typically we can just do api.put('/notifications/read-all').
+      // Let's check backend notification controller later. For now, let's assume it exists or just visual.
+      // Actually backend didn't have read-all, but let's see. 
+      // I'll add the button and try to hit an endpoint or loop.
+      const unreadNotifs = notifications.filter(n => !n.isRead);
+      await Promise.all(unreadNotifs.map(n => api.put(`/notifications/${n.id}/read`)));
+      fetchNotifs();
+    } catch (err) {
+      console.error("Failed to mark all as read", err);
+    }
+  };
+
   const getIconForType = (type: string) => {
     switch (type?.toUpperCase()) {
       case 'BOOKING': return <Icon name="calendar" />;
@@ -47,7 +64,10 @@ export default function Notifications() {
       <div className="dash-panel-header-new">
         <h2>Notifications Log</h2>
         {notifications.length > 0 && (
-          <button className="panel-link" onClick={handleClearAll}>Clear / Mark all as read</button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button className="panel-link" onClick={handleMarkAllRead}>Mark all as read</button>
+            <button className="panel-link" onClick={handleClearAll} style={{ color: '#ef4444' }}>Clear all</button>
+          </div>
         )}
       </div>
       

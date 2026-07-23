@@ -53,7 +53,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     if (c.id === activeChatUser) return true;
     const { name, other } = getParticipantDetails(c);
     return name === activeChatUser || other?.id === activeChatUser;
-  }) || (conversations.length > 0 ? conversations[0] : null);
+  });
 
   const activeDetails = activeConv ? getParticipantDetails(activeConv) : { name: activeChatUser || 'Chat', avatar: images.proJeff, other: null };
 
@@ -397,7 +397,14 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                       ) : (
                         !isImage && !isAudio && <p>{msg.content}</p>
                       )}
-                      <span className="bubble-time">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', gap: '4px', marginTop: '4px' }}>
+                        <span className="bubble-time" style={{ margin: 0 }}>{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        {isMe && (
+                          <span style={{ fontSize: '14px', color: msg.isRead || msg.readAt ? '#53bdeb' : (isMe && !msg.isRead ? '#8696a0' : '#8696a0'), lineHeight: 1 }}>
+                            {msg.isRead || msg.readAt ? '✓✓' : (msg.deliveredAt ? '✓✓' : '✓')}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -421,7 +428,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               </div>
             )}
 
-            <div className="chat-input-area">
+            <div className="chat-input-area" style={{ flexDirection: 'row', alignItems: 'flex-end', padding: '10px 15px', background: '#f0f2f5', gap: '8px' }}>
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -430,42 +437,33 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                 style={{ display: 'none' }} 
                 onChange={handleImagePick} 
               />
-              <div className="chat-input-actions">
-                <button 
-                  type="button"
-                  className="chat-action-btn" 
-                  title="Attach Images" 
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  🖼️
+              
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '5px 10px', minHeight: '44px' }}>
+                <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
+                  📎
                 </button>
-                <button 
-                  type="button"
-                  className="chat-action-btn" 
-                  title="Send Voice Note" 
-                  onClick={handleVoiceRecord}
-                  style={isRecording ? { background: '#ef4444', color: '#fff' } : {}}
-                >
-                  🎤
-                </button>
-                <button 
-                  type="button"
-                  className="chat-action-btn" 
-                  title="Share Physical Location" 
-                  onClick={handleLocationShare}
-                >
+                <input 
+                  type="text" 
+                  placeholder="Type a message" 
+                  value={newMsgText}
+                  onChange={(e) => setNewMsgText(e.target.value)}
+                  onKeyDown={(e) => { if(e.key === 'Enter') handleSendMsg(); }}
+                  style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1rem', padding: '8px', color: '#111b21' }}
+                />
+                <button type="button" title="Share Location" onClick={handleLocationShare} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
                   📍
                 </button>
               </div>
-              <form onSubmit={handleSendMsg} className="chat-input-bar">
-                <input 
-                  type="text" 
-                  placeholder="Type a message..." 
-                  value={newMsgText}
-                  onChange={(e) => setNewMsgText(e.target.value)}
-                />
-                <button type="submit">Send</button>
-              </form>
+
+              {newMsgText.trim() || selectedImages.length > 0 ? (
+                <button type="button" onClick={(e) => handleSendMsg(e)} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  ➤
+                </button>
+              ) : (
+                <button type="button" title="Send Voice Note" onClick={handleVoiceRecord} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                  {isRecording ? '⏹️' : '🎤'}
+                </button>
+              )}
             </div>
           </>
         ) : (
