@@ -29,7 +29,7 @@ import MyJobs from './pages/Provider/MyJobs'
 import JobLeads from './pages/Provider/JobLeads'
 import ProviderWallet from './pages/Provider/ProviderWallet'
 import ProviderReviews from './pages/Provider/ProviderReviews'
-import ProfileSettings from './pages/Provider/ProfileSettings'
+// Removed ProfileSettings import
 import ProviderSupport from './pages/Provider/ProviderSupport'
 import ProviderDashboard from './pages/Provider/ProviderDashboard'
 
@@ -1115,7 +1115,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Reviews', icon: 'star' as IconName },
       { name: 'Career Pathways', icon: 'briefcase' as IconName },
-      { name: 'Profile Settings', icon: 'user' as IconName },
+      { name: 'Settings', icon: 'user' as IconName },
       { name: 'Support', icon: 'message' as IconName }
     ];
 
@@ -1350,7 +1350,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 )}
                 {activeTab === 'Reviews' && <Reviews />}
                 {activeTab === 'My Referrals' && <Referrals />}
-                {activeTab === 'Profile Settings' && (
+                {activeTab === 'Settings' && (
                   <Settings 
                     savedProsState={savedProsState} 
                     setSavedProsState={setSavedProsState} 
@@ -1389,10 +1389,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { name: 'My Jobs', icon: 'briefcase' as IconName },
     { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
     { name: 'Job Leads', icon: 'search' as IconName },
+    { name: 'My Stats', icon: 'chart-bar' as IconName },
     { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', icon: 'star' as IconName },
     { name: 'Career Pathways', icon: 'briefcase' as IconName },
-    { name: 'Profile Settings', icon: 'user' as IconName },
+    { name: 'Settings', icon: 'user' as IconName },
     { name: 'Support', icon: 'message' as IconName }
   ];
 
@@ -1422,7 +1423,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div 
             className="user-card-new" 
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-            onClick={() => handleNavClick(userRole === 'pro' ? 'Profile Settings' : 'My Profile')}
+            onClick={() => handleNavClick(userRole === 'pro' ? 'Settings' : 'My Profile')}
           >
             <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
             {!isSidebarCollapsed && (
@@ -1561,7 +1562,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           {activeTab === 'Job Leads' && <JobLeads />}
           {activeTab === 'Wallet' && <ProviderWallet />}
           {activeTab === 'Reviews' && <ProviderReviews />}
-          {activeTab === 'Profile Settings' && <ProfileSettings />}
+          {activeTab === 'Settings' && <Settings />}
+          {activeTab === 'My Stats' && <Stats />}
           {activeTab === 'Support' && (
             <ProviderSupport 
               setActiveTab={setActiveTab} 

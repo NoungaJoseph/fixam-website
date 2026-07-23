@@ -1,22 +1,33 @@
 import './Settings.css';
 import React, { useState, useEffect } from 'react';
-import SavedProviders from './SavedProviders';
-import Stats from './Stats';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
 interface SettingsProps {
-  savedProsState: any[];
-  setSavedProsState: (pros: any[]) => void;
-  setActiveTab: (tab: string) => void;
-  setActiveChatUser: (user: string) => void;
+  savedProsState?: any[];
+  setSavedProsState?: (pros: any[]) => void;
+  setActiveTab?: (tab: string) => void;
+  setActiveChatUser?: (user: string) => void;
 }
 
-export default function Settings({ savedProsState, setSavedProsState, setActiveTab, setActiveChatUser }: SettingsProps) {
+export default function Settings({ setActiveTab }: SettingsProps) {
   const { user, refreshUser } = useAuth();
-  const [activeSubTab, setActiveSubTab] = useState<'profile' | 'saved' | 'stats'>('profile');
+  const [activeSubTab, setActiveSubTab] = useState<'notifications' | 'privacy' | 'language'>('notifications');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [mobileOverlay, setMobileOverlay] = useState<'profile' | 'saved' | 'stats' | null>(null);
+  const [mobileOverlay, setMobileOverlay] = useState<'notifications' | 'privacy' | 'language' | null>(null);
+
+  // States for Notifications
+  const [notifyNews, setNotifyNews] = useState(true);
+  const [notifySecurity, setNotifySecurity] = useState(true);
+  const [notifyNewsletter, setNotifyNewsletter] = useState(false);
+  const [notifyPromotions, setNotifyPromotions] = useState(false);
+
+  // States for Privacy
+  const [shareAnalytics, setShareAnalytics] = useState(false);
+  const [personalizeRecommendation, setPersonalizeRecommendation] = useState(true);
+
+  // States for Language
+  const [language, setLanguage] = useState<'EN' | 'FR'>('EN');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -35,18 +46,156 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
   }, [mobileOverlay]);
 
   const menuItems = [
-    { id: 'profile' as const, title: 'Account Settings', desc: 'Update your personal details, address, and notification preferences.', icon: '🔧' },
-    { id: 'saved' as const, title: 'Saved Providers', desc: 'View and manage your bookmarked professionals.', icon: '⭐' },
-    { id: 'stats' as const, title: 'My Stats', desc: 'Monitor your booking and task statistics.', icon: '📊' }
+    { id: 'notifications' as const, title: 'Notification Settings', desc: 'Manage updates, news, newsletters, and promotional alerts.', icon: '🔔' },
+    { id: 'privacy' as const, title: 'Privacy and Security Settings', desc: 'Change password, manage 2FA, data usage and analytics sharing.', icon: '🔒' },
+    { id: 'language' as const, title: 'Language', desc: 'Switch your preferred platform language.', icon: '🌐' }
   ];
+
+  const handleSaveSettings = async () => {
+    try {
+      // Mock API call to update settings
+      await api.put('/users/settings', {
+        notifications: { notifyNews, notifySecurity, notifyNewsletter, notifyPromotions },
+        privacy: { shareAnalytics, personalizeRecommendation },
+        language
+      });
+      alert('Settings saved successfully!');
+    } catch (err) {
+      alert('Failed to save settings');
+    }
+  };
+
+  const handleDownloadData = () => {
+    alert("Downloading your personal data... (mock)");
+  };
+
+  const handleClearCache = () => {
+    alert("Cache cleared successfully!");
+  };
+
+  const renderContent = (tabId: string) => {
+    switch (tabId) {
+      case 'notifications':
+        return (
+          <div className="settings-section animate-fade-in">
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Notification Settings</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Fixam News</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Get updates on platform changes.</p>
+                </div>
+                <input type="checkbox" checked={notifyNews} onChange={e => setNotifyNews(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Security Updates</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Important security alerts and login attempts.</p>
+                </div>
+                <input type="checkbox" checked={notifySecurity} onChange={e => setNotifySecurity(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Newsletter</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Receive our monthly newsletter.</p>
+                </div>
+                <input type="checkbox" checked={notifyNewsletter} onChange={e => setNotifyNewsletter(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Promotions</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Special offers and discounts.</p>
+                </div>
+                <input type="checkbox" checked={notifyPromotions} onChange={e => setNotifyPromotions(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+            </div>
+
+            <button onClick={handleSaveSettings} style={{ marginTop: '2rem', padding: '0.8rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Save Notification Preferences
+            </button>
+          </div>
+        );
+      case 'privacy':
+        return (
+          <div className="settings-section animate-fade-in">
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Privacy & Security</h3>
+            
+            <div style={{ marginBottom: '2rem' }}>
+              <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>Account Security</h4>
+              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer', marginRight: '1rem' }}>Change Password</button>
+              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--teal)', background: '#F0FDFA', color: 'var(--teal)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Enable 2FA</button>
+            </div>
+
+            <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>Data Usage</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Share Analytics</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Help us improve Fixam by sharing anonymous usage data.</p>
+                </div>
+                <input type="checkbox" checked={shareAnalytics} onChange={e => setShareAnalytics(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Personalize Recommendations</h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Use my data to recommend better services.</p>
+                </div>
+                <input type="checkbox" checked={personalizeRecommendation} onChange={e => setPersonalizeRecommendation(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
+              </div>
+            </div>
+
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button onClick={handleDownloadData} style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer' }}>Download Personal Data</button>
+              <button onClick={handleClearCache} style={{ padding: '0.6rem 1rem', border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#B91C1C', borderRadius: '6px', cursor: 'pointer' }}>Clear Cache</button>
+              <button onClick={handleSaveSettings} style={{ padding: '0.6rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginLeft: 'auto' }}>
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        );
+      case 'language':
+        return (
+          <div className="settings-section animate-fade-in">
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Language</h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>Select your preferred language for the Fixam platform.</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', padding: '1rem', border: `1px solid ${language === 'EN' ? 'var(--teal)' : 'var(--line)'}`, borderRadius: '8px', background: language === 'EN' ? '#F0FDFA' : 'transparent' }}>
+                <input type="radio" name="language" value="EN" checked={language === 'EN'} onChange={() => setLanguage('EN')} style={{ transform: 'scale(1.2)' }} />
+                <span style={{ fontSize: '1rem', fontWeight: 500 }}>English</span>
+              </label>
+              
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', padding: '1rem', border: `1px solid ${language === 'FR' ? 'var(--teal)' : 'var(--line)'}`, borderRadius: '8px', background: language === 'FR' ? '#F0FDFA' : 'transparent' }}>
+                <input type="radio" name="language" value="FR" checked={language === 'FR'} onChange={() => setLanguage('FR')} style={{ transform: 'scale(1.2)' }} />
+                <span style={{ fontSize: '1rem', fontWeight: 500 }}>Français (French)</span>
+              </label>
+            </div>
+
+            <button onClick={handleSaveSettings} style={{ marginTop: '2rem', padding: '0.8rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Apply Language
+            </button>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   if (isMobile) {
     return (
       <div className="settings-mobile-container animate-fade-in" style={{ width: '100%' }}>
-        <h2>Profile Settings</h2>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Settings</h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '2rem', lineHeight: '1.4' }}>
+          Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations.
+        </p>
         
         {/* Menu Cards */}
-        <div className="settings-mobile-menu-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+        <div className="settings-mobile-menu-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {menuItems.map((item) => (
             <div 
               key={item.id} 
@@ -98,139 +247,35 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
-                justifyContent: 'space-between', 
-                borderBottom: '1px solid var(--line)',
                 paddingBottom: '1rem',
-                marginBottom: '1.5rem'
+                borderBottom: '1px solid var(--line)',
+                marginBottom: '1rem'
               }}
             >
               <button 
                 onClick={() => setMobileOverlay(null)}
                 style={{
-                  background: 'var(--soft)',
+                  background: 'transparent',
                   border: 'none',
-                  color: 'var(--ink)',
-                  padding: '0.5rem 1rem',
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  fontSize: '0.9rem',
-                  cursor: 'pointer'
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  marginRight: '0.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                &larr; Back
+                &larr;
               </button>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--ink)' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--ink)' }}>
                 {menuItems.find(i => i.id === mobileOverlay)?.title}
               </h3>
-              <div style={{ width: '60px' }}></div> {/* Spacer to center title */}
             </div>
-
-            {/* Content */}
+            
+            {/* Content area */}
             <div style={{ flex: 1 }}>
-              {mobileOverlay === 'profile' && (
-                <div className="dash-panel-premium settings-panel-premium">
-                  <h2>Client Settings</h2>
-                  <form className="settings-form-premium" onSubmit={async (e) => { 
-                    e.preventDefault(); 
-                    const formData = new FormData(e.currentTarget);
-                    const updates = {
-                      fullName: formData.get('fullName'),
-                      email: formData.get('email'),
-                      phone: formData.get('phone'),
-                      preferredLanguage: formData.get('language'),
-                      location: formData.get('location')
-                    };
-                    try {
-                      await api.patch('/users/profile', updates);
-                      if (refreshUser) await refreshUser();
-                      alert('Settings saved successfully!');
-                      setMobileOverlay(null);
-                    } catch (err) {
-                      alert('Failed to update settings');
-                    }
-                  }}>
-                    <div className="form-grid-2">
-                      <label>
-                        <span>Full Name</span>
-                        <input type="text" name="fullName" defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`.trim()} />
-                      </label>
-                      <label>
-                        <span>Email Address</span>
-                        <input type="email" name="email" defaultValue={user?.email || ''} />
-                      </label>
-                    </div>
-                    <div className="form-grid-2">
-                      <label>
-                        <span>Phone Number</span>
-                        <input type="text" name="phone" defaultValue={user?.phone || ''} />
-                      </label>
-                      <label>
-                        <span>Language preference</span>
-                        <select name="language" defaultValue={user?.preferredLanguage || 'English'}>
-                          <option value="English">English</option>
-                          <option value="French">French</option>
-                        </select>
-                      </label>
-                    </div>
-                    <label>
-                      <span>Address / Location Area</span>
-                      <input type="text" name="location" defaultValue={user?.location || ''} />
-                    </label>
-                    
-                    <div className="settings-checkbox-row">
-                      <input type="checkbox" id="email-notifs" defaultChecked />
-                      <label htmlFor="email-notifs">Receive email notifications for booking updates</label>
-                    </div>
-                    <div className="settings-checkbox-row">
-                      <input type="checkbox" id="sms-notifs" defaultChecked />
-                      <label htmlFor="sms-notifs">Receive SMS text notifications for urgent offers</label>
-                    </div>
-
-                    <button type="submit" className="btn-settings-submit" style={{ width: '100%', marginTop: '1rem' }}>Save Preferences</button>
-                  </form>
-
-                  <h2 style={{ marginTop: '2rem' }}>Security Settings</h2>
-                  <form className="settings-form-premium" onSubmit={async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const currentPassword = formData.get('currentPassword');
-                    const newPassword = formData.get('newPassword');
-                    if (!currentPassword || !newPassword) return alert("Please fill both password fields");
-                    try {
-                      await api.post('/users/change-password', { currentPassword, newPassword });
-                      alert('Password updated successfully!');
-                      e.currentTarget.reset();
-                    } catch (err: any) {
-                      alert(err.response?.data?.message || 'Failed to update password');
-                    }
-                  }}>
-                    <div className="form-grid-2">
-                      <label>
-                        <span>Current Password</span>
-                        <input type="password" name="currentPassword" required />
-                      </label>
-                      <label>
-                        <span>New Password</span>
-                        <input type="password" name="newPassword" required />
-                      </label>
-                    </div>
-                    <button type="submit" className="btn-settings-submit" style={{ width: '100%', marginTop: '1rem', background: 'var(--red)', borderColor: 'var(--red)' }}>Update Password</button>
-                  </form>
-                </div>
-              )}
-
-              {mobileOverlay === 'saved' && (
-                <SavedProviders 
-                  savedProsState={savedProsState} 
-                  setSavedProsState={setSavedProsState} 
-                  setActiveTab={setActiveTab} 
-                  setActiveChatUser={setActiveChatUser} 
-                />
-              )}
-
-              {mobileOverlay === 'stats' && (
-                <Stats />
-              )}
+              {renderContent(mobileOverlay)}
             </div>
           </div>
         )}
@@ -238,134 +283,53 @@ export default function Settings({ savedProsState, setSavedProsState, setActiveT
     );
   }
 
-  // Desktop view (standard tabs)
+  // Desktop view
   return (
-    <div className="settings-tab-wrapper animate-fade-in" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      {/* Subtabs Header */}
-      <div className="dash-subtabs-header">
-        <button 
-          className={`subtab-btn ${activeSubTab === 'profile' ? 'active' : ''}`} 
-          onClick={() => setActiveSubTab('profile')}
-        >
-          Account Settings
-        </button>
-        <button 
-          className={`subtab-btn ${activeSubTab === 'saved' ? 'active' : ''}`} 
-          onClick={() => setActiveSubTab('saved')}
-        >
-          Saved Providers
-        </button>
-        <button 
-          className={`subtab-btn ${activeSubTab === 'stats' ? 'active' : ''}`} 
-          onClick={() => setActiveSubTab('stats')}
-        >
-          My Stats
-        </button>
+    <div className="settings-desktop-container animate-fade-in">
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: 'var(--ink)' }}>Settings</h2>
+        <p style={{ fontSize: '0.95rem', color: 'var(--muted)', maxWidth: '800px', lineHeight: '1.5' }}>
+          Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations on the platform.
+        </p>
       </div>
-
-      {activeSubTab === 'profile' && (
-        <div className="dash-panel-premium settings-panel-premium">
-          <h2>Client Settings</h2>
-          <form className="settings-form-premium" onSubmit={async (e) => { 
-            e.preventDefault(); 
-            const formData = new FormData(e.currentTarget);
-            const updates = {
-              fullName: formData.get('fullName'),
-              email: formData.get('email'),
-              phone: formData.get('phone'),
-              preferredLanguage: formData.get('language'),
-              location: formData.get('location')
-            };
-            try {
-              await api.patch('/users/profile', updates);
-              if (refreshUser) await refreshUser();
-              alert('Settings saved successfully!');
-            } catch (err) {
-              alert('Failed to update settings');
-            }
-          }}>
-            <div className="form-grid-2">
-              <label>
-                <span>Full Name</span>
-                <input type="text" name="fullName" defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`.trim()} />
-              </label>
-              <label>
-                <span>Email Address</span>
-                <input type="email" name="email" defaultValue={user?.email || ''} />
-              </label>
-            </div>
-            <div className="form-grid-2">
-              <label>
-                <span>Phone Number</span>
-                <input type="text" name="phone" defaultValue={user?.phone || ''} />
-              </label>
-              <label>
-                <span>Language preference</span>
-                <select name="language" defaultValue={user?.preferredLanguage || 'English'}>
-                  <option value="English">English</option>
-                  <option value="French">French</option>
-                </select>
-              </label>
-            </div>
-            <label>
-              <span>Address / Location Area</span>
-              <input type="text" name="location" defaultValue={user?.location || ''} />
-            </label>
-            
-            <div className="settings-checkbox-row">
-              <input type="checkbox" id="email-notifs" defaultChecked />
-              <label htmlFor="email-notifs">Receive email notifications for booking updates</label>
-            </div>
-            <div className="settings-checkbox-row">
-              <input type="checkbox" id="sms-notifs" defaultChecked />
-              <label htmlFor="sms-notifs">Receive SMS text notifications for urgent offers</label>
-            </div>
-
-            <button type="submit" className="btn-settings-submit">Save Preferences</button>
-          </form>
-
-          <h2 style={{ marginTop: '2rem' }}>Security Settings</h2>
-          <form className="settings-form-premium" onSubmit={async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            const currentPassword = formData.get('currentPassword');
-            const newPassword = formData.get('newPassword');
-            if (!currentPassword || !newPassword) return alert("Please fill both password fields");
-            try {
-              await api.post('/users/change-password', { currentPassword, newPassword });
-              alert('Password updated successfully!');
-              e.currentTarget.reset();
-            } catch (err: any) {
-              alert(err.response?.data?.message || 'Failed to update password');
-            }
-          }}>
-            <div className="form-grid-2">
-              <label>
-                <span>Current Password</span>
-                <input type="password" name="currentPassword" required />
-              </label>
-              <label>
-                <span>New Password</span>
-                <input type="password" name="newPassword" required />
-              </label>
-            </div>
-            <button type="submit" className="btn-settings-submit" style={{ background: 'var(--red)', borderColor: 'var(--red)' }}>Update Password</button>
-          </form>
+      
+      <div className="settings-desktop-layout" style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '2rem', minHeight: '60vh' }}>
+        
+        {/* Left Sidebar */}
+        <div className="settings-desktop-sidebar" style={{ borderRight: '1px solid var(--line)', paddingRight: '1rem' }}>
+          {menuItems.map(item => (
+            <button 
+              key={item.id}
+              onClick={() => setActiveSubTab(item.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.8rem',
+                width: '100%',
+                padding: '1rem',
+                border: 'none',
+                background: activeSubTab === item.id ? 'var(--bg-teal-light)' : 'transparent',
+                color: activeSubTab === item.id ? 'var(--teal)' : 'var(--muted)',
+                textAlign: 'left',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: activeSubTab === item.id ? 'bold' : 'normal',
+                transition: 'all 0.2s',
+                marginBottom: '0.5rem'
+              }}
+            >
+              <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+              {item.title}
+            </button>
+          ))}
         </div>
-      )}
 
-      {activeSubTab === 'saved' && (
-        <SavedProviders 
-          savedProsState={savedProsState} 
-          setSavedProsState={setSavedProsState} 
-          setActiveTab={setActiveTab} 
-          setActiveChatUser={setActiveChatUser} 
-        />
-      )}
-
-      {activeSubTab === 'stats' && (
-        <Stats />
-      )}
+        {/* Right Content */}
+        <div className="settings-desktop-content" style={{ padding: '0 1rem' }}>
+          {renderContent(activeSubTab)}
+        </div>
+        
+      </div>
     </div>
   );
 }
