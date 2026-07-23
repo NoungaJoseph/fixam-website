@@ -1057,9 +1057,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const totalUnread = convsRes.data.data.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
             setUnreadMessagesCount(totalUnread);
           }
-          if (notifsRes?.data?.notifications || notifsRes?.data?.data) {
-            const list = notifsRes.data.notifications || notifsRes.data.data || [];
-            const unreadNotifs = list.filter((n: any) => !n.isRead && !n.read).length;
+          if (notifsRes?.data) {
+            const unreadNotifs = notifsRes.data.unreadCount !== undefined 
+              ? notifsRes.data.unreadCount 
+              : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
             setUnreadNotificationsCount(unreadNotifs);
           }
 

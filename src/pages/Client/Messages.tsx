@@ -18,6 +18,8 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   const [newMsgText, setNewMsgText] = useState('');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [activeTask, setActiveTask] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,8 +62,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
       api.get(`/chat/${activeConv.id}/messages`).then(res => {
         setMessages(res.data.data || []);
       }).catch(console.error);
+
+      api.get(`/chat/${activeConv.id}/active-task`).then(res => {
+        setActiveTask(res.data?.data || null);
+      }).catch(() => setActiveTask(null));
     } else {
       setMessages([]);
+      setActiveTask(null);
     }
   }, [activeConv?.id]);
 
@@ -220,7 +227,138 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                 <h3>{activeDetails.name}</h3>
                 <span className="online-badge">• Active</span>
               </div>
+
+              {!activeConv.isSystem && (
+                <div style={{ marginLeft: 'auto' }}>
+                  <button 
+                    type="button"
+                    onClick={() => setShowTrackingModal(true)}
+                    style={{
+                      background: 'linear-gradient(135deg, #14B8A6, #0D9488)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '20px',
+                      padding: '8px 16px',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      boxShadow: '0 2px 8px rgba(20, 184, 166, 0.3)'
+                    }}
+                  >
+                    📍 Track Provider
+                  </button>
+                </div>
+              )}
             </div>
+
+            {/* Provider Tracking Overlay Modal */}
+            {showTrackingModal && (
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'rgba(15, 23, 42, 0.65)',
+                backdropFilter: 'blur(4px)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1rem'
+              }}>
+                <div style={{
+                  background: '#ffffff',
+                  borderRadius: '16px',
+                  maxWidth: '520px',
+                  width: '100%',
+                  overflow: 'hidden',
+                  boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)'
+                }}>
+                  {/* Header */}
+                  <div style={{ background: '#0F172A', color: '#fff', padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>📍</span>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>Live Provider Tracking</h3>
+                    </div>
+                    <button 
+                      onClick={() => setShowTrackingModal(false)}
+                      style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', fontSize: '1rem' }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  {/* Body Content */}
+                  <div style={{ padding: '1.5rem' }}>
+                    {/* Live Status Badge */}
+                    <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '0.8rem 1rem', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.2rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 0 4px rgba(34,197,94,0.2)' }}></span>
+                        <span style={{ fontWeight: 700, color: '#166534', fontSize: '0.9rem' }}>
+                          {activeTask?.status === 'IN_PROGRESS' ? 'Provider On Site' : 'Provider En Route'}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '0.8rem', color: '#15803D', fontWeight: 600 }}>ETA: ~10 mins</span>
+                    </div>
+
+                    {/* Provider Info Card */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: '#F8FAFC', borderRadius: '12px', marginBottom: '1.2rem' }}>
+                      <img src={activeDetails.avatar} alt={activeDetails.name} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }} />
+                      <div style={{ flex: 1 }}>
+                        <h4 style={{ margin: '0 0 2px 0', fontSize: '1rem', color: '#0F172A' }}>{activeDetails.name}</h4>
+                        <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
+                          {activeTask?.title || activeTask?.category || 'Assigned Service Specialist'}
+                        </span>
+                      </div>
+                      <a 
+                        href={`tel:${activeDetails.other?.phone || ''}`} 
+                        style={{ background: '#14B8A6', color: '#fff', padding: '8px 14px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
+                      >
+                        📞 Call
+                      </a>
+                    </div>
+
+                    {/* Simulated Live Map Container */}
+                    <div style={{ height: '180px', background: '#E2E8F0', borderRadius: '12px', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', backgroundSize: 'cover', backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundColor: '#f1f5f9' }}>
+                      <span style={{ fontSize: '2.5rem', marginBottom: '0.4rem' }}>🗺️</span>
+                      <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Tracking Live Location in Real-time</span>
+                      <a 
+                        href="https://maps.google.com" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        style={{ marginTop: '8px', color: '#0D9488', fontSize: '0.8rem', fontWeight: 700, textDecoration: 'underline' }}
+                      >
+                        Open Full Live Map ↗
+                      </a>
+                    </div>
+
+                    {/* Progress Timeline */}
+                    <div style={{ marginTop: '1.2rem', display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 10px' }}>
+                      <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✓</div>
+                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>Accepted</span>
+                      </div>
+                      <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🚗</div>
+                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>En Route</span>
+                      </div>
+                      <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>📍</div>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>On Site</span>
+                      </div>
+                      <div style={{ textAlign: 'center', flex: 1 }}>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🏁</div>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Done</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="chat-messages-scroll" ref={scrollRef}>
               {messages.map((msg) => {
