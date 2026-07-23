@@ -11,6 +11,8 @@ interface MyBookingsProps {
   setClientTasks: (tasks: any[]) => void;
   setActiveTab: (tab: string) => void;
   setActiveChatUser: (user: string) => void;
+  walletBalance?: number;
+  savedProsState?: any[];
 }
 
 export default function MyBookings({ 
@@ -19,7 +21,9 @@ export default function MyBookings({
   clientTasks, 
   setClientTasks, 
   setActiveTab, 
-  setActiveChatUser 
+  setActiveChatUser,
+  walletBalance = 0,
+  savedProsState = []
 }: MyBookingsProps) {
   const [activeSubTab, setActiveSubTab] = useState<'bookings' | 'tasks'>('bookings');
 
@@ -45,24 +49,6 @@ export default function MyBookings({
         <div className="bg-transparent border-0 p-0 w-full">
           <div className="dash-panel-header-new">
             <h2>Bookings List</h2>
-            <button className="btn-tab-action" onClick={async () => {
-              const dateStr = prompt("Enter booking date (e.g. 2026-05-25):", "2026-05-25");
-              const providerId = prompt("Enter Provider ID:");
-              const jobId = prompt("Enter Job ID (Optional):");
-              if (dateStr && providerId) {
-                try {
-                  const res = await api.post('/bookings', {
-                    providerId,
-                    jobId: jobId || undefined,
-                    scheduledDate: new Date(dateStr).toISOString()
-                  });
-                  setClientBookings([res.data.booking, ...clientBookings]);
-                  alert("Booking created successfully!");
-                } catch (err: any) {
-                  alert(err.response?.data?.message || "Failed to create booking");
-                }
-              }
-            }}>+ New Booking</button>
           </div>
           <div className="bookings-detailed-list">
             {clientBookings.map((bk) => {
@@ -124,6 +110,9 @@ export default function MyBookings({
           clientTasks={clientTasks} 
           setClientTasks={setClientTasks} 
           setActiveTab={setActiveTab} 
+          walletBalance={walletBalance}
+          savedProsState={savedProsState}
+          clientBookings={clientBookings}
         />
       )}
     </div>

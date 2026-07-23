@@ -15,6 +15,7 @@ interface Provider {
   role: string;
   image: string;
   rating: number;
+  originalData?: any;
 }
 
 interface Booking {
@@ -31,8 +32,9 @@ interface ClientDashboardProps {
   setSelectedProvider: (pro: Provider) => void;
   services: Service[];
   displayedPros: Provider[];
-  clientBookings: Booking[];
+  clientBookings: any[];
   walletBalance?: number;
+  setSelectedBooking?: (booking: any) => void;
 }
 
 export default function ClientDashboard({
@@ -42,6 +44,7 @@ export default function ClientDashboard({
   displayedPros,
   clientBookings,
   walletBalance = 0,
+  setSelectedBooking,
 }: ClientDashboardProps) {
   const { user } = useAuth();
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -168,20 +171,34 @@ export default function ClientDashboard({
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {displayedPros.slice(0, 3).map((pro, idx) => {
-                  const roleArray = pro.role ? pro.role.split(',').map(s => s.trim()) : [];
-                  const displayRole = roleArray.slice(0, 2).join(', ') + (roleArray.length > 2 ? '...' : '');
+                  const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
+                  const displayRole = roleArray.length > 0 ? roleArray[0] : 'Service Provider';
                   return (
                     <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center text-center relative group hover:shadow-sm transition-shadow" key={idx}>
                       <button className="absolute top-2 right-2 text-gray-300 hover:text-[#F59E0B] transition" onClick={() => alert(`${pro.name} saved!`)}>
                         <Icon name="star" />
                       </button>
-                      <img src={pro.image} alt={pro.name} className="w-16 h-16 rounded-full mb-3 object-cover shadow-sm" />
+                      {pro.image ? (
+                        <img 
+                          src={pro.image} 
+                          alt={pro.name} 
+                          className="w-16 h-16 rounded-full mb-3 object-cover shadow-sm" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).onerror = null;
+                            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name)}&background=14B8A6&color=fff&size=64&rounded=true`;
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full mb-3 shadow-sm bg-teal-500 text-white flex items-center justify-center font-bold text-xl">
+                          {pro.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                       <h4 className="text-sm font-bold text-gray-800 mb-1 line-clamp-1">{pro.name}</h4>
                       <span className="block text-[10px] uppercase font-bold tracking-wider text-[#14B8A6] bg-teal-50 px-2 py-0.5 rounded-full mb-2 line-clamp-1" title={pro.role}>{displayRole}</span>
                       <div className="flex items-center justify-center gap-1 text-xs text-[#F59E0B] mb-3">
                         <Icon name="star" />
                         <span className="font-medium text-gray-700">{pro.rating}</span>
-                        <span className="text-gray-400">({Math.floor(Math.random() * 100 + 50)})</span>
+                        <span className="text-gray-400">({pro.originalData?.reviewsCount || 0})</span>
                       </div>
                       <button className="w-full py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium text-xs rounded transition mt-auto" onClick={() => setSelectedProvider(pro)}>View Profile</button>
                     </div>
@@ -208,26 +225,47 @@ export default function ClientDashboard({
                 const activeBookings = clientBookings.filter(bk => bk.status !== 'Completed' && bk.status !== 'Cancelled' && bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED');
                 return activeBookings.length > 0 ? (
                   <div className="space-y-4">
-                    {activeBookings.map((bk) => (
-                      <div className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0" key={bk.id}>
-                        <div className="bg-teal-50 rounded-lg w-12 h-12 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-[10px] font-bold text-[#14B8A6] uppercase">{bk.date.split(' ')[0]}</span>
-                          <span className="text-lg font-black text-[#14B8A6] leading-none -mt-1">{bk.date.split(' ')[1]}</span>
+                    {activeBookings.map((bk) => {
+                      const displayDate = bk.date || bk.scheduledDate || bk.createdAt || 'TBD';
+                      const parts = displayDate.split(' ');
+                      const part1 = parts[0] || 'TBD';
+                      const part2 = parts[1] || '';
+                      
+                      return (
+                      <div 
+                        className="flex items-start gap-4 p-4 mb-4 bg-white border border-gray-100 rounded-xl hover:border-teal-200 hover:shadow-md transition cursor-pointer group" 
+                        key={bk.id || bk._id}
+                        onClick={() => {
+                          if (setSelectedBooking) setSelectedBooking(bk);
+                          setActiveTab('Booking Details');
+                        }}
+                      >
+                        <div className="bg-teal-50 group-hover:bg-teal-100 transition rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0">
+                          <span className="text-[11px] font-bold text-teal-600 uppercase tracking-wide">{part1}</span>
+                          <span className="text-xl font-black text-teal-700 leading-none -mt-1">{part2 || <Icon name="calendar" />}</span>
                         </div>
                         <div className="flex-1">
-                          <div className="flex justify-between items-start mb-1">
-                            <h4 className="font-bold text-gray-800 text-sm">{bk.service}</h4>
-                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : (bk.status === 'Pending' || bk.status === 'PENDING') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
-                              {bk.status}
+                          <div className="flex justify-between items-start mb-1.5">
+                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-teal-700 transition">{bk.service || bk.title || 'Service'}</h4>
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : (bk.status === 'Pending' || bk.status === 'PENDING') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
+                              {bk.status || 'PENDING'}
                             </span>
                           </div>
-                          <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                            <Icon name="calendar" /> {bk.date} at {bk.time}
+                          <div className="text-xs text-gray-500 mb-1.5 flex items-center gap-1.5">
+                            <Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}
                           </div>
-                          <div className="text-xs font-medium text-gray-700">Provider: {bk.provider}</div>
+                          <div className="text-xs font-medium text-gray-600 flex items-center gap-1">
+                            <span className="text-gray-400">Provider:</span> {
+                            typeof bk.provider === 'string' ? bk.provider : 
+                            (bk.provider?.fullName || bk.provider?.name || `${bk.provider?.firstName || ''} ${bk.provider?.lastName || ''}`.trim() || 
+                            (bk.providerDetails ? `${bk.providerDetails.firstName || ''} ${bk.providerDetails.lastName || ''}`.trim() : 'Unassigned')) || 'Unassigned'
+                          }</div>
+                        </div>
+                        <div className="self-center text-gray-300 group-hover:text-teal-500 transition">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </div>
                       </div>
-                    ))}
+                    )})}
                   </div>
                 ) : (
                   <div className="text-center py-6">

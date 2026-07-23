@@ -66,7 +66,7 @@ export type IconName =
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
   | 'chevron-up' | 'chevron-down'
-  | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart'
+  | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart' | 'phone'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
@@ -350,7 +350,7 @@ function App() {
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} />
+        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} onRoleChange={setUserRole} />
       ) : page === 'login' ? (
         <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
@@ -958,6 +958,19 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.profile-dropdown-container')) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [searchVal, setSearchVal] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
@@ -1039,6 +1052,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   ]);
   const [clientBookings, setClientBookings] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState(0);
+  const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [leads, setLeads] = useState<any[]>([]);
@@ -1069,13 +1083,37 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const [jobsRes, walletRes, providersRes, bookingsRes] = await Promise.all([
               api.get('/jobs/client').catch(() => null),
               api.get('/wallet/balance').catch(() => null),
-              api.get('/users/providers').catch(() => null),
+              api.get('/providers').catch(() => null),
               api.get('/bookings/mine').catch(() => null)
             ]);
-            if (bookingsRes?.data?.bookings) setClientBookings(bookingsRes.data.bookings);
-            if (jobsRes?.data?.jobs) setClientTasks(jobsRes.data.jobs);
-            if (walletRes?.data?.balance !== undefined) setWalletBalance(walletRes.data.balance || 0);
-            if (providersRes?.data?.providers) setLocalLivePros(providersRes.data.providers);
+            if (bookingsRes?.data?.data) setClientBookings(bookingsRes.data.data);
+            if (jobsRes?.data?.data) setClientTasks(jobsRes.data.data);
+            if (walletRes?.data?.data) {
+              setWalletBalance(walletRes.data.data.balance || 0);
+              if (walletRes.data.data.transactions) setWalletTransactions(walletRes.data.data.transactions);
+            }
+            if (providersRes?.data?.data) {
+              const formattedPros = providersRes.data.data.map((item: any) => {
+                const name = item.user?.fullName || 'Anonymous Provider';
+                const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
+                const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
+                
+                let image = 'https://via.placeholder.com/150';
+                if (item.user?.avatar) {
+                  image = item.user.avatar.startsWith('http') ? item.user.avatar : `https://api.usefixam.com/api${item.user.avatar}`;
+                }
+                
+                return {
+                  id: item.id,
+                  name,
+                  role,
+                  rating,
+                  image,
+                  originalData: item
+                };
+              });
+              setLocalLivePros(formattedPros);
+            }
           } else if (userRole === 'pro') {
             const [leadsRes, proposalsRes, walletRes] = await Promise.all([
               api.get('/jobs/pro/matches').catch(() => null), 
@@ -1084,7 +1122,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             ]);
             if (leadsRes?.data) setLeads(leadsRes.data.jobs || leadsRes.data.matches || []);
             if (proposalsRes?.data?.proposals) setActiveProposals(proposalsRes.data.proposals);
-            if (walletRes?.data?.balance !== undefined) setWalletBalance(walletRes.data.balance || 0);
+            if (walletRes?.data?.data) {
+              setWalletBalance(walletRes.data.data.balance || 0);
+              if (walletRes.data.data.transactions) setWalletTransactions(walletRes.data.data.transactions);
+            }
           }
         } catch (err) {
           console.error(`Failed to fetch ${userRole} dashboard data`, err);
@@ -1121,18 +1162,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const handleNavClick = async (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
-      if (itemName === 'Support') {
-        try {
-          const res = await api.post('/chat/support');
-          const supportConvId = res.data?.data?.id;
-          setActiveChatUser(supportConvId || 'Support');
-          setActiveTab('Messages');
-        } catch (err) {
-          console.error("Failed to open support chat", err);
-          alert('Failed to connect to support.');
-        }
-      } else if (itemName === 'Career Pathways') {
+      if (itemName === 'Career Pathways') {
         onNavigate('career_pathways');
+      } else if (itemName === 'Log Out') {
+        onNavigate('home');
       } else {
         setActiveTab(itemName);
       }
@@ -1201,12 +1234,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               </button>
             ))}
             
-            {onRoleChange && (
-              <button className="side-link-new" onClick={() => onRoleChange('pro')}>
-                <Icon name="user" />
-                <span>Provider View</span>
-              </button>
-            )}
+
 
             <button className="side-link-new" onClick={() => onNavigate('login')}>
               <Icon name="x" />
@@ -1260,16 +1288,44 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               </button>
 
 
-              <button className="profile-chip-dash" onClick={() => setActiveTab('My Profile')}>
-                <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User profile" className="desktop-only" />
-                <div className="profile-details-dash">
-                  <span className="profile-name-dash">
-                    {user?.firstName || 'User'}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </span>
-                  <span className="profile-role-dash">Client</span>
-                </div>
-              </button>
+              <div className="relative profile-dropdown-container">
+                <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
+                  <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User profile" className="desktop-only" />
+                  <div className="profile-details-dash">
+                    <span className="profile-name-dash">
+                      {user?.firstName || 'User'}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem', transform: isProfileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                    <span className="profile-role-dash">Client</span>
+                  </div>
+                </button>
+                {isProfileDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
+                    <button 
+                      className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setActiveTab('My Profile');
+                      }}
+                    >
+                      <div className="flex items-center gap-2"><Icon name="user" /> Client</div>
+                      <Icon name="check" />
+                    </button>
+                    {onRoleChange && (
+                      <button 
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          onRoleChange('pro');
+                        }}
+                      >
+                        <Icon name="briefcase" /> Switch to Provider
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </header>
 
@@ -1475,12 +1531,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             </button>
           ))}
           
-          {onRoleChange && (
-            <button className="side-link-new" onClick={() => onRoleChange('client')}>
-              <Icon name="user" />
-              <span>Client View</span>
-            </button>
-          )}
+
 
           <button className="side-link-new" onClick={() => onNavigate('home')}>
             <Icon name="x" />
@@ -1532,18 +1583,46 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             </button>
 
 
-            <button className="profile-chip-dash">
-              <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="Profile" />
-              <div className="profile-details-dash">
-                <span className="profile-name-dash">
-                  {user?.firstName || 'User'}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </span>
-                <span className="profile-role-dash">{userRole === 'pro' ? 'Provider' : 'Client'}</span>
+              <div className="relative profile-dropdown-container">
+                <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
+                  <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="Profile" />
+                  <div className="profile-details-dash">
+                    <span className="profile-name-dash">
+                      {user?.firstName || 'User'}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem', transform: isProfileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                    <span className="profile-role-dash">{userRole === 'pro' ? 'Provider' : 'Client'}</span>
+                  </div>
+                </button>
+                {isProfileDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
+                    {onRoleChange && (
+                      <button 
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        onClick={() => {
+                          setIsProfileDropdownOpen(false);
+                          onRoleChange('client');
+                        }}
+                      >
+                        <Icon name="user" /> Switch to Client
+                      </button>
+                    )}
+                    <button 
+                      className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        setActiveTab('Settings');
+                      }}
+                    >
+                      <div className="flex items-center gap-2"><Icon name="briefcase" /> Provider</div>
+                      <Icon name="check" />
+                    </button>
+                  </div>
+                )}
               </div>
-            </button>
-          </div>
-        </header>
+            </div>
+          </header>
 
         {/* Main Content Area */}
         <div className={`dash-content-premium`}>
@@ -1722,7 +1801,11 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: (typeof pros)[
   return (
     <article className={mini ? 'top-rated-card mini' : 'top-rated-card'}>
       <div className="top-rated-cover">
-        <img src={pro.image} alt={pro.name} className="top-rated-img" />
+        {pro.image ? (
+          <img src={pro.image} alt={pro.name} className="top-rated-img" />
+        ) : (
+          <div className="top-rated-img fallback-cover" style={{ backgroundColor: '#14b8a6', width: '100%', height: '100%' }}></div>
+        )}
         <div className="top-rated-verified"><Icon name="shield" /> Verified</div>
       </div>
       <div className="top-rated-content">
@@ -1995,7 +2078,8 @@ export function Icon({ name }: { name: IconName }) {
     linkedin: 'M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z M2 9h4v12H2z M4 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4z',
     chart: 'M4 20h16 M4 20V10 M9 20V6 M14 20V12 M19 20V8',
     'chevron-up': 'M18 15l-6-6-6 6',
-    'chevron-down': 'M6 9l6 6 6-6'
+    'chevron-down': 'M6 9l6 6 6-6',
+    phone: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'
   }
 
   return (

@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           fullName: response.data.user.fullName,
           email: response.data.user.email,
           role: response.data.user.role,
-          image: response.data.user.profileImage,
+          image: response.data.user.avatar,
           avatar: response.data.user.avatar,
           phone: response.data.user.phone,
           preferredLanguage: response.data.user.preferredLanguage,

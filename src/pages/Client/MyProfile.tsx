@@ -19,6 +19,45 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
   const [reviews, setReviews] = useState([]);
   const [savedPros, setSavedPros] = useState([]);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    location: user?.location || ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [accountStatusActive, setAccountStatusActive] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setEditFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        location: user.location || ''
+      });
+    }
+  }, [user]);
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await api.put('/users/profile', editFormData);
+      await refreshUser();
+      alert('Profile updated successfully!');
+      setIsEditModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update profile.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     if (profileActiveSubTab === 'Saved Providers') {
       // api.get('/users/saved-providers').then((res: any) => setSavedPros(res.data)).catch(console.error);
@@ -102,7 +141,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
             
             <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-sm text-gray-500 mt-4 w-full">
               <p className="flex items-center gap-1.5"><Icon name="message" /> {user?.email || 'No email provided'}</p>
-              <p className="flex items-center gap-1.5"><Icon name="bell" /> {user?.phone || 'No phone provided'}</p>
+              <p className="flex items-center gap-1.5"><Icon name="phone" /> {user?.phone || 'No phone provided'}</p>
               <p className="flex items-center gap-1.5"><Icon name="location" /> {user?.location || 'Your Area'}</p>
             </div>
           </div>
@@ -115,7 +154,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
                 <Icon name="user" /> Switch to {userRole === 'client' ? 'Provider' : 'Client'}
               </button>
             )}
-            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2" onClick={() => setActiveTab('Settings')}>
+            <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2" onClick={() => setIsEditModalOpen(true)}>
               <Icon name="wrench" /> Edit Profile
             </button>
           </div>
@@ -126,9 +165,20 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
             <span className="block text-xs text-gray-400 mb-1">Member Since</span>
             <strong className="flex items-center justify-center md:justify-start gap-2 text-gray-800 text-sm"><Icon name="calendar" /> {new Date((user as any)?.createdAt || Date.now()).toLocaleDateString()}</strong>
           </div>
-          <div className="text-center md:text-left">
+          <div className="text-center md:text-left flex flex-col items-center md:items-start">
             <span className="block text-xs text-gray-400 mb-1">Account Status</span>
-            <strong className="flex items-center justify-center md:justify-start gap-2 text-green-600 text-sm"><span className="w-2 h-2 rounded-full bg-green-500"></span> Active</strong>
+            <div className="flex items-center gap-3">
+              <strong className={`flex items-center gap-2 text-sm ${accountStatusActive ? 'text-green-600' : 'text-gray-500'}`}>
+                <span className={`w-2 h-2 rounded-full ${accountStatusActive ? 'bg-green-500' : 'bg-gray-400'}`}></span> 
+                {accountStatusActive ? 'Active' : 'Inactive'}
+              </strong>
+              <button 
+                onClick={() => setAccountStatusActive(!accountStatusActive)}
+                className={`w-8 h-4 rounded-full relative transition-colors ${accountStatusActive ? 'bg-green-500' : 'bg-gray-300'}`}
+              >
+                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${accountStatusActive ? 'left-[18px]' : 'left-0.5'}`}></div>
+              </button>
+            </div>
           </div>
           <div className="text-center md:text-left">
             <span className="block text-xs text-gray-400 mb-1">Account Security</span>
@@ -173,7 +223,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
                 </div>
               </div>
               <div className="flex flex-col py-2 border-b border-gray-100">
-                <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="bell" /> Phone Number</span>
+                <span className="flex items-center gap-2 text-xs text-gray-500 mb-1"><Icon name="phone" /> Phone Number</span>
                 <strong className="text-sm font-semibold text-gray-800">{user?.phone || 'Not set'}</strong>
               </div>
               <div className="flex flex-col py-2 border-b border-gray-100">
@@ -309,6 +359,96 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
         </div>
       )}
 
+      {/* Edit Profile Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-scale-in">
+            <div className="flex justify-between items-center p-4 border-b border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900">Edit Profile</h3>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="p-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">First Name</label>
+                  <input
+                    type="text"
+                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#14B8A6]"
+                    value={editFormData.firstName}
+                    onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#14B8A6]"
+                    value={editFormData.lastName}
+                    onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                <input
+                  type="text"
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#14B8A6]"
+                  value={editFormData.phone}
+                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#14B8A6]"
+                  value={editFormData.email}
+                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
+                <input
+                  type="text"
+                  className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#14B8A6]"
+                  value={editFormData.location}
+                  onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition"
+                  disabled={isSaving}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-[#14B8A6] text-white font-bold rounded-lg hover:bg-[#0F9788] transition"
+                  disabled={isSaving}
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -630,7 +630,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
       <section className="section" style={{ backgroundColor: 'var(--soft)' }}>
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
         <div className="pro-grid" ref={proGridRef}>
-          {displayedPros.map((pro) => (
+          {displayedPros.slice(0, 6).map((pro) => (
             <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
           ))}
         </div>
