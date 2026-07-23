@@ -1288,13 +1288,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             ) : (
               <>
                 {activeTab === 'Dashboard' && (
-                  <ClientDashboard 
-                    setActiveTab={setActiveTab}
-                    setSelectedProvider={setSelectedProvider}
-                    services={services}
-                    displayedPros={displayedPros}
-                    clientBookings={clientBookings}
-                  />
+                    <ClientDashboard 
+                      setActiveTab={setActiveTab}
+                      setSelectedProvider={setSelectedProvider}
+                      services={services}
+                      displayedPros={displayedPros}
+                      clientBookings={clientBookings}
+                      walletBalance={walletBalance}
+                    />
                 )}
 
                 {activeTab === 'My Bookings' && (
