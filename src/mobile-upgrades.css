@@ -364,7 +364,10 @@
     border-bottom: 1px solid var(--line);
   }
   .header-upper-row {
+    display: flex;
     justify-content: space-between;
+    align-items: center;
+    position: relative;
   }
   .mobile-header-right {
     display: flex;
@@ -379,16 +382,24 @@
     border-radius: 9999px;
     padding: 0.4rem 1rem;
     font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .mobile-menu-btn {
     order: -1; /* move hamburger to left */
   }
-  .brand-button {
-    margin-left: 1rem; /* space after hamburger */
-  }
   .header-left {
     display: flex;
     align-items: center;
+  }
+  .brand-button {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0;
   }
 
   /* Sticky Auth Bar for Mobile Page Bottom */

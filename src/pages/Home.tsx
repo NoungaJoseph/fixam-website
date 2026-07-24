@@ -424,12 +424,6 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           <h1 className="hero-title">
             {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
           </h1>
-          
-          {/* Audience Toggle (Mobile Only) */}
-          <div className="segmented-toggle-wrapper mobile-only" style={{ maxWidth: '400px', margin: '0 auto 1.5rem auto' }}>
-            <button className={`segmented-toggle-btn ${workToggle === 'clients' ? 'active' : ''}`} onClick={() => setWorkToggle('clients')}>{i18n.language === 'fr' ? 'Je cherche un service' : 'I need a service'}</button>
-            <button className={`segmented-toggle-btn ${workToggle === 'providers' ? 'active' : ''}`} onClick={() => { setWorkToggle('providers'); onNavigate('register'); }}>{i18n.language === 'fr' ? 'Je propose un service' : 'I provide a service'}</button>
-          </div>
 
           {/* Search Input (Desktop) */}
           <form onSubmit={handleSearchSubmit} className="hero-search-wrapper desktop-only">

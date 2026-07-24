@@ -653,7 +653,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               <Icon name="menu" />
             </button>
             <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
-              <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'left center' }} />
+              <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'center center' }} />
             </button>
           </div>
 

@@ -546,8 +546,8 @@
 .hero-video-section-premium .hero-copy {
   position: relative;
   z-index: 3;
-  text-align: center;
-  max-width: 950px;
+  text-align: left;
+  max-width: min(1200px, calc(100% - 5rem));
   width: 100%;
   margin: 0 auto;
 }
@@ -559,6 +559,7 @@
   line-height: 1.25;
   letter-spacing: -0.02em;
   margin-bottom: 2rem;
+  text-align: left;
 }
 
 
@@ -574,7 +575,7 @@
   padding: 0.25rem;
   max-width: 600px;
   width: 100%;
-  margin: 0 auto 2rem;
+  margin: 0 0 2rem 0;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
@@ -607,7 +608,7 @@
 .hero-pills-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
@@ -1000,7 +1001,7 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 2.5rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
@@ -1015,62 +1016,73 @@
 
 .testimonial-card .quote-mark {
   color: var(--teal);
-  font-size: 3rem;
+  font-size: 2.5rem;
   line-height: 1;
   font-family: serif;
   display: block;
-  margin-bottom: -1rem;
+  margin-bottom: -0.5rem;
 }
 
 .testimonial-card .quote-text {
-  font-style: italic;
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   color: var(--ink);
-  line-height: 1.7;
+  line-height: 1.65;
   flex: 1;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .testimonial-divider {
   height: 1px;
   background: var(--line);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .testimonial-author {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-
 .author-avatar {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 50%;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 
 .author-info {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
 }
 
 .author-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--ink);
 }
 
 .author-role {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted);
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    padding: 1.5rem;
+  }
+  .testimonial-card .quote-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
 }
 
 /* FAQ upgraded sections */
@@ -1263,8 +1275,18 @@
 }
 
 @media (max-width: 768px) {
+  .hero-video-section-premium {
+    padding: 4rem 1.5rem !important;
+  }
+  .hero-video-section-premium .hero-copy {
+    max-width: 100% !important;
+    text-align: left !important;
+  }
   .hero-video-section-premium .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.5rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: left !important;
   }
   .how-it-works-header-row {
     flex-direction: column;
@@ -1493,11 +1515,18 @@
 
 /* Mobile responsive styles below 480px */
 @media (max-width: 480px) {
+  .hero-video-section-premium {
+    padding: 3rem 1.25rem !important;
+  }
+  .hero-video-section-premium .hero-copy {
+    text-align: left !important;
+  }
   .hero-video-section-premium .hero-title {
-    font-size: 1.8rem !important;
-    line-height: 1.3 !important;
+    font-size: 2.2rem !important;
+    line-height: 1.2 !important;
     margin-bottom: 1.2rem !important;
-    padding: 0 0.5rem;
+    padding: 0;
+    text-align: left !important;
   }
   .hero-search-wrapper {
     flex-direction: row;

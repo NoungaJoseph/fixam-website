@@ -425,8 +425,62 @@
     padding: 0.8rem 2rem;
     font-size: 0.95rem;
   }
+  .section-title-centered {
+    margin-bottom: 2rem;
+  }
+  .section-title-centered h2 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  .section-title-centered p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .career-benefits-section {
+    margin-bottom: 3rem;
+  }
+  .benefit-card {
+    padding: 1.5rem 1.25rem;
+  }
+  .benefit-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+  .career-trades-section {
+    margin-bottom: 3rem;
+  }
+  .trade-card-marketing {
+    padding: 1.25rem;
+  }
+  .trade-card-marketing p {
+    margin-bottom: 1rem;
+  }
+  .career-certificate-showcase {
+    padding: 1.5rem 1.25rem;
+    margin-bottom: 2.5rem;
+  }
   .cert-showcase-card {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+  .cert-showcase-text h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .cert-showcase-text p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 1.5rem;
+  }
+  .cert-preview-frame-mini {
+    padding: 1rem;
+    border-width: 6px;
+  }
+  .cert-border-inner-mini {
+    padding: 1rem 0.5rem;
+  }
+  .cert-user-name-placeholder {
+    font-size: 1.1rem;
+    width: 85%;
   }
 }

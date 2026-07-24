@@ -106,7 +106,17 @@ body.body-scroll-lock {
   display: none;
 }
 
-.brand-button,
+.brand-button {
+  border: 0;
+  background: transparent;
+  width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  cursor: pointer;
+}
+
 .nav-link {
   border: 0;
   background: transparent;
