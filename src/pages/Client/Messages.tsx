@@ -15,6 +15,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   const { user } = useAuth();
   const [conversations, setConversations] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [newMsgText, setNewMsgText] = useState('');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
@@ -59,9 +60,14 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
 
   useEffect(() => {
     if (activeConv) {
+      setIsLoadingMessages(true);
       api.get(`/chat/${activeConv.id}/messages`).then(res => {
         setMessages(res.data.data || []);
-      }).catch(console.error);
+        setIsLoadingMessages(false);
+      }).catch(err => {
+        console.error(err);
+        setIsLoadingMessages(false);
+      });
 
       api.get(`/chat/${activeConv.id}/active-task`).then(res => {
         setActiveTask(res.data?.data || null);
@@ -361,54 +367,65 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
             )}
 
             <div className="chat-messages-scroll" ref={scrollRef}>
-              {messages.map((msg) => {
-                const isMe = msg.senderId === user?.id;
-                const isLocation = msg.type === 'LOCATION' || msg.content?.includes('maps.google.com');
-                const isImage = msg.type === 'IMAGE' || msg.mediaUrl;
-                const isAudio = msg.type === 'AUDIO' || msg.content?.includes('Voice note');
+              {isLoadingMessages ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94A3B8', gap: '0.5rem' }}>
+                  <div style={{ width: '24px', height: '24px', border: '2px solid #E2E8F0', borderTopColor: '#14B8A6', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                  <span style={{ fontSize: '0.9rem' }}>Loading messages...</span>
+                </div>
+              ) : messages.length === 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94A3B8' }}>
+                  <span style={{ fontSize: '0.9rem' }}>No messages here yet</span>
+                </div>
+              ) : (
+                messages.map((msg) => {
+                  const isMe = msg.senderId === user?.id;
+                  const isLocation = msg.type === 'LOCATION' || msg.content?.includes('maps.google.com');
+                  const isImage = msg.type === 'IMAGE' || msg.mediaUrl;
+                  const isAudio = msg.type === 'AUDIO' || msg.content?.includes('Voice note');
 
-                return (
-                  <div className={`msg-bubble-row ${isMe ? 'client' : 'pro'}`} key={msg.id}>
-                    <div className="bubble-content">
-                      {isImage && (
-                        <img 
-                          src={msg.mediaUrl} 
-                          alt="Attachment" 
-                          style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '0.4rem', display: 'block' }} 
-                        />
-                      )}
-                      {isAudio && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
-                          🎵 <span>{msg.content}</span>
-                        </div>
-                      )}
-                      {isLocation ? (
-                        <div>
-                          <p>{msg.content}</p>
-                          <a 
-                            href={msg.content?.match(/https:\/\/maps\.google\.com[^\s]*/)?.[0] || '#'} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            style={{ color: isMe ? '#fff' : '#0284c7', textDecoration: 'underline', fontSize: '0.85rem', marginTop: '4px', display: 'inline-block' }}
-                          >
-                            🗺️ Open in Google Maps
-                          </a>
-                        </div>
-                      ) : (
-                        !isImage && !isAudio && <p>{msg.content}</p>
-                      )}
-                      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', gap: '4px', marginTop: '4px' }}>
-                        <span className="bubble-time" style={{ margin: 0 }}>{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        {isMe && (
-                          <span style={{ fontSize: '14px', color: msg.isRead || msg.readAt ? '#53bdeb' : (isMe && !msg.isRead ? '#8696a0' : '#8696a0'), lineHeight: 1 }}>
-                            {msg.isRead || msg.readAt ? '✓✓' : (msg.deliveredAt ? '✓✓' : '✓')}
-                          </span>
+                  return (
+                    <div className={`msg-bubble-row ${isMe ? 'client' : 'pro'}`} key={msg.id}>
+                      <div className="bubble-content">
+                        {isImage && (
+                          <img 
+                            src={msg.mediaUrl} 
+                            alt="Attachment" 
+                            style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '0.4rem', display: 'block' }} 
+                          />
                         )}
+                        {isAudio && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                            🎵 <span>{msg.content}</span>
+                          </div>
+                        )}
+                        {isLocation ? (
+                          <div>
+                            <p>{msg.content}</p>
+                            <a 
+                              href={msg.content?.match(/https:\/\/maps\.google\.com[^\s]*/)?.[0] || '#'} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ color: isMe ? '#fff' : '#0284c7', textDecoration: 'underline', fontSize: '0.85rem', marginTop: '4px', display: 'inline-block' }}
+                            >
+                              🗺️ Open in Google Maps
+                            </a>
+                          </div>
+                        ) : (
+                          !isImage && !isAudio && <p>{msg.content}</p>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', gap: '4px', marginTop: '4px' }}>
+                          <span className="bubble-time" style={{ margin: 0 }}>{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          {isMe && (
+                            <span style={{ fontSize: '14px', color: msg.isRead || msg.readAt ? '#53bdeb' : (isMe && !msg.isRead ? '#8696a0' : '#8696a0'), lineHeight: 1 }}>
+                              {msg.isRead || msg.readAt ? '✓✓' : (msg.deliveredAt ? '✓✓' : '✓')}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
 
             {/* Selected Images Preview Bar */}

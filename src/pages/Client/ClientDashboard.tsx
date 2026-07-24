@@ -220,7 +220,7 @@ export default function ClientDashboard({
               <h2 className="text-lg font-bold text-gray-800">Bookings</h2>
             </div>
             
-            <div className="bg-white border border-gray-200 rounded-lg p-5">
+            <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               {(() => {
                 const activeBookings = clientBookings.filter(bk => bk.status !== 'Completed' && bk.status !== 'Cancelled' && bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED');
                 return activeBookings.length > 0 ? (
@@ -233,35 +233,76 @@ export default function ClientDashboard({
                       
                       return (
                       <div 
-                        className="flex items-start gap-4 p-4 mb-4 bg-white border border-gray-100 rounded-xl hover:border-[#14B8A6] hover:shadow-md transition cursor-pointer group relative" 
                         key={bk.id || bk._id}
                         onClick={() => {
                           if (setSelectedBooking) setSelectedBooking(bk);
                           setActiveTab('Booking Details');
                         }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1rem',
+                          padding: '1.25rem',
+                          marginBottom: '1rem',
+                          backgroundColor: '#fff',
+                          border: '1px solid #E2E8F0',
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          transition: 'all 0.2s ease',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#14B8A6';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(20, 184, 166, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = '#E2E8F0';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
+                        }}
                       >
                         {/* Status Badge */}
-                        <div className="absolute top-4 right-4">
-                            <span className={`text-[9px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : (bk.status === 'Pending' || bk.status === 'PENDING') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
+                        <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem' }}>
+                            <span style={{ 
+                                fontSize: '0.65rem', 
+                                fontWeight: 800, 
+                                padding: '4px 8px', 
+                                borderRadius: '6px', 
+                                textTransform: 'uppercase', 
+                                letterSpacing: '0.5px',
+                                backgroundColor: bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? '#DCFCE7' : (bk.status === 'Pending' || bk.status === 'PENDING') ? '#FEF9C3' : '#F1F5F9',
+                                color: bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? '#166534' : (bk.status === 'Pending' || bk.status === 'PENDING') ? '#854D0E' : '#475569'
+                            }}>
                               {bk.status || 'PENDING'}
                             </span>
                         </div>
 
                         {/* Date Block */}
-                        <div className="bg-gray-50 group-hover:bg-teal-50 border border-gray-100 group-hover:border-teal-100 transition rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-[11px] font-bold text-gray-500 group-hover:text-teal-600 uppercase tracking-wide">{part1}</span>
-                          <span className="text-xl font-black text-gray-800 group-hover:text-teal-700 leading-none -mt-1">{part2 || <Icon name="calendar" />}</span>
+                        <div style={{
+                          backgroundColor: '#F8FAFC',
+                          border: '1px solid #F1F5F9',
+                          borderRadius: '12px',
+                          width: '60px',
+                          height: '60px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{part1}</span>
+                          <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginTop: '-4px' }}>{part2 || <Icon name="calendar" />}</span>
                         </div>
                         
-                        <div className="flex-1 pr-16">
-                          <h4 className="font-bold text-gray-900 text-[15px] group-hover:text-[#14B8A6] transition mb-1 line-clamp-1">{bk.service || bk.title || 'Service'}</h4>
+                        <div style={{ flex: 1, paddingRight: '4rem' }}>
+                          <h4 style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A', margin: '0 0 0.25rem 0' }}>{bk.service || bk.title || 'Service'}</h4>
                           
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-gray-500 mb-3">
-                            <span className="flex items-center gap-1.5 font-medium"><Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}</span>
-                            {bk.budget && <span className="flex items-center gap-1.5 font-bold text-gray-700"><Icon name="wallet" /> {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}</span>}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', fontSize: '0.85rem', color: '#64748B', marginBottom: '0.5rem' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}><Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}</span>
+                            {bk.budget && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: '#334155' }}><Icon name="wallet" /> {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}</span>}
                           </div>
                           
-                          <div className="flex items-center gap-2">
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '0.5rem' }}>
                             {(() => {
                               const pName = typeof bk.provider === 'string' ? bk.provider : 
                                 (bk.provider?.fullName || bk.provider?.name || `${bk.provider?.firstName || ''} ${bk.provider?.lastName || ''}`.trim() || 
@@ -270,18 +311,18 @@ export default function ClientDashboard({
                               
                               if (pName === 'Unassigned') {
                                 return (
-                                  <div className="flex items-center gap-2 text-xs font-medium text-gray-400 italic">
-                                    <div className="w-5 h-5 rounded-full bg-gray-100 border border-dashed border-gray-300"></div>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 500, color: '#94A3B8', fontStyle: 'italic' }}>
+                                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px dashed #CBD5E1' }}></div>
                                     No provider assigned yet
                                   </div>
                                 );
                               }
                               return (
-                                <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>
                                   {pAvatar ? (
-                                    <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} className="w-5 h-5 rounded-full object-cover" />
+                                    <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
                                   ) : (
-                                    <div className="w-5 h-5 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[8px]">
+                                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.7rem' }}>
                                       {pName.substring(0,2).toUpperCase()}
                                     </div>
                                   )}
