@@ -119,32 +119,57 @@ export default function ClientDashboard({
 
       <CreateTaskModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} />
 
-      {/* 1. Top Categories Carousel (No box) */}
-      <div className="mb-10 relative">
+      {/* 1. Top Categories Carousel (App-style cards) */}
+      <div className="mb-10 relative group">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Top Categories</h2>
+          <h2 className="text-xl font-bold text-gray-800">Popular Categories</h2>
           <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Find Services')}>
-            View All
+            View all
           </button>
         </div>
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x" style={{ scrollbarWidth: 'none' }}>
+        
+        {/* Left Scroll Arrow */}
+        <button 
+          className="absolute left-0 top-[55%] -translate-y-1/2 -ml-4 w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-teal-50"
+          onClick={() => {
+            const container = document.getElementById('categories-scroll-container');
+            if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+
+        <div id="categories-scroll-container" className="flex gap-4 overflow-x-auto pb-4 snap-x" style={{ scrollbarWidth: 'none' }}>
           {services.map(service => (
             <button
               key={service.id}
-              className="flex-shrink-0 flex flex-col items-center gap-3 group cursor-pointer snap-start bg-transparent border-none outline-none"
+              className="flex-shrink-0 flex flex-col group cursor-pointer snap-start bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow text-left overflow-hidden"
               onClick={() => {
                 localStorage.setItem('fixam_search_cat', service.title);
                 setActiveTab('Find Services');
               }}
-              style={{ width: '110px' }}
+              style={{ width: '180px', height: '160px' }}
             >
-              <div className="w-24 h-24 rounded-full overflow-hidden shadow-sm group-hover:shadow-md transition-shadow group-hover:ring-4 ring-teal-50">
-                <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
+              <div className="w-full h-[110px] overflow-hidden bg-gray-100 relative">
+                <img src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
               </div>
-              <span className="font-bold text-gray-800 text-sm text-center group-hover:text-teal-600 transition-colors line-clamp-2">{service.title}</span>
+              <div className="p-3 w-full flex-grow flex items-center">
+                <span className="font-bold text-gray-800 text-sm group-hover:text-teal-600 transition-colors line-clamp-1">{service.title}</span>
+              </div>
             </button>
           ))}
         </div>
+
+        {/* Right Scroll Arrow */}
+        <button 
+          className="absolute right-0 top-[55%] -translate-y-1/2 -mr-4 w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-teal-50"
+          onClick={() => {
+            const container = document.getElementById('categories-scroll-container');
+            if (container) container.scrollBy({ left: 300, behavior: 'smooth' });
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
 
       {/* 2. Recommended For You (No box, larger profiles) */}
@@ -153,38 +178,38 @@ export default function ClientDashboard({
           <span className="text-xl">🎯</span>
           <h2 className="text-xl font-bold text-gray-800">Recommended for You</h2>
         </div>
-        <div className="flex flex-wrap gap-8">
+        <div className="flex flex-wrap gap-6">
           {displayedPros.slice(0, 5).map((pro, idx) => {
             const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
             const displayRole = roleArray.length > 0 ? roleArray[0] : 'Service Provider';
             return (
-              <div className="flex flex-col items-center text-center group cursor-pointer" key={idx} onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }} style={{ width: '140px' }}>
-                <div className="relative mb-3">
+              <div className="flex flex-col items-center text-center group cursor-pointer bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5" key={idx} onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }} style={{ width: '170px' }}>
+                <div className="relative mb-4">
                   {pro.image ? (
                     <img 
                       src={pro.image.startsWith('http') ? pro.image : `http://localhost:5000${pro.image}`} 
                       alt={pro.name || 'Provider'} 
-                      className="w-28 h-28 rounded-full object-cover shadow-sm group-hover:shadow-md transition-shadow group-hover:ring-4 ring-teal-50" 
+                      className="w-24 h-24 rounded-full object-cover shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
                       onError={(e) => {
                         (e.target as HTMLImageElement).onerror = null;
-                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name || 'Provider')}&background=14B8A6&color=fff&size=112&rounded=true`;
+                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name || 'Provider')}&background=14B8A6&color=fff&size=96&rounded=true`;
                       }}
                     />
                   ) : (
-                    <div className="w-28 h-28 rounded-full shadow-sm bg-teal-500 text-white flex items-center justify-center font-bold text-4xl group-hover:shadow-md transition-shadow group-hover:ring-4 ring-teal-50">
+                    <div className="w-24 h-24 rounded-full shadow-inner bg-teal-500 text-white flex items-center justify-center font-bold text-3xl group-hover:ring-4 ring-teal-50 transition-all">
                       {(pro.name || 'Provider').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <button className="absolute top-0 right-0 bg-white rounded-full p-1.5 shadow-sm text-gray-300 hover:text-[#F59E0B] transition z-10" onClick={(e) => { e.stopPropagation(); alert(`${pro.name} saved!`); }}>
+                  <button className="absolute -top-2 -right-2 bg-white rounded-full p-2 shadow border border-gray-50 text-gray-300 hover:text-[#F59E0B] hover:scale-110 transition z-10" onClick={(e) => { e.stopPropagation(); alert(`${pro.name} saved!`); }}>
                     <Icon name="star" />
                   </button>
                 </div>
-                <h4 className="text-base font-bold text-gray-800 mb-1 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
-                <span className="block text-[11px] uppercase font-bold tracking-wider text-gray-500 mb-1 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
-                <div className="flex items-center justify-center gap-1 text-sm text-[#F59E0B]">
+                <h4 className="text-[15px] font-bold text-gray-800 mb-1 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
+                <span className="block text-[11px] uppercase font-bold tracking-wider text-gray-500 mb-2 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
+                <div className="flex items-center justify-center gap-1 text-sm bg-orange-50 px-2 py-1 rounded-full text-[#F59E0B]">
                   <Icon name="star" />
-                  <span className="font-bold text-gray-700">{pro.rating}</span>
-                  <span className="text-gray-400 text-xs">({pro.originalData?.reviewsCount || 0})</span>
+                  <span className="font-bold">{pro.rating}</span>
+                  <span className="text-orange-400 text-xs ml-1">({pro.originalData?.reviewsCount || 0})</span>
                 </div>
               </div>
             );
@@ -266,23 +291,30 @@ export default function ClientDashboard({
                       backgroundColor: '#F8FAFC',
                       border: '1px solid #F1F5F9',
                       borderRadius: '12px',
-                      width: '60px',
-                      height: '60px',
+                      width: '64px',
+                      height: '64px',
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0
                     }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>{part1}</span>
-                      <span style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', marginTop: '-4px' }}>{part2 || <Icon name="calendar" />}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' }}>
+                        {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { month: 'short' }) : 'TBD'}
+                      </span>
+                      <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0F172A', marginTop: '-2px' }}>
+                        {displayDate !== 'TBD' ? new Date(displayDate).getDate() : <Icon name="calendar" />}
+                      </span>
                     </div>
                     
                     <div style={{ flex: 1, paddingRight: '4rem' }}>
                       <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', margin: '0 0 0.35rem 0' }}>{bk.service || bk.title || 'Service'}</h4>
                       
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', fontSize: '0.9rem', color: '#64748B', marginBottom: '0.75rem' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}><Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+                          <Icon name="calendar" /> {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'TBD'}
+                          {bk.time ? ` at ${bk.time}` : ''}
+                        </span>
                         {bk.budget && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: '#334155' }}><Icon name="wallet" /> {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}</span>}
                       </div>
                       

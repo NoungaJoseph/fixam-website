@@ -74,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (token: string, userData: User) => {
+    localStorage.setItem('fixam_token', token);
     setUser(userData);
   };
 
@@ -83,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Logout failed", error);
     }
+    localStorage.removeItem('fixam_token');
     setUser(null);
   };
 

@@ -34,6 +34,10 @@ export default function ProviderProfileDetail({
   const initialSaved = savedProsState.some((p: any) => p._id === providerId || (p.provider && p.provider._id === providerId));
   const [isSaved, setIsSaved] = useState(initialSaved);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   if (!selectedProvider) return null;
 
   const portfolio = original.portfolio || [];
@@ -95,7 +99,7 @@ export default function ProviderProfileDetail({
 
   return (
     <div className="provider-profile-detail-page animate-fade-in">
-      <button className="btn-profile-back" onClick={() => setSelectedProvider(null)}>
+      <button className="btn-profile-back" onClick={() => { setSelectedProvider(null); setActiveTab('Dashboard'); }}>
         <span>&larr;</span> Back to Dashboard
       </button>
 

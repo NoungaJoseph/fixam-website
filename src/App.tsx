@@ -53,6 +53,8 @@ import CareerPathwaysBrowsePage from './pages/Resources/CareerPathwaysBrowsePage
 import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
+import CookieBanner from './components/CookieBanner'
+import BookingDetail from './pages/Client/BookingDetail'
 
 import './App.css'
 import './marketplace.css'
@@ -403,6 +405,7 @@ function App() {
         </>
       )}
 
+      <CookieBanner />
     </div>
   )
 }
@@ -971,18 +974,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  const [activeTab, setActiveTab] = useState(() => {
-    const hash = window.location.hash.replace('#', '');
-    if (hash === 'wallet') return 'Wallet';
-    if (hash === 'refer-and-earn') return 'Refer & Earn';
-    if (hash === 'settings') return 'Settings';
-    if (hash === 'messages') return 'Messages';
-    if (hash === 'my-bookings') return 'My Bookings';
-    if (hash === 'find-services') return 'Find Services';
-    return 'Dashboard';
-  });
+    // Dashboard navigation specific state
+    const [activeTab, setActiveTab] = useState('Dashboard')
+    const [selectedProvider, setSelectedProvider] = useState<any>(null)
+    const [selectedBooking, setSelectedBooking] = useState<any>(null)
+    const [activeChatUser, setActiveChatUser] = useState<string>('')
+    const [savedProsState, setSavedProsState] = useState<any[]>([])
+
   const [searchVal, setSearchVal] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState<any>(null);
   
   useEffect(() => {
     if (activeTab === 'Dashboard') {
