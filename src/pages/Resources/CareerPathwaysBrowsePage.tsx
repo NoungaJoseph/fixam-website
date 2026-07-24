@@ -164,7 +164,7 @@ export default function CareerPathwaysBrowsePage({
               <div className="cert-border-inner-mini">
                 <span className="cert-top-seal-mini">FIXAM PATHWAYS</span>
                 <h4>{isFr ? 'CERTIFICAT DE COMPLÉTION' : 'CERTIFICATE OF COMPLETION'}</h4>
-                <div className="cert-user-name-placeholder">Nounga Joseph</div>
+                <div className="cert-user-name-placeholder">Alex Johnson</div>
                 <p>{isFr ? 'Atteste de la maîtrise des compétences en électricité et plomberie.' : 'Verifying mastery of key vocational field skills.'}</p>
                 <div className="cert-seal-mini">★ APPROVED ★</div>
               </div>

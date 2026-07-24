@@ -404,6 +404,27 @@
 }
 
 @media (max-width: 768px) {
+  .career-marketing-container {
+    padding: 1.5rem 1rem;
+  }
+  .career-hero-section {
+    padding: 2.5rem 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .career-hero-content h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+  }
+  .career-hero-content p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+  }
+  .career-cta-btn-premium {
+    padding: 0.8rem 2rem;
+    font-size: 0.95rem;
+  }
   .cert-showcase-card {
     grid-template-columns: 1fr;
     gap: 2rem;
