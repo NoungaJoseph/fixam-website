@@ -83,7 +83,12 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
             <h1 className="text-2xl font-bold text-slate-900 mb-2">{bookingData.service || bookingData.title || 'Service Booking'}</h1>
             <p className="text-slate-500 flex items-center gap-2">
               <Icon name="calendar" /> 
-              {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Date TBD'} 
+              {(() => {
+                if (!displayDate || displayDate === 'TBD') return 'Date TBD';
+                const d = new Date(displayDate);
+                if (isNaN(d.getTime())) return displayDate;
+                return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+              })()}
               {bookingData.time ? ` at ${bookingData.time}` : ''}
             </p>
           </div>

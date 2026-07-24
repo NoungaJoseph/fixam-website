@@ -231,14 +231,32 @@ export default function ClientDashboard({
         
         <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           {(() => {
+            const formatCardDate = (dateStr: string) => {
+              if (!dateStr || dateStr === 'TBD') {
+                return { month: 'TBD', day: '', full: 'TBD' };
+              }
+              const d = new Date(dateStr);
+              if (isNaN(d.getTime())) {
+                const parts = dateStr.split(' ');
+                return {
+                  month: parts[0] || 'TBD',
+                  day: parts.slice(1).join(' ') || '',
+                  full: dateStr
+                };
+              }
+              return {
+                month: d.toLocaleDateString('en-US', { month: 'short' }),
+                day: d.getDate().toString(),
+                full: d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })
+              };
+            };
+
             const activeBookings = clientBookings.filter(bk => bk.status !== 'Completed' && bk.status !== 'Cancelled' && bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED');
             return activeBookings.length > 0 ? (
               <div className="space-y-4">
                 {activeBookings.map((bk) => {
                   const displayDate = bk.date || bk.scheduledDate || bk.createdAt || 'TBD';
-                  const parts = displayDate.split(' ');
-                  const part1 = parts[0] || 'TBD';
-                  const part2 = parts[1] || '';
+                  const dateInfo = formatCardDate(displayDate);
                   
                   return (
                   <div 
@@ -265,10 +283,10 @@ export default function ClientDashboard({
                     {/* Date Block */}
                     <div className="bg-slate-50 border border-slate-100 rounded-xl w-16 h-16 flex flex-col items-center justify-center flex-shrink-0">
                       <span className="text-[11px] font-bold text-red-500 uppercase tracking-wide">
-                        {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { month: 'short' }) : 'TBD'}
+                        {dateInfo.month}
                       </span>
                       <span className="text-xl font-black text-slate-800 -mt-0.5">
-                        {displayDate !== 'TBD' ? new Date(displayDate).getDate() : <Icon name="calendar" />}
+                        {dateInfo.day || <Icon name="calendar" />}
                       </span>
                     </div>
                     
@@ -281,7 +299,7 @@ export default function ClientDashboard({
                       <div className="flex flex-wrap gap-x-6 gap-y-1.5 text-xs sm:text-sm text-slate-500 mb-2">
                         <span className="flex items-center gap-1.5 font-medium">
                           <Icon name="calendar" /> 
-                          {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'TBD'}
+                          {dateInfo.full}
                           {bk.time ? ` at ${bk.time}` : ''}
                         </span>
                         {bk.budget && (

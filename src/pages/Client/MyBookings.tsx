@@ -54,7 +54,16 @@ export default function MyBookings({
             {clientBookings.map((bk) => {
               const bkProvider = bk.provider ? `${bk.provider.firstName || ''} ${bk.provider.lastName || ''}`.trim() : 'Unknown Provider';
               const bkService = bk.task?.title || 'General Service';
-              const bkDate = new Date(bk.bookingDate || bk.createdAt).toLocaleDateString();
+              let bkDate = 'TBD';
+              try {
+                const dateVal = bk.bookingDate || bk.createdAt;
+                if (dateVal) {
+                  const d = new Date(dateVal);
+                  bkDate = isNaN(d.getTime()) ? dateVal : d.toLocaleDateString();
+                }
+              } catch {
+                bkDate = bk.bookingDate || bk.createdAt || 'TBD';
+              }
               const bkTime = bk.bookingTime || 'TBD';
               const bkPrice = bk.budget ? `${bk.budget} XAF` : 'N/A';
               const bkImage = bk.provider?.avatar ? getMediaUrl(bk.provider.avatar) : images.proJeff;
