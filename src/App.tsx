@@ -971,12 +971,30 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash === 'wallet') return 'Wallet';
+    if (hash === 'refer-and-earn') return 'Refer & Earn';
+    if (hash === 'settings') return 'Settings';
+    if (hash === 'messages') return 'Messages';
+    if (hash === 'my-bookings') return 'My Bookings';
+    if (hash === 'find-services') return 'Find Services';
+    return 'Dashboard';
+  });
   const [searchVal, setSearchVal] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   
   useEffect(() => {
-    setActiveTab('Dashboard');
+    if (activeTab === 'Dashboard') {
+      window.history.replaceState(null, '', window.location.pathname);
+    } else {
+      window.location.hash = activeTab.toLowerCase().replace(/\s+/g, '-').replace('&', 'and');
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) setActiveTab('Dashboard');
     setSelectedProvider(null);
   }, [userRole]);
 
