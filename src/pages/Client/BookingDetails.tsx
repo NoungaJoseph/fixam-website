@@ -76,7 +76,7 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
           <div>
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Provider</h3>
             {providerName !== 'Unassigned' ? (
-              <div className="border border-gray-100 rounded-xl p-4 flex items-center gap-4">
+              <div className="border border-gray-100 rounded-xl p-4 flex items-center gap-4 mb-6">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt={providerName} className="w-14 h-14 rounded-full object-cover shadow-sm" onError={(e) => {
                     (e.target as HTMLImageElement).onerror = null;
@@ -99,8 +99,17 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
                 </div>
               </div>
             ) : (
-              <div className="border border-gray-100 bg-gray-50 rounded-xl p-4 text-center">
+              <div className="border border-gray-100 bg-gray-50 rounded-xl p-4 text-center mb-6">
                 <p className="text-sm text-gray-500 italic">No provider assigned yet.</p>
+              </div>
+            )}
+
+            {(booking.notes || booking.description) && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Requirements & Notes</h3>
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{booking.notes || booking.description}</p>
+                </div>
               </div>
             )}
           </div>

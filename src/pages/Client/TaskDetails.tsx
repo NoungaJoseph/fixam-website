@@ -51,10 +51,54 @@ export default function TaskDetails({ task, setActiveTab, setActiveChatUser }: T
           <div className="space-y-6">
             <div>
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Task Description</h3>
-              <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100 whitespace-pre-wrap">
                 {description}
               </p>
             </div>
+
+            {(task.whatNeedsDone || task.taskScope) && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Requirements</h3>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 space-y-3">
+                  {task.whatNeedsDone && (
+                    <div>
+                      <strong>What needs to be done:</strong>
+                      <p className="mt-1">{task.whatNeedsDone}</p>
+                    </div>
+                  )}
+                  {task.taskScope && (
+                    <div>
+                      <strong>Task Scope:</strong>
+                      <p className="mt-1">{task.taskScope}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {(task.importantDetails || (task.preferences && task.preferences.length > 0)) && (
+              <div>
+                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Additional Details</h3>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 space-y-3">
+                  {task.importantDetails && (
+                    <div>
+                      <strong>Important Details:</strong>
+                      <p className="mt-1">{task.importantDetails}</p>
+                    </div>
+                  )}
+                  {task.preferences && task.preferences.length > 0 && (
+                    <div>
+                      <strong>Preferences:</strong>
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        {task.preferences.map((pref: string, i: number) => (
+                          <li key={i}>{pref}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Location</h3>

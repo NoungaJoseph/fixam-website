@@ -180,20 +180,20 @@ export default function ClientDashboard({
                       </button>
                       {pro.image ? (
                         <img 
-                          src={pro.image} 
-                          alt={pro.name} 
+                          src={pro.image.startsWith('http') ? pro.image : `http://localhost:5000${pro.image}`} 
+                          alt={pro.name || 'Provider'} 
                           className="w-16 h-16 rounded-full mb-3 object-cover shadow-sm" 
                           onError={(e) => {
                             (e.target as HTMLImageElement).onerror = null;
-                            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name)}&background=14B8A6&color=fff&size=64&rounded=true`;
+                            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name || 'Provider')}&background=14B8A6&color=fff&size=64&rounded=true`;
                           }}
                         />
                       ) : (
                         <div className="w-16 h-16 rounded-full mb-3 shadow-sm bg-teal-500 text-white flex items-center justify-center font-bold text-xl">
-                          {pro.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                          {(pro.name || 'Provider').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
                         </div>
                       )}
-                      <h4 className="text-sm font-bold text-gray-800 mb-1 line-clamp-1">{pro.name}</h4>
+                      <h4 className="text-sm font-bold text-gray-800 mb-1 line-clamp-1">{pro.name || 'Provider'}</h4>
                       <span className="block text-[10px] uppercase font-bold tracking-wider text-[#14B8A6] bg-teal-50 px-2 py-0.5 rounded-full mb-2 line-clamp-1" title={pro.role}>{displayRole}</span>
                       <div className="flex items-center justify-center gap-1 text-xs text-[#F59E0B] mb-3">
                         <Icon name="star" />
@@ -233,36 +233,63 @@ export default function ClientDashboard({
                       
                       return (
                       <div 
-                        className="flex items-start gap-4 p-4 mb-4 bg-white border border-gray-100 rounded-xl hover:border-teal-200 hover:shadow-md transition cursor-pointer group" 
+                        className="flex items-start gap-4 p-4 mb-4 bg-white border border-gray-100 rounded-xl hover:border-[#14B8A6] hover:shadow-md transition cursor-pointer group relative" 
                         key={bk.id || bk._id}
                         onClick={() => {
                           if (setSelectedBooking) setSelectedBooking(bk);
                           setActiveTab('Booking Details');
                         }}
                       >
-                        <div className="bg-teal-50 group-hover:bg-teal-100 transition rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-[11px] font-bold text-teal-600 uppercase tracking-wide">{part1}</span>
-                          <span className="text-xl font-black text-teal-700 leading-none -mt-1">{part2 || <Icon name="calendar" />}</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start mb-1.5">
-                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-teal-700 transition">{bk.service || bk.title || 'Service'}</h4>
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : (bk.status === 'Pending' || bk.status === 'PENDING') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
+                        {/* Status Badge */}
+                        <div className="absolute top-4 right-4">
+                            <span className={`text-[9px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : (bk.status === 'Pending' || bk.status === 'PENDING') ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}`}>
                               {bk.status || 'PENDING'}
                             </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mb-1.5 flex items-center gap-1.5">
-                            <Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}
-                          </div>
-                          <div className="text-xs font-medium text-gray-600 flex items-center gap-1">
-                            <span className="text-gray-400">Provider:</span> {
-                            typeof bk.provider === 'string' ? bk.provider : 
-                            (bk.provider?.fullName || bk.provider?.name || `${bk.provider?.firstName || ''} ${bk.provider?.lastName || ''}`.trim() || 
-                            (bk.providerDetails ? `${bk.providerDetails.firstName || ''} ${bk.providerDetails.lastName || ''}`.trim() : 'Unassigned')) || 'Unassigned'
-                          }</div>
                         </div>
-                        <div className="self-center text-gray-300 group-hover:text-teal-500 transition">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+
+                        {/* Date Block */}
+                        <div className="bg-gray-50 group-hover:bg-teal-50 border border-gray-100 group-hover:border-teal-100 transition rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0">
+                          <span className="text-[11px] font-bold text-gray-500 group-hover:text-teal-600 uppercase tracking-wide">{part1}</span>
+                          <span className="text-xl font-black text-gray-800 group-hover:text-teal-700 leading-none -mt-1">{part2 || <Icon name="calendar" />}</span>
+                        </div>
+                        
+                        <div className="flex-1 pr-16">
+                          <h4 className="font-bold text-gray-900 text-[15px] group-hover:text-[#14B8A6] transition mb-1 line-clamp-1">{bk.service || bk.title || 'Service'}</h4>
+                          
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs text-gray-500 mb-3">
+                            <span className="flex items-center gap-1.5 font-medium"><Icon name="calendar" /> {displayDate} {bk.time ? `at ${bk.time}` : ''}</span>
+                            {bk.budget && <span className="flex items-center gap-1.5 font-bold text-gray-700"><Icon name="wallet" /> {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}</span>}
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            {(() => {
+                              const pName = typeof bk.provider === 'string' ? bk.provider : 
+                                (bk.provider?.fullName || bk.provider?.name || `${bk.provider?.firstName || ''} ${bk.provider?.lastName || ''}`.trim() || 
+                                (bk.providerDetails ? `${bk.providerDetails.firstName || ''} ${bk.providerDetails.lastName || ''}`.trim() : 'Unassigned')) || 'Unassigned';
+                              const pAvatar = bk.provider?.avatar || bk.providerDetails?.avatar;
+                              
+                              if (pName === 'Unassigned') {
+                                return (
+                                  <div className="flex items-center gap-2 text-xs font-medium text-gray-400 italic">
+                                    <div className="w-5 h-5 rounded-full bg-gray-100 border border-dashed border-gray-300"></div>
+                                    No provider assigned yet
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div className="flex items-center gap-2 text-xs font-medium text-gray-700">
+                                  {pAvatar ? (
+                                    <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} className="w-5 h-5 rounded-full object-cover" />
+                                  ) : (
+                                    <div className="w-5 h-5 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[8px]">
+                                      {pName.substring(0,2).toUpperCase()}
+                                    </div>
+                                  )}
+                                  <span>{pName}</span>
+                                </div>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </div>
                     )})}

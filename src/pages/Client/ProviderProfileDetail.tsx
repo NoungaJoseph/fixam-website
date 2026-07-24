@@ -3,6 +3,7 @@ import { Icon } from '../../App';
 import React, { useState, useEffect } from 'react';
 import BookingFormModal from '../../components/BookingFormModal';
 import { api } from '../../services/api';
+import { getMediaUrl } from '../../App';
 
 interface ProviderProfileDetailProps {
   selectedProvider: any;
@@ -50,12 +51,15 @@ export default function ProviderProfileDetail({
     reviews: original.reviews || []
   };
 
+  const fullName = selectedProvider.name || `${selectedProvider.firstName || ''} ${selectedProvider.lastName || ''}`.trim() || 'Provider';
+  const displayImage = selectedProvider.image ? getMediaUrl(selectedProvider.image) : '';
+
   const handleShare = async () => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `Fixam Provider: ${selectedProvider.name}`,
-          text: `Check out ${selectedProvider.name}'s profile on Fixam!`,
+          title: `Fixam Provider: ${fullName}`,
+          text: `Check out ${fullName}'s profile on Fixam!`,
           url: window.location.href,
         });
       } else {
@@ -99,25 +103,25 @@ export default function ProviderProfileDetail({
       <div className="profile-banner-card-centered">
         <div className="profile-banner-bg-centered"></div>
         <div className="profile-header-main-centered">
-          {selectedProvider.image ? (
+          {displayImage ? (
             <img 
-              src={selectedProvider.image} 
-              alt={selectedProvider.name} 
+              src={displayImage} 
+              alt={fullName} 
               className="profile-avatar-xl" 
               onError={(e) => {
                 (e.target as HTMLImageElement).onerror = null;
-                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedProvider.name)}&background=14B8A6&color=fff&size=120&rounded=true`;
+                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=14B8A6&color=fff&size=120&rounded=true`;
               }}
             />
           ) : (
             <div className="profile-avatar-xl fallback-avatar-centered flex items-center justify-center font-bold text-3xl bg-teal-500 text-white">
-              {selectedProvider.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+              {fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
             </div>
           )}
           
           <div className="profile-header-info-centered">
             <h1 className="profile-name-centered">
-              {selectedProvider.name}
+              {fullName}
               <span className="badge-verified-pro-centered">
                 <Icon name="check" /> Verified Pro
               </span>
@@ -277,9 +281,9 @@ export default function ProviderProfileDetail({
       <BookingFormModal 
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
-        providerName={selectedProvider.name}
-        providerService={selectedProvider.role}
-        providerImage={selectedProvider.image}
+        providerName={fullName}
+        providerService={selectedProvider.role || 'Service'}
+        providerImage={displayImage}
         onSubmit={(bookingData) => {
           const newBooking = {
             id: Date.now(),

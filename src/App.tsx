@@ -1155,6 +1155,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'My Bookings', icon: 'calendar' as IconName },
       { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+      { name: 'Refer & Earn', icon: 'star' as IconName },
       { name: 'Settings', icon: 'user' as IconName },
       { name: 'Support', icon: 'message' as IconName }
     ];
@@ -1253,7 +1254,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             </button>
             <div className="mobile-logo-dash" style={{ display: 'none', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--ink)' }}>
               <span className="logo-mark-dash" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>F</span>
-              Fixam
             </div>
             {/* Live Ticker instead of Search bar */}
             <div className="header-news-ticker">
@@ -1404,7 +1404,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   />
                 )}
                 {activeTab === 'Reviews' && <Reviews />}
-                {activeTab === 'My Referrals' && <Referrals />}
+                {activeTab === 'Refer & Earn' && <Referrals />}
                 {activeTab === 'Settings' && (
                   <Settings 
                     savedProsState={savedProsState} 
