@@ -23,7 +23,14 @@ export default function FindServices({
   const [findServicesSearch, setFindServicesSearch] = useState('');
   const [findServicesLoc, setFindServicesLoc] = useState('Nearby');
   const [findServicesRating, setFindServicesRating] = useState('All');
-  const [findServicesCat, setFindServicesCat] = useState('All Categories');
+  const [findServicesCat, setFindServicesCat] = useState(() => {
+    const init = localStorage.getItem('fixam_search_cat');
+    if (init) {
+      localStorage.removeItem('fixam_search_cat');
+      return init;
+    }
+    return 'All Categories';
+  });
   const [findServicesPrice, setFindServicesPrice] = useState(50000);
   const [availNow, setAvailNow] = useState(false);
   const [availToday, setAvailToday] = useState(false);

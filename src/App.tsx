@@ -66,7 +66,7 @@ export type IconName =
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
   | 'chevron-up' | 'chevron-down'
-  | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart' | 'phone'
+  | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart' | 'phone' | 'settings' | 'logout'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
 
@@ -1174,7 +1174,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Refer & Earn', icon: 'star' as IconName },
-      { name: 'Settings', icon: 'user' as IconName },
+      { name: 'Settings', icon: 'settings' as IconName },
       { name: 'Support', icon: 'message' as IconName }
     ];
 
@@ -1200,7 +1200,33 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           ></div>
         )}
         {/* Left Sidebar */}
-        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
+        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`} style={{ position: 'relative' }}>
+          
+          {/* Desktop Toggle Button placed outside the sidebar */}
+          <button 
+            className="desktop-only"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+            style={{ 
+              position: 'absolute', 
+              right: '-45px', 
+              top: '20px', 
+              width: '40px',
+              height: '40px',
+              background: '#fff', 
+              border: '1px solid var(--line)', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+              zIndex: 10
+            }}
+            title="Toggle Sidebar"
+          >
+            <Icon name="menu" />
+          </button>
+
           <div className="brand-header" style={{ justifyContent: 'space-between' }}>
             <div 
               className="user-card-new" 
@@ -1226,13 +1252,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
-                {isSidebarCollapsed ? (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                )}
-              </button>
               <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
                 <Icon name="x" />
               </button>
@@ -1256,7 +1275,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
 
             <button className="side-link-new" onClick={() => onNavigate('login')}>
-              <Icon name="x" />
+              <Icon name="logout" />
               <span>Logout</span>
             </button>
           </nav>
@@ -2097,7 +2116,9 @@ export function Icon({ name }: { name: IconName }) {
     chart: 'M4 20h16 M4 20V10 M9 20V6 M14 20V12 M19 20V8',
     'chevron-up': 'M18 15l-6-6-6 6',
     'chevron-down': 'M6 9l6 6 6-6',
-    phone: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'
+    phone: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z',
+    settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z',
+    logout: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9'
   }
 
   return (
