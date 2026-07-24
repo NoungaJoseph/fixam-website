@@ -247,78 +247,52 @@ export default function ClientDashboard({
                       if (setSelectedBooking) setSelectedBooking(bk);
                       setActiveTab('Booking Details');
                     }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '1.5rem',
-                      padding: '1.25rem 1.5rem',
-                      marginBottom: '1rem',
-                      backgroundColor: '#fff',
-                      border: '1px solid #E2E8F0',
-                      borderRadius: '12px',
-                      cursor: 'pointer',
-                      position: 'relative',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#14B8A6';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(20, 184, 166, 0.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#E2E8F0';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
-                    }}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 mb-4 bg-white border border-gray-200 rounded-xl cursor-pointer relative transition-all duration-200 hover:border-[#14B8A6] hover:shadow-md hover:shadow-teal-50/50"
                   >
                     {/* Status Badge */}
-                    <div style={{ position: 'absolute', top: '1.25rem', right: '1.25rem' }}>
-                        <span style={{ 
-                            fontSize: '0.65rem', 
-                            fontWeight: 800, 
-                            padding: '4px 8px', 
-                            borderRadius: '6px', 
-                            textTransform: 'uppercase', 
-                            letterSpacing: '0.5px',
-                            backgroundColor: bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? '#DCFCE7' : (bk.status === 'Pending' || bk.status === 'PENDING') ? '#FEF9C3' : '#F1F5F9',
-                            color: bk.status === 'Confirmed' || bk.status === 'ACCEPTED' ? '#166534' : (bk.status === 'Pending' || bk.status === 'PENDING') ? '#854D0E' : '#475569'
-                        }}>
-                          {bk.status || 'PENDING'}
-                        </span>
+                    <div className="absolute top-4 right-4 sm:static sm:ml-auto sm:order-last">
+                      <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider ${
+                        bk.status === 'Confirmed' || bk.status === 'ACCEPTED' 
+                          ? 'bg-green-50 text-green-700 border border-green-200' 
+                          : (bk.status === 'Pending' || bk.status === 'PENDING') 
+                            ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' 
+                            : 'bg-gray-50 text-gray-600 border border-gray-200'
+                      }`}>
+                        {bk.status || 'PENDING'}
+                      </span>
                     </div>
 
                     {/* Date Block */}
-                    <div style={{
-                      backgroundColor: '#F8FAFC',
-                      border: '1px solid #F1F5F9',
-                      borderRadius: '12px',
-                      width: '64px',
-                      height: '64px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
-                    }}>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#ef4444', textTransform: 'uppercase' }}>
+                    <div className="bg-slate-50 border border-slate-100 rounded-xl w-16 h-16 flex flex-col items-center justify-center flex-shrink-0">
+                      <span className="text-[11px] font-bold text-red-500 uppercase tracking-wide">
                         {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { month: 'short' }) : 'TBD'}
                       </span>
-                      <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0F172A', marginTop: '-2px' }}>
+                      <span className="text-xl font-black text-slate-800 -mt-0.5">
                         {displayDate !== 'TBD' ? new Date(displayDate).getDate() : <Icon name="calendar" />}
                       </span>
                     </div>
                     
-                    <div style={{ flex: 1, paddingRight: '4rem' }}>
-                      <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', margin: '0 0 0.35rem 0' }}>{bk.service || bk.title || 'Service'}</h4>
+                    {/* Content Details */}
+                    <div className="flex-1 min-w-0 pr-12 sm:pr-0 w-full">
+                      <h4 className="font-bold text-base sm:text-lg text-slate-800 mb-1 truncate">
+                        {bk.service || bk.title || 'Service'}
+                      </h4>
                       
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', fontSize: '0.9rem', color: '#64748B', marginBottom: '0.75rem' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
-                          <Icon name="calendar" /> {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'TBD'}
+                      <div className="flex flex-wrap gap-x-6 gap-y-1.5 text-xs sm:text-sm text-slate-500 mb-2">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <Icon name="calendar" /> 
+                          {displayDate !== 'TBD' ? new Date(displayDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) : 'TBD'}
                           {bk.time ? ` at ${bk.time}` : ''}
                         </span>
-                        {bk.budget && <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, color: '#334155' }}><Icon name="wallet" /> {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}</span>}
+                        {bk.budget && (
+                          <span className="flex items-center gap-1.5 font-bold text-slate-700">
+                            <Icon name="wallet" /> 
+                            {bk.budget} {bk.budget.toString().includes('XAF') ? '' : 'XAF'}
+                          </span>
+                        )}
                       </div>
                       
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="flex items-center gap-2">
                         {(() => {
                           const pName = typeof bk.provider === 'string' ? bk.provider : 
                             (bk.provider?.fullName || bk.provider?.name || `${bk.provider?.firstName || ''} ${bk.provider?.lastName || ''}`.trim() || 
@@ -327,18 +301,18 @@ export default function ClientDashboard({
                           
                           if (pName === 'Unassigned') {
                             return (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', fontWeight: 500, color: '#94A3B8', fontStyle: 'italic' }}>
-                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#F1F5F9', border: '1px dashed #CBD5E1' }}></div>
+                              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-400 italic">
+                                <div className="w-6 h-6 rounded-full bg-slate-50 border border-dashed border-slate-300"></div>
                                 No provider assigned yet
                               </div>
                             );
                           }
                           return (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', fontWeight: 600, color: '#334155' }}>
+                            <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600">
                               {pAvatar ? (
-                                <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                                <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} className="w-6 h-6 rounded-full object-cover" />
                               ) : (
-                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.7rem' }}>
+                                <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">
                                   {pName.substring(0,2).toUpperCase()}
                                 </div>
                               )}

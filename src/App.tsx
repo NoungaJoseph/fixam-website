@@ -691,9 +691,9 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             <div className="mobile-header-right mobile-only">
               <button 
                 className="mobile-header-signup" 
-                onClick={() => handleNavigate('register')}
+                onClick={() => handleNavigate('login')}
               >
-                {t('nav.signin') || 'Sign Up'}
+                {t('nav.signin') || 'Sign In'}
               </button>
             </div>
           </div>
@@ -978,8 +978,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const [activeTab, setActiveTab] = useState('Dashboard')
     const [selectedProvider, setSelectedProvider] = useState<any>(null)
     const [selectedBooking, setSelectedBooking] = useState<any>(null)
-    const [activeChatUser, setActiveChatUser] = useState<string>('')
-    const [savedProsState, setSavedProsState] = useState<any[]>([])
 
   const [searchVal, setSearchVal] = useState('');
   
@@ -1199,7 +1197,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           ></div>
         )}
         {/* Left Sidebar */}
-        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`} style={{ position: 'relative' }}>
+        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
           
           {/* Desktop Toggle Button placed outside the sidebar */}
           <button 
