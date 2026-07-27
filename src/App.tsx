@@ -1208,20 +1208,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Support', icon: 'message' as IconName }
     ];
 
-    const handleNavClick = async (itemName: string) => {
+    const handleNavClick = (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
-      if (itemName === 'Career Pathways') {
-        login(response.data.token, response.data.user);
-      await refreshUser();
-      // Normalize URL to dashboard hash after successful login
-      window.history.replaceState('', document.title, '/#dashboard');
-      
-      onLogin?.(role);
-      onNavigate('dashboard');
-      } else {
-        setActiveTab(itemName);
-      }
+      setActiveTab(itemName);
     };
 
     return (
