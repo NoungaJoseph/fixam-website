@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import './ProviderDashboard.css';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { Icon } from '../../App';
+import '../Client/Reviews.css';
 
 export default function ProviderReviews() {
   const { user } = useAuth();
@@ -31,59 +32,93 @@ export default function ProviderReviews() {
   const totalReviews = reviews.length || 1; // avoid division by zero
 
   return (
-    <div className="dash-panel-premium provider-reviews-grid animate-fade-in">
-      {/* LEFT: Ratings stats */}
-      <div style={{ borderRight: '1px solid #E5E7EB', paddingRight: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#1F2937', marginBottom: '16px' }}>My Rating Overview</h3>
-        
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '24px' }}>
-          <strong style={{ fontSize: '48px', color: '#1F2937', fontWeight: 800 }}>{stats.average.toFixed(1)}</strong>
-          <span style={{ fontSize: '16px', color: '#6B7280' }}>/ 5.0</span>
-        </div>
-
-        {/* Rating Bars */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {[5, 4, 3, 2, 1].map(stars => {
-            const count = stats.breakdown[stars - 1] || 0;
-            const pct = Math.round((count / totalReviews) * 100);
-            return (
-            <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px' }}>
-              <span style={{ width: '40px', color: '#4B5563', fontWeight: 500 }}>{stars} Stars</span>
-              <div style={{ flex: 1, height: '6px', backgroundColor: '#E5E7EB', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${pct}%`, height: '100%', backgroundColor: '#14B8A6' }}></div>
-              </div>
-              <span style={{ width: '30px', color: '#6B7280', textAlign: 'right' }}>{pct}%</span>
-            </div>
-          )})}
-        </div>
+    <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-gray-800">Client Feedback</h2>
+        <p className="text-sm text-gray-500 mt-1">See what clients are saying about your services and track your rating.</p>
       </div>
 
-      {/* RIGHT: List of reviews */}
-      <div>
-        <div className="dash-panel-header-new">
-          <h2>Client Feedback</h2>
+      <div className="grid lg:grid-cols-5 gap-8">
+        
+        {/* LEFT Column: Rating Overview (2 cols) */}
+        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-6">Rating Overview</h3>
+            
+            <div className="flex items-baseline gap-2 mb-8">
+              <strong className="text-5xl font-black text-gray-900 tracking-tight">{stats.average.toFixed(1)}</strong>
+              <span className="text-sm font-bold text-gray-400">/ 5.0</span>
+            </div>
+
+            {/* Rating Bars */}
+            <div className="space-y-3.5">
+              {[5, 4, 3, 2, 1].map(stars => {
+                const count = stats.breakdown[stars - 1] || 0;
+                const pct = Math.round((count / totalReviews) * 100);
+                return (
+                  <div key={stars} className="flex items-center gap-3 text-xs font-semibold text-gray-505">
+                    <span className="w-12 text-left">{stars} Stars</span>
+                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#14B8A6] rounded-full" style={{ width: `${pct}%` }}></div>
+                    </div>
+                    <span className="w-8 text-right font-bold text-gray-400">{pct}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-100 pt-5 mt-6 text-center text-xs font-semibold text-gray-400">
+            Based on {reviews.length} total client reviews
+          </div>
         </div>
 
-        <div className="bookings-detailed-list" style={{ marginTop: '20px' }}>
-          {reviews.length === 0 && <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--gray-500)' }}>No reviews yet.</p>}
-          {reviews.map(r => {
-            const reviewerName = r.reviewer ? `${r.reviewer.firstName || ''} ${r.reviewer.lastName || ''}`.trim() : 'Anonymous';
-            const rating = r.rating || 5;
-            return (
-            <div key={r.id || r._id} style={{ padding: '16px 20px', border: '1px solid #E5E7EB', borderRadius: '8px', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <strong style={{ fontSize: '15px', color: '#1F2937' }}>{reviewerName}</strong>
-                <span style={{ fontSize: '12px', color: '#6B7280' }}>{new Date(r.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div style={{ display: 'flex', gap: '2px', color: '#F59E0B', marginBottom: '8px' }}>
-                {"★".repeat(rating)}{"☆".repeat(5 - rating)}
-              </div>
-              <p style={{ fontSize: '14px', color: '#4B5563', margin: 0, lineHeight: 1.5 }}>
-                "{r.comment || 'No comment provided.'}"
+        {/* RIGHT Column: Feedback List (3 cols) */}
+        <div className="lg:col-span-3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-lg">💬</span>
+            <h3 className="text-lg font-bold text-gray-800">Client Reviews</h3>
+          </div>
+
+          <div className="reviews-list-premium space-y-4">
+            {reviews.length === 0 ? (
+              <p className="text-center py-12 text-gray-400 font-medium bg-gray-55 border border-dashed border-gray-200 rounded-xl">
+                No reviews yet. Completed jobs will show feedback here.
               </p>
-            </div>
-          )})}
+            ) : (
+              reviews.map(r => {
+                const reviewerName = r.reviewer ? `${r.reviewer.firstName || ''} ${r.reviewer.lastName || ''}`.trim() : 'Anonymous';
+                const rating = r.rating || 5;
+                const stars = Array(rating).fill(0);
+                
+                return (
+                  <div className="review-item-premium" key={r.id || r._id}>
+                    <div className="review-header flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-bold text-slate-800 text-sm leading-snug">{reviewerName}</h4>
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#14B8A6] bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100 mt-1 inline-block">
+                          Client
+                        </span>
+                      </div>
+                      <div className="review-stars-premium flex items-center gap-0.5 text-amber-500">
+                        {stars.map((_, i) => <Icon key={i} name="star" />)}
+                        <strong className="text-slate-800 font-bold text-xs ml-1.5">{rating}.0</strong>
+                      </div>
+                    </div>
+                    <p className="review-comment text-slate-600 text-sm italic font-medium leading-relaxed mb-2.5">
+                      "{r.comment || 'No comment provided.'}"
+                    </p>
+                    <span className="review-date text-[10px] font-semibold text-slate-400">
+                      📅 {new Date(r.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
+
       </div>
     </div>
   );

@@ -15,8 +15,6 @@ export default function ProviderDashboard({
   onRoleChange,
   leads,
   activeProposals,
-  ActivityCard,
-  ImageSlot
 }: ProviderDashboardProps) {
   const { user } = useAuth();
   
@@ -39,24 +37,43 @@ export default function ProviderDashboard({
         )}
       </div>
 
-      {/* Metric Cards (like RecommendedCards) */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        {[
-          ['Total Earnings', '85,000 XAF', 'wallet', 'bg-teal-50', 'text-teal-600', 'bg-teal-50/50'],
-          ['Active Jobs', '3', 'briefcase', 'bg-blue-50', 'text-blue-600', 'bg-blue-50/50'],
-          ['Completed Jobs', '28', 'check', 'bg-green-50', 'text-green-600', 'bg-green-50/50'],
-          ['Average Rating', '4.9', 'star', 'bg-orange-50', 'text-orange-600', 'bg-orange-50/50'],
-        ].map(([title, value, icon, iconBg, iconColor, cardBg]) => (
-          <div key={title} className={`${cardBg} border border-gray-200 rounded-lg p-5 relative`}>
-            <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-md ${iconBg} flex items-center justify-center`}>
-                <span className={iconColor}><Icon name={icon as IconName} /></span>
-              </div>
-              <span className="text-sm font-bold text-gray-800">{title}</span>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{value}</h3>
+      {/* Metric Cards Section */}
+      <div className="dash-metrics-grid mb-8">
+        <div className="metric-card-premium m-coins" onClick={() => setActiveTab('Wallet')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Total Earnings</span>
+            <div className="metric-icon-box"><Icon name="wallet" /></div>
           </div>
-        ))}
+          <strong className="metric-big-num">85,000 XAF</strong>
+          <span className="metric-card-desc">Cash received from 28 jobs</span>
+        </div>
+
+        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Jobs')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Active Jobs</span>
+            <div className="metric-icon-box"><Icon name="briefcase" /></div>
+          </div>
+          <strong className="metric-big-num">3</strong>
+          <span className="metric-card-desc">Ongoing contracts</span>
+        </div>
+
+        <div className="metric-card-premium m-completed" onClick={() => setActiveTab('My Jobs')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Completed Jobs</span>
+            <div className="metric-icon-box"><Icon name="check" /></div>
+          </div>
+          <strong className="metric-big-num">28</strong>
+          <span className="metric-card-desc">Successfully finished</span>
+        </div>
+
+        <div className="metric-card-premium m-saved" onClick={() => setActiveTab('Reviews')} style={{ cursor: 'pointer' }}>
+          <div className="metric-card-header">
+            <span>Average Rating</span>
+            <div className="metric-icon-box"><Icon name="star" /></div>
+          </div>
+          <strong className="metric-big-num">4.9</strong>
+          <span className="metric-card-desc">From client reviews</span>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-8 pb-16">
@@ -64,7 +81,7 @@ export default function ProviderDashboard({
         <div className="lg:col-span-3 space-y-6">
           
           {/* Leads List table */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <span className="text-lg">🎯</span>
@@ -82,19 +99,24 @@ export default function ProviderDashboard({
 
             <div className="space-y-4">
               {leads.map((lead) => (
-                <div className="flex items-center gap-4 py-3 border-b border-gray-50 last:border-0" key={lead.title}>
-                  <div className="w-12 h-12 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                <div 
+                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-white border border-gray-200 rounded-xl transition-all duration-200 hover:border-[#14B8A6] hover:shadow-sm" 
+                  key={lead.title}
+                >
+                  <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-100">
                     <img src={lead.image} alt={lead.title} className="w-full h-full object-cover" />
                   </div>
-                  <div className="flex-1">
-                    <span className="text-[10px] font-bold text-[#14B8A6] uppercase bg-teal-50 px-2 py-0.5 rounded">{lead.tag}</span>
-                    <h3 className="text-sm font-bold text-gray-800 mt-1">{lead.title}</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">Nearby • 2.4 km away</p>
+                  <div className="flex-1 min-w-0 w-full">
+                    <span className="text-[10px] font-extrabold text-[#14B8A6] uppercase bg-teal-50/60 border border-teal-100 px-2 py-0.5 rounded-md tracking-wider">{lead.tag}</span>
+                    <h3 className="text-sm font-bold text-gray-800 mt-1.5 truncate">{lead.title}</h3>
+                    <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                      <span>📍 Nearby • 2.4 km away</span>
+                    </p>
                   </div>
-                  <div className="text-right flex flex-col items-end gap-2">
-                    <strong className="text-sm text-gray-900">{lead.price}</strong>
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100">
+                    <strong className="text-sm font-extrabold text-gray-900">{lead.price}</strong>
                     <button 
-                      className="bg-[#14B8A6] text-white text-xs px-3 py-1.5 rounded hover:bg-[#0F9788] transition"
+                      className="bg-[#14B8A6] text-white text-xs font-bold px-4 py-2 rounded-lg hover:bg-[#0F9788] transition shadow-sm"
                       onClick={() => alert(`Proposal submitted for: ${lead.title}`)}
                     >
                       Send Proposal
@@ -103,7 +125,7 @@ export default function ProviderDashboard({
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
               <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788]" onClick={() => setActiveTab('Job Leads')}>View All Leads →</button>
             </div>
           </div>
@@ -111,40 +133,41 @@ export default function ProviderDashboard({
 
         {/* Right column */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-gradient-to-br from-[#14B8A6] to-[#0D9488] text-white rounded-lg p-6 shadow-sm">
-            <span className="text-xs font-medium text-teal-100">Total Earnings Tracked</span>
-            <strong className="text-3xl font-black block mt-1 mb-2">85,000 XAF</strong>
-            <p className="text-xs text-teal-100 mb-4">Cash received from 28 jobs</p>
-            <button className="bg-white text-[#14B8A6] text-xs font-bold px-4 py-2 rounded-full hover:bg-gray-50 transition" onClick={() => setActiveTab('Wallet')}>View Job History →</button>
+          <div className="bg-gradient-to-br from-[#14B8A6] to-[#0D9488] text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 pointer-events-none"></div>
+            <span className="text-xs font-bold text-teal-100 uppercase tracking-wider block mb-1">Total Earnings Tracked</span>
+            <strong className="text-3xl font-black block mb-2">85,000 XAF</strong>
+            <p className="text-xs text-teal-50/80 mb-5 leading-relaxed">Cash payments received from 28 completed jobs</p>
+            <button className="bg-white text-[#14B8A6] text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm" onClick={() => setActiveTab('Wallet')}>View Job History →</button>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-5">
               <span className="text-lg">💼</span>
               <h2 className="text-lg font-bold text-gray-800">New Client Proposals</h2>
             </div>
             <div className="space-y-4">
               {activeProposals.map((proposal) => (
-                <div className="border border-gray-100 rounded-lg p-3 hover:shadow-sm transition" key={proposal.name}>
+                <div className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-sm hover:border-gray-300 transition-all duration-200" key={proposal.name}>
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={proposal.image} alt={proposal.name} className="w-10 h-10 rounded-full object-cover" />
-                    <div>
-                      <div className="flex items-center justify-between w-full gap-4">
-                        <h3 className="text-sm font-bold text-gray-800">{proposal.name}</h3>
-                        <span className="text-xs font-medium text-orange-500 flex items-center gap-1"><Icon name="star" /> {proposal.rating}</span>
+                    <img src={proposal.image} alt={proposal.name} className="w-10 h-10 rounded-full object-cover border border-gray-100" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between w-full gap-2">
+                        <h3 className="text-sm font-bold text-gray-800 truncate">{proposal.name}</h3>
+                        <span className="text-xs font-bold text-amber-500 flex items-center gap-0.5"><Icon name="star" /> {proposal.rating}</span>
                       </div>
-                      <p className="text-xs text-gray-500">{proposal.role}</p>
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">{proposal.role}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 pt-1">
                     <button 
-                      className="flex-1 bg-[#14B8A6] text-white text-xs font-medium py-1.5 rounded hover:bg-[#0F9788] transition"
+                      className="flex-1 bg-[#14B8A6] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#0F9788] transition shadow-sm"
                       onClick={() => alert(`Accepted proposal from ${proposal.name}`)}
                     >
                       Accept
                     </button>
                     <button 
-                      className="flex-1 border border-gray-200 text-gray-700 text-xs font-medium py-1.5 rounded hover:bg-gray-50 transition"
+                      className="flex-1 border border-gray-250 text-gray-700 text-xs font-semibold py-2 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition"
                       onClick={() => alert(`Declined proposal from ${proposal.name}`)}
                     >
                       Decline

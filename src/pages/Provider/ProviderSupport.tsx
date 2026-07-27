@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../../services/api';
-import './ProviderDashboard.css';
+import { Icon } from '../../App';
 
 interface ProviderSupportProps {
   setActiveTab?: (tab: string) => void;
@@ -52,70 +52,119 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
   ];
 
   return (
-    <div className="dash-panel-premium provider-support-grid animate-fade-in">
-      {/* LEFT: Provider FAQs */}
-      <div style={{ borderRight: '1px solid #E5E7EB', paddingRight: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#1F2937', marginBottom: '16px' }}>Help Center & FAQs</h3>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {faqs.map((f, i) => (
-            <details key={i} style={{ border: '1px solid #E5E7EB', borderRadius: '8px', padding: '16px', cursor: 'pointer' }}>
-              <summary style={{ fontWeight: 600, fontSize: '14px', color: '#1f2937', outline: 'none' }}>{f.q}</summary>
-              <p style={{ fontSize: '13px', color: '#4B5563', margin: '8px 0 0 0', lineHeight: 1.5 }}>{f.a}</p>
-            </details>
-          ))}
-        </div>
+    <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in w-full space-y-8">
+      
+      {/* Header */}
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Provider Support Center</h2>
+        <p className="text-gray-500">Need help? Browse our FAQs or submit a support request below.</p>
       </div>
 
-      {/* RIGHT: Ticket submission form */}
-      <div>
-        <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#1F2937', marginBottom: '16px' }}>Submit Support Ticket</h3>
-        <p style={{ fontSize: '13px', color: '#6B7280', lineHeight: 1.5, marginBottom: '24px' }}>
-          Encountering issues with a client, coin purchase, or profile settings? Send our support team a message.
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#4B5563', marginBottom: '6px' }}>Subject</label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              placeholder="e.g. Coin purchase issue"
-              style={{
-                width: '100%', height: '44px', borderRadius: '6px', border: '1px solid #D1D5DB',
-                padding: '0 12px', fontSize: '14px', boxSizing: 'border-box'
-              }}
-              required
-            />
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* LEFT: FAQ & Help */}
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Help Center & FAQs</h3>
+            <p className="text-xs text-gray-400">Quick answers to frequently asked provider questions.</p>
+          </div>
+          
+          <div className="space-y-3">
+            {faqs.map((f, i) => (
+              <details 
+                key={i} 
+                className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer transition hover:border-[#14B8A6] group [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="font-bold text-sm text-slate-800 outline-none flex items-center justify-between">
+                  <span>{f.q}</span>
+                  <span className="text-[#14B8A6] transition group-open:rotate-180">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                </summary>
+                <p className="text-xs text-slate-500 mt-3 leading-relaxed border-t border-gray-50 pt-2">{f.a}</p>
+              </details>
+            ))}
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#4B5563', marginBottom: '6px' }}>Detailed Message</label>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Describe your issue in detail..."
-              rows={4}
-              style={{
-                width: '100%', borderRadius: '6px', border: '1px solid #D1D5DB',
-                padding: '12px', fontSize: '14px', boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical'
-              }}
-              required
-            ></textarea>
+          {/* Contact Details Card */}
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">Direct Contact Information</h4>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="w-9 h-9 rounded-full bg-[#14B8A6] text-white flex items-center justify-center text-sm">
+                  <Icon name="message" />
+                </div>
+                <div>
+                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Email Support</span>
+                  <a href="mailto:fixam8899@gmail.com" className="block text-sm font-bold text-slate-800 hover:text-[#14B8A6]">
+                    fixam8899@gmail.com
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="w-9 h-9 rounded-full bg-green-500 text-white flex items-center justify-center text-sm">
+                  <Icon name="bell" />
+                </div>
+                <div>
+                  <span className="block text-[10px] text-gray-400 font-bold uppercase">WhatsApp</span>
+                  <a href="https://wa.me/237682803006" target="_blank" rel="noopener noreferrer" className="block text-sm font-bold text-slate-800 hover:text-green-600">
+                    +237 682803006
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              width: '100%', height: '44px', backgroundColor: isSubmitting ? '#9CA3AF' : '#14B8A6', color: 'white',
-              border: 'none', borderRadius: '6px', fontWeight: 600, cursor: isSubmitting ? 'not-allowed' : 'pointer', transition: 'all 200ms ease'
-            }}
-          >
-            {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
-          </button>
-        </form>
+        {/* RIGHT: Ticket Submission Form */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">📧</span>
+            <h3 className="text-lg font-bold text-gray-800">Submit Support Ticket</h3>
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed mb-6">
+            Describe your issue and our support team will open a direct chat conversation to assist you.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">Subject</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="e.g., Wallet payout issue"
+                className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">Detailed Message</label>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Please describe your problem or question in detail..."
+                rows={5}
+                className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition resize-none font-sans"
+                required
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`w-full h-11 font-bold rounded-xl transition shadow-sm flex items-center justify-center text-white ${
+                isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#14B8A6] hover:bg-[#0F9788]'
+              }`}
+            >
+              {isSubmitting ? 'Submitting...' : 'Submit Support Ticket'}
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
   );
