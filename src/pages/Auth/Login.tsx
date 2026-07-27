@@ -108,8 +108,8 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
       login(response.data.token, response.data.user);
       await refreshUser();
       
+      // Successful login, invoke role callback; navigation handled by auth enforcement
       onLogin?.(role);
-      onNavigate('dashboard');
     } catch (error: any) {
       setIsLoading(false);
       setApiError(

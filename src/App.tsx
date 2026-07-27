@@ -73,6 +73,11 @@ export type IconName =
 export const asset = (fileName: string) => `/assets/${fileName}`
 
 export const getApiUrl = () => {
+  // Prefer local API when running in development mode for a smoother experience
+  if (import.meta.env.MODE === 'development') {
+    console.log('[App] Using local API for development');
+    return 'http://localhost:5000/api';
+  }
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
@@ -216,10 +221,13 @@ function App() {
 
   // Enforce auth
   useEffect(() => {
+    console.log('[App] Auth effect', { page, isLoggedIn, isLoading, user });
     if (!isLoading) {
       if (page === 'dashboard' && !isLoggedIn) {
+        console.log('[App] Redirecting to login page');
         setPage('login');
       } else if (isLoggedIn && (page === 'login' || page === 'register' || page === 'otp')) {
+        console.log('[App] Redirecting to dashboard page');
         setPage('dashboard');
       }
       if (user) {
@@ -966,7 +974,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 }
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, login, refreshUser } = useAuth();
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1008,8 +1016,24 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { isNews: false, badgeText: 'SPORTS', text: '⚽ Match Result: 2 - 0 (LIVE)' },
     { isNews: false, badgeText: 'SPORTS', text: '📅 Upcoming: Nigeria vs Ghana (19:00)' },
     { isNews: true, badgeText: 'NEWS', text: '📰 50+ New Verified Plumbers joined Fixam this week!' },
-    { isNews: false, badgeText: 'SPORTS', text: '⚽ Real Madrid 3 - 1 Barcelona (FINISHED)' },
-    { isNews: true, badgeText: 'NEWS', text: '⚡ Wallet top-up via Mobile Money now processed 2x faster!' },
+    {
+      isNews: true,
+      badgeText: 'NEWS',
+      text: 'Loading...',
+      // @ts-ignore
+      fetchTickerData: async () => {
+        console.log('[App] Fetching ticker data');
+        try {
+          const res = await fetch(`${getApiUrl()}/sports/ticker?lang=${i18n.language}&country=${user?.location || 'Cameroon'}`);
+          if (!res.ok) throw new Error(`Ticker fetch failed: ${res.status}`);
+          const data = await res.json();
+          // TODO: integrate ticker data into UI (e.g., setTicker(data))
+          console.log('[App] Ticker data received', data);
+        } catch (err) {
+          console.warn('[App] Ticker fetch error (ignored)', err);
+        }
+      }
+    },
   ]);
 
   useEffect(() => {
@@ -1188,9 +1212,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       setIsSidebarOpen(false);
       setSelectedProvider(null);
       if (itemName === 'Career Pathways') {
-        onNavigate('career_pathways');
-      } else if (itemName === 'Log Out') {
-        onNavigate('home');
+        login(response.data.token, response.data.user);
+      await refreshUser();
+      // Normalize URL to dashboard hash after successful login
+      window.history.replaceState('', document.title, '/#dashboard');
+      
+      onLogin?.(role);
+      onNavigate('dashboard');
       } else {
         setActiveTab(itemName);
       }
