@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react';
+import i18n from 'i18next';
 import { useTranslation } from 'react-i18next'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
