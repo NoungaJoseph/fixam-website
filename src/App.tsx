@@ -269,6 +269,15 @@ function App() {
       } else if (!hash) {
         setPage('home');
       }
+
+      // If the URL pathname is invalid, reset it to / to clean up browser URL
+      if (path !== '/' && path !== '' && 
+          !path.startsWith('/profile/') && 
+          !path.startsWith('/job/') && 
+          path !== '/download' && path !== '/download/' &&
+          !validPages.includes(pathPage as Page)) {
+        window.history.replaceState('', document.title, '/' + window.location.hash);
+      }
     };
 
     handleHashChange();
