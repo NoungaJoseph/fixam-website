@@ -45,18 +45,20 @@ export default function OTPVerification({ onNavigate }: { onNavigate: (page: Pag
     setErrorText('');
 
     try {
-      const identifier = sessionStorage.getItem('pendingOTPIdentifier');
-      if (!identifier) {
+      const email = sessionStorage.getItem('pendingOTPEmail') || sessionStorage.getItem('pendingOTPIdentifier');
+      if (!email) {
         throw new Error('No pending registration found. Please try registering again.');
       }
       
-      const response = await api.post('/auth/verify-otp', { identifier, otp });
+      const response = await api.post('/auth/verify-email-otp', { email, otp });
       
       login(response.data.token, response.data.user);
       await refreshUser();
+      sessionStorage.removeItem('pendingOTPEmail');
+      sessionStorage.removeItem('pendingOTPIdentifier');
       
       setIsLoading(false);
-      onNavigate('login'); // or navigate to 'dashboard' if we auto login
+      onNavigate('dashboard');
     } catch (error: any) {
       setIsLoading(false);
       setErrorText(error.response?.data?.message || 'Invalid or expired OTP. Please try again.');
@@ -68,7 +70,7 @@ export default function OTPVerification({ onNavigate }: { onNavigate: (page: Pag
     verifyTitle: isFr ? 'Vérifier le compte' : 'Verify Account',
     verifySub: isFr 
       ? 'Nous avons envoyé un code de vérification à 6 chiffres sur votre téléphone.' 
-      : 'We\'ve sent a 6-digit verification code to your phone.',
+      : 'We\'ve sent a 6-digit verification code to your email.',
     verifyBtn: isFr ? 'Vérifier le Code' : 'Verify Code',
     verifying: isFr ? 'Vérification...' : 'Verifying...',
     noCode: isFr ? 'Vous n\'avez pas reçu le code ?' : 'Didn\'t receive the code?',

@@ -34,6 +34,7 @@ import ProviderReviews from './pages/Provider/ProviderReviews'
 // Removed ProfileSettings import
 import ProviderSupport from './pages/Provider/ProviderSupport'
 import ProviderDashboard from './pages/Provider/ProviderDashboard'
+import ProviderStats from './pages/Provider/ProviderStats'
 
 // Public landing pages
 import Home from './pages/Home'
@@ -975,7 +976,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 }
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
-  const { isLoggedIn, user, login, refreshUser } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth();
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1512,17 +1513,19 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { name: 'My Jobs', icon: 'briefcase' as IconName },
     { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
     { name: 'Job Leads', icon: 'search' as IconName },
-    { name: 'My Stats', icon: 'chart-bar' as IconName },
+    { name: 'My Stats', icon: 'chart' as IconName },
     { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', icon: 'star' as IconName },
     { name: 'Career Pathways', icon: 'briefcase' as IconName },
-    { name: 'Settings', icon: 'user' as IconName },
+    { name: 'My Profile', icon: 'user' as IconName },
+    { name: 'Settings', icon: 'settings' as IconName },
     { name: 'Support', icon: 'message' as IconName }
   ];
 
   const handleNavClick = (itemName: string) => {
     setIsSidebarOpen(false);
     if (itemName === 'Log Out') {
+      logout();
       onNavigate('home');
     } else if (itemName === 'Career Pathways') {
       onNavigate('career_pathways');
@@ -1546,7 +1549,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div 
             className="user-card-new" 
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-            onClick={() => handleNavClick(userRole === 'pro' ? 'Settings' : 'My Profile')}
+            onClick={() => handleNavClick('My Profile')}
           >
             <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
             {!isSidebarCollapsed && (
@@ -1595,7 +1598,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           
 
 
-          <button className="side-link-new" onClick={() => onNavigate('home')}>
+          <button className="side-link-new" onClick={() => handleNavClick('Log Out')}>
             <Icon name="x" />
             <span>Logout</span>
           </button>
@@ -1674,7 +1677,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
-                        setActiveTab('Settings');
+                        setActiveTab('My Profile');
                       }}
                     >
                       <div className="flex items-center gap-2"><Icon name="briefcase" /> Provider</div>
@@ -1692,10 +1695,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             <ProviderDashboard 
               setActiveTab={setActiveTab}
               onRoleChange={onRoleChange}
-              leads={leads}
-              activeProposals={activeProposals}
-              ActivityCard={ActivityCard}
-              ImageSlot={ImageSlot}
             />
           )}
 
@@ -1709,7 +1708,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           {activeTab === 'Wallet' && <ProviderWallet />}
           {activeTab === 'Reviews' && <ProviderReviews />}
           {activeTab === 'Settings' && <Settings />}
-          {activeTab === 'My Stats' && <Stats />}
+          {activeTab === 'My Profile' && (
+            <MyProfile
+              setActiveTab={setActiveTab}
+              onRoleChange={onRoleChange}
+              userRole={userRole}
+            />
+          )}
+          {activeTab === 'My Stats' && <ProviderStats />}
           {activeTab === 'Support' && (
             <ProviderSupport 
               setActiveTab={setActiveTab} 

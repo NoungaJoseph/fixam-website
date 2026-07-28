@@ -40,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = async () => {
-    console.log('[AuthContext] refreshUser start');
     try {
       const response = await api.get('/auth/me');
       if (response.data.success && response.data.user) {
@@ -67,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
     } finally {
       setIsLoading(false);
-      console.log('[AuthContext] refreshUser done, isLoading -> false');
     }
   };
 
@@ -76,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = (token: string, userData: User) => {
-    console.log('[AuthContext] login called – token:', token);
     localStorage.setItem('fixam_token', token);
     setUser(userData);
   };

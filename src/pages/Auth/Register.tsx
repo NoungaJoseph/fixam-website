@@ -153,12 +153,10 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
       isValid = false;
     }
 
-    if (email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        setEmailError(isFr ? 'Format d\'email invalide' : 'Invalid email format');
-        isValid = false;
-      }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      setEmailError(isFr ? 'Veuillez entrer un email valide' : 'Please enter a valid email address');
+      isValid = false;
     }
 
     return isValid;
@@ -269,7 +267,8 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
           : 'Account created! Check your phone pour un code de vérification.'
       );
       
-      sessionStorage.setItem('pendingOTPIdentifier', formattedPhone || email);
+      sessionStorage.setItem('pendingOTPEmail', email.trim().toLowerCase());
+      sessionStorage.setItem('pendingOTPIdentifier', email.trim().toLowerCase());
 
       // Redirect after 2 seconds
       setTimeout(() => {
@@ -298,7 +297,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     phoneLabel: isFr ? 'Numéro de Téléphone' : 'Phone Number',
     phonePlaceholder: '6XX XXX XXX',
     
-    emailLabel: isFr ? 'Adresse Email (optionnel)' : 'Email Address (optional)',
+    emailLabel: isFr ? 'Adresse Email' : 'Email Address',
     emailPlaceholder: 'your@email.com',
     
     regionLabel: isFr ? 'Région' : 'Region',
