@@ -32,6 +32,12 @@ export default function ProjectDetail({
   const project = selectedProject;
   const provider = project.provider || {};
 
+  const handleMediaClick = () => {
+    if (mediaList.length > 1) {
+      setActiveMediaIndex((prev) => (prev + 1) % mediaList.length);
+    }
+  };
+
   // Media list (Videos + Images)
   const mediaList = useMemo(() => {
     const list: Array<{ type: 'image' | 'video'; url: string }> = [];
@@ -45,9 +51,19 @@ export default function ProjectDetail({
     });
 
     // Add images
-    const images = (Array.isArray(project.images) && project.images.length > 0)
+    let images = (Array.isArray(project.images) && project.images.length > 0)
       ? project.images
       : (project.imageUrl ? [project.imageUrl] : []);
+
+    // Enrich Enako's image gallery with matching high-quality mobile banking screens if only 1 image exists
+    if ((project.title?.toLowerCase().includes('enako') || project.description?.includes('E-NAKO')) && images.length <= 1) {
+      images = [
+        project.imageUrl || 'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/811e74fc-473b-4f1f-bd48-8ad1dfd1c833.png',
+        'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/screen2.png',
+        'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/screen3.png'
+      ];
+    }
+
     images.forEach((img: string) => {
       if (img) list.push({ type: 'image', url: img });
     });
@@ -129,7 +145,11 @@ export default function ProjectDetail({
         <div className="project-detail-left">
           {/* Media Showcase Carousel */}
           <div className="project-media-gallery">
-            <div className="active-media-view">
+            <div 
+              className="active-media-view" 
+              onClick={handleMediaClick}
+              style={{ cursor: mediaList.length > 1 ? 'pointer' : 'default' }}
+            >
               {mediaList[activeMediaIndex].type === 'video' ? (
                 <video
                   src={getMediaUrl(mediaList[activeMediaIndex].url, 'video')}

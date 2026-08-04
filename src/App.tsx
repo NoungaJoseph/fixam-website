@@ -89,9 +89,29 @@ export const getMediaUrl = (path?: string, type?: 'image' | 'video') => {
   }
 
   // Intercept local device files uploaded from mobile app emulators/devices
-  if (path.startsWith('file://') || path.startsWith('content://') || path.includes('/ImagePicker/') || path.includes('/cache/')) {
+  if (path.startsWith('file://') || path.startsWith('content://') || path.includes('/ImagePicker/') || path.includes('/cache/') || path.includes('screen2') || path.includes('screen3')) {
     if (type === 'video' || path.toLowerCase().endsWith('.mp4') || path.toLowerCase().endsWith('.mov') || path.toLowerCase().endsWith('.m4v') || path.toLowerCase().endsWith('.3gp')) {
+      // Map Joseph's videos to clean finance walkthrough videos or sample mp4s
+      if (path.includes('60073c92-074e-488a-be6e-d7bf30ec7d20')) {
+        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+      }
+      if (path.includes('c5fd1d1d-8c0c-4d7c-835e-466c50e94a57')) {
+        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
+      }
+      if (path.includes('11f1549b-bd50-4a1e-bfb3-870660cc6b42')) {
+        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4';
+      }
       return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+    }
+    // Map Joseph's main Enako screenshots to beautiful fintech app UI layouts
+    if (path.includes('811e74fc-473b-4f1f-bd48-8ad1dfd1c833')) {
+      return 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=800&auto=format&fit=crop&q=80';
+    }
+    if (path.includes('screen2')) {
+      return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80';
+    }
+    if (path.includes('screen3')) {
+      return 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80';
     }
     return 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
   }
@@ -212,7 +232,10 @@ function MaintenanceScreen({ message }: { message: string }) {
 }
 
 function App() {
-  const [page, setPage] = useState<Page>('home')
+  const [page, setPage] = useState<Page>(() => {
+    const token = localStorage.getItem('fixam_token');
+    return token ? 'dashboard' : 'home';
+  });
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   const { i18n } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState('')
@@ -318,7 +341,8 @@ function App() {
       } else if (validPages.includes(pathPage as Page)) {
         setPage(pathPage as Page);
       } else if (!hash) {
-        setPage('home');
+        const token = localStorage.getItem('fixam_token');
+        setPage(token ? 'dashboard' : 'home');
       }
 
       // If the URL pathname is invalid, reset it to / to clean up browser URL
@@ -736,6 +760,7 @@ export const translateServiceHelper = (name: string, desc: string, lang: string)
 
 function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
   const { t, i18n } = useTranslation();
+  const { isLoggedIn, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | 'pathways' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
@@ -872,12 +897,21 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
             {/* Mobile Header Right */}
             <div className="mobile-header-right mobile-only">
-              <button 
-                className="mobile-header-signup" 
-                onClick={() => handleNavigate('login')}
-              >
-                {t('nav.signin') || 'Sign In'}
-              </button>
+              {isLoggedIn ? (
+                <button 
+                  className="mobile-header-signup" 
+                  onClick={() => handleNavigate('dashboard')}
+                >
+                  Dashboard
+                </button>
+              ) : (
+                <button 
+                  className="mobile-header-signup" 
+                  onClick={() => handleNavigate('login')}
+                >
+                  {t('nav.signin') || 'Sign In'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -1016,8 +1050,17 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
           </nav>
           
           <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center', position: 'absolute', right: 0 }}>
-             <button className="nav-link-new" onClick={() => handleNavigate('login')} style={{ fontWeight: '600' }}>{t('nav.signin') || 'SIGN IN'}</button>
-             <button onClick={() => handleNavigate('register')} style={{ backgroundColor: '#14B8A6', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>GET STARTED</button>
+            {isLoggedIn ? (
+              <>
+                <button className="nav-link-new" onClick={() => handleNavigate('dashboard')} style={{ fontWeight: '600' }}>DASHBOARD</button>
+                <button onClick={async () => { await logout(); handleNavigate('home'); }} style={{ backgroundColor: '#EF4444', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>LOG OUT</button>
+              </>
+            ) : (
+              <>
+                <button className="nav-link-new" onClick={() => handleNavigate('login')} style={{ fontWeight: '600' }}>{t('nav.signin') || 'SIGN IN'}</button>
+                <button onClick={() => handleNavigate('register')} style={{ backgroundColor: '#14B8A6', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>GET STARTED</button>
+              </>
+            )}
           </div>
         </div>
 
@@ -1126,12 +1169,25 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
           </div>
 
           <div className="mobile-menu-bottom-bar">
-            <a href="#" className="login-link" onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); handleNavigate('login'); }}>
-              {t('nav.signin') || 'Log In'}
-            </a>
-            <button className="signup-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('register'); }}>
-              Sign Up
-            </button>
+            {isLoggedIn ? (
+              <>
+                <a href="#" className="login-link" onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); handleNavigate('dashboard'); }}>
+                  Dashboard
+                </a>
+                <button className="signup-btn" style={{ backgroundColor: '#EF4444' }} onClick={async () => { setIsMobileMenuOpen(false); await logout(); handleNavigate('home'); }}>
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <>
+                <a href="#" className="login-link" onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); handleNavigate('login'); }}>
+                  {t('nav.signin') || 'Log In'}
+                </a>
+                <button className="signup-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('register'); }}>
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
         </nav>
       </header>
