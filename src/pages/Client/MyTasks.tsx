@@ -1,7 +1,7 @@
 import './MyTasks.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
-import PostTaskFlow from '../../components/PostTaskFlow';
+import PostJobModal from '../../components/PostJobModal';
 import { api } from '../../services/api';
 
 interface MyTasksProps {
@@ -17,22 +17,8 @@ interface MyTasksProps {
 export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask }: MyTasksProps) {
   const [isPostTaskOpen, setIsPostTaskOpen] = useState(false);
 
-  const handlePostTaskSubmit = async (taskData: any) => {
-    try {
-      const res = await api.post('/jobs', {
-        title: taskData.title,
-        description: taskData.description || 'New task',
-        budget: Number(taskData.budget),
-        categoryId: taskData.category,
-        location: 'Remote',
-        urgencyLevel: 'NORMAL'
-      });
-      setClientTasks([res.data.job, ...clientTasks]);
-      setIsPostTaskOpen(false);
-      alert("Task published successfully!");
-    } catch (err: any) {
-      alert("Failed to publish task: " + err.response?.data?.message);
-    }
+  const handleJobCreated = (newJob: any) => {
+    setClientTasks([newJob, ...clientTasks]);
   };
 
   const activeTasksCount = clientTasks.filter((t: any) => t.status === 'PENDING' || t.status === 'IN_PROGRESS').length;
@@ -168,10 +154,10 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
         </div>
       </div>
       
-      <PostTaskFlow 
-        isOpen={isPostTaskOpen} 
-        onClose={() => setIsPostTaskOpen(false)} 
-        onSubmit={handlePostTaskSubmit} 
+      <PostJobModal
+        isOpen={isPostTaskOpen}
+        onClose={() => setIsPostTaskOpen(false)}
+        onSuccess={handleJobCreated}
       />
     </div>
   );
