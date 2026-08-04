@@ -23,6 +23,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   const [activeTask, setActiveTask] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [recordDuration, setRecordDuration] = useState(0);
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordTimerIdRef = useRef<any>(null);
+  const isRecordingCancelledRef = useRef(false);
 
   useEffect(() => {
     const loadConvs = async () => {
@@ -175,15 +182,91 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     }
   };
 
-  const handleVoiceRecord = () => {
-    if (!isRecording) {
+  const formatRecordTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  const startAudioRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        if (audioChunksRef.current.length > 0 && !isRecordingCancelledRef.current) {
+          setIsUploadingAudio(true);
+          try {
+            const file = new File([audioBlob], `voice-note-${Date.now()}.webm`, { type: 'audio/webm' });
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'generic');
+            const uploadRes = await api.post('/upload', formData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            const url = uploadRes.data.url;
+            await handleSendMsg(undefined, `🎤 Voice Note (${formatRecordTime(recordDuration)})`, 'AUDIO', url);
+          } catch (err) {
+            console.error("Failed to upload audio message", err);
+            alert("Failed to send voice note.");
+          } finally {
+            setIsUploadingAudio(false);
+          }
+        }
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      isRecordingCancelledRef.current = false;
+      mediaRecorder.start();
       setIsRecording(true);
-      alert('🎤 Recording voice note... Click again to send.');
-    } else {
-      setIsRecording(false);
-      handleSendMsg(undefined, '🎤 Voice note (0:15)', 'AUDIO');
+      setRecordDuration(0);
+      
+      if (recordTimerIdRef.current) clearInterval(recordTimerIdRef.current);
+      recordTimerIdRef.current = setInterval(() => {
+        setRecordDuration(prev => prev + 1);
+      }, 1000);
+    } catch (err) {
+      console.error("Audio recording failed to start", err);
+      alert("Could not access microphone.");
     }
   };
+
+  const stopAudioRecording = (shouldCancel = false) => {
+    if (recordTimerIdRef.current) {
+      clearInterval(recordTimerIdRef.current);
+      recordTimerIdRef.current = null;
+    }
+    isRecordingCancelledRef.current = shouldCancel;
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    setIsRecording(false);
+  };
+
+  const handleVoiceRecord = () => {
+    if (!isRecording) {
+      startAudioRecording();
+    } else {
+      stopAudioRecording(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recordTimerIdRef.current) {
+        clearInterval(recordTimerIdRef.current);
+      }
+    };
+  }, []);
 
   const isMobileDetailView = activeConv ? 'viewing-chat' : 'viewing-list';
 
@@ -329,17 +412,16 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                     </div>
 
                     {/* Simulated Live Map Container */}
-                    <div style={{ height: '180px', background: '#E2E8F0', borderRadius: '12px', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', backgroundSize: 'cover', backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundColor: '#f1f5f9' }}>
-                      <span style={{ fontSize: '2.5rem', marginBottom: '0.4rem' }}>🗺️</span>
-                      <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>Tracking Live Location in Real-time</span>
-                      <a 
-                        href="https://maps.google.com" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        style={{ marginTop: '8px', color: '#0D9488', fontSize: '0.8rem', fontWeight: 700, textDecoration: 'underline' }}
-                      >
-                        Open Full Live Map ↗
-                      </a>
+                    <div style={{ height: '180px', borderRadius: '12px', overflow: 'hidden', position: 'relative' }}>
+                      <iframe 
+                        title="Live Provider Location"
+                        width="100%" 
+                        height="180" 
+                        frameBorder="0" 
+                        scrolling="no" 
+                        src="https://maps.google.com/maps?width=100%25&amp;height=180&amp;hl=en&amp;q=4.0503,9.7679&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
+                        style={{ border: 0 }}
+                      />
                     </div>
 
                     {/* Progress Timeline */}
@@ -394,8 +476,15 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                           />
                         )}
                         {isAudio && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
-                            🎵 <span>{msg.content}</span>
+                          <div className="w-[240px] py-1">
+                            <div className="flex items-center gap-2 mb-1.5 font-semibold text-xs opacity-90">
+                              <span>🎤 Voice Note</span>
+                            </div>
+                            <audio 
+                              src={msg.mediaUrl || msg.content} 
+                              controls 
+                              className="w-full h-8 outline-none rounded-lg text-teal-600"
+                            />
                           </div>
                         )}
                         {isLocation ? (
@@ -445,39 +534,63 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               </div>
             )}
 
-            <div className="chat-input-area" style={{ flexDirection: 'row', alignItems: 'flex-end', padding: '10px 15px', background: '#f0f2f5', gap: '8px' }}>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                multiple 
-                accept="image/*" 
-                style={{ display: 'none' }} 
-                onChange={handleImagePick} 
-              />
-              
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '5px 10px', minHeight: '44px' }}>
-                <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
-                  📎
-                </button>
-                <input 
-                  type="text" 
-                  placeholder="Type a message" 
-                  value={newMsgText}
-                  onChange={(e) => setNewMsgText(e.target.value)}
-                  onKeyDown={(e) => { if(e.key === 'Enter') handleSendMsg(); }}
-                  style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1rem', padding: '8px', color: '#111b21' }}
-                />
-                <button type="button" title="Share Location" onClick={handleLocationShare} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
-                  📍
-                </button>
-              </div>
+            <div className="chat-input-area" style={{ flexDirection: 'row', alignItems: 'center', padding: '10px 15px', background: '#f0f2f5', gap: '8px' }}>
+              {isRecording ? (
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '10px 20px', minHeight: '44px', justifyContent: 'space-between' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                    <span className="text-red-500 font-bold text-sm tracking-wider">
+                      Recording voice note: {formatRecordTime(recordDuration)}
+                    </span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => stopAudioRecording(true)} 
+                    className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    multiple 
+                    accept="image/*" 
+                    style={{ display: 'none' }} 
+                    onChange={handleImagePick} 
+                  />
+                  
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '5px 10px', minHeight: '44px' }}>
+                    <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
+                      📎
+                    </button>
+                    <input 
+                      type="text" 
+                      placeholder="Type a message" 
+                      value={newMsgText}
+                      onChange={(e) => setNewMsgText(e.target.value)}
+                      onKeyDown={(e) => { if(e.key === 'Enter') handleSendMsg(); }}
+                      style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1rem', padding: '8px', color: '#111b21' }}
+                    />
+                    <button type="button" title="Share Location" onClick={handleLocationShare} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
+                      📍
+                    </button>
+                  </div>
+                </>
+              )}
 
-              {newMsgText.trim() || selectedImages.length > 0 ? (
+              {isUploadingAudio ? (
+                <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              ) : (newMsgText.trim() || selectedImages.length > 0) && !isRecording ? (
                 <button type="button" onClick={(e) => handleSendMsg(e)} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                   ➤
                 </button>
               ) : (
-                <button type="button" title="Send Voice Note" onClick={handleVoiceRecord} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                <button type="button" title={isRecording ? "Stop & Send" : "Send Voice Note"} onClick={handleVoiceRecord} style={{ width: '48px', height: '48px', borderRadius: '50%', background: isRecording ? '#ef4444' : '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                   {isRecording ? '⏹️' : '🎤'}
                 </button>
               )}

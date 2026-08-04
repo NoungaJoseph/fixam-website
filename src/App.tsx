@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
-import i18n from 'i18next';
+import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
@@ -34,7 +33,6 @@ import ProviderReviews from './pages/Provider/ProviderReviews'
 // Removed ProfileSettings import
 import ProviderSupport from './pages/Provider/ProviderSupport'
 import ProviderDashboard from './pages/Provider/ProviderDashboard'
-import ProviderStats from './pages/Provider/ProviderStats'
 
 // Public landing pages
 import Home from './pages/Home'
@@ -75,11 +73,6 @@ export type IconName =
 export const asset = (fileName: string) => `/assets/${fileName}`
 
 export const getApiUrl = () => {
-  // Prefer local API when running in development mode for a smoother experience
-  if (import.meta.env.MODE === 'development') {
-    console.log('[App] Using local API for development');
-    return 'http://localhost:5000/api';
-  }
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api'
@@ -216,6 +209,20 @@ function App() {
   const [jobId, setJobId] = useState('');
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingSlide, setOnboardingSlide] = useState(0);
+
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('fixam_onboarded');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
+  const completeOnboarding = () => {
+    localStorage.setItem('fixam_onboarded', 'true');
+    setShowOnboarding(false);
+  };
   
   const { isLoggedIn, isLoading, user } = useAuth();
   
@@ -223,13 +230,10 @@ function App() {
 
   // Enforce auth
   useEffect(() => {
-    console.log('[App] Auth effect', { page, isLoggedIn, isLoading, user });
     if (!isLoading) {
       if (page === 'dashboard' && !isLoggedIn) {
-        console.log('[App] Redirecting to login page');
         setPage('login');
       } else if (isLoggedIn && (page === 'login' || page === 'register' || page === 'otp')) {
-        console.log('[App] Redirecting to dashboard page');
         setPage('dashboard');
       }
       if (user) {
@@ -425,6 +429,133 @@ function App() {
       )}
 
       <CookieBanner />
+
+      {/* Onboarding Slider Deck Modal */}
+      {showOnboarding && (
+        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-[3px] z-[9999] flex items-center justify-center p-4 animate-fade-in text-slate-800 font-sans">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 flex flex-col relative">
+            
+            {/* Close Button */}
+            <button 
+              onClick={completeOnboarding} 
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition font-bold z-10"
+            >
+              ✕
+            </button>
+
+            {/* Slide Content */}
+            <div className="p-8 text-center flex flex-col items-center">
+              {onboardingSlide === 0 && (
+                <div className="animate-fade-in">
+                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                    👋
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-3">
+                    {i18n.language === 'fr' ? 'Bienvenue sur Fixam' : 'Welcome to Fixam'}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
+                    {i18n.language === 'fr' 
+                      ? 'Votre plateforme de confiance pour trouver et réserver instantanément des prestataires de services qualifiés à domicile (plomberie, électricité, ménage).' 
+                      : 'Your premium hub for on-demand home and expert professional services. Instantly book verified plumbing, electrical, and cleaning specialists.'}
+                  </p>
+                </div>
+              )}
+
+              {onboardingSlide === 1 && (
+                <div className="animate-fade-in">
+                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-pulse">
+                    🛡️
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-3">
+                    {i18n.language === 'fr' ? 'Profils 100% Vérifiés' : '100% Verified Profiles'}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
+                    {i18n.language === 'fr' 
+                      ? 'Tous nos experts passent par une vérification d\'identité rigoureuse avec selfie vidéo et validation de document officiel.' 
+                      : 'All service providers undergo strict background checks, including official document verification and live webcam selfie checks.'}
+                  </p>
+                </div>
+              )}
+
+              {onboardingSlide === 2 && (
+                <div className="animate-fade-in">
+                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
+                    💳
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-3">
+                    {i18n.language === 'fr' ? 'Paiement Mobile Sécurisé' : 'Secure Mobile Payments'}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
+                    {i18n.language === 'fr' 
+                      ? 'Rechargez votre portefeuille avec MTN MoMo, Orange Money ou M-Pesa. Suivez la confirmation de transaction en direct.' 
+                      : 'Top up your wallet instantly using MTN MoMo, Orange Money, or M-Pesa. Poll for automated transaction updates in 3 seconds.'}
+                  </p>
+                </div>
+              )}
+
+              {onboardingSlide === 3 && (
+                <div className="animate-fade-in">
+                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-bounce">
+                    📍
+                  </div>
+                  <h3 className="text-2xl font-black text-slate-900 mb-3">
+                    {i18n.language === 'fr' ? 'Suivi en Direct & Vocal' : 'Live Tracking & Chat'}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
+                    {i18n.language === 'fr' 
+                      ? 'Suivez le trajet de votre prestataire sur une carte interactive, partagez votre position GPS et envoyez des notes vocales.' 
+                      : 'Track your provider\'s arrival on a live interactive map, share your GPS location, and send voice notes in the chat area.'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Slider Navigation Bar */}
+            <div className="bg-slate-50 px-8 py-5 border-t border-slate-100 flex items-center justify-between">
+              {/* Dots */}
+              <div className="flex gap-2">
+                {[0, 1, 2, 3].map((idx) => (
+                  <button
+                    type="button"
+                    key={idx}
+                    onClick={() => setOnboardingSlide(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${onboardingSlide === idx ? 'bg-teal-500 w-6' : 'bg-slate-300'}`}
+                    aria-label={`Slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                {onboardingSlide < 3 ? (
+                  <>
+                    <button 
+                      onClick={completeOnboarding} 
+                      className="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-2"
+                    >
+                      {i18n.language === 'fr' ? 'Passer' : 'Skip'}
+                    </button>
+                    <button 
+                      onClick={() => setOnboardingSlide(prev => prev + 1)}
+                      className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition"
+                    >
+                      {i18n.language === 'fr' ? 'Suivant' : 'Next'}
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={completeOnboarding}
+                    className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition"
+                  >
+                    {i18n.language === 'fr' ? 'Commencer' : 'Get Started'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -976,7 +1107,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 }
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1018,24 +1149,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { isNews: false, badgeText: 'SPORTS', text: '⚽ Match Result: 2 - 0 (LIVE)' },
     { isNews: false, badgeText: 'SPORTS', text: '📅 Upcoming: Nigeria vs Ghana (19:00)' },
     { isNews: true, badgeText: 'NEWS', text: '📰 50+ New Verified Plumbers joined Fixam this week!' },
-    {
-      isNews: true,
-      badgeText: 'NEWS',
-      text: 'Loading...',
-      // @ts-ignore
-      fetchTickerData: async () => {
-        console.log('[App] Fetching ticker data');
-        try {
-          const res = await fetch(`${getApiUrl()}/sports/ticker?lang=${i18n.language}&country=${user?.location || 'Cameroon'}`);
-          if (!res.ok) throw new Error(`Ticker fetch failed: ${res.status}`);
-          const data = await res.json();
-          // TODO: integrate ticker data into UI (e.g., setTicker(data))
-          console.log('[App] Ticker data received', data);
-        } catch (err) {
-          console.warn('[App] Ticker fetch error (ignored)', err);
-        }
-      }
-    },
+    { isNews: false, badgeText: 'SPORTS', text: '⚽ Real Madrid 3 - 1 Barcelona (FINISHED)' },
+    { isNews: true, badgeText: 'NEWS', text: '⚡ Wallet top-up via Mobile Money now processed 2x faster!' },
   ]);
 
   useEffect(() => {
@@ -1210,10 +1325,16 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Support', icon: 'message' as IconName }
     ];
 
-    const handleNavClick = (itemName: string) => {
+    const handleNavClick = async (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
-      setActiveTab(itemName);
+      if (itemName === 'Career Pathways') {
+        onNavigate('career_pathways');
+      } else if (itemName === 'Log Out') {
+        onNavigate('home');
+      } else {
+        setActiveTab(itemName);
+      }
     };
 
     return (
@@ -1513,19 +1634,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { name: 'My Jobs', icon: 'briefcase' as IconName },
     { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
     { name: 'Job Leads', icon: 'search' as IconName },
-    { name: 'My Stats', icon: 'chart' as IconName },
+    { name: 'My Stats', icon: 'chart-bar' as IconName },
     { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', icon: 'star' as IconName },
     { name: 'Career Pathways', icon: 'briefcase' as IconName },
-    { name: 'My Profile', icon: 'user' as IconName },
-    { name: 'Settings', icon: 'settings' as IconName },
+    { name: 'Settings', icon: 'user' as IconName },
     { name: 'Support', icon: 'message' as IconName }
   ];
 
   const handleNavClick = (itemName: string) => {
     setIsSidebarOpen(false);
     if (itemName === 'Log Out') {
-      logout();
       onNavigate('home');
     } else if (itemName === 'Career Pathways') {
       onNavigate('career_pathways');
@@ -1549,7 +1668,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div 
             className="user-card-new" 
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-            onClick={() => handleNavClick('My Profile')}
+            onClick={() => handleNavClick(userRole === 'pro' ? 'Settings' : 'My Profile')}
           >
             <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
             {!isSidebarCollapsed && (
@@ -1598,7 +1717,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           
 
 
-          <button className="side-link-new" onClick={() => handleNavClick('Log Out')}>
+          <button className="side-link-new" onClick={() => onNavigate('home')}>
             <Icon name="x" />
             <span>Logout</span>
           </button>
@@ -1677,7 +1796,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
-                        setActiveTab('My Profile');
+                        setActiveTab('Settings');
                       }}
                     >
                       <div className="flex items-center gap-2"><Icon name="briefcase" /> Provider</div>
@@ -1708,14 +1827,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           {activeTab === 'Wallet' && <ProviderWallet />}
           {activeTab === 'Reviews' && <ProviderReviews />}
           {activeTab === 'Settings' && <Settings />}
-          {activeTab === 'My Profile' && (
-            <MyProfile
-              setActiveTab={setActiveTab}
-              onRoleChange={onRoleChange}
-              userRole={userRole}
-            />
-          )}
-          {activeTab === 'My Stats' && <ProviderStats />}
+          {activeTab === 'My Stats' && <Stats />}
           {activeTab === 'Support' && (
             <ProviderSupport 
               setActiveTab={setActiveTab} 

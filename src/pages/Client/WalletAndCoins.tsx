@@ -2,6 +2,9 @@ import './WalletAndCoins.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import MobileMoneyCheckoutModal from '../../components/MobileMoneyCheckoutModal';
 
 interface WalletAndCoinsProps {
   setActiveTab: (tab: string) => void;
@@ -12,6 +15,10 @@ interface WalletAndCoinsProps {
 
 export default function WalletAndCoins({ setActiveTab, walletBalance = 0, clientBookings = [], clientTasks = [] }: WalletAndCoinsProps) {
   const [transactions, setTransactions] = useState<any[]>([]);
+  const { refreshUser } = useAuth();
+  const { i18n } = useTranslation();
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<any>({ name: '', coins: 0, price: '' });
 
   React.useEffect(() => {
     const fetchTx = async () => {
@@ -23,7 +30,7 @@ export default function WalletAndCoins({ setActiveTab, walletBalance = 0, client
       }
     };
     fetchTx();
-  }, []);
+  }, [walletBalance]);
 
   const coinPackages = [
     { name: 'Starter Pack', coins: 10, bonus: 0, price: '5,000 XAF', popular: false },
@@ -33,6 +40,14 @@ export default function WalletAndCoins({ setActiveTab, walletBalance = 0, client
     { name: 'Premium Pack', coins: 50, bonus: 5, price: '25,000 XAF', popular: false }
   ];
 
+  const handleBuyInitiate = (pkg: typeof coinPackages[0]) => {
+    setSelectedPkg({
+      name: pkg.name,
+      coins: pkg.coins + pkg.bonus,
+      price: pkg.price
+    });
+    setIsCheckoutOpen(true);
+  };
 
   return (
     <div className="wallet-referrals-tab-wrapper animate-fade-in" style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '1.5rem' }}>
@@ -54,8 +69,14 @@ export default function WalletAndCoins({ setActiveTab, walletBalance = 0, client
         {/* Coin Packages Carousel */}
         <div className="coin-packages-carousel-container" style={{ width: '100%' }}>
           <div style={{ marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A' }}>Buy Coins Package</h2>
-            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>Top up your wallet with coins to book instant professional services.</p>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A' }}>
+              {i18n.language === 'fr' ? 'Acheter un forfait de pièces' : 'Buy Coins Package'}
+            </h2>
+            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+              {i18n.language === 'fr' 
+                ? 'Rechargez votre portefeuille pour réserver instantanément des professionnels.'
+                : 'Top up your wallet with coins to book instant professional services.'}
+            </p>
           </div>
           <div className="coin-packages-carousel" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', paddingTop: '1rem', scrollbarWidth: 'thin' }}>
             {coinPackages.map((pkg, idx) => (
@@ -67,11 +88,22 @@ export default function WalletAndCoins({ setActiveTab, walletBalance = 0, client
                 </div>
                 {pkg.bonus > 0 && <span className="text-green-500 font-bold text-sm block mb-1">+{pkg.bonus} Bonus Coins</span>}
                 <span className="package-price">{pkg.price}</span>
-                <button className="btn-buy-package" onClick={() => alert(`Purchase flow for ${pkg.name} initiated!`)}>Buy Package</button>
+                <button className="btn-buy-package" onClick={() => handleBuyInitiate(pkg)}>
+                  {i18n.language === 'fr' ? 'Acheter le pack' : 'Buy Package'}
+                </button>
               </div>
             ))}
           </div>
         </div>
+
+        <MobileMoneyCheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          pkg={selectedPkg}
+          onSuccess={async () => {
+            await refreshUser();
+          }}
+        />
 
         <div className="wallet-left-column" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <div className="transactions-panel-transparent" style={{ marginTop: '1rem' }}>

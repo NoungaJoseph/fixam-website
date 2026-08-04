@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+let API_URL = 'https://api.usefixam.com/api';
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || import.meta.env.MODE === 'development') {
+  API_URL = 'http://localhost:5000/api';
+} else if (import.meta.env.VITE_API_URL) {
+  API_URL = import.meta.env.VITE_API_URL;
+}
+
 if (API_URL && !API_URL.endsWith('/api') && !API_URL.endsWith('/api/')) {
   API_URL = API_URL.replace(/\/$/, '') + '/api';
 }

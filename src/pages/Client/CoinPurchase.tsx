@@ -1,11 +1,20 @@
 import './CoinPurchase.css';
+import { useState } from 'react';
 import { Icon, IconName } from '../../App';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import MobileMoneyCheckoutModal from '../../components/MobileMoneyCheckoutModal';
 
 interface CoinPurchaseProps {
   setActiveTab: (tab: string) => void;
 }
 
 export default function CoinPurchase({ setActiveTab }: CoinPurchaseProps) {
+  const { refreshUser } = useAuth();
+  const { i18n } = useTranslation();
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<any>({ name: '', coins: 0, price: '' });
+
   const pkgs = [
     { name: 'Starter Pack', coins: 10, price: '5,000 XAF', popular: false },
     { name: 'Value Pack', coins: 50, price: '22,000 XAF', popular: true },
@@ -13,21 +22,34 @@ export default function CoinPurchase({ setActiveTab }: CoinPurchaseProps) {
     { name: 'Enterprise Pack', coins: 250, price: '90,000 XAF', popular: false },
   ];
 
+  const handleBuyInitiate = (p: typeof pkgs[0]) => {
+    setSelectedPkg({
+      name: p.name,
+      coins: p.coins,
+      price: p.price
+    });
+    setIsCheckoutOpen(true);
+  };
+
   return (
     <div className="coin-purchase-layout animate-fade-in">
       <div className="coin-purchase-top">
         <div className="coin-bal-card">
           <div className="coin-bal-icon"><Icon name="wallet" /></div>
           <div>
-            <span>Your Coin Balance</span>
+            <span>{i18n.language === 'fr' ? 'Votre Solde de Pièces' : 'Your Coin Balance'}</span>
             <strong>1,250</strong>
           </div>
         </div>
       </div>
 
       <div className="dash-panel-premium" style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '0.5rem' }}>Buy Coins</h2>
-        <p style={{ color: 'var(--muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>Top up your wallet to book instant professional services.</p>
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+          {i18n.language === 'fr' ? 'Acheter des Pièces' : 'Buy Coins'}
+        </h2>
+        <p style={{ color: 'var(--muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+          {i18n.language === 'fr' ? 'Rechargez votre portefeuille pour réserver instantanément des professionnels.' : 'Top up your wallet to book instant professional services.'}
+        </p>
         <div className="coin-pkgs-grid">
           {pkgs.map((p, i) => (
             <div className={`coin-pkg-card ${p.popular ? 'popular' : ''}`} key={i}>
@@ -37,11 +59,22 @@ export default function CoinPurchase({ setActiveTab }: CoinPurchaseProps) {
                 <strong>{p.coins}</strong> <span>Coins</span>
               </div>
               <span className="pkg-price">{p.price}</span>
-              <button className="btn-buy-package" onClick={() => alert(`Purchase: ${p.name}`)}>Buy Package</button>
+              <button className="btn-buy-package" onClick={() => handleBuyInitiate(p)}>
+                {i18n.language === 'fr' ? 'Acheter' : 'Buy Package'}
+              </button>
             </div>
           ))}
         </div>
       </div>
+
+      <MobileMoneyCheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        pkg={selectedPkg}
+        onSuccess={async () => {
+          await refreshUser();
+        }}
+      />
 
       <div className="dash-panel-premium">
         <div className="dash-panel-header-new">
