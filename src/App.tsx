@@ -1541,6 +1541,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       displayedPros={displayedPros}
                       clientBookings={clientBookings}
                       walletBalance={walletBalance}
+                      clientTasks={clientTasks}
+                      setClientTasks={setClientTasks}
                     />
                 )}
 

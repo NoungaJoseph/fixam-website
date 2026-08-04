@@ -1,7 +1,7 @@
 import './MyTasks.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
-import PostJobModal from '../../components/PostJobModal';
+import CreateTaskModal from './CreateTaskModal';
 import { api } from '../../services/api';
 
 interface MyTasksProps {
@@ -154,7 +154,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
         </div>
       </div>
       
-      <PostJobModal
+      <CreateTaskModal
         isOpen={isPostTaskOpen}
         onClose={() => setIsPostTaskOpen(false)}
         onSuccess={handleJobCreated}

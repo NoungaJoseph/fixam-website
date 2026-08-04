@@ -33,6 +33,8 @@ interface ClientDashboardProps {
   services: Service[];
   displayedPros: Provider[];
   clientBookings: any[];
+  clientTasks?: any[];
+  setClientTasks?: (tasks: any[]) => void;
   walletBalance?: number;
   setSelectedBooking?: (booking: any) => void;
 }
@@ -44,6 +46,8 @@ export default function ClientDashboard({
   displayedPros,
   clientBookings,
   walletBalance = 0,
+  clientTasks = [],
+  setClientTasks,
   setSelectedBooking,
 }: ClientDashboardProps) {
   const { user } = useAuth();
@@ -117,7 +121,16 @@ export default function ClientDashboard({
         </div>
       </div>
 
-      <CreateTaskModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} />
+      <CreateTaskModal 
+        isOpen={showTaskModal} 
+        onClose={() => setShowTaskModal(false)} 
+        onSuccess={(newJob) => {
+          if (setClientTasks) {
+            setClientTasks([newJob, ...clientTasks]);
+          }
+          setActiveTab('My Tasks');
+        }}
+      />
 
       {/* 1. Top Categories Carousel (App-style cards) */}
       <div className="mb-10 relative group">
