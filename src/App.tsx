@@ -1127,7 +1127,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
   const { isLoggedIn, user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -1174,33 +1174,36 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   useEffect(() => {
     let isMounted = true;
+    const lang = i18n.language || 'en';
+    const country = (user as any)?.country || 'Cameroon';
     const fetchTickerData = async () => {
       try {
-        const response = await fetch(`${getApiUrl()}/sports/ticker?lang=en&country=Cameroon`);
+        const response = await fetch(`${getApiUrl()}/sports/ticker?lang=${lang}&country=${encodeURIComponent(country)}`);
         const result = await response.json();
         if (isMounted && result?.data?.items) {
           const items = result.data.items;
           if (items.length > 0) {
             const processed = items.map((item: any) => {
               if (item.type === 'MATCH') {
-                const liveStatus = item.status === 'LIVE' ? ' (LIVE)' : '';
+                const liveStatus = item.status === 'LIVE' ? ` (${lang === 'fr' ? 'EN DIRECT' : 'LIVE'})` : '';
                 return {
                   isNews: false,
-                  badgeText: 'SPORTS',
+                  badgeText: lang === 'fr' ? 'SPORTS' : 'SPORTS',
                   text: `⚽ ${item.home} ${item.homeScore} - ${item.awayScore} ${item.away}${liveStatus}`
                 };
               } else if (item.type === 'UPCOMING') {
-                const time = new Date(item.time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const time = new Date(item.time).toLocaleTimeString(lang === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
                 return {
                   isNews: false,
-                  badgeText: 'SPORTS',
-                  text: `📅 Upcoming: ${item.home} vs ${item.away} (${time})`
+                  badgeText: lang === 'fr' ? 'SPORTS' : 'SPORTS',
+                  text: `📅 ${lang === 'fr' ? 'À venir' : 'Upcoming'}: ${item.home} vs ${item.away} (${time})`
                 };
               } else if (item.type === 'NEWS') {
+                const prefix = item.prefix || '📰';
                 return {
                   isNews: true,
-                  badgeText: 'NEWS',
-                  text: `${item.prefix || '📰'} ${item.title}`
+                  badgeText: lang === 'fr' ? 'ACTU' : 'NEWS',
+                  text: `${prefix} ${item.title}`
                 };
               }
               return null;
@@ -1216,12 +1219,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     };
     
     fetchTickerData();
-    const interval = setInterval(fetchTickerData, 60 * 1000);
+    const interval = setInterval(fetchTickerData, 2 * 60 * 1000);
     return () => {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [i18n.language, (user as any)?.country]);
 
   const catScrollRef = useRef<HTMLDivElement>(null);
   const [localLivePros, setLocalLivePros] = useState<any[]>([]);
