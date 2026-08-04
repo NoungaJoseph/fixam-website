@@ -8,30 +8,55 @@ import './Auth.css';
 
 // 10 regions of Cameroon with their major cities/quarters
 const regionData: Record<string, { nameEn: string; nameFr: string; cities: string[] }> = {
-  central: {
-    nameEn: 'Central Region',
-    nameFr: 'Région Centrale',
-    cities: ['Downtown', 'Metro Area', 'City Center', 'Suburbs', 'North District']
+  adamawa: {
+    nameEn: 'Adamawa Region',
+    nameFr: 'Région de l\'Adamaoua',
+    cities: ["Ngaoundéré", "Meiganga", "Tibati", "Banyo"]
   },
-  north: {
-    nameEn: 'Northern Region',
-    nameFr: 'Région Nord',
-    cities: ['North Metro', 'Highland Area', 'Lakeside', 'North Valley', 'Eastside']
-  },
-  south: {
-    nameEn: 'Southern Region',
-    nameFr: 'Région Sud',
-    cities: ['South Harbor', 'Coastal Area', 'Bay District', 'South Metro', 'Valley District']
+  centre: {
+    nameEn: 'Centre Region',
+    nameFr: 'Région du Centre',
+    cities: ["Yaoundé", "Bafia", "Mbalmayo", "Obala"]
   },
   east: {
-    nameEn: 'Eastern Region',
-    nameFr: 'Région Est',
-    cities: ['East Metro', 'River District', 'East Hills', 'Parkside', 'Summit']
+    nameEn: 'East Region',
+    nameFr: 'Région de l\'Est',
+    cities: ["Bertoua", "Batouri", "Abong-Mbang", "Yokadouma"]
+  },
+  farNorth: {
+    nameEn: 'Far North Region',
+    nameFr: 'Région de l\'Extrême-Nord',
+    cities: ["Maroua", "Yagoua", "Mokolo", "Kousseri"]
+  },
+  littoral: {
+    nameEn: 'Littoral Region',
+    nameFr: 'Région du Littoral',
+    cities: ["Douala", "Edéa", "Nkongsamba", "Loum"]
+  },
+  north: {
+    nameEn: 'North Region',
+    nameFr: 'Région du Nord',
+    cities: ["Garoua", "Guider", "Figuil", "Tcholliré"]
+  },
+  northwest: {
+    nameEn: 'Northwest Region',
+    nameFr: 'Région du Nord-Ouest',
+    cities: ["Bamenda", "Kumbo", "Wum", "Ndop"]
+  },
+  south: {
+    nameEn: 'South Region',
+    nameFr: 'Région du Sud',
+    cities: ["Ebolowa", "Sangmélima", "Kribi", "Campo"]
+  },
+  southwest: {
+    nameEn: 'Southwest Region',
+    nameFr: 'Région du Sud-Ouest',
+    cities: ["Buea", "Limbe", "Kumba", "Tiko"]
   },
   west: {
-    nameEn: 'Western Region',
-    nameFr: 'Région Ouest',
-    cities: ['West Metro', 'Sunset District', 'West Valley', 'Highland Park', 'Oakridge']
+    nameEn: 'West Region',
+    nameFr: 'Région de l\'Ouest',
+    cities: ["Bafoussam", "Dschang", "Foumban", "Mbouda"]
   }
 };
 
@@ -42,7 +67,8 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
 
   const [accountType, setAccountType] = useState<'client' | 'pro'>('client');
   const [currentStep, setCurrentStep] = useState(1);
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [countryCode, setCountryCode] = useState('+237');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -61,7 +87,8 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   const [agreeTerms, setAgreeTerms] = useState(false);
 
   // Validation States (error texts)
-  const [fullNameError, setFullNameError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [apiError, setApiError] = useState('');
@@ -137,12 +164,18 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
 
   const validateStep1 = (): boolean => {
     let isValid = true;
-    setFullNameError('');
+    setFirstNameError('');
+    setLastNameError('');
     setPhoneError('');
     setEmailError('');
 
-    if (!fullName.trim()) {
-      setFullNameError(isFr ? 'Veuillez entrer votre nom complet' : 'Please enter your full name');
+    if (!firstName.trim()) {
+      setFirstNameError(isFr ? 'Veuillez entrer votre prénom' : 'Please enter your first name');
+      isValid = false;
+    }
+
+    if (!lastName.trim()) {
+      setLastNameError(isFr ? 'Veuillez entrer votre nom de famille' : 'Please enter your last name');
       isValid = false;
     }
 
@@ -249,6 +282,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
       const prefix = countryCode.replace('+', '');
       const formattedPhone = cleanPhone.startsWith(prefix) ? cleanPhone : prefix + cleanPhone;
 
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
       await api.post('/auth/register', {
         fullName,
         email,
@@ -291,8 +325,10 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     clientTab: isFr ? 'Client' : 'Client',
     providerTab: isFr ? 'Prestataire' : 'Provider',
     
-    nameLabel: isFr ? 'Nom Complet' : 'Full Name',
-    namePlaceholder: isFr ? 'Entrez votre nom complet' : 'Enter your full name',
+    firstNameLabel: isFr ? 'Prénom' : 'First Name',
+    firstNamePlaceholder: isFr ? 'Entrez votre prénom' : 'Enter your first name',
+    lastNameLabel: isFr ? 'Nom' : 'Last Name',
+    lastNamePlaceholder: isFr ? 'Entrez votre nom' : 'Enter your last name',
     
     phoneLabel: isFr ? 'Numéro de Téléphone' : 'Phone Number',
     phonePlaceholder: '6XX XXX XXX',
@@ -433,26 +469,49 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                   </div>
                 </div>
 
-                {/* FULL NAME */}
+                {/* FIRST NAME */}
                 <div>
                   <div className="field-group">
-                    <label>{t.nameLabel}</label>
-                    <div className={`input-container has-left-icon ${fullNameError ? 'error-state' : ''}`}>
+                    <label>{t.firstNameLabel}</label>
+                    <div className={`input-container has-left-icon ${firstNameError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       <input
                         type="text"
-                        placeholder={t.namePlaceholder}
-                        value={fullName}
+                        placeholder={t.firstNamePlaceholder}
+                        value={firstName}
                         onChange={(e) => {
-                          setFullName(e.target.value);
-                          if (fullNameError) setFullNameError('');
+                          setFirstName(e.target.value);
+                          if (firstNameError) setFirstNameError('');
                         }}
                         required
                       />
                     </div>
-                    {fullNameError && <span className="error-text-message">{fullNameError}</span>}
+                    {firstNameError && <span className="error-text-message">{firstNameError}</span>}
+                  </div>
+                </div>
+
+                {/* LAST NAME */}
+                <div>
+                  <div className="field-group">
+                    <label>{t.lastNameLabel}</label>
+                    <div className={`input-container has-left-icon ${lastNameError ? 'error-state' : ''}`}>
+                      <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder={t.lastNamePlaceholder}
+                        value={lastName}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                          if (lastNameError) setLastNameError('');
+                        }}
+                        required
+                      />
+                    </div>
+                    {lastNameError && <span className="error-text-message">{lastNameError}</span>}
                   </div>
                 </div>
 
