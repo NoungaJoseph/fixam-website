@@ -25,6 +25,7 @@ import MyProfile from './pages/Client/MyProfile'
 import VerificationPage from './pages/Client/VerificationPage'
 import ClientDashboard from './pages/Client/ClientDashboard'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
+import ProjectDetail from './pages/Client/ProjectDetail'
 
 // Provider Subpages
 import MyJobs from './pages/Provider/MyJobs'
@@ -1147,6 +1148,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const [activeTab, setActiveTab] = useState('Dashboard')
     const [selectedProvider, setSelectedProvider] = useState<any>(null)
     const [selectedBooking, setSelectedBooking] = useState<any>(null)
+    const [selectedProject, setSelectedProject] = useState<any>(null)
 
   const [searchVal, setSearchVal] = useState('');
   
@@ -1162,6 +1164,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const hash = window.location.hash.replace('#', '');
     if (!hash) setActiveTab('Dashboard');
     setSelectedProvider(null);
+    setSelectedProject(null);
   }, [userRole]);
 
   const [tickerItems, setTickerItems] = useState<Array<{ isNews: boolean; badgeText: string; text: string }>>([
@@ -1338,6 +1341,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const handleNavClick = async (itemName: string) => {
       setIsSidebarOpen(false);
       setSelectedProvider(null);
+      setSelectedProject(null);
       if (itemName === 'Career Pathways') {
         onNavigate('career_pathways');
       } else if (itemName === 'Log Out') {
@@ -1525,7 +1529,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
           {/* Main Content Columns */}
           <div className={`dash-content-premium`}>
-            {selectedProvider ? (
+            {selectedProject ? (
+              <ProjectDetail
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+                setSelectedProvider={setSelectedProvider}
+                setActiveTab={setActiveTab}
+                clientBookings={clientBookings}
+                setClientBookings={setClientBookings}
+                displayedPros={displayedPros}
+              />
+            ) : selectedProvider ? (
               <ProviderProfileDetail
                 selectedProvider={selectedProvider}
                 setSelectedProvider={setSelectedProvider}
@@ -1540,6 +1554,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     <ClientDashboard 
                       setActiveTab={setActiveTab}
                       setSelectedProvider={setSelectedProvider}
+                      setSelectedProject={setSelectedProject}
                       services={services}
                       displayedPros={displayedPros}
                       clientBookings={clientBookings}

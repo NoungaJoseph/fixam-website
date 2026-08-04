@@ -30,6 +30,7 @@ interface Booking {
 interface ClientDashboardProps {
   setActiveTab: (tab: string) => void;
   setSelectedProvider: (pro: Provider) => void;
+  setSelectedProject?: (proj: any) => void;
   services: Service[];
   displayedPros: Provider[];
   clientBookings: any[];
@@ -42,6 +43,7 @@ interface ClientDashboardProps {
 export default function ClientDashboard({
   setActiveTab,
   setSelectedProvider,
+  setSelectedProject,
   services,
   displayedPros,
   clientBookings,
@@ -261,11 +263,15 @@ export default function ClientDashboard({
                   className="flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer snap-start overflow-hidden group/card"
                   style={{ width: '260px' }}
                   onClick={() => {
-                    // Navigate to provider profile
-                    const providerObj = displayedPros.find(p => p.originalData?.id === prov.id);
-                    if (providerObj) {
-                      setSelectedProvider(providerObj);
-                      setActiveTab('Provider Profile');
+                    if (setSelectedProject) {
+                      const providerObj = displayedPros.find(p => p.originalData?.id === prov.id);
+                      setSelectedProject({
+                        ...project,
+                        provider: {
+                          ...prov,
+                          avatar: providerObj?.image || prov.avatar || ''
+                        }
+                      });
                     }
                   }}
                 >
