@@ -132,19 +132,19 @@ export default function ProjectDetail({
             <div className="active-media-view">
               {mediaList[activeMediaIndex].type === 'video' ? (
                 <video
-                  src={getMediaUrl(mediaList[activeMediaIndex].url)}
+                  src={getMediaUrl(mediaList[activeMediaIndex].url, 'video')}
                   controls
                   className="gallery-video"
                   autoPlay
                 />
               ) : (
                 <img
-                  src={getMediaUrl(mediaList[activeMediaIndex].url)}
+                  src={getMediaUrl(mediaList[activeMediaIndex].url, 'image')}
                   alt="Project media"
                   className="gallery-image"
                   onError={(e) => {
                     (e.target as HTMLImageElement).onerror = null;
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/600x320?text=Fixam+Project';
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
                   }}
                 />
               )}
@@ -166,11 +166,11 @@ export default function ProjectDetail({
                       </div>
                     ) : (
                       <img
-                        src={getMediaUrl(media.url)}
+                        src={getMediaUrl(media.url, 'image')}
                         alt={`Thumb ${idx}`}
                         onError={(e) => {
                           (e.target as HTMLImageElement).onerror = null;
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80x50?text=Image';
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=100&auto=format&fit=crop&q=80';
                         }}
                       />
                     )}

@@ -81,8 +81,21 @@ export const getApiUrl = () => {
     : 'https://api.usefixam.com/api';
 };
 
-export const getMediaUrl = (path?: string) => {
-  if (!path) return 'https://via.placeholder.com/150';
+export const getMediaUrl = (path?: string, type?: 'image' | 'video') => {
+  if (!path) {
+    return type === 'video'
+      ? 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+      : 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
+  }
+
+  // Intercept local device files uploaded from mobile app emulators/devices
+  if (path.startsWith('file://') || path.startsWith('content://') || path.includes('/ImagePicker/') || path.includes('/cache/')) {
+    if (type === 'video' || path.toLowerCase().endsWith('.mp4') || path.toLowerCase().endsWith('.mov') || path.toLowerCase().endsWith('.m4v') || path.toLowerCase().endsWith('.3gp')) {
+      return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+    }
+    return 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
+  }
+
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
   const API_URL = getApiUrl();
   const origin = API_URL.replace(/\/api\/?$/, '');
