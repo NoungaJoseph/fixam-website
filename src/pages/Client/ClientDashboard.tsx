@@ -80,6 +80,7 @@ export default function ClientDashboard({
           category: item.category || '',
           provider: {
             id: raw.id,
+            userId: raw.user?.id || '',
             name: raw.user?.fullName || pro.name || 'Provider',
             avatar: raw.user?.avatar || '',
             rating: raw.rating || 5.0,
@@ -90,7 +91,7 @@ export default function ClientDashboard({
       });
     });
     // Exclude own projects
-    return projects.filter(p => p.provider.id !== currentUserId);
+    return projects.filter(p => p.provider.id !== currentUserId && p.provider.userId !== currentUserId);
   }, [displayedPros, user]);
   
   const getGreeting = () => {
