@@ -4,6 +4,42 @@ import { images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
+// ─── External Contact Detection ──────────────────────────────────────────────
+// Matches phone numbers (Cameroon +237 and local formats), WhatsApp/Telegram
+// links, email addresses, and common off-platform phrases (EN + FR).
+const EXTERNAL_CONTACT_PATTERNS: RegExp[] = [
+  // Cameroon numbers: +237 or 00237 followed by a 6/7/9 digit number
+  /(?:\+237|00237)[\s\-.]?[679]\d{7,8}/,
+  /\b[679]\d{7}\b/,
+  // Generic international numbers  (+XX ...)
+  /\+\d{1,3}[\s\-.][\d\s\-.]{7,}/,
+  // WhatsApp / Telegram links
+  /wa\.me\//i,
+  /t\.me\//i,
+  /whatsapp\.com/i,
+  // Email addresses
+  /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/,
+  // Common off-platform phrases (English & French)
+  /\b(call me|whatsapp me|text me|dm me|reach me|contact me|here(?:'s| is) my number|mon num[eé]ro|appelle.?moi|écris.?moi sur|rejoins.?moi sur)\b/i,
+];
+
+/** Returns the first matching excerpt, or null if no pattern matches. */
+const detectExternalContact = (text: string): string | null => {
+  for (const pattern of EXTERNAL_CONTACT_PATTERNS) {
+    const match = text.match(pattern);
+    if (match) return match[0];
+  }
+  return null;
+};
+
+// Disclosure copy (EN / FR based on browser/app language)
+const DISCLOSURE_EN = 'Messages in this chat may be reviewed by Fixam support in case of a dispute.';
+const DISCLOSURE_FR = 'Les messages de cette conversation peuvent être examinés par le support Fixam en cas de litige.';
+const WARNING_TITLE_EN = 'Keep your conversation safe';
+const WARNING_BODY_EN = "Moving this conversation outside Fixam means we can't help resolve disputes if something goes wrong.";
+const WARNING_TITLE_FR = 'Protégez votre conversation';
+const WARNING_BODY_FR = "Déplacer cette conversation hors de Fixam nous empêche de résoudre tout litige si quelque chose ne va pas.";
+
 interface MessagesProps {
   chatMessages: any[];
   setChatMessages: React.Dispatch<React.SetStateAction<any[]>>;
@@ -23,13 +59,25 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   const [activeTask, setActiveTask] = useState<any>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [recordDuration, setRecordDuration] = useState(0);
   const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordTimerIdRef = useRef<any>(null);
   const isRecordingCancelledRef = useRef(false);
+
+  // Feature 2: tracks whether we are waiting for the user's answer on the
+  // external-contact-sharing confirmation dialog.
+  const [contactWarning, setContactWarning] = useState<{
+    detectedPattern: string;
+    pendingContent: string;
+    pendingType: string;
+    pendingMediaUrl?: string;
+  } | null>(null);
+
+  // Detect browser/app language for bilingual copy
+  const isFr = typeof navigator !== 'undefined' && navigator.language.startsWith('fr');
 
   useEffect(() => {
     const loadConvs = async () => {
@@ -91,13 +139,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     }
   }, [messages]);
 
-  const handleSendMsg = async (e?: React.FormEvent, customContent?: string, customType: string = 'TEXT', mediaUrl?: string) => {
-    if (e) e.preventDefault();
-    const contentToSend = customContent || newMsgText;
-    if ((!contentToSend.trim() && !mediaUrl && selectedImages.length === 0) || !activeConv) return;
-    
-    setNewMsgText('');
-    
+  /**
+   * Core send dispatcher — called only after all safety checks have passed.
+   * Do not invoke directly for TEXT messages; use handleSendMsg() instead.
+   */
+  const _dispatchSendMsg = async (contentToSend: string, customType: string, mediaUrl?: string) => {
+    if (!activeConv) return;
+
     // Send images if attached
     if (selectedImages.length > 0) {
       const imagesToSend = [...selectedImages];
@@ -120,7 +168,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
             type: 'IMAGE'
           });
         } catch (err) {
-          console.error("Failed to send image", err);
+          console.error('Failed to send image', err);
         }
       }
     }
@@ -146,9 +194,61 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
         const res = await api.get(`/chat/${activeConv.id}/messages`);
         setMessages(res.data.data || []);
       } catch (err) {
-        console.error("Failed to send msg", err);
+        console.error('Failed to send msg', err);
       }
     }
+  };
+
+  /**
+   * Main send handler.
+   * For TEXT messages, scans for external-contact patterns before sending.
+   * If found, surfaces an inline confirmation dialog instead of sending immediately.
+   */
+  const handleSendMsg = async (e?: React.FormEvent, customContent?: string, customType: string = 'TEXT', mediaUrl?: string) => {
+    if (e) e.preventDefault();
+    const contentToSend = customContent || newMsgText;
+    if ((!contentToSend.trim() && !mediaUrl && selectedImages.length === 0) || !activeConv) return;
+
+    // ── Feature 2: External contact detection (TEXT only) ─────────────────────
+    if (customType === 'TEXT' && contentToSend.trim()) {
+      const detectedPattern = detectExternalContact(contentToSend);
+      if (detectedPattern) {
+        // Log warning event immediately (fire-and-forget)
+        api.post(`/chat/${activeConv.id}/log-contact-warning`, {
+          detectedPattern,
+          sentAnyway: false,
+          platform: 'web',
+        }).catch(() => {});
+
+        // Surface the inline confirmation dialog — do NOT send yet
+        setContactWarning({
+          detectedPattern,
+          pendingContent: contentToSend,
+          pendingType: customType,
+          pendingMediaUrl: mediaUrl,
+        });
+        return;
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    setNewMsgText('');
+    await _dispatchSendMsg(contentToSend, customType, mediaUrl);
+  };
+
+  /** Called when the user clicks "Send Anyway" in the contact-warning dialog. */
+  const handleSendAnyway = async () => {
+    if (!contactWarning || !activeConv) return;
+    // Log that the user chose to send
+    api.post(`/chat/${activeConv.id}/log-contact-warning`, {
+      detectedPattern: contactWarning.detectedPattern,
+      sentAnyway: true,
+      platform: 'web',
+    }).catch(() => {});
+    const { pendingContent, pendingType, pendingMediaUrl } = contactWarning;
+    setContactWarning(null);
+    setNewMsgText('');
+    await _dispatchSendMsg(pendingContent, pendingType, pendingMediaUrl);
   };
 
   const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,6 +417,74 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                 <span className="online-badge">• Active</span>
               </div>
 
+              {/* ── Feature 1: Chat Disclosure Notice ────────────────────────────
+                  Persistent, non-dismissable info strip. Shown every time a
+                  conversation is opened on both client and provider views. ── */}
+
+            </div>
+
+            {/* Disclosure banner — always visible, no interaction required */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              background: '#F9FAFB',
+              borderBottom: '1px solid #E5E7EB',
+              fontSize: '11px',
+              color: '#6B7280',
+              lineHeight: '1.4',
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>{isFr ? DISCLOSURE_FR : DISCLOSURE_EN}</span>
+            </div>
+
+            {/* ── Feature 2: External-contact-sharing inline warning dialog ───
+                Shown in-place (not a modal) when a potential off-platform
+                contact is detected before the message is sent. ────────── */}
+            {contactWarning && (
+              <div style={{
+                margin: '8px 12px 0',
+                background: '#FFFBEB',
+                border: '1px solid #FCD34D',
+                borderRadius: '10px',
+                padding: '12px 14px',
+              }}>
+                <p style={{ margin: '0 0 6px', fontWeight: 700, fontSize: '13px', color: '#92400E' }}>
+                  ⚠️ {isFr ? WARNING_TITLE_FR : WARNING_TITLE_EN}
+                </p>
+                <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#78350F', lineHeight: '1.5' }}>
+                  {isFr ? WARNING_BODY_FR : WARNING_BODY_EN}
+                </p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={() => setContactWarning(null)}
+                    style={{
+                      flex: 1, padding: '7px', border: '1px solid #D1D5DB',
+                      borderRadius: '8px', background: '#fff', fontSize: '12px',
+                      fontWeight: 600, cursor: 'pointer', color: '#374151',
+                    }}
+                  >
+                    {isFr ? 'Annuler' : 'Cancel'}
+                  </button>
+                  <button
+                    onClick={handleSendAnyway}
+                    style={{
+                      flex: 1, padding: '7px', border: 'none',
+                      borderRadius: '8px', background: '#F59E0B', fontSize: '12px',
+                      fontWeight: 700, cursor: 'pointer', color: '#fff',
+                    }}
+                  >
+                    {isFr ? 'Envoyer quand même' : 'Send Anyway'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Tracking button (existing) ─────────────────────────────── */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 12px 0' }}>
               {!activeConv.isSystem && (
                 <div style={{ marginLeft: 'auto' }}>
                   <button 
