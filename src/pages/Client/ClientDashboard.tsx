@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Icon } from '../../App';
+import { useState, useEffect, useMemo } from 'react';
+import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import CreateTaskModal from './CreateTaskModal';
 
@@ -61,6 +61,37 @@ export default function ClientDashboard({
       setShowTaskModal(true);
     }
   }, []);
+
+  // Extract portfolio projects from all providers (matching mobile app's projectShowcaseList)
+  const portfolioProjects = useMemo(() => {
+    const projects: any[] = [];
+    const currentUserId = user?.id || '';
+    displayedPros.forEach((pro) => {
+      const raw = pro.originalData;
+      if (!raw || !Array.isArray(raw.portfolio)) return;
+      raw.portfolio.forEach((item: any) => {
+        if (!item || (!item.title && !item.imageUrl)) return;
+        projects.push({
+          id: item.id || `${raw.id}_${item.title}`,
+          title: item.title || 'Untitled Project',
+          description: item.description || '',
+          imageUrl: item.imageUrl || item.url || item.image || '',
+          price: item.price || null,
+          category: item.category || '',
+          provider: {
+            id: raw.id,
+            name: raw.user?.fullName || pro.name || 'Provider',
+            avatar: raw.user?.avatar || '',
+            rating: raw.rating || 5.0,
+            reviewCount: raw.reviewsCount || raw.reviewCount || 0,
+            country: raw.user?.country || 'Cameroon',
+          },
+        });
+      });
+    });
+    // Exclude own projects
+    return projects.filter(p => p.provider.id !== currentUserId);
+  }, [displayedPros, user]);
   
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -193,6 +224,111 @@ export default function ClientDashboard({
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
+
+      {/* Projects Showcase Section (matching mobile app) */}
+      {portfolioProjects.length > 0 && (
+        <div className="mb-10 relative group">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">Projects</h2>
+            <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Find Services')}>
+              See All
+            </button>
+          </div>
+
+          {/* Left Scroll Arrow */}
+          <button
+            className="absolute left-0 top-[55%] -translate-y-1/2 -ml-4 w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-teal-50"
+            onClick={() => {
+              const container = document.getElementById('projects-scroll-container');
+              if (container) container.scrollBy({ left: -320, behavior: 'smooth' });
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+
+          <div id="projects-scroll-container" className="flex gap-4 overflow-x-auto pb-4 snap-x" style={{ scrollbarWidth: 'none' }}>
+            {portfolioProjects.map((project, idx) => {
+              const imgSrc = getMediaUrl(project.imageUrl) || 'https://via.placeholder.com/300x180?text=Project';
+              const prov = project.provider;
+              const ratingVal = Number(prov.rating || 4.8).toFixed(1);
+              const reviewCount = prov.reviewCount || 0;
+              const priceDisplay = project.price ? `XAF ${Number(project.price).toLocaleString()}` : null;
+
+              return (
+                <div
+                  key={project.id || idx}
+                  className="flex-shrink-0 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer snap-start overflow-hidden group/card"
+                  style={{ width: '260px' }}
+                  onClick={() => {
+                    // Navigate to provider profile
+                    const providerObj = displayedPros.find(p => p.originalData?.id === prov.id);
+                    if (providerObj) {
+                      setSelectedProvider(providerObj);
+                      setActiveTab('Provider Profile');
+                    }
+                  }}
+                >
+                  {/* Project Image */}
+                  <div className="relative w-full h-[160px] overflow-hidden bg-gray-100">
+                    <img
+                      src={imgSrc}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).onerror = null;
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x180?text=Project';
+                      }}
+                    />
+                    {/* Like Button */}
+                    <button
+                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition"
+                      onClick={(e) => { e.stopPropagation(); }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-3">
+                    <h4 className="font-bold text-sm text-gray-900 mb-1 line-clamp-1">{project.title}</h4>
+                    {project.description && (
+                      <p className="text-xs text-gray-500 mb-2 line-clamp-2">{project.description}</p>
+                    )}
+                    {project.category && (
+                      <span className="text-[11px] font-semibold text-[#14B8A6] mb-2 block">{project.category}</span>
+                    )}
+
+                    {/* Rating & Price Footer */}
+                    <div className="flex items-center justify-between mt-1 pt-2 border-t border-gray-50">
+                      <div className="flex items-center gap-1">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#F59E0B" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span className="text-sm font-bold text-gray-800">{ratingVal}</span>
+                        <span className="text-xs text-gray-400">({reviewCount})</span>
+                      </div>
+                      {priceDisplay && (
+                        <span className="text-xs text-gray-500">
+                          From <span className="font-bold text-gray-800">{priceDisplay}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Right Scroll Arrow */}
+          <button
+            className="absolute right-0 top-[55%] -translate-y-1/2 -mr-4 w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex items-center justify-center text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-teal-50"
+            onClick={() => {
+              const container = document.getElementById('projects-scroll-container');
+              if (container) container.scrollBy({ left: 320, behavior: 'smooth' });
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      )}
 
       {/* 2. Recommended For You (No box, larger profiles) */}
       <div className="mb-10">
