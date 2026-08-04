@@ -212,19 +212,28 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSlide, setOnboardingSlide] = useState(0);
 
+  const { isLoggedIn, isLoading, user } = useAuth();
+
   useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('fixam_onboarded');
-    if (!hasSeenOnboarding) {
-      setShowOnboarding(true);
+    if (isLoggedIn && page === 'dashboard') {
+      const isNewReg = localStorage.getItem('fixam_new_registration_welcome');
+      if (isNewReg === 'true') {
+        setShowOnboarding(true);
+        localStorage.removeItem('fixam_new_registration_welcome');
+      }
     }
-  }, []);
+  }, [isLoggedIn, page]);
+
+  useEffect(() => {
+    if (user?.preferredLanguage) {
+      i18n.changeLanguage(user.preferredLanguage.toLowerCase());
+    }
+  }, [user?.preferredLanguage]);
 
   const completeOnboarding = () => {
     localStorage.setItem('fixam_onboarded', 'true');
     setShowOnboarding(false);
   };
-  
-  const { isLoggedIn, isLoading, user } = useAuth();
   
   const [userRole, setUserRole] = useState<'client' | 'pro'>(user?.role === 'PROVIDER' ? 'pro' : 'client');
 

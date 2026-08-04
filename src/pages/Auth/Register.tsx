@@ -263,8 +263,8 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
       setIsLoading(false);
       setSuccessBanner(
         isFr
-          ? 'Compte créé! Vérifiez votre téléphone pour un code de vérification.'
-          : 'Account created! Check your phone pour un code de vérification.'
+          ? 'Compte créé! Vérifiez votre adresse e-mail pour le code de vérification.'
+          : 'Account created! Check your email address for the verification code.'
       );
       
       sessionStorage.setItem('pendingOTPEmail', email.trim().toLowerCase());
