@@ -1,6 +1,6 @@
 import './MyBookings.css';
 import React, { useState } from 'react';
-import { Icon, images, getMediaUrl } from '../../App';
+import { Icon, images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import MyTasks from './MyTasks';
 
@@ -66,7 +66,7 @@ export default function MyBookings({
               }
               const bkTime = bk.bookingTime || 'TBD';
               const bkPrice = bk.budget ? `${bk.budget} XAF` : 'N/A';
-              const bkImage = bk.provider?.avatar ? getMediaUrl(bk.provider.avatar) : images.proJeff;
+              const bkImage = bk.provider?.avatar ? getMediaUrl(bk.provider.avatar) : DEFAULT_AVATAR;
               const bkStatus = bk.status || 'PENDING';
 
               return (

@@ -22,6 +22,7 @@ import Support from './pages/Client/Support'
 import Referrals from './pages/Client/Referrals'
 import Reviews from './pages/Client/Reviews'
 import MyProfile from './pages/Client/MyProfile'
+import VerificationPage from './pages/Client/VerificationPage'
 import ClientDashboard from './pages/Client/ClientDashboard'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 
@@ -95,6 +96,8 @@ const hashCode = (str: string) => {
   return hash;
 };
 
+export const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CBD5E1'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/%3E%3C/svg%3E";
+
 export const images = {
   landingHero: asset('landing-hero-composite.png'),
   heroProfessional: asset('hero-professional.png'),
@@ -136,12 +139,7 @@ export const services: Array<{ id: string; title: string; icon: IconName; color:
   { id: 'cctv', title: 'CCTV Installation', icon: 'shield' as IconName, color: 'orange', image: asset('cctv-installation.jpg') },
 ]
 
-export const pros = [
-  { name: 'Jeff Thomson', role: 'Plumbing Specialist', rating: '4.8', distance: '4.2 km away', image: images.proJeff },
-  { name: 'Samuel Bright', role: 'Electrician', rating: '4.7', distance: '3.6 km away', image: images.proSamuel },
-  { name: 'Mary Clean', role: 'Cleaning Expert', rating: '4.9', distance: '2.1 km away', image: images.proMary },
-  { name: 'Peter Wood', role: 'Carpenter', rating: '4.6', distance: '5.3 km away', image: images.proPeter },
-]
+export const pros: any[] = [];
 
 const blogPosts = [
   { tag: 'Plumbing', title: '5 Signs You Need to Call a Professional Plumber', image: images.blogPlumbing },
@@ -212,7 +210,7 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSlide, setOnboardingSlide] = useState(0);
 
-  const { isLoggedIn, isLoading, user } = useAuth();
+  const { isLoggedIn, isLoading, user, refreshUser } = useAuth();
 
   useEffect(() => {
     if (isLoggedIn && page === 'dashboard') {
@@ -235,7 +233,23 @@ function App() {
     setShowOnboarding(false);
   };
   
-  const [userRole, setUserRole] = useState<'client' | 'pro'>(user?.role === 'PROVIDER' ? 'pro' : 'client');
+  const [userRole, setUserRole] = useState<'client' | 'pro'>(
+    user?.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client'
+  );
+
+  const handleRoleSwitch = async (newRole: 'client' | 'pro') => {
+    try {
+      const mode = newRole === 'pro' ? 'WORK' : 'PERSONAL';
+      const response = await api.put('/users/profile', { profileMode: mode });
+      if (response.data.success) {
+        setUserRole(newRole);
+        await refreshUser();
+      }
+    } catch (err: any) {
+      console.error('Failed to switch role', err);
+      alert(err.response?.data?.message || 'Could not switch role. Please try again.');
+    }
+  };
 
   // Enforce auth
   useEffect(() => {
@@ -246,7 +260,7 @@ function App() {
         setPage('dashboard');
       }
       if (user) {
-        setUserRole(user.role === 'PROVIDER' ? 'pro' : 'client');
+        setUserRole(user.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client');
       }
     }
   }, [page, isLoggedIn, isLoading, user]);
@@ -347,13 +361,9 @@ function App() {
             const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
             const distance = item.serviceArea || 'Nearby';
             
-            let image = images.proJeff;
+            let image = DEFAULT_AVATAR;
             if (item.user?.avatar) {
               image = getMediaUrl(item.user.avatar);
-            } else {
-              const placeholders = [images.proJeff, images.proSamuel, images.proMary, images.proPeter];
-              const idx = Math.abs(hashCode(item.id || name)) % placeholders.length;
-              image = placeholders[idx];
             }
 
             return {
@@ -384,7 +394,7 @@ function App() {
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} onRoleChange={setUserRole} />
+        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} onRoleChange={handleRoleSwitch} />
       ) : page === 'login' ? (
         <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
@@ -1215,15 +1225,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   const catScrollRef = useRef<HTMLDivElement>(null);
   const [localLivePros, setLocalLivePros] = useState<any[]>([]);
-  const displayedPros = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : pros);
+  const displayedPros = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : []);
 
   // Client-specific interactive state hooks
   // Client-specific interactive state hooks
-  const [clientTasks, setClientTasks] = useState([
-    { id: 1, title: 'Fix leaking pipe in kitchen', tag: 'Plumbing', price: '25,000 XAF', status: 'In Progress', bids: 3 },
-    { id: 2, title: 'Installing ceiling fan in bedroom', tag: 'Electrical', price: '15,000 XAF', status: 'Pending Offers', bids: 5 },
-    { id: 3, title: 'House deep cleaning', tag: 'Cleaning', price: '20,000 XAF', status: 'Completed', bids: 0 }
-  ]);
+  const [clientTasks, setClientTasks] = useState<any[]>([]);
   const [clientBookings, setClientBookings] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState(0);
   const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
@@ -1309,18 +1315,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     }
   }, [isLoggedIn, userRole]);
 
-  const [chatMessages, setChatMessages] = useState([
-    { id: 1, sender: 'pro', text: 'Hello Nounga, I can come over tomorrow at 9:00 AM. Does that work?', time: 'Yesterday' },
-    { id: 2, sender: 'client', text: 'Yes, that works perfectly. Please bring your tools for piping.', time: 'Yesterday' },
-    { id: 3, sender: 'pro', text: 'Great, see you then!', time: 'Yesterday' }
-  ]);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [activeChatUser, setActiveChatUser] = useState<string>('');
   
-  const [savedProsState, setSavedProsState] = useState([
-    { id: 1, name: 'Jeff Thomson', role: 'Plumbing Specialist', rating: '4.8', distance: '4.2 km away', image: images.proJeff },
-    { id: 2, name: 'Samuel Bright', role: 'Electrician', rating: '4.7', distance: '3.6 km away', image: images.proSamuel },
-    { id: 3, name: 'Mary Clean', role: 'Cleaning Expert', rating: '4.9', distance: '2.1 km away', image: images.proMary }
-  ]);
+  const [savedProsState, setSavedProsState] = useState<any[]>([]);
 
   if (userRole === 'client') {
     const clientNavItems = [
@@ -1392,7 +1390,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 setActiveTab('My Profile');
               }}
             >
-              <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
+              <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
               {!isSidebarCollapsed && (
                 <div className="user-info-new">
                   <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || 'Client'}</h3>
@@ -1483,7 +1481,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
               <div className="relative profile-dropdown-container">
                 <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
-                  <img src={user?.image ? getMediaUrl(user.image) : images.proJeff} alt="User profile" className="desktop-only" />
+                  <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User profile" className="desktop-only" />
                   <div className="profile-details-dash">
                     <span className="profile-name-dash">
                       {user?.firstName || 'User'}
@@ -1613,6 +1611,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     userRole={userRole}
                   />
                 )}
+                {activeTab === 'Verification' && (
+                  <VerificationPage 
+                    setActiveTab={setActiveTab} 
+                  />
+                )}
                 {activeTab === 'Find Services' && (
                   <FindServices 
                     setSelectedProvider={setSelectedProvider} 
@@ -1679,7 +1682,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
             onClick={() => handleNavClick(userRole === 'pro' ? 'Settings' : 'My Profile')}
           >
-            <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
+            <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
             {!isSidebarCollapsed && (
               <div className="user-info-new">
                 <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || (userRole === 'pro' ? 'Provider' : 'Client')}</h3>
@@ -1778,7 +1781,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
               <div className="relative profile-dropdown-container">
                 <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
-                  <img src={user?.image ? getMediaUrl(user.image) : (userRole === 'pro' ? images.proSamuel : images.proJeff)} alt="Profile" />
+                  <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="Profile" />
                   <div className="profile-details-dash">
                     <span className="profile-name-dash">
                       {user?.firstName || 'User'}
@@ -1984,7 +1987,7 @@ function ServiceCard(service: (typeof services)[number]) {
   )
 }
 
-export function ProCard({ pro, mini = false, onNavigate }: { pro: (typeof pros)[number]; mini?: boolean; onNavigate?: (page: Page) => void }) {
+export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: boolean; onNavigate?: (page: Page) => void }) {
   const { t } = useTranslation();
 
   return (
@@ -1999,7 +2002,7 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: (typeof pros)[
       </div>
       <div className="top-rated-content">
         <div className="top-rated-avatar">
-          {pro.name.split(' ').map(n => n[0]).join('')}
+          {(pro.name || '').split(' ').map((n: string) => n[0]).join('')}
         </div>
         <div className="top-rated-header">
           <h3>{pro.name}</h3>

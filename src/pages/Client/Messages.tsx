@@ -1,6 +1,6 @@
 import './Messages.css';
 import React, { useState, useEffect, useRef } from 'react';
-import { images, getMediaUrl } from '../../App';
+import { images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -48,12 +48,12 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   }, []);
 
   const getParticipantDetails = (c: any) => {
-    if (!c) return { name: 'Support', avatar: images.proJeff, other: null };
+    if (!c) return { name: 'Support', avatar: DEFAULT_AVATAR, other: null };
     const other = c.participants?.find((p: any) => p.id !== user?.id) || c.participants?.[0];
     const name = other?.fullName || 
       (other?.firstName ? `${other.firstName} ${other.lastName || ''}`.trim() : '') || 
       (c.isSystem ? 'Fixam Support' : 'User');
-    const avatar = other?.avatar ? getMediaUrl(other.avatar) : images.proJeff;
+    const avatar = other?.avatar ? getMediaUrl(other.avatar) : DEFAULT_AVATAR;
     return { other, name, avatar };
   };
 
@@ -63,7 +63,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     return name === activeChatUser || other?.id === activeChatUser;
   });
 
-  const activeDetails = activeConv ? getParticipantDetails(activeConv) : { name: activeChatUser || 'Chat', avatar: images.proJeff, other: null };
+  const activeDetails = activeConv ? getParticipantDetails(activeConv) : { name: activeChatUser || 'Chat', avatar: DEFAULT_AVATAR, other: null };
 
   useEffect(() => {
     if (activeConv) {
