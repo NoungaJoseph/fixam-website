@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import CreateTaskModal from './CreateTaskModal';
@@ -52,6 +52,15 @@ export default function ClientDashboard({
 }: ClientDashboardProps) {
   const { user } = useAuth();
   const [showTaskModal, setShowTaskModal] = useState(false);
+
+  // Auto-open task creation modal if redirected from the landing page
+  useEffect(() => {
+    const shouldPost = localStorage.getItem('fixam_redirect_post_task');
+    if (shouldPost === 'true') {
+      localStorage.removeItem('fixam_redirect_post_task');
+      setShowTaskModal(true);
+    }
+  }, []);
   
   const getGreeting = () => {
     const hour = new Date().getHours();

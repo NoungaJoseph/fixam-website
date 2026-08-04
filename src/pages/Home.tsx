@@ -370,6 +370,11 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     }
   };
 
+  const handlePostTaskClick = () => {
+    localStorage.setItem('fixam_redirect_post_task', 'true');
+    onNavigate('dashboard');
+  };
+
   // Sync FAQ category when language changes
   useEffect(() => {
     setFaqCategory(i18n.language === 'fr' ? 'Démarrage' : 'Getting Started');
@@ -471,7 +476,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             ))}
           </div>
 
-          {/* Find Provider CTA Row */}
+          {/* Find Provider & Post a Task CTA Row */}
           <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               onClick={() => onNavigate('services')}
@@ -484,6 +489,19 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
               }}
             >
               {i18n.language === 'fr' ? 'Trouver un prestataire' : 'Find a Provider'}
+            </button>
+            <button
+              onClick={handlePostTaskClick}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
+                background: 'rgba(255,255,255,0.15)', color: '#fff', fontWeight: 600,
+                fontSize: '15px', padding: '13px 28px', borderRadius: '50px',
+                border: '2px solid rgba(255,255,255,0.4)', cursor: 'pointer', backdropFilter: 'blur(8px)',
+                transition: 'transform 0.15s'
+              }}
+            >
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+              {i18n.language === 'fr' ? 'Poster une tâche' : 'Post a Task'}
             </button>
           </div>
         </div>
