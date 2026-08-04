@@ -237,9 +237,14 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
           <div className="flex-1 pb-1 w-full">
             <div className="flex flex-col md:flex-row items-center gap-3 mb-1">
               <h2 className="text-2xl font-bold text-gray-900">{fullName}</h2>
-              {(user as any)?.isVerified && (
+              {(user?.providerProfile?.verification === 'VERIFIED' || (user as any)?.isVerified) && (
                 <span className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-bold">
                   <Icon name="shield" /> Verified
+                </span>
+              )}
+              {user?.providerProfile?.verification === 'PENDING' && (
+                <span className="flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs font-bold">
+                  ⏰ Pending Review
                 </span>
               )}
             </div>
@@ -259,7 +264,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
                 <Icon name="user" /> Switch to {userRole === 'client' ? 'Provider' : 'Client'}
               </button>
             )}
-            {!(user?.providerProfile?.verification === 'VERIFIED' || (user as any)?.isVerified) && (
+            {!(user?.providerProfile?.verification === 'VERIFIED' || user?.providerProfile?.verification === 'PENDING' || (user as any)?.isVerified) && (
               <button 
                 className="bg-[#14B8A6] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#0F9788] transition flex items-center justify-center gap-2 shadow-sm" 
                 onClick={() => setActiveTab('Verification')}
