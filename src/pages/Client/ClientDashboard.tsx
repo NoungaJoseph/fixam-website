@@ -352,7 +352,7 @@ export default function ClientDashboard({
                 <div className="relative mb-4">
                   {pro.image ? (
                     <img 
-                      src={pro.image.startsWith('http') ? pro.image : `http://localhost:5000${pro.image}`} 
+                      src={getMediaUrl(pro.image)} 
                       alt={pro.name || 'Provider'} 
                       className="w-24 h-24 rounded-full object-cover shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
                       onError={(e) => {
@@ -493,7 +493,7 @@ export default function ClientDashboard({
                           return (
                             <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600">
                               {pAvatar ? (
-                                <img src={pAvatar.startsWith('http') ? pAvatar : `http://localhost:5000${pAvatar}`} alt={pName} className="w-6 h-6 rounded-full object-cover" />
+                                <img src={getMediaUrl(pAvatar)} alt={pName} className="w-6 h-6 rounded-full object-cover" />
                               ) : (
                                 <div className="w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">
                                   {pName.substring(0,2).toUpperCase()}

@@ -22,6 +22,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
   const [savedPros, setSavedPros] = useState([]);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [editFormData, setEditFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -187,6 +188,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
     const formData = new FormData();
     formData.append('image', file); // Matches the backend acceptFile configuration
 
+    setIsUploadingAvatar(true);
     try {
       const response = await api.post('/upload/profile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -202,6 +204,8 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       alert('Failed to upload profile picture.');
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -224,7 +228,17 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       <div className="mb-8 relative bg-transparent">
         <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 relative">
           <div className="relative flex-shrink-0">
-            <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt={fullName} className="w-28 h-28 rounded-full shadow-md object-cover bg-gray-100" />
+            <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-md">
+              <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt={fullName} className="w-full h-full object-cover bg-gray-100" />
+              {isUploadingAvatar && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <svg className="animate-spin h-8 w-8 text-[#14B8A6]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              )}
+            </div>
             <button 
               className="absolute bottom-0 right-0 bg-[#14B8A6] text-white p-1.5 rounded-full shadow-sm hover:bg-[#0F9788] transition" 
               aria-label="Change Avatar" 
