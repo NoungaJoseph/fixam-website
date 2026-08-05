@@ -188,11 +188,17 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
     formData.append('image', file); // Matches the backend acceptFile configuration
 
     try {
-      await api.post('/upload/profile', formData, {
+      const response = await api.post('/upload/profile', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      await refreshUser(); // Refresh user data to get new image URL
-      alert('Profile picture updated successfully!');
+      if (response.data?.url) {
+        // Persist the new avatar URL to the database user record
+        await api.put('/users/profile', { avatar: response.data.url });
+        await refreshUser(); // Refresh user data to get new image URL
+        alert('Profile picture updated successfully!');
+      } else {
+        throw new Error('No URL returned from upload server');
+      }
     } catch (error) {
       console.error('Error uploading profile picture:', error);
       alert('Failed to upload profile picture.');
