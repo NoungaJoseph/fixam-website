@@ -51,18 +51,9 @@ export default function ProjectDetail({
     });
 
     // Add images
-    let images = (Array.isArray(project.images) && project.images.length > 0)
+    const images = (Array.isArray(project.images) && project.images.length > 0)
       ? project.images
       : (project.imageUrl ? [project.imageUrl] : []);
-
-    // Enrich Enako's image gallery with matching high-quality mobile banking screens if only 1 image exists
-    if ((project.title?.toLowerCase().includes('enako') || project.description?.includes('E-NAKO')) && images.length <= 1) {
-      images = [
-        project.imageUrl || 'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/811e74fc-473b-4f1f-bd48-8ad1dfd1c833.png',
-        'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/screen2.png',
-        'file:///data/user/0/com.fixam.app.android/cache/ImagePicker/screen3.png'
-      ];
-    }
 
     images.forEach((img: string) => {
       if (img) list.push({ type: 'image', url: img });

@@ -78,6 +78,10 @@ export default function ClientDashboard({
           title: item.title || 'Untitled Project',
           description: item.description || '',
           imageUrl: item.imageUrl || item.url || item.image || '',
+          images: item.images || [],
+          videos: item.videos || [],
+          video: item.video || item.videoUrl || null,
+          packages: item.packages || null,
           price: item.price || null,
           category: item.category || '',
           provider: {

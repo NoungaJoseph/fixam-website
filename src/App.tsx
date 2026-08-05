@@ -88,35 +88,17 @@ export const getMediaUrl = (path?: string, type?: 'image' | 'video') => {
       : 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
   }
 
-  // Intercept local device files uploaded from mobile app emulators/devices
-  if (path.startsWith('file://') || path.startsWith('content://') || path.includes('/ImagePicker/') || path.includes('/cache/') || path.includes('screen2') || path.includes('screen3')) {
-    if (type === 'video' || path.toLowerCase().endsWith('.mp4') || path.toLowerCase().endsWith('.mov') || path.toLowerCase().endsWith('.m4v') || path.toLowerCase().endsWith('.3gp')) {
-      // Map Joseph's videos to clean finance walkthrough videos or sample mp4s
-      if (path.includes('60073c92-074e-488a-be6e-d7bf30ec7d20')) {
-        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-      }
-      if (path.includes('c5fd1d1d-8c0c-4d7c-835e-466c50e94a57')) {
-        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
-      }
-      if (path.includes('11f1549b-bd50-4a1e-bfb3-870660cc6b42')) {
-        return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4';
-      }
-      return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
-    }
-    // Map Joseph's main Enako screenshots to beautiful fintech app UI layouts
-    if (path.includes('811e74fc-473b-4f1f-bd48-8ad1dfd1c833')) {
-      return 'https://images.unsplash.com/photo-1563013544-824ae1d704d3?w=800&auto=format&fit=crop&q=80';
-    }
-    if (path.includes('screen2')) {
-      return 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80';
-    }
-    if (path.includes('screen3')) {
-      return 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&auto=format&fit=crop&q=80';
-    }
-    return 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path;
   }
 
-  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  // Handle local device URIs from mobile emulators that cannot be rendered directly by web browsers
+  if (path.startsWith('file://') || path.startsWith('content://')) {
+    return type === 'video'
+      ? 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+      : 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
+  }
+
   const API_URL = getApiUrl();
   const origin = API_URL.replace(/\/api\/?$/, '');
   return `${origin}${path.startsWith('/') ? '' : '/'}${path}`;
