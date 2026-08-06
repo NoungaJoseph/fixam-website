@@ -1,47 +1,42 @@
 .project-detail-page-wrapper {
-  max-width: 1200px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 16px 16px 40px;
   width: 100%;
 }
 
-.project-detail-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
+.project-detail-single-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-@media (min-width: 992px) {
-  .project-detail-layout {
-    grid-template-columns: 7fr 4fr;
-  }
-}
-
-/* Upper Hero Media Gallery Showcase */
+/* Upper Hero Media Gallery Showcase (Clean Background Hero Banner - No text written on top) */
 .project-media-gallery {
   background: transparent;
   border: none;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 0;
   box-shadow: none;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   position: relative;
   width: 100%;
 }
 
 .active-media-view {
   width: 100%;
-  height: 440px;
-  border-radius: 16px;
+  height: 420px;
+  border-radius: 20px;
   overflow: hidden;
   background-color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-/* Floating Overlay Back Button Inside Upper Hero */
+/* Floating Overlay Back Button Inside Upper Hero (Top-Left) */
 .floating-hero-back-btn {
   position: absolute;
   top: 16px;
@@ -71,6 +66,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .gallery-video {
@@ -133,11 +129,11 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .project-detail-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: #0f172a;
   line-height: 1.3;
@@ -166,7 +162,7 @@
   border-bottom: 1px solid #e2e8f0;
   padding: 12px 0 20px;
   cursor: pointer;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   transition: opacity 0.2s;
 }
 
@@ -243,9 +239,9 @@
 .project-description-section {
   background: transparent;
   border: none;
-  padding: 16px 0 24px;
+  padding: 8px 0 20px;
   border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 28px;
+  margin-bottom: 8px;
 }
 
 .section-title-clean,
@@ -263,9 +259,9 @@
   white-space: pre-line;
 }
 
-/* Project Packages Section (Positioned BEFORE breakdown) */
+/* Project Packages Section (Positioned BEFORE breakdown - Renders ONLY ONCE) */
 .project-packages-section {
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .packages-container-card {
@@ -453,9 +449,9 @@
 
 /* Seller Rating Breakdown Section */
 .seller-breakdown-section {
-  padding: 20px 0;
+  padding: 16px 0 20px;
   border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 28px;
+  margin-bottom: 8px;
 }
 
 .rating-overview-row {
@@ -511,7 +507,7 @@
 
 /* Client Reviews Section */
 .client-reviews-section {
-  padding: 20px 0;
+  padding: 16px 0;
 }
 
 .reviews-header-flex {
@@ -578,65 +574,7 @@
   font-style: italic;
 }
 
-/* Right Side Column: Quick Summary Card */
-.quick-summary-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  position: sticky;
-  top: 24px;
-}
-
-.quick-summary-price {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 24px;
-  font-weight: 900;
-  color: #0f172a;
-  margin-bottom: 8px;
-}
-
-.tier-tag {
-  background: #f0fdfa;
-  color: #14B8A6;
-  font-size: 11px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 12px;
-  text-transform: uppercase;
-}
-
-.quick-summary-desc {
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-  margin-bottom: 16px;
-}
-
-.quick-summary-perks {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 20px;
-}
-
-.quick-summary-perks div {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.quick-summary-perks svg {
-  color: #14B8A6;
-}
-
-/* Send Proposal Order Modal (Matching App's ProjectProposalScreen) */
+/* Send Proposal Order Modal */
 .proposal-modal-overlay {
   position: fixed;
   top: 0;

@@ -72,17 +72,31 @@ export default function ClientDashboard({
       const raw = pro.originalData;
       if (!raw || !Array.isArray(raw.portfolio)) return;
       raw.portfolio.forEach((item: any) => {
-        if (!item || (!item.title && !item.imageUrl)) return;
+        if (!item) return;
+
+        let parsedPackages = item.packages;
+        if (typeof parsedPackages === 'string') {
+          try { parsedPackages = JSON.parse(parsedPackages); } catch (_) {}
+        }
+
+        const itemImages = Array.isArray(item.images) && item.images.length > 0
+          ? item.images
+          : (item.imageUrl ? [item.imageUrl] : (item.url ? [item.url] : (item.image ? [item.image] : [])));
+
+        const itemVideos = Array.isArray(item.videos) && item.videos.length > 0
+          ? item.videos
+          : (item.video ? (Array.isArray(item.video) ? item.video : [item.video]) : (item.videoUrl ? [item.videoUrl] : []));
+
         projects.push({
-          id: item.id || `${raw.id}_${item.title}`,
+          id: item.id || `${raw.id}_${item.title || 'proj'}`,
           title: item.title || 'Untitled Project',
           description: item.description || '',
-          imageUrl: item.imageUrl || item.url || item.image || '',
-          images: item.images || [],
-          videos: item.videos || [],
-          video: item.video || item.videoUrl || null,
-          packages: item.packages || null,
-          price: item.price || null,
+          imageUrl: itemImages[0] || item.imageUrl || item.url || item.image || '',
+          images: itemImages,
+          videos: itemVideos,
+          video: itemVideos[0] || null,
+          packages: parsedPackages || null,
+          price: item.price || (parsedPackages?.basic?.price || parsedPackages?.standard?.price || null),
           category: item.category || '',
           provider: {
             id: raw.id,
