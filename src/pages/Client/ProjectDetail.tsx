@@ -68,7 +68,7 @@ export default function ProjectDetail({
     return list;
   }, [project, provider]);
 
-  // Resolve packages/tiers (similar to mobile app)
+  // Resolve packages/tiers (All 3 Tiers BASIC, STANDARD, PREMIUM - matching app)
   const tiers = useMemo(() => {
     const baseRate = Number(project.price || provider.rate || 5000);
     if (project.packages) {
@@ -79,7 +79,7 @@ export default function ProjectDetail({
           parsed.push({
             id: key,
             name: key.toUpperCase(),
-            label: pkg.summary || pkg.label || `${key.charAt(0).toUpperCase() + key.slice(1)} Package`,
+            label: pkg.summary || pkg.label || (key === 'basic' ? (isFr ? 'Forfait De Base' : 'Basic Package') : key === 'standard' ? (isFr ? 'Forfait Standard' : 'Standard Package') : (isFr ? 'Forfait Premium' : 'Premium Package')),
             price: Number(pkg.price || 0),
             deliveryDays: Number(pkg.deliveryDays || 1),
             revisions: Number(pkg.revisions || 0),
@@ -95,22 +95,46 @@ export default function ProjectDetail({
       if (parsed.length > 0) return parsed;
     }
 
-    // Default Tiers fallback if not provided by backend
+    // Default Tiers fallback if not provided by backend (BASIC, STANDARD, PREMIUM)
     return [
+      {
+        id: 'basic',
+        name: 'BASIC',
+        label: isFr ? 'Forfait De Base' : 'Basic Package',
+        price: Math.round(baseRate * 0.7),
+        deliveryDays: 1,
+        revisions: 1,
+        expressDeliveryEnabled: true,
+        expressDeliveryDays: 1,
+        expressDeliveryPrice: Math.round(baseRate * 0.2),
+        features: [isFr ? 'Livraison essentielle' : 'Essential Delivery', isFr ? 'Résolution standard' : 'Standard Resolution']
+      },
       {
         id: 'standard',
         name: 'STANDARD',
-        label: 'Standard Package',
+        label: isFr ? 'Forfait Standard' : 'Standard Package',
         price: baseRate,
         deliveryDays: 3,
         revisions: 2,
         expressDeliveryEnabled: true,
         expressDeliveryDays: 1,
-        expressDeliveryPrice: Math.round(baseRate * 0.2),
-        features: ['Professional Delivery', 'High Resolution', 'Source Files']
+        expressDeliveryPrice: Math.round(baseRate * 0.25),
+        features: [isFr ? 'Livraison professionnelle' : 'Professional Delivery', isFr ? 'Haute résolution' : 'High Resolution', isFr ? 'Fichiers sources' : 'Source Files']
+      },
+      {
+        id: 'premium',
+        name: 'PREMIUM',
+        label: isFr ? 'Forfait Premium' : 'Premium Package',
+        price: Math.round(baseRate * 1.5),
+        deliveryDays: 5,
+        revisions: 5,
+        expressDeliveryEnabled: true,
+        expressDeliveryDays: 2,
+        expressDeliveryPrice: Math.round(baseRate * 0.3),
+        features: [isFr ? 'Support prioritaire VIP' : 'VIP Priority Support', isFr ? 'Licence commerciale complète' : 'Full Commercial License', isFr ? 'Tous les fichiers sources' : 'All Source Files', isFr ? 'Révisions illimitées' : 'Unlimited Revisions']
       }
     ];
-  }, [project, provider]);
+  }, [project, provider, isFr]);
 
   const activeTier = tiers[selectedTierIndex] || tiers[0];
   const expressAddonPrice = Number(activeTier.expressDeliveryPrice || Math.round(activeTier.price * 0.2));
@@ -129,21 +153,26 @@ export default function ProjectDetail({
 
   return (
     <div className="project-detail-page-wrapper animate-fade-in">
-      {/* Back Button */}
-      <button className="btn-project-back" onClick={() => setSelectedProject(null)}>
-        <span>&larr;</span> {isFr ? 'Retour au tableau de bord' : 'Back to Dashboard'}
-      </button>
-
       <div className="project-detail-layout">
-        {/* Left Side: Media Gallery & Content */}
+        {/* Left Side: Hero Media & Content */}
         <div className="project-detail-left">
-          {/* Media Showcase Carousel */}
+          {/* Media Showcase Carousel with Overlay Floating Back Arrow */}
           <div className="project-media-gallery">
             <div 
               className="active-media-view" 
               onClick={handleMediaClick}
               style={{ cursor: mediaList.length > 1 ? 'pointer' : 'default' }}
             >
+              {/* Floating Back Arrow Inside Upper Image/Hero Section */}
+              <button 
+                className="floating-hero-back-btn" 
+                onClick={(e) => { e.stopPropagation(); setSelectedProject(null); }} 
+                aria-label="Back to Dashboard"
+                title={isFr ? 'Retour au tableau de bord' : 'Back to Dashboard'}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+
               {mediaList[activeMediaIndex].type === 'video' ? (
                 <video
                   src={getMediaUrl(mediaList[activeMediaIndex].url, 'video')}
@@ -175,7 +204,7 @@ export default function ProjectDetail({
                   >
                     {media.type === 'video' ? (
                       <div className="thumb-video-placeholder">
-                        <Icon name="briefcase" /> {/* Video icon replacement */}
+                        <Icon name="briefcase" />
                         <span className="play-indicator-text">Play</span>
                       </div>
                     ) : (
@@ -202,7 +231,7 @@ export default function ProjectDetail({
             )}
           </div>
 
-          {/* Provider Card Row */}
+          {/* Provider Info Row */}
           <div className="project-provider-card" onClick={handleViewProviderProfile}>
             <div className="provider-avatar-wrap">
               {provider.avatar ? (
@@ -227,7 +256,7 @@ export default function ProjectDetail({
                 <span className="rating-badge">
                   <Icon name="star" /> {Number(provider.rating || 5.0).toFixed(1)}
                 </span>
-                <span className="reviews-count">({provider.reviewCount || 0} reviews)</span>
+                <span className="reviews-count">({provider.reviewCount || (provider.reviews?.length || 0)} {isFr ? 'avis' : 'reviews'})</span>
               </div>
             </div>
             <button className="btn-view-profile-chevron" title="View Profile">
@@ -235,19 +264,85 @@ export default function ProjectDetail({
             </button>
           </div>
 
-          {/* Project Description */}
+          {/* Project Description (No outer card box) */}
           <div className="project-description-section">
             <h3>{isFr ? 'À propos de ce projet' : 'About This Project'}</h3>
             <p className="project-description-paragraph">
               {project.description || (isFr ? 'Aucune description fournie pour ce projet.' : 'No description provided for this project.')}
             </p>
           </div>
+
+          {/* Seller Rating Breakdown Section (Matching App) */}
+          <div className="seller-breakdown-section">
+            <h3 className="section-title-clean">{isFr ? 'Évaluation du vendeur' : 'Seller Rating Breakdown'}</h3>
+            <div className="rating-overview-row">
+              <div className="stars-flex">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Icon key={s} name="star" />
+                ))}
+              </div>
+              <span className="rating-score-large">{Number(provider.rating || 4.8).toFixed(1)}</span>
+            </div>
+            <div className="breakdown-grid">
+              <div className="breakdown-item-row">
+                <span className="breakdown-item-label">{isFr ? 'Niveau de communication du vendeur' : 'Seller communication level'}</span>
+                <span className="breakdown-item-score"><Icon name="star" /> {Math.min(5.0, Number(((provider.rating || 4.8) * 1.01).toFixed(1))).toFixed(1)}</span>
+              </div>
+              <div className="breakdown-item-row">
+                <span className="breakdown-item-label">{isFr ? 'Qualité de livraison' : 'Quality of delivery'}</span>
+                <span className="breakdown-item-score"><Icon name="star" /> {Number((provider.rating || 4.8).toFixed(1)).toFixed(1)}</span>
+              </div>
+              <div className="breakdown-item-row">
+                <span className="breakdown-item-label">{isFr ? 'Rapport qualité-prix de la livraison' : 'Value of delivery'}</span>
+                <span className="breakdown-item-score"><Icon name="star" /> {Math.max(1.0, Number(((provider.rating || 4.8) * 0.96).toFixed(1))).toFixed(1)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Client Reviews Section (Matching App) */}
+          <div className="client-reviews-section">
+            <div className="reviews-header-flex">
+              <h3 className="section-title-clean">
+                {provider.reviewCount || (provider.reviews?.length || 0)} {isFr ? 'Avis clients' : 'Client Reviews'}
+              </h3>
+            </div>
+            {Array.isArray(provider.reviews) && provider.reviews.length > 0 ? (
+              <div className="reviews-horizontal-list">
+                {provider.reviews.map((rev: any, rIdx: number) => (
+                  <div key={rev.id || rIdx} className="review-card-item">
+                    <div className="reviewer-info-row">
+                      <img
+                        src={getMediaUrl(rev.reviewer?.avatar || rev.job?.client?.avatar)}
+                        alt="Reviewer"
+                        className="reviewer-avatar"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).onerror = null;
+                          (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=Client&background=14B8A6&color=fff';
+                        }}
+                      />
+                      <div className="reviewer-text">
+                        <h5>{rev.reviewer?.fullName || 'Client'}</h5>
+                        <div className="review-stars-row">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Icon key={s} name="star" />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="review-comment-text">{rev.comment || (isFr ? 'Mission réalisée avec un excellent retour.' : 'Great work delivered on time!')}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="no-reviews-text">{isFr ? 'Aucun avis pour ce professionnel pour le moment.' : 'No reviews for this professional yet.'}</p>
+            )}
+          </div>
         </div>
 
         {/* Right Side: Packages / Pricing & Booking Tiers */}
         <div className="project-detail-right">
           <div className="packages-container-card">
-            {/* Tiers Tabs Headers */}
+            {/* Tiers Tabs Headers (BASIC, STANDARD, PREMIUM) */}
             <div className="tiers-tabs-header">
               {tiers.map((tier, idx) => (
                 <button
@@ -258,7 +353,7 @@ export default function ProjectDetail({
                     setExpressAddon(false);
                   }}
                 >
-                  {tier.name}
+                  {tier.name === 'BASIC' ? (isFr ? 'DE BASE' : 'BASIC') : tier.name}
                 </button>
               ))}
             </div>

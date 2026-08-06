@@ -1498,12 +1498,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         <section className="dash-main-new">
           {/* Top Bar Header */}
           <header className="dash-header-premium">
-            <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu" style={{ display: 'none' }}>
-              <Icon name="menu" />
-            </button>
-            <div className="mobile-logo-dash" style={{ display: 'none', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--ink)' }}>
-              <span className="logo-mark-dash" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>F</span>
-            </div>
             {/* Live Ticker instead of Search bar */}
             <div className="header-news-ticker">
               <span className="ticker-static-badge">Live Scores</span>
@@ -1813,11 +1807,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu" style={{ display: 'none' }}>
             <Icon name="menu" />
           </button>
-          <div className="mobile-logo-dash" style={{ display: 'none', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '1.2rem', color: 'var(--ink)' }}>
-            <span className="logo-mark-dash" style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>F</span>
-            Fixam
-          </div>
-          
           {/* Live Ticker */}
           <div className="header-news-ticker">
             <span className="ticker-static-badge">Live Scores</span>
