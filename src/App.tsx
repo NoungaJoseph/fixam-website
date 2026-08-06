@@ -1498,6 +1498,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         <section className="dash-main-new">
           {/* Top Bar Header */}
           <header className="dash-header-premium">
+            <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+              <Icon name="menu" />
+            </button>
             {/* Live Ticker instead of Search bar */}
             <div className="header-news-ticker">
               <span className="ticker-static-badge">Live Scores</span>
@@ -1804,7 +1807,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       {/* Main Dashboard Area */}
       <section className="dash-main-new">
         <header className="dash-header-premium">
-          <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu" style={{ display: 'none' }}>
+          <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
             <Icon name="menu" />
           </button>
           {/* Live Ticker */}

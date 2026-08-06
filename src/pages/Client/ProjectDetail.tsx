@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
-import BookingFormModal from '../../components/BookingFormModal';
+import { api } from '../../services/api';
 import './ProjectDetail.css';
 
 interface ProjectDetailProps {
@@ -27,13 +27,22 @@ export default function ProjectDetail({
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [selectedTierIndex, setSelectedTierIndex] = useState(0);
   const [expressAddon, setExpressAddon] = useState(false);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
-  const project = selectedProject;
+  // Send Proposal / Order Modal State (Matching App's ProjectProposalScreen)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [proposalType, setProposalType] = useState<'EXACT' | 'SIMILAR'>('EXACT');
+  const [proposalDescription, setProposalDescription] = useState('');
+  const [offeredBudget, setOfferedBudget] = useState('');
+  const [expectedDays, setExpectedDays] = useState('');
+  const [isSubmittingProposal, setIsSubmittingProposal] = useState(false);
+
+  const project = selectedProject || {};
   const provider = project.provider || {};
+  const providerUserId = provider.userId || provider.id;
 
   const handleMediaClick = () => {
     if (mediaList.length > 1) {
@@ -41,14 +50,14 @@ export default function ProjectDetail({
     }
   };
 
-  // Media list (Videos + Images)
+  // Extract Real Media list (Videos + Images)
   const mediaList = useMemo(() => {
     const list: Array<{ type: 'image' | 'video'; url: string }> = [];
     
     // Add videos
     const videoList = Array.isArray(project.videos) && project.videos.length > 0
       ? project.videos
-      : (project.video ? [project.video] : []);
+      : (project.video ? (Array.isArray(project.video) ? project.video : [project.video]) : []);
     videoList.forEach((v: string) => {
       if (v) list.push({ type: 'video', url: v });
     });
@@ -63,15 +72,15 @@ export default function ProjectDetail({
     });
 
     if (list.length === 0) {
-      list.push({ type: 'image', url: provider?.avatar || 'https://via.placeholder.com/600x320?text=Fixam+Project' });
+      list.push({ type: 'image', url: provider?.avatar || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80' });
     }
     return list;
   }, [project, provider]);
 
-  // Resolve packages/tiers (All 3 Tiers BASIC, STANDARD, PREMIUM - matching app)
+  // Parse Real Packages/Tiers from DB (Matching Mobile App Logic)
   const tiers = useMemo(() => {
     const baseRate = Number(project.price || provider.rate || 5000);
-    if (project.packages) {
+    if (project.packages && typeof project.packages === 'object') {
       const parsed: any[] = [];
       ['basic', 'standard', 'premium'].forEach((key) => {
         const pkg = project.packages[key];
@@ -87,7 +96,7 @@ export default function ProjectDetail({
             expressDeliveryDays: pkg.expressDeliveryDays ? Number(pkg.expressDeliveryDays) : 1,
             expressDeliveryPrice: pkg.expressDeliveryPrice ? Number(pkg.expressDeliveryPrice) : Math.round(Number(pkg.price || 0) * 0.3),
             features: Array.isArray(pkg.features) && pkg.features.length > 0
-              ? pkg.features.filter((f: any) => f && f.trim())
+              ? pkg.features.filter((f: any) => f && typeof f === 'string' && f.trim())
               : []
           });
         }
@@ -95,20 +104,8 @@ export default function ProjectDetail({
       if (parsed.length > 0) return parsed;
     }
 
-    // Default Tiers fallback if not provided by backend (BASIC, STANDARD, PREMIUM)
+    // Default Single Tier fallback based on actual project.price / provider.rate if no packages object
     return [
-      {
-        id: 'basic',
-        name: 'BASIC',
-        label: isFr ? 'Forfait De Base' : 'Basic Package',
-        price: Math.round(baseRate * 0.7),
-        deliveryDays: 1,
-        revisions: 1,
-        expressDeliveryEnabled: true,
-        expressDeliveryDays: 1,
-        expressDeliveryPrice: Math.round(baseRate * 0.2),
-        features: [isFr ? 'Livraison essentielle' : 'Essential Delivery', isFr ? 'Résolution standard' : 'Standard Resolution']
-      },
       {
         id: 'standard',
         name: 'STANDARD',
@@ -120,18 +117,6 @@ export default function ProjectDetail({
         expressDeliveryDays: 1,
         expressDeliveryPrice: Math.round(baseRate * 0.25),
         features: [isFr ? 'Livraison professionnelle' : 'Professional Delivery', isFr ? 'Haute résolution' : 'High Resolution', isFr ? 'Fichiers sources' : 'Source Files']
-      },
-      {
-        id: 'premium',
-        name: 'PREMIUM',
-        label: isFr ? 'Forfait Premium' : 'Premium Package',
-        price: Math.round(baseRate * 1.5),
-        deliveryDays: 5,
-        revisions: 5,
-        expressDeliveryEnabled: true,
-        expressDeliveryDays: 2,
-        expressDeliveryPrice: Math.round(baseRate * 0.3),
-        features: [isFr ? 'Support prioritaire VIP' : 'VIP Priority Support', isFr ? 'Licence commerciale complète' : 'Full Commercial License', isFr ? 'Tous les fichiers sources' : 'All Source Files', isFr ? 'Révisions illimitées' : 'Unlimited Revisions']
       }
     ];
   }, [project, provider, isFr]);
@@ -140,6 +125,60 @@ export default function ProjectDetail({
   const expressAddonPrice = Number(activeTier.expressDeliveryPrice || Math.round(activeTier.price * 0.2));
   const expressDays = Number(activeTier.expressDeliveryDays || 1);
   const finalPrice = activeTier.price + (expressAddon ? expressAddonPrice : 0);
+
+  // Open Order / Send Proposal Modal with prefilled tier values
+  const handleOpenOrderModal = () => {
+    setOfferedBudget(String(finalPrice));
+    setExpectedDays(String(activeTier.deliveryDays || 3));
+    setProposalDescription('');
+    setProposalType('EXACT');
+    setIsOrderModalOpen(true);
+  };
+
+  // Submit Proposal Handler (Identical to app's ProjectProposalScreen)
+  const handleSubmitProposal = async () => {
+    if (!proposalDescription.trim()) {
+      alert(isFr ? 'Veuillez décrire votre proposition ou vos exigences' : 'Please describe your proposal or requirements');
+      return;
+    }
+
+    setIsSubmittingProposal(true);
+    try {
+      // 1. Post proposal booking
+      await api.post('/bookings', {
+        providerId: providerUserId,
+        isProposal: true,
+        budget: Number(offeredBudget || finalPrice),
+        bookingDate: new Date().toISOString(),
+        bookingTime: '09:00',
+        bookingDuration: `${expectedDays || 3} DAYS`,
+        notes: `PROJECT PROPOSAL: ${project.title || 'Custom Service'}\nRequirements: ${proposalDescription.trim()}`,
+        location: `Project: ${project.title || 'Custom Service'} (${activeTier.name})`
+      });
+
+      // 2. Create or fetch chat conversation
+      let convId;
+      try {
+        const convRes = await api.post('/chat/conversations', { participantId: providerUserId });
+        convId = convRes.data?.data?.id || convRes.data?.id;
+      } catch (_) {}
+
+      // 3. Send proposal message into chat if conversation exists
+      if (convId) {
+        const proposalText = `📋 *PROPOSAL FOR PROJECT*: ${project.title || 'Custom Service'}\nType: ${proposalType === 'EXACT' ? 'Buy Exact Project' : 'Similar Custom Service'}\nPackage: ${activeTier.name}\nOffered Price: XAF ${offeredBudget}\nTimeline: ${expectedDays} Days\n\nRequirements:\n${proposalDescription.trim()}`;
+        await api.post(`/chat/conversations/${convId}/messages`, { content: proposalText, type: 'TEXT' });
+      }
+
+      alert(isFr ? 'Votre proposition a été envoyée avec succès au prestataire !' : 'Your proposal has been sent to the provider!');
+      setIsOrderModalOpen(false);
+      setSelectedProject(null);
+      setActiveTab('Messages');
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || 'Error submitting proposal');
+    } finally {
+      setIsSubmittingProposal(false);
+    }
+  };
 
   // Navigate to provider profile view
   const handleViewProviderProfile = () => {
@@ -156,7 +195,7 @@ export default function ProjectDetail({
       <div className="project-detail-layout">
         {/* Left Side: Hero Media & Content */}
         <div className="project-detail-left">
-          {/* Media Showcase Carousel with Overlay Floating Back Arrow */}
+          {/* Upper Hero Media Showcase Carousel with Overlay Floating Back Arrow */}
           <div className="project-media-gallery">
             <div 
               className="active-media-view" 
@@ -223,7 +262,7 @@ export default function ProjectDetail({
             )}
           </div>
 
-          {/* Project Title and Header */}
+          {/* Project Title and Category Header */}
           <div className="project-info-header">
             <h1 className="project-detail-title">{project.title || 'Untitled Project'}</h1>
             {project.category && (
@@ -264,12 +303,91 @@ export default function ProjectDetail({
             </button>
           </div>
 
-          {/* Project Description (No outer card box) */}
+          {/* Project Description (About Section) */}
           <div className="project-description-section">
             <h3>{isFr ? 'À propos de ce projet' : 'About This Project'}</h3>
             <p className="project-description-paragraph">
               {project.description || (isFr ? 'Aucune description fournie pour ce projet.' : 'No description provided for this project.')}
             </p>
+          </div>
+
+          {/* Packages / Pricing Tiers (Positioned BEFORE Seller Rating Breakdown) */}
+          <div className="project-packages-section">
+            <h3 className="section-title-clean">{isFr ? 'Forfaits et tarifs du projet' : 'Project Packages & Pricing'}</h3>
+            <div className="packages-container-card">
+              {/* Tiers Tabs Headers */}
+              <div className="tiers-tabs-header">
+                {tiers.map((tier, idx) => (
+                  <button
+                    key={tier.id}
+                    className={`tier-tab-header-btn ${selectedTierIndex === idx ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedTierIndex(idx);
+                      setExpressAddon(false);
+                    }}
+                  >
+                    {tier.name === 'BASIC' ? (isFr ? 'DE BASE' : 'BASIC') : tier.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Active Tier Details Body */}
+              <div className="active-tier-body">
+                <div className="tier-price-row">
+                  <span className="tier-price-label">{isFr ? 'Prix' : 'Price'}</span>
+                  <span className="tier-price-value">XAF {tierPriceFormat(activeTier.price)}</span>
+                </div>
+
+                <h4 className="tier-summary-title">{activeTier.label}</h4>
+
+                {/* Delivery info & revisions */}
+                <div className="delivery-info-grid">
+                  <div className="info-cell">
+                    <Icon name="calendar" />
+                    <span>{activeTier.deliveryDays} {isFr ? `Jour${activeTier.deliveryDays > 1 ? 's' : ''} de livraison` : `Day${activeTier.deliveryDays > 1 ? 's' : ''} Delivery`}</span>
+                  </div>
+                  <div className="info-cell">
+                    <Icon name="settings" />
+                    <span>{activeTier.revisions || (isFr ? 'Illimité' : 'Unlimited')} {isFr ? `Révision${activeTier.revisions !== 1 ? 's' : ''}` : `Revision${activeTier.revisions !== 1 ? 's' : ''}`}</span>
+                  </div>
+                </div>
+
+                {/* Features List */}
+                {activeTier.features.length > 0 && (
+                  <div className="tier-features-list">
+                    <h5>{isFr ? 'Ce qui est inclus :' : "What's Included:"}</h5>
+                    <ul>
+                      {activeTier.features.map((feat: string, index: number) => (
+                        <li key={index}>
+                          <span className="check-bullet">&check;</span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Express Delivery Option */}
+                {activeTier.expressDeliveryEnabled !== false && (
+                  <label className="express-addon-option">
+                    <input
+                      type="checkbox"
+                      checked={expressAddon}
+                      onChange={(e) => setExpressAddon(e.target.checked)}
+                    />
+                    <div className="express-addon-text-wrap">
+                      <span className="express-addon-title">{isFr ? `Livraison express en ${expressDays} jour(s)` : `Express ${expressDays} Day Delivery`}</span>
+                      <span className="express-addon-price">+XAF {tierPriceFormat(expressAddonPrice)}</span>
+                    </div>
+                  </label>
+                )}
+
+                {/* Order Button -> Opens Send Proposal Form Modal */}
+                <button className="btn-order-project-tier" onClick={handleOpenOrderModal}>
+                  {isFr ? 'Commander maintenant' : 'Order Now'} (XAF {tierPriceFormat(finalPrice)})
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Seller Rating Breakdown Section (Matching App) */}
@@ -339,116 +457,123 @@ export default function ProjectDetail({
           </div>
         </div>
 
-        {/* Right Side: Packages / Pricing & Booking Tiers */}
+        {/* Right Side Column: Provider Quick Order Summary */}
         <div className="project-detail-right">
-          <div className="packages-container-card">
-            {/* Tiers Tabs Headers (BASIC, STANDARD, PREMIUM) */}
-            <div className="tiers-tabs-header">
-              {tiers.map((tier, idx) => (
-                <button
-                  key={tier.id}
-                  className={`tier-tab-header-btn ${selectedTierIndex === idx ? 'active' : ''}`}
-                  onClick={() => {
-                    setSelectedTierIndex(idx);
-                    setExpressAddon(false);
-                  }}
-                >
-                  {tier.name === 'BASIC' ? (isFr ? 'DE BASE' : 'BASIC') : tier.name}
-                </button>
-              ))}
+          <div className="quick-summary-card">
+            <div className="quick-summary-price">
+              <span>XAF {tierPriceFormat(finalPrice)}</span>
+              <span className="tier-tag">{activeTier.name}</span>
             </div>
-
-            {/* Active Tier Details Body */}
-            <div className="active-tier-body">
-              <div className="tier-price-row">
-                <span className="tier-price-label">{isFr ? 'Prix' : 'Price'}</span>
-                <span className="tier-price-value">XAF {tierPriceFormat(activeTier.price)}</span>
-              </div>
-
-              <h4 className="tier-summary-title">{activeTier.label}</h4>
-
-              {/* Delivery info & revisions */}
-              <div className="delivery-info-grid">
-                <div className="info-cell">
-                  <Icon name="calendar" />
-                  <span>{activeTier.deliveryDays} {isFr ? `Jour${activeTier.deliveryDays > 1 ? 's' : ''} de livraison` : `Day${activeTier.deliveryDays > 1 ? 's' : ''} Delivery`}</span>
-                </div>
-                <div className="info-cell">
-                  <Icon name="settings" />
-                  <span>{activeTier.revisions || (isFr ? 'Illimité' : 'Unlimited')} {isFr ? `Révision${activeTier.revisions !== 1 ? 's' : ''}` : `Revision${activeTier.revisions !== 1 ? 's' : ''}`}</span>
-                </div>
-              </div>
-
-              {/* Features List */}
-              {activeTier.features.length > 0 && (
-                <div className="tier-features-list">
-                  <h5>{isFr ? 'Ce qui est inclus :' : "What's Included:"}</h5>
-                  <ul>
-                    {activeTier.features.map((feat: string, index: number) => (
-                      <li key={index}>
-                        <span className="check-bullet">&check;</span>
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Express Delivery Option */}
-              {activeTier.expressDeliveryEnabled !== false && (
-                <label className="express-addon-option">
-                  <input
-                    type="checkbox"
-                    checked={expressAddon}
-                    onChange={(e) => setExpressAddon(e.target.checked)}
-                  />
-                  <div className="express-addon-text-wrap">
-                    <span className="express-addon-title">{isFr ? `Livraison express en ${expressDays} jour(s)` : `Express ${expressDays} Day Delivery`}</span>
-                    <span className="express-addon-price">+XAF {tierPriceFormat(expressAddonPrice)}</span>
-                  </div>
-                </label>
-              )}
-
-              {/* CTA Booking Button */}
-              <button className="btn-order-project-tier" onClick={() => setIsBookingModalOpen(true)}>
-                {isFr ? 'Commander maintenant' : 'Order Now'} (XAF {tierPriceFormat(finalPrice)})
-              </button>
+            <p className="quick-summary-desc">{activeTier.label}</p>
+            <div className="quick-summary-perks">
+              <div><Icon name="calendar" /> {activeTier.deliveryDays} {isFr ? 'Jours de livraison' : 'Days Delivery'}</div>
+              <div><Icon name="settings" /> {activeTier.revisions || (isFr ? 'Illimité' : 'Unlimited')} {isFr ? 'Révisions' : 'Revisions'}</div>
             </div>
+            <button className="btn-order-project-tier" onClick={handleOpenOrderModal}>
+              {isFr ? 'Commander maintenant' : 'Order Now'}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Booking Form Modal Integration */}
-      <BookingFormModal
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-        providerName={provider.name || 'Provider'}
-        providerService={project.title || 'Project Deliverable'}
-        providerImage={mediaList[0]?.type === 'image' ? getMediaUrl(mediaList[0]?.url) : undefined}
-        basePrice={`XAF ${finalPrice.toLocaleString()}`}
-        onSubmit={(bookingData) => {
-          const newBooking = {
-            id: Date.now(),
-            service: bookingData.service,
-            provider: bookingData.provider,
-            date: bookingData.date,
-            time: bookingData.time,
-            status: 'Confirmed',
-            price: finalPrice.toLocaleString(),
-            image: bookingData.image
-          };
-          setClientBookings([newBooking, ...clientBookings]);
-          alert(`Order placed successfully for ${bookingData.date}! ${provider.name} has been notified.`);
-          setIsBookingModalOpen(false);
-          setSelectedProject(null);
-          setActiveTab('My Bookings');
-        }}
-      />
+      {/* SEND PROPOSAL / PROJECT ORDER MODAL (Matching App's ProjectProposalScreen) */}
+      {isOrderModalOpen && (
+        <div className="proposal-modal-overlay animate-fade-in" onClick={() => setIsOrderModalOpen(false)}>
+          <div className="proposal-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="proposal-modal-header">
+              <h3>{isFr ? 'Envoyer une proposition / Commande' : 'Send Proposal / Order'}</h3>
+              <button className="modal-close-btn" onClick={() => setIsOrderModalOpen(false)}>&times;</button>
+            </div>
+
+            <div className="proposal-project-banner">
+              <h4>{project.title || 'Custom Service'}</h4>
+              <p>{isFr ? 'Prestataire :' : 'Provider:'} <strong>{provider.name || 'Provider'}</strong></p>
+            </div>
+
+            {/* Proposal Intent Radio Group */}
+            <div className="proposal-field-group">
+              <label className="field-label-bold">{isFr ? 'Sélectionner le type de proposition' : 'Select Proposal Type'}</label>
+              
+              <label className={`proposal-radio-box ${proposalType === 'EXACT' ? 'active' : ''}`}>
+                <input
+                  type="radio"
+                  name="proposalType"
+                  checked={proposalType === 'EXACT'}
+                  onChange={() => setProposalType('EXACT')}
+                />
+                <div className="radio-text-wrap">
+                  <strong>{isFr ? 'Acheter / Demander ce projet exact' : 'Buy / Request this exact project'}</strong>
+                  <span>{isFr ? 'Poursuivre avec les fonctionnalités et livrables décrits dans ce projet' : 'Proceed with the features and deliverables described in this project'}</span>
+                </div>
+              </label>
+
+              <label className={`proposal-radio-box ${proposalType === 'SIMILAR' ? 'active' : ''}`}>
+                <input
+                  type="radio"
+                  name="proposalType"
+                  checked={proposalType === 'SIMILAR'}
+                  onChange={() => setProposalType('SIMILAR')}
+                />
+                <div className="radio-text-wrap">
+                  <strong>{isFr ? 'Demander un service personnalisé similaire à ce projet' : 'Request a custom service similar to this project'}</strong>
+                  <span>{isFr ? 'Demander au prestataire d\'adapter le travail à vos besoins spécifiques' : 'Ask provider to adapt or customize work for your specific needs'}</span>
+                </div>
+              </label>
+            </div>
+
+            {/* Requirements Description */}
+            <div className="proposal-field-group">
+              <label className="field-label-bold">{isFr ? 'Description de la proposition / Exigences *' : 'Proposal Description / Requirements *'}</label>
+              <textarea
+                className="proposal-textarea"
+                rows={4}
+                placeholder={isFr ? 'Décrivez les exigences de votre projet, la portée et vos instructions spécifiques...' : 'Describe your project requirements, scope, and specific instructions...'}
+                value={proposalDescription}
+                onChange={(e) => setProposalDescription(e.target.value)}
+              />
+            </div>
+
+            {/* Price & Days Grid */}
+            <div className="proposal-two-cols">
+              <div className="proposal-field-group">
+                <label className="field-label-bold">{isFr ? 'Budget proposé (XAF)' : 'Offered Budget (XAF)'}</label>
+                <input
+                  type="number"
+                  className="proposal-input"
+                  value={offeredBudget}
+                  onChange={(e) => setOfferedBudget(e.target.value)}
+                />
+              </div>
+
+              <div className="proposal-field-group">
+                <label className="field-label-bold">{isFr ? 'Jours estimés' : 'Expected Days'}</label>
+                <input
+                  type="number"
+                  className="proposal-input"
+                  value={expectedDays}
+                  onChange={(e) => setExpectedDays(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Submit Proposal CTA Button */}
+            <button
+              className="btn-submit-proposal-modal"
+              onClick={handleSubmitProposal}
+              disabled={isSubmittingProposal}
+            >
+              {isSubmittingProposal
+                ? (isFr ? 'Envoi en cours...' : 'Submitting...')
+                : (isFr ? 'Soumettre la proposition' : 'Submit Proposal')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // Utility to format price nicely
 function tierPriceFormat(price: number) {
-  return Number(price).toLocaleString();
+  return Number(price || 0).toLocaleString();
 }
