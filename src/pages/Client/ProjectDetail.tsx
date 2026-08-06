@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import BookingFormModal from '../../components/BookingFormModal';
 import './ProjectDetail.css';
 
@@ -24,6 +25,8 @@ export default function ProjectDetail({
   displayedPros
 }: ProjectDetailProps) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [selectedTierIndex, setSelectedTierIndex] = useState(0);
   const [expressAddon, setExpressAddon] = useState(false);
@@ -128,7 +131,7 @@ export default function ProjectDetail({
     <div className="project-detail-page-wrapper animate-fade-in">
       {/* Back Button */}
       <button className="btn-project-back" onClick={() => setSelectedProject(null)}>
-        <span>&larr;</span> Back to Dashboard
+        <span>&larr;</span> {isFr ? 'Retour au tableau de bord' : 'Back to Dashboard'}
       </button>
 
       <div className="project-detail-layout">
@@ -234,9 +237,9 @@ export default function ProjectDetail({
 
           {/* Project Description */}
           <div className="project-description-section">
-            <h3>About This Project</h3>
+            <h3>{isFr ? 'À propos de ce projet' : 'About This Project'}</h3>
             <p className="project-description-paragraph">
-              {project.description || 'No description provided for this project.'}
+              {project.description || (isFr ? 'Aucune description fournie pour ce projet.' : 'No description provided for this project.')}
             </p>
           </div>
         </div>
@@ -263,7 +266,7 @@ export default function ProjectDetail({
             {/* Active Tier Details Body */}
             <div className="active-tier-body">
               <div className="tier-price-row">
-                <span className="tier-price-label">Price</span>
+                <span className="tier-price-label">{isFr ? 'Prix' : 'Price'}</span>
                 <span className="tier-price-value">XAF {tierPriceFormat(activeTier.price)}</span>
               </div>
 
@@ -273,18 +276,18 @@ export default function ProjectDetail({
               <div className="delivery-info-grid">
                 <div className="info-cell">
                   <Icon name="calendar" />
-                  <span>{activeTier.deliveryDays} Day{activeTier.deliveryDays > 1 ? 's' : ''} Delivery</span>
+                  <span>{activeTier.deliveryDays} {isFr ? `Jour${activeTier.deliveryDays > 1 ? 's' : ''} de livraison` : `Day${activeTier.deliveryDays > 1 ? 's' : ''} Delivery`}</span>
                 </div>
                 <div className="info-cell">
                   <Icon name="settings" />
-                  <span>{activeTier.revisions || 'Unlimited'} Revision{activeTier.revisions !== 1 ? 's' : ''}</span>
+                  <span>{activeTier.revisions || (isFr ? 'Illimité' : 'Unlimited')} {isFr ? `Révision${activeTier.revisions !== 1 ? 's' : ''}` : `Revision${activeTier.revisions !== 1 ? 's' : ''}`}</span>
                 </div>
               </div>
 
               {/* Features List */}
               {activeTier.features.length > 0 && (
                 <div className="tier-features-list">
-                  <h5>What's Included:</h5>
+                  <h5>{isFr ? 'Ce qui est inclus :' : "What's Included:"}</h5>
                   <ul>
                     {activeTier.features.map((feat: string, index: number) => (
                       <li key={index}>
@@ -305,7 +308,7 @@ export default function ProjectDetail({
                     onChange={(e) => setExpressAddon(e.target.checked)}
                   />
                   <div className="express-addon-text-wrap">
-                    <span className="express-addon-title">Express {expressDays} Day Delivery</span>
+                    <span className="express-addon-title">{isFr ? `Livraison express en ${expressDays} jour(s)` : `Express ${expressDays} Day Delivery`}</span>
                     <span className="express-addon-price">+XAF {tierPriceFormat(expressAddonPrice)}</span>
                   </div>
                 </label>
@@ -313,7 +316,7 @@ export default function ProjectDetail({
 
               {/* CTA Booking Button */}
               <button className="btn-order-project-tier" onClick={() => setIsBookingModalOpen(true)}>
-                Order Now (XAF {tierPriceFormat(finalPrice)})
+                {isFr ? 'Commander maintenant' : 'Order Now'} (XAF {tierPriceFormat(finalPrice)})
               </button>
             </div>
           </div>
