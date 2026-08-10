@@ -237,20 +237,30 @@
   gap: 1.1rem;
 }
 
-.upwork-job-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 1.4rem;
+.upwork-job-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  gap: 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.upwork-job-card {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: background-color 0.15s;
 }
 
 .upwork-job-card:hover {
-  border-color: #10B981;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.06);
+  background-color: #fdfdfd;
+  box-shadow: none;
 }
 
 .upwork-card-topbar {
@@ -259,14 +269,13 @@
   align-items: center;
 }
 
-.meta-time-badge {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #dbeafe;
-  border-radius: 999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+.upwork-meta-pill {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 6px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .card-quick-actions {
@@ -297,28 +306,40 @@
 
 .upwork-card-title {
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #0f172a;
   margin: 0;
   cursor: pointer;
+  line-height: 1.35;
   transition: color 0.15s;
 }
 
 .upwork-card-title:hover {
   color: #10B981;
+  text-decoration: underline;
 }
 
 .upwork-card-submeta {
-  color: #64748b;
+  color: #5e6d82;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .upwork-card-submeta .dot {
-  color: #cbd5e1;
+  color: #94a3b8;
+}
+
+.upwork-card-location-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #64748b;
+  font-size: 0.83rem;
+  font-weight: 500;
 }
 
 .upwork-card-description {
@@ -344,29 +365,72 @@
 
 .skill-pill {
   background: #f1f5f9;
-  color: #334155;
+  color: #475569;
+  border: 1px solid #e2e8f0;
   border-radius: 999px;
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 0.8rem;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .upwork-card-client-footer {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  justify-content: space-between;
+  gap: 1rem;
   font-size: 0.82rem;
   color: #64748b;
-  font-weight: 600;
+  font-weight: 500;
+  margin-top: 0.35rem;
   flex-wrap: wrap;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 0.75rem;
-  margin-top: 0.25rem;
+}
+
+.upwork-client-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
 }
 
 .check-verified {
-  color: #10B981;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.rating-stars {
+  color: #f59e0b;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.spending-text {
+  color: #64748b;
+}
+
+.client-country {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #64748b;
+}
+
+.upwork-submit-proposal-btn {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.82rem;
   font-weight: 700;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.upwork-submit-proposal-btn:hover {
+  background: #059669;
 }
 
 .feed-status-message {
@@ -1249,7 +1313,7 @@
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    padding: 0.5rem 0.5rem 4rem !important;
+    padding: 0.5rem 0.75rem 4rem !important;
     overflow-x: hidden !important;
   }
 
@@ -1355,41 +1419,86 @@
   }
 
   .upwork-job-cards-list {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-    gap: 0.85rem !important;
+    border-top: 1px solid #e2e8f0 !important;
+    gap: 0 !important;
   }
 
   .upwork-job-card {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    padding: 1rem !important;
-    border-radius: 16px !important;
-    border: 1.5px solid #e2e8f0 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+    padding: 1.2rem 0 !important;
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
     background: #ffffff !important;
+    gap: 0.55rem !important;
   }
 
   .upwork-card-title {
     font-size: 1.05rem !important;
-    line-height: 1.35 !important;
-    font-weight: 800 !important;
+    line-height: 1.32 !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+  }
+
+  .upwork-card-submeta {
+    font-size: 0.8rem !important;
+    color: #5e6d82 !important;
+    gap: 0.3rem !important;
+  }
+
+  .upwork-card-location-notice {
+    font-size: 0.8rem !important;
+    color: #64748b !important;
+  }
+
+  .upwork-card-description {
+    font-size: 0.85rem !important;
+    line-height: 1.45 !important;
+    color: #334155 !important;
+  }
+
+  .upwork-card-skills {
+    display: flex !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    gap: 0.4rem !important;
+    padding-bottom: 0.25rem !important;
+    -webkit-overflow-scrolling: touch;
+    align-items: center;
+  }
+
+  .skill-pill {
+    padding: 0.25rem 0.7rem !important;
+    font-size: 0.75rem !important;
+    flex-shrink: 0 !important;
+    border-radius: 6px !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
   }
 
   .upwork-card-client-footer {
     flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 0.75rem !important;
+    align-items: flex-start !important;
+    gap: 0.35rem !important;
+    margin-top: 0.25rem !important;
   }
 
-  .upwork-card-client-footer button {
-    width: 100% !important;
-    justify-content: center !important;
-    padding: 0.65rem 1rem !important;
-    font-size: 0.82rem !important;
-    border-radius: 12px !important;
+  .upwork-client-badges {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    flex-wrap: wrap !important;
+    font-size: 0.78rem !important;
+  }
+
+  .upwork-submit-proposal-btn {
+    display: none !important; /* Hide green button inside mobile card to match Upwork mobile layout */
   }
 }
 
