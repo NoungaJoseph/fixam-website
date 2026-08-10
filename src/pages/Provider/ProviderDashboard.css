@@ -1313,7 +1313,11 @@
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    padding: 0.5rem 0.75rem 4rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
     overflow-x: hidden !important;
   }
 

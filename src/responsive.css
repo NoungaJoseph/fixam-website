@@ -349,11 +349,13 @@ html, body, #root, .dashboard-shell-new {
     grid-template-columns: 1fr;
     height: auto !important;
     overflow: visible !important;
+    background: #ffffff !important;
   }
 
   .dash-main-new {
     height: auto !important;
     overflow: visible !important;
+    background: #ffffff !important;
   }
 
   .dash-sidebar-new {
