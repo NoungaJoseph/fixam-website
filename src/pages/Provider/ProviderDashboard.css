@@ -1,373 +1,1307 @@
-.provider-job-feed,
-.provider-stats-page {
+/* ====== Upwork-style Dashboard Layout ====== */
+.upwork-dashboard-container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1.5rem 0 3rem;
+  padding: 1.25rem 1rem 4rem;
 }
 
-.provider-feed-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.provider-feed-header h1 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 1.65rem;
-  font-weight: 800;
-  letter-spacing: 0;
-}
-
-.provider-feed-header p {
-  margin: 0.35rem 0 0;
-  color: #64748b;
-  font-size: 0.94rem;
-}
-
-.provider-feed-actions {
-  display: flex;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.provider-secondary-btn {
-  min-height: 42px;
-  border: 1px solid #dbe4ea;
-  background: #ffffff;
-  color: #334155;
-  border-radius: 8px;
-  padding: 0 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  font-size: 0.86rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.provider-secondary-btn:hover {
-  border-color: #14b8a6;
-  color: #0f766e;
-  background: #f0fdfa;
-}
-
-.provider-job-toolbar {
+.upwork-dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 190px;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 2rem;
+  align-items: start;
 }
 
-.provider-search-field {
-  min-height: 48px;
+/* MAIN LEFT COLUMN */
+.upwork-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* DARK HERO BANNER */
+.upwork-hero-banner {
+  background: #181818;
+  border-radius: 16px;
+  padding: 2rem 2.25rem;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.upwork-hero-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.upwork-hero-content h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 1.25rem 0;
+  line-height: 1.35;
+  max-width: 480px;
+}
+
+.btn-hero-white {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 999px;
+  padding: 0.65rem 1.4rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-hero-white:hover {
+  background: #f1f5f9;
+}
+
+/* LIGHT MINT ALERT BANNER */
+.upwork-alert-banner {
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 12px;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: #1b5e20;
+  font-size: 0.88rem;
+}
+
+.alert-text-group {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid #dbe4ea;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 0 0.9rem;
+  font-weight: 600;
 }
 
-.provider-search-field .icon {
-  color: #64748b;
-  width: 18px;
-  height: 18px;
+.alert-text-group p {
+  margin: 0;
 }
 
-.provider-search-field input,
-.provider-job-toolbar select {
-  width: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #0f172a;
-  font-size: 0.94rem;
-}
-
-.provider-job-toolbar select {
-  border: 1px solid #dbe4ea;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 0 0.8rem;
-  min-height: 48px;
-  font-weight: 700;
-}
-
-.provider-filter-row {
+.alert-actions {
   display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding-bottom: 0.8rem;
-  margin-bottom: 0.4rem;
+  align-items: center;
+  gap: 1rem;
 }
 
-.provider-filter-row button {
-  border: 1px solid #dbe4ea;
-  background: #ffffff;
-  color: #475569;
-  border-radius: 999px;
-  padding: 0.55rem 0.85rem;
-  font-size: 0.78rem;
+.alert-link-btn {
+  background: transparent;
+  border: none;
+  color: #007a27;
   font-weight: 800;
+  text-decoration: underline;
   cursor: pointer;
-  white-space: nowrap;
 }
 
-.provider-filter-row button.active {
-  border-color: #14b8a6;
-  background: #14b8a6;
-  color: #ffffff;
+.alert-close-btn {
+  background: transparent;
+  border: none;
+  color: #2e7d32;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
 }
 
-.provider-job-list {
+/* SEARCH ROW */
+.upwork-search-row {
+  margin-top: 0.25rem;
+}
+
+.upwork-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.upwork-search-box:focus-within {
+  border-color: #10B981;
+}
+
+.upwork-search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+/* JOBS YOU MIGHT LIKE */
+.upwork-jobs-section {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
 }
 
-.provider-job-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 210px;
-  gap: 1rem;
-  align-items: center;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
-
-.provider-job-row:hover {
-  border-color: #14b8a6;
-}
-
-.provider-job-meta,
-.provider-job-details {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  flex-wrap: wrap;
-}
-
-.provider-job-meta span {
-  border: 1px solid #dbeafe;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-radius: 999px;
-  padding: 0.25rem 0.55rem;
-  font-size: 0.7rem;
+.jobs-section-header h2 {
+  font-size: 1.4rem;
   font-weight: 800;
-}
-
-.provider-job-meta span.verified {
-  border-color: #bbf7d0;
-  background: #f0fdf4;
-  color: #15803d;
-}
-
-.provider-job-main h2 {
-  margin: 0.55rem 0 0.3rem;
   color: #0f172a;
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: 0;
-}
-
-.provider-job-main p {
   margin: 0;
-  color: #64748b;
-  line-height: 1.5;
-  font-size: 0.88rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
-.provider-job-details {
-  margin-top: 0.75rem;
-  color: #64748b;
-  font-size: 0.78rem;
-  font-weight: 650;
-}
-
-.provider-job-details span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.provider-job-details .icon {
-  width: 14px;
-  height: 14px;
-}
-
-.provider-job-side {
+.upwork-feed-tabs-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #e2e8f0;
+  padding-bottom: 0.4rem;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.provider-job-side strong {
-  color: #0f172a;
-  font-size: 1rem;
-  text-align: right;
+.feed-tab-links {
+  display: flex;
+  gap: 1.5rem;
 }
 
-.provider-job-side button {
-  min-height: 40px;
-  border: 0;
-  border-radius: 8px;
-  background: #14b8a6;
-  color: #ffffff;
-  padding: 0 0.95rem;
-  font-size: 0.84rem;
-  font-weight: 800;
+.feed-tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  padding-bottom: 0.5rem;
   cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
 }
 
-.provider-job-side button:disabled {
-  cursor: wait;
-  opacity: 0.7;
+.feed-tab-btn.active {
+  color: #0f172a;
+  font-weight: 800;
+  border-bottom: 3px solid #0f172a;
 }
 
-.provider-feed-message {
-  border: 1px dashed #cbd5e1;
+.btn-upwork-filter {
+  border: 1.5px solid #10B981;
+  background: #ffffff;
+  color: #10B981;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-upwork-filter:hover,
+.btn-upwork-filter.has-active {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+.filter-badge-dot {
+  width: 7px;
+  height: 7px;
+  background: #10B981;
+  border-radius: 50%;
+}
+
+.feed-subtext {
+  color: #64748b;
+  font-size: 0.86rem;
+  margin: 0.25rem 0 0.85rem 0;
+}
+
+/* JOB CARDS */
+.upwork-job-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.upwork-job-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.upwork-job-card:hover {
+  border-color: #10B981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.06);
+}
+
+.upwork-card-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-time-badge {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.card-quick-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.icon-action-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+}
+
+.icon-action-btn:hover,
+.icon-action-btn.saved {
+  background: #f0fdf4;
+  border-color: #10B981;
+  color: #10B981;
+}
+
+.upwork-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.upwork-card-title:hover {
+  color: #10B981;
+}
+
+.upwork-card-submeta {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.upwork-card-submeta .dot {
+  color: #cbd5e1;
+}
+
+.upwork-card-description {
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.upwork-card-description .more-link {
+  color: #10B981;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.upwork-card-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
+}
+
+.skill-pill {
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.upwork-card-client-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+  flex-wrap: wrap;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.check-verified {
+  color: #10B981;
+  font-weight: 700;
+}
+
+.feed-status-message {
+  border: 1.5px dashed #cbd5e1;
   background: #f8fafc;
   color: #64748b;
-  border-radius: 8px;
-  padding: 1.25rem;
+  border-radius: 12px;
+  padding: 2rem;
   text-align: center;
   font-weight: 700;
 }
 
-.provider-feed-message.error {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
-}
-
-.provider-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
-.provider-stat-card {
+.feed-empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 14px;
 }
 
-.provider-stat-card > span {
-  width: 42px;
-  height: 42px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  background: #f1f5f9;
-  color: #334155;
-  flex: 0 0 auto;
+.feed-empty-state span {
+  font-size: 2.5rem;
 }
 
-.provider-stat-card strong {
-  display: block;
-  color: #0f172a;
-  font-size: 1.15rem;
-  font-weight: 850;
-}
-
-.provider-stat-card p {
-  margin: 0.15rem 0 0;
-  color: #64748b;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.provider-stat-card.teal > span { background: #ccfbf1; color: #0f766e; }
-.provider-stat-card.green > span { background: #dcfce7; color: #15803d; }
-.provider-stat-card.blue > span { background: #dbeafe; color: #1d4ed8; }
-.provider-stat-card.amber > span { background: #fef3c7; color: #b45309; }
-.provider-stat-card.purple > span { background: #f3e8ff; color: #7e22ce; }
-
-.provider-performance-panel {
-  margin-top: 1rem;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.provider-performance-panel h2 {
-  margin: 0;
-  font-size: 1.05rem;
-  color: #0f172a;
-}
-
-.provider-performance-panel p {
-  margin: 0.35rem 0 1rem;
+.feed-empty-state p {
   color: #64748b;
   font-size: 0.9rem;
+  margin: 0;
 }
 
-.provider-rating-meter {
-  height: 10px;
+/* RIGHT SIDEBAR COLUMN */
+.upwork-sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.upwork-sidebar-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.user-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar-lg {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.user-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.user-tagline {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin: 0.15rem 0 0 0;
+}
+
+.complete-profile-link {
+  background: transparent;
+  border: none;
+  color: #10B981;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.progress-bar-track {
+  height: 6px;
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
 }
 
-.provider-rating-meter span {
-  display: block;
+.progress-bar-fill {
   height: 100%;
-  background: #14b8a6;
+  background: #10B981;
+  border-radius: 999px;
 }
 
-@media (max-width: 760px) {
-  .provider-feed-header {
+.sidebar-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-card-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.sidebar-card-header .chevron {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.promote-option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.promote-option-row .label {
+  color: #334155;
+  font-weight: 600;
+  display: block;
+}
+
+.promote-option-row .val {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.promote-option-row .edit-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-buy-connects {
+  width: 100%;
+  background: #ffffff;
+  color: #10B981;
+  border: 1.5px solid #10B981;
+  border-radius: 999px;
+  padding: 0.6rem;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-buy-connects:hover {
+  background: #f0fdf4;
+}
+
+.quick-links-card {
+  gap: 0.4rem;
+}
+
+.quick-link-item {
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  transition: color 0.15s;
+}
+
+.quick-link-item:hover {
+  color: #10B981;
+  text-decoration: underline;
+}
+
+/* CENTERED FILTER MODAL DIALOG (Screenshots 3 & 4) */
+.upwork-filter-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.upwork-filter-modal-card {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 580px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  padding: 1.5rem 1.75rem;
+}
+
+.upwork-filter-modal-card .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upwork-filter-modal-card .modal-header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #64748b;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-note {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0.35rem 0 1.25rem 0;
+}
+
+.modal-body-scroll {
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-right: 0.35rem;
+}
+
+.filter-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  width: 18px;
+  height: 18px;
+  accent-color: #10B981;
+  cursor: pointer;
+}
+
+.filter-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+}
+
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title-row h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.section-title-row span {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+.radio-group-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-input {
+  flex: 1;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.modal-input:focus {
+  border-color: #10B981;
+}
+
+.modal-select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.modal-select:focus {
+  border-color: #10B981;
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-modal-clear {
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-modal-clear:hover {
+  text-decoration: underline;
+}
+
+.btn-modal-apply-green {
+  background: #10B981;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.6rem;
+  font-weight: 800;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-modal-apply-green:hover {
+  background: #059669;
+}
+
+@media (max-width: 900px) {
+  .upwork-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .upwork-sidebar-column {
+    order: 2;
+  }
+}
+
+
+/* ====== Clickable Job Card Details ====== */
+.job-row-clickable-title {
+  transition: color 0.15s;
+}
+
+.provider-job-main:hover .job-row-clickable-title {
+  color: #14B8A6;
+}
+
+.view-details-pill {
+  background: #f0fdfa;
+  color: #0f766e;
+  border: 1px solid #ccfbf1;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-left: auto;
+  transition: background-color 0.2s;
+}
+
+.provider-job-main:hover .view-details-pill {
+  background: #14B8A6;
+  color: #ffffff;
+  border-color: #14B8A6;
+}
+
+/* ====== Slide-Over Job Detail Drawer Modal ====== */
+.upwork-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.upwork-modal-drawer {
+  width: 960px;
+  max-width: 92vw;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.upwork-drawer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.btn-back-arrow {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-back-arrow:hover {
+  background: #f0fdf4;
+  border-color: #10B981;
+}
+
+.upwork-external-link-btn {
+  background: transparent;
+  border: none;
+  color: #10B981;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.upwork-external-link-btn:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+.upwork-drawer-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  overflow-y: auto;
+}
+
+/* LEFT MAIN COLUMN */
+.upwork-left-column {
+  padding: 2.25rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.upwork-job-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.upwork-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.upwork-meta-line .dot {
+  color: #cbd5e1;
+}
+
+.upwork-divider {
+  border-bottom: 1px solid #e2e8f0;
+  margin: 0.4rem 0;
+}
+
+.upwork-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upwork-section h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.upwork-section .sub-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.upwork-text-block {
+  color: #334155;
+  font-size: 0.94rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.upwork-text-block.highlight {
+  background: #fefce8;
+  border-left: 3px solid #eab308;
+  padding: 0.75rem 1rem;
+  border-radius: 0 8px 8px 0;
+}
+
+.upwork-deliverables-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #334155;
+  font-size: 0.92rem;
+}
+
+.upwork-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  margin: 0.5rem 0;
+}
+
+.upwork-metric-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.upwork-metric-box .metric-icon {
+  font-size: 1.35rem;
+}
+
+.upwork-metric-box strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.upwork-metric-box small {
+  display: block;
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+
+.upwork-skills-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+}
+
+.skill-badge {
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 999px;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.upwork-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.green-text {
+  color: #10B981;
+  font-weight: 800;
+}
+
+.upgrade-membership-text {
+  color: #10B981;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  cursor: pointer;
+}
+
+/* RIGHT SIDEBAR COLUMN */
+.upwork-right-column {
+  border-left: 1px solid #e2e8f0;
+  padding: 2.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: #ffffff;
+}
+
+.upwork-notice-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  font-size: 0.84rem;
+  color: #475569;
+  display: flex;
+  gap: 0.6rem;
+  line-height: 1.45;
+}
+
+.upwork-notice-box .notice-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.learn-link {
+  color: #10B981;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-upwork-primary {
+  width: 100%;
+  background: #10B981;
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 0.8rem;
+  font-size: 0.94rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-upwork-primary:hover {
+  background: #059669;
+}
+
+.btn-upwork-primary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.btn-upwork-secondary {
+  width: 100%;
+  background: #ffffff;
+  color: #10B981;
+  font-weight: 800;
+  border: 1.5px solid #10B981;
+  border-radius: 999px;
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-upwork-secondary:hover {
+  background: #f0fdf4;
+}
+
+.btn-upwork-secondary.saved {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #10B981;
+}
+
+.upwork-flag-link {
+  background: transparent;
+  border: none;
+  color: #10B981;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0;
+  width: fit-content;
+}
+
+.upwork-flag-link:hover {
+  text-decoration: underline;
+}
+
+.upwork-connects-info {
+  font-size: 0.85rem;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.upwork-connects-info p {
+  margin: 0;
+}
+
+.upwork-client-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.upwork-client-section h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem 0;
+}
+
+.client-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #334155;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.client-check-item .check-mark {
+  color: #10B981;
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+.client-meta-text {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.client-meta-text p {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .upwork-modal-drawer {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    margin-right: 0;
+    border-radius: 0;
+  }
+  .upwork-drawer-body {
+    grid-template-columns: 1fr;
+  }
+  .upwork-right-column {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding: 1.75rem 1.5rem;
+  }
+  .upwork-left-column {
+    padding: 1.5rem;
+  }
+}
+
+/* ====== Feed Pagination (1 2 3 4 ...) ====== */
+.upwork-pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pagination-btn {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: #10B981;
+  color: #10B981;
+  background: #f0fdf4;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pagination-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pagination-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: #475569;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s;
+}
+
+.pagination-num:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.pagination-num.active {
+  background: #10B981;
+  color: #ffffff;
+  border-color: #10B981;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+/* MOBILE RESPONSIVE MEDIA QUERIES */
+@media (max-width: 900px) {
+  .upwork-dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+  .upwork-sidebar-column {
+    order: 2;
+  }
+  .upwork-main-column {
+    order: 1;
+  }
+  .upwork-hero-graphic {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .upwork-dashboard-container {
+    padding: 0.75rem !important;
+  }
+  .upwork-alert-banner {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
   }
-
-  .provider-feed-actions {
+  .alert-actions {
     width: 100%;
-    justify-content: stretch;
+    justify-content: space-between;
   }
-
-  .provider-secondary-btn {
-    flex: 1;
+  .upwork-hero-banner {
+    padding: 1.5rem 1.25rem;
   }
-
-  .provider-job-toolbar {
-    grid-template-columns: 1fr;
+  .upwork-hero-content h2 {
+    font-size: 1.15rem;
   }
-
-  .provider-job-row {
-    grid-template-columns: 1fr;
-  }
-
-  .provider-job-side {
+  .upwork-feed-tabs-row {
+    flex-direction: column;
     align-items: stretch;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 0.9rem;
+    gap: 0.75rem;
   }
-
-  .provider-job-side strong {
-    text-align: left;
+  .feed-tab-links {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 0.25rem;
   }
-
-  .provider-stats-grid {
-    grid-template-columns: 1fr;
+  .btn-upwork-filter {
+    width: 100%;
+    justify-content: center;
+  }
+  .upwork-card-topbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .upwork-drawer-drawer {
+    width: 100% !important;
   }
 }
+
+
+

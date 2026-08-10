@@ -54,21 +54,19 @@ export default function ProjectDetail({
   const mediaList = useMemo(() => {
     const list: Array<{ type: 'image' | 'video'; url: string }> = [];
     
-    // Add videos
-    const videoList = Array.isArray(project.videos) && project.videos.length > 0
-      ? project.videos
-      : (project.video ? (Array.isArray(project.video) ? project.video : [project.video]) : []);
-    videoList.forEach((v: string) => {
-      if (v) list.push({ type: 'video', url: v });
-    });
-
-    // Add images
     const images = (Array.isArray(project.images) && project.images.length > 0)
       ? project.images
       : (project.imageUrl ? [project.imageUrl] : (project.image ? [project.image] : (project.url ? [project.url] : [])));
 
     images.forEach((img: string) => {
       if (img) list.push({ type: 'image', url: img });
+    });
+
+    const videoList = Array.isArray(project.videos) && project.videos.length > 0
+      ? project.videos
+      : (project.video ? (Array.isArray(project.video) ? project.video : [project.video]) : (project.videoUrl ? [project.videoUrl] : []));
+    videoList.forEach((v: string) => {
+      if (v) list.push({ type: 'video', url: v });
     });
 
     if (list.length === 0) {

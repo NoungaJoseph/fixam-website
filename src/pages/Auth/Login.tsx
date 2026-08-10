@@ -118,9 +118,22 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
         onNavigate('otp');
         return;
       }
-      setApiError(
-        error.response?.data?.message || (isFr ? 'Téléphone ou mot de passe incorrect. Veuillez réessayer.' : 'Incorrect credentials. Please try again.')
-      );
+      const rawMsg = error.response?.data?.message || '';
+      if (isFr) {
+        if (rawMsg.toLowerCase().includes('invalid credentials') || rawMsg.toLowerCase().includes('invalid phone or password')) {
+          setApiError('Identifiants incorrects. Veuillez réessayer.');
+        } else if (rawMsg.toLowerCase().includes('user not found')) {
+          setApiError('Aucun utilisateur trouvé avec ces identifiants.');
+        } else if (rawMsg.toLowerCase().includes('blocked') || rawMsg.toLowerCase().includes('suspended')) {
+          setApiError('Ce compte a été suspendu. Veuillez contacter le support.');
+        } else if (rawMsg) {
+          setApiError(rawMsg);
+        } else {
+          setApiError('Téléphone ou mot de passe incorrect. Veuillez réessayer.');
+        }
+      } else {
+        setApiError(rawMsg || 'Incorrect credentials. Please try again.');
+      }
     }
   };
 

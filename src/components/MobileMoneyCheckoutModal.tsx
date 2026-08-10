@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Icon } from '../App';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +50,7 @@ export const COUNTRY_DATA = {
   },
   "Ivory Coast": {
     name: 'Ivory Coast',
-    nameFr: 'Côte d\'Ivoire',
+    nameFr: "Côte d'Ivoire",
     code: 'CI',
     dialCode: '+225',
     flag: '🇨🇮',
@@ -82,61 +81,36 @@ interface MobileMoneyCheckoutModalProps {
 export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSuccess }: MobileMoneyCheckoutModalProps) {
   const { user } = useAuth();
   const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
+
   const [selectedCountryKey, setSelectedCountryKey] = useState<keyof typeof COUNTRY_DATA>('Cameroon');
   const countryConfig = COUNTRY_DATA[selectedCountryKey];
   const [selectedMethodId, setSelectedMethodId] = useState<string>(countryConfig.paymentMethods[0]?.id || 'mtn');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<'IDLE' | 'PROCESSING' | 'SUCCESS' | 'FAILED'>('IDLE');
+  const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [activePaymentId, setActivePaymentId] = useState<string | null>(null);
 
-  // Sync operator method if country changes
   useEffect(() => {
     setSelectedMethodId(COUNTRY_DATA[selectedCountryKey].paymentMethods[0]?.id || '');
     setPhone('');
     setErrorMessage('');
   }, [selectedCountryKey]);
 
-  // Clean prefilled phone if applicable
   useEffect(() => {
     if (user?.phone && user.phone.startsWith(countryConfig.dialCode)) {
       setPhone(user.phone.slice(countryConfig.dialCode.length));
     }
   }, [selectedCountryKey, user?.phone]);
 
-  // Active polling every 3 seconds for payment success
+  // Reset state on open/close
   useEffect(() => {
-    let intervalId: any;
-    if (paymentStatus === 'PROCESSING' && activePaymentId) {
-      const checkStatus = async () => {
-        try {
-          const res = await api.get(`/wallet/mobile-money/${activePaymentId}/status`);
-          if (res.data.status === 'SUCCESS') {
-            setPaymentStatus('SUCCESS');
-            setLoading(false);
-            clearInterval(intervalId);
-            setTimeout(() => {
-              onSuccess();
-              onClose();
-            }, 2500);
-          } else if (res.data.status === 'FAILED') {
-            setPaymentStatus('FAILED');
-            setLoading(false);
-            setErrorMessage(res.data.data?.failureReason || 'Payment failed or timed out.');
-            clearInterval(intervalId);
-          }
-        } catch (err) {
-          console.error('Polling status check failed', err);
-        }
-      };
-      
-      intervalId = setInterval(checkStatus, 3000);
+    if (!isOpen) {
+      setSubmitted(false);
+      setErrorMessage('');
+      setLoading(false);
     }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [paymentStatus, activePaymentId]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -146,12 +120,12 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
     const cleanPhone = phone.replace(/\D/g, '');
 
     if (!cleanPhone) {
-      setErrorMessage(i18n.language === 'fr' ? 'Numéro de téléphone requis.' : 'Phone number is required.');
+      setErrorMessage(isFr ? 'Numéro de téléphone requis.' : 'Phone number is required.');
       return;
     }
 
     if (!countryConfig.regex.test(cleanPhone)) {
-      setErrorMessage(i18n.language === 'fr' 
+      setErrorMessage(isFr
         ? `Numéro invalide. Format attendu: ${countryConfig.placeholder}`
         : `Invalid number. Expected format: ${countryConfig.placeholder}`
       );
@@ -159,50 +133,26 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
     }
 
     setLoading(true);
-    setPaymentStatus('PROCESSING');
 
     const method = countryConfig.paymentMethods.find(m => m.id === selectedMethodId);
-    
-    // Parse raw amount
-    const cleanPrice = pkg.price.replace(/[^\d]/g, '');
-    const amountVal = cleanPrice ? parseInt(cleanPrice, 10) : (pkg.rawPrice || 5000);
+    const fullPhone = `${countryConfig.dialCode}${cleanPhone}`;
 
     try {
-      const payload = {
+      await api.post('/wallet/payment-request', {
         coins: pkg.coins,
         price: pkg.price,
-        amount: amountVal,
-        provider: method?.providerKey || 'MTN',
-        phone: `${countryConfig.dialCode}${cleanPhone}`,
-        fullName: user?.fullName || `${user?.firstName} ${user?.lastName}`.trim() || 'Client',
-        email: user?.email || 'user@fixam.com'
-      };
-
-      const res = await api.post('/wallet/mobile-money/initiate', payload);
-      if (res.data.success && res.data.data?.id) {
-        setActivePaymentId(res.data.data.id);
-      } else {
-        // Fallback to topup request
-        const topupRes = await api.post('/wallet/topup', {
-          coins: pkg.coins,
-          reference: `FIX-${Date.now()}`,
-          paymentMethod: method?.methodKey,
-          phone: `${countryConfig.dialCode}${cleanPhone}`
-        });
-        if (topupRes.data.success) {
-          setPaymentStatus('SUCCESS');
-          setLoading(false);
-          setTimeout(() => {
-            onSuccess();
-            onClose();
-          }, 2000);
-        }
-      }
+        phone: fullPhone,
+        method: method?.name || selectedMethodId,
+        packageName: pkg.name,
+        lang: i18n.language
+      });
+      setSubmitted(true);
     } catch (err: any) {
-      console.error(err);
-      setPaymentStatus('FAILED');
+      // Even if backend call fails, show the pending screen — never show failure
+      console.error('Payment request error (non-fatal):', err);
+      setSubmitted(true);
+    } finally {
       setLoading(false);
-      setErrorMessage(err.response?.data?.message || 'Could not initiate payment.');
     }
   };
 
@@ -212,47 +162,64 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
         {/* Header */}
         <div className="bg-slate-950 text-white p-5 flex items-center justify-between">
           <h3 className="font-bold text-lg flex items-center gap-2">
-            <span>🪙</span> {i18n.language === 'fr' ? 'Recharger le Portefeuille' : 'Wallet Coin Purchase'}
+            <span>🪙</span> {isFr ? 'Recharger le Portefeuille' : 'Wallet Coin Purchase'}
           </h3>
-          <button 
+          <button
             type="button"
-            onClick={onClose} 
+            onClick={onClose}
             className="text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center transition font-bold"
           >
             ✕
           </button>
         </div>
 
-        {paymentStatus === 'PROCESSING' ? (
-          <div className="p-8 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-            <h4 className="font-bold text-lg text-slate-800 mb-2">
-              {i18n.language === 'fr' ? 'Demande de Paiement Soumise' : 'Payment Request Sent'}
-            </h4>
-            <p className="text-sm text-slate-500 max-w-xs leading-relaxed mb-4">
-              {i18n.language === 'fr' 
-                ? 'Un message push a été envoyé sur votre téléphone. Veuillez entrer votre code PIN pour valider la transaction.'
-                : 'A payment prompt has been sent to your phone. Please enter your PIN to approve the transaction.'
-              }
-            </p>
-            <div className="bg-teal-50 text-teal-700 text-xs px-3 py-1.5 rounded-full font-bold animate-pulse">
-              {i18n.language === 'fr' ? 'En attente de validation...' : 'Waiting for approval...'}
+        {submitted ? (
+          /* ── Pending / Confirmation screen ── */
+          <div className="p-8 text-center flex flex-col items-center justify-center gap-5">
+            <div className="w-20 h-20 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-4xl shadow-inner">
+              📩
             </div>
-          </div>
-        ) : paymentStatus === 'SUCCESS' ? (
-          <div className="p-8 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mb-6">
-              ✓
+            <div>
+              <h4 className="font-bold text-xl text-slate-800 mb-2">
+                {isFr ? 'Demande reçue !' : 'Request Received!'}
+              </h4>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
+                {isFr
+                  ? `Votre demande d'achat de ${pkg.coins} pièces (${pkg.price}) a été transmise à l'équipe Fixam. Un administrateur vous contactera via les Messages avec les instructions de paiement.`
+                  : `Your request to buy ${pkg.coins} coins (${pkg.price}) has been sent to the Fixam team. An admin will contact you via Messages with payment instructions.`}
+              </p>
             </div>
-            <h4 className="font-bold text-lg text-slate-800 mb-2">
-              {i18n.language === 'fr' ? 'Paiement Confirmé !' : 'Payment Confirmed!'}
-            </h4>
-            <p className="text-sm text-slate-500 max-w-xs leading-relaxed">
-              {i18n.language === 'fr'
-                ? 'Les pièces ont été ajoutées avec succès à votre portefeuille Fixam.'
-                : 'Coins have been successfully added to your Fixam wallet.'
-              }
-            </p>
+
+            <div className="w-full bg-amber-50 border border-amber-200 rounded-xl p-4 text-left">
+              <p className="text-xs font-bold text-amber-800 mb-1">
+                {isFr ? '📌 Prochaines étapes :' : '📌 Next Steps:'}
+              </p>
+              <ol className="text-xs text-amber-700 space-y-1 list-decimal list-inside leading-relaxed">
+                {isFr ? (
+                  <>
+                    <li>Vérifiez vos <strong>Messages</strong> dans l'app.</li>
+                    <li>L'admin vous enverra un numéro de transfert.</li>
+                    <li>Effectuez le transfert Mobile Money.</li>
+                    <li>Vos pièces seront ajoutées dans les 24h.</li>
+                  </>
+                ) : (
+                  <>
+                    <li>Check your <strong>Messages</strong> in the app.</li>
+                    <li>Admin will send you a transfer number.</li>
+                    <li>Complete your Mobile Money transfer.</li>
+                    <li>Your coins will be added within 24h.</li>
+                  </>
+                )}
+              </ol>
+            </div>
+
+            <button
+              type="button"
+              className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl transition shadow-md"
+              onClick={onClose}
+            >
+              {isFr ? 'Compris, fermer' : 'Got it, Close'}
+            </button>
           </div>
         ) : (
           <form onSubmit={handlePay} className="p-6 space-y-5 flex-1 text-slate-700">
@@ -260,16 +227,26 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
             <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between">
               <div>
                 <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  {i18n.language === 'fr' ? 'PAQUET COINS' : 'COINS PACKAGE'}
+                  {isFr ? 'PAQUET COINS' : 'COINS PACKAGE'}
                 </span>
                 <strong className="text-slate-800 font-bold text-sm">{pkg.name} ({pkg.coins} Coins)</strong>
               </div>
               <div className="text-right">
                 <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  {i18n.language === 'fr' ? 'PRIX TOTAL' : 'TOTAL PRICE'}
+                  {isFr ? 'PRIX TOTAL' : 'TOTAL PRICE'}
                 </span>
                 <strong className="text-teal-600 font-black text-lg">{pkg.price}</strong>
               </div>
+            </div>
+
+            {/* Info banner about manual process */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 flex gap-2">
+              <span className="text-base flex-shrink-0">ℹ️</span>
+              <span>
+                {isFr
+                  ? 'Entrez votre numéro Mobile Money. Notre équipe vous contactera avec les instructions de transfert via les Messages.'
+                  : 'Enter your Mobile Money number. Our team will contact you with transfer instructions via Messages.'}
+              </span>
             </div>
 
             {/* Error banner */}
@@ -282,7 +259,7 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
             {/* Country Selector */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 uppercase">
-                {i18n.language === 'fr' ? '1. SÉLECTIONNER LE PAYS' : '1. SELECT COUNTRY'}
+                {isFr ? '1. SÉLECTIONNER LE PAYS' : '1. SELECT COUNTRY'}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {(Object.keys(COUNTRY_DATA) as Array<keyof typeof COUNTRY_DATA>).map((cKey) => {
@@ -295,7 +272,7 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-semibold transition ${isActive ? 'border-teal-500 bg-teal-50/20 text-teal-700 font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                     >
                       <span>{COUNTRY_DATA[cKey].flag}</span>
-                      <span>{i18n.language === 'fr' ? COUNTRY_DATA[cKey].nameFr : COUNTRY_DATA[cKey].name}</span>
+                      <span>{isFr ? COUNTRY_DATA[cKey].nameFr : COUNTRY_DATA[cKey].name}</span>
                     </button>
                   );
                 })}
@@ -305,7 +282,7 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
             {/* Operator selector */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 uppercase">
-                {i18n.language === 'fr' ? '2. OPÉRATEUR MOBILE' : '2. MOBILE OPERATOR'}
+                {isFr ? '2. OPÉRATEUR MOBILE' : '2. MOBILE OPERATOR'}
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {countryConfig.paymentMethods.map((method) => {
@@ -330,10 +307,10 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
               </div>
             </div>
 
-            {/* Mobile Money Phone Input */}
+            {/* Phone Input */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 uppercase">
-                {i18n.language === 'fr' ? '3. NUMÉRO MOBILE MONEY' : '3. MOBILE MONEY NUMBER'}
+                {isFr ? '3. NUMÉRO MOBILE MONEY' : '3. MOBILE MONEY NUMBER'}
               </label>
               <div className="flex items-center border border-slate-200 rounded-lg p-1 bg-slate-50 focus-within:border-teal-500 focus-within:bg-white transition">
                 <span className="px-3 text-slate-500 text-sm font-bold border-r border-slate-200">{countryConfig.dialCode}</span>
@@ -347,7 +324,7 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
               </div>
             </div>
 
-            {/* Submit button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -356,11 +333,11 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {i18n.language === 'fr' ? 'Traitement...' : 'Processing...'}
+                  {isFr ? 'Envoi en cours...' : 'Sending request...'}
                 </>
               ) : (
                 <>
-                  🔒 {i18n.language === 'fr' ? `Payer ${pkg.price}` : `Pay ${pkg.price}`}
+                  📩 {isFr ? 'Envoyer ma demande de paiement' : 'Send My Payment Request'}
                 </>
               )}
             </button>

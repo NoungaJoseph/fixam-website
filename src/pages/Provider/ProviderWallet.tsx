@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { Icon } from '../../App';
+import MobileMoneyCheckoutModal from '../../components/MobileMoneyCheckoutModal';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ProviderWallet() {
-  const [momoNumber, setMomoNumber] = useState('677890123');
-  const [provider, setProvider] = useState('MTN');
   const [transactions, setTransactions] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>({ balance: 0, thisMonthEarned: 0 });
+  const [walletBalance, setWalletBalance] = useState(0);
+  const { refreshUser } = useAuth();
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<any>({ name: '', coins: 0, price: '' });
 
   useEffect(() => {
     const fetchWallet = async () => {
@@ -15,146 +18,127 @@ export default function ProviderWallet() {
           api.get('/wallet/balance'),
           api.get('/wallet/transactions')
         ]);
-        setStats(balRes.data?.data || { balance: 0, thisMonthEarned: 0 });
-        setTransactions(txRes.data?.transactions || []);
+        const bal = balRes.data?.data?.balance ?? balRes.data?.balance ?? 0;
+        setWalletBalance(bal);
+        setTransactions(txRes.data?.data || txRes.data?.transactions || []);
       } catch (err) {
-        console.error("Failed to fetch wallet info", err);
+        console.error('Failed to fetch wallet info', err);
       }
     };
     fetchWallet();
   }, []);
 
-  const handleSaveMomo = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert('Mobile Money details saved successfully!');
+  const coinPackages = [
+    { name: 'Starter Pack', coins: 10, bonus: 0, price: '5,000 XAF', popular: false },
+    { name: 'Standard Pack', coins: 20, bonus: 2, price: '10,000 XAF', popular: true },
+    { name: 'Popular Pack', coins: 30, bonus: 3, price: '15,000 XAF', popular: false },
+    { name: 'Growth Pack', coins: 40, bonus: 4, price: '20,000 XAF', popular: false },
+    { name: 'Premium Pack', coins: 50, bonus: 5, price: '25,000 XAF', popular: false }
+  ];
+
+  const handleBuyInitiate = (pkg: typeof coinPackages[0]) => {
+    setSelectedPkg({
+      name: pkg.name,
+      coins: pkg.coins + pkg.bonus,
+      price: pkg.price
+    });
+    setIsCheckoutOpen(true);
   };
 
   return (
-    <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800">Earnings & Payouts</h2>
-        <p className="text-sm text-gray-500 mt-1">Track your income, view transaction history, and configure Mobile Money payouts.</p>
-      </div>
+    <div className="wallet-referrals-tab-wrapper animate-fade-in" style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '1.5rem' }}>
 
-      {/* Metrics Row */}
-      <div className="dash-metrics-grid">
-        <div className="metric-card-premium m-coins">
-          <div className="metric-card-header">
-            <span>Available Balance</span>
+      {/* Balance Card */}
+      <div className="dash-metrics-grid" style={{ padding: '0 0.5rem', display: 'flex' }}>
+        <div className="metric-card-premium m-coins" style={{ maxWidth: '300px' }}>
+          <div className="metric-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Coins Balance</span>
             <div className="metric-icon-box"><Icon name="wallet" /></div>
           </div>
-          <strong className="metric-big-num">{stats.balance?.toLocaleString() || 0} Coins</strong>
-          <span className="metric-card-desc">✓ Checked from cash receipts</span>
-        </div>
-
-        <div className="metric-card-premium m-active">
-          <div className="metric-card-header">
-            <span>Earned This Month</span>
-            <div className="metric-icon-box"><Icon name="briefcase" /></div>
-          </div>
-          <strong className="metric-big-num">{stats.thisMonthSpent?.toLocaleString() || 0} Coins</strong>
-          <span className="metric-card-desc">Processing next Monday</span>
+          <strong className="metric-big-num">{walletBalance.toLocaleString()}</strong>
+          <span className="metric-card-desc">Available Coins</span>
         </div>
       </div>
 
-      {/* Two Column Grid */}
-      <div className="grid lg:grid-cols-5 gap-8">
-        
-        {/* LEFT Column: Transactions (3 cols) */}
-        <div className="lg:col-span-3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="text-lg">📜</span>
-            <h3 className="text-lg font-bold text-gray-800">Transaction History</h3>
-          </div>
+      <div className="wallet-layout-vertical" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', padding: '0 0.5rem' }}>
 
-          <div className="transactions-table-wrapper">
-            <table className="transactions-table w-full">
-              <thead>
-                <tr className="border-b border-gray-100 text-left">
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Description</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Type</th>
-                  <th className="pb-3 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-55">
-                {transactions.length > 0 ? (
-                  transactions.map((tx) => {
-                    const isEarn = tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0;
-                    return (
-                      <tr key={tx.id || tx._id}>
-                        <td className="py-4 text-sm text-gray-500">
-                          {new Date(tx.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="py-4 text-sm font-semibold text-gray-800">
-                          {tx.description || tx.reason || 'Transaction'}
-                        </td>
-                        <td className="py-4">
-                          <span className={`tx-type ${isEarn ? 'earn' : 'spend'}`}>
-                            {isEarn ? 'Earn' : 'Spend'}
+        {/* Coin Packages Carousel */}
+        <div className="coin-packages-carousel-container" style={{ width: '100%' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A' }}>
+              Buy Coins Package
+            </h2>
+            <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+              Top up your wallet with coins to unlock premium job leads and boost your profile visibility.
+            </p>
+          </div>
+          <div className="coin-packages-carousel" style={{ display: 'flex', overflowX: 'auto', gap: '1rem', paddingBottom: '1rem', paddingTop: '1rem', scrollbarWidth: 'thin' }}>
+            {coinPackages.map((pkg, idx) => (
+              <div className={`package-card ${pkg.popular ? 'popular' : ''}`} key={idx} style={{ minWidth: '240px', flex: '0 0 auto' }}>
+                {pkg.popular && <span className="popular-badge">Most Popular</span>}
+                <h3>{pkg.name}</h3>
+                <div className="package-coins">
+                  <strong>{pkg.coins}</strong> <span>Coins</span>
+                </div>
+                {pkg.bonus > 0 && <span className="text-green-500 font-bold text-sm block mb-1">+{pkg.bonus} Bonus Coins</span>}
+                <span className="package-price">{pkg.price}</span>
+                <button className="btn-buy-package" onClick={() => handleBuyInitiate(pkg)}>
+                  Buy Package
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <MobileMoneyCheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          pkg={selectedPkg}
+          onSuccess={async () => {
+            await refreshUser();
+            const balRes = await api.get('/wallet/balance');
+            const bal = balRes.data?.data?.balance ?? balRes.data?.balance ?? 0;
+            setWalletBalance(bal);
+          }}
+        />
+
+        {/* Transaction History */}
+        <div className="wallet-left-column" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div className="transactions-panel-transparent" style={{ marginTop: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginBottom: '1rem' }}>Transaction History</h2>
+            <div className="transactions-table-wrapper" style={{ overflowX: 'auto' }}>
+              <table className="transactions-table" style={{ width: '100%', minWidth: '500px', backgroundColor: 'transparent' }}>
+                <thead>
+                  <tr style={{ borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>
+                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>Date</th>
+                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>Description</th>
+                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>Type</th>
+                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.length > 0 ? (
+                    transactions.map((tx) => (
+                      <tr key={tx.id || tx._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '1rem 0.5rem', color: '#334155' }}>{new Date(tx.createdAt).toLocaleDateString()}</td>
+                        <td style={{ padding: '1rem 0.5rem', color: '#334155', fontWeight: 500 }}>{tx.description || tx.reason || 'Transaction'}</td>
+                        <td style={{ padding: '1rem 0.5rem' }}>
+                          <span className={`tx-type ${(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? 'earn' : 'spend'}`}>
+                            {(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? 'Earn' : 'Spend'}
                           </span>
                         </td>
-                        <td className={`py-4 text-sm font-black text-right ${isEarn ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
+                        <td style={{ padding: '1rem 0.5rem', color: '#0F172A', fontWeight: 700 }}>
                           {tx.amount > 0 ? `+${tx.amount}` : tx.amount} coins
                         </td>
                       </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="py-8 text-center text-gray-400 font-medium">
-                      No recent transactions.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* RIGHT Column: MoMo Payout Setup (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg">⚙️</span>
-            <h3 className="text-lg font-bold text-gray-800">Payout Configuration</h3>
-          </div>
-          <p className="text-xs text-gray-400 leading-relaxed mb-6">
-            Configure your Mobile Money account details to enable automated weekly earnings payouts.
-          </p>
-
-          <form onSubmit={handleSaveMomo} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">MOMO Provider</label>
-              <select
-                value={provider}
-                onChange={(e) => setProvider(e.target.value)}
-                className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition bg-white"
-              >
-                <option value="MTN">MTN Mobile Money</option>
-                <option value="Orange">Orange Money</option>
-              </select>
+                    ))
+                  ) : (
+                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: '#94A3B8' }}>No recent transactions.</td></tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">Mobile Wallet Number</label>
-              <input
-                type="tel"
-                value={momoNumber}
-                onChange={(e) => setMomoNumber(e.target.value)}
-                className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition"
-                placeholder="6xxxxxxxx"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full h-11 bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold rounded-xl transition shadow-sm mt-2"
-            >
-              Save Payout Info
-            </button>
-          </form>
+          </div>
         </div>
 
       </div>

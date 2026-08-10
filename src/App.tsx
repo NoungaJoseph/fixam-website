@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
@@ -26,15 +26,20 @@ import VerificationPage from './pages/Client/VerificationPage'
 import ClientDashboard from './pages/Client/ClientDashboard'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 import ProjectDetail from './pages/Client/ProjectDetail'
+import BookingDetail from './pages/Client/BookingDetail'
 
 // Provider Subpages
 import MyJobs from './pages/Provider/MyJobs'
 import JobLeads from './pages/Provider/JobLeads'
 import ProviderWallet from './pages/Provider/ProviderWallet'
 import ProviderReviews from './pages/Provider/ProviderReviews'
-// Removed ProfileSettings import
+import ProfileSettings from './pages/Provider/ProfileSettings'
+import ProviderProfile from './pages/Provider/ProviderProfile'
+import PostProject from './pages/Provider/PostProject'
 import ProviderSupport from './pages/Provider/ProviderSupport'
 import ProviderDashboard from './pages/Provider/ProviderDashboard'
+import BoostProfile from './pages/Provider/BoostProfile'
+
 
 // Public landing pages
 import Home from './pages/Home'
@@ -56,7 +61,6 @@ import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
-import BookingDetail from './pages/Client/BookingDetail'
 
 import './App.css'
 import './marketplace.css'
@@ -252,25 +256,30 @@ function App() {
     setShowOnboarding(false);
   };
   
-  const [userRole, setUserRole] = useState<'client' | 'pro'>(
-    user?.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client'
-  );
+  const [userRole, setUserRole] = useState<'client' | 'pro'>(() => {
+    const savedRole = localStorage.getItem('fixam_user_role');
+    if (savedRole === 'client' || savedRole === 'pro') return savedRole;
+    return user?.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client';
+  });
+  // Track whether the role was explicitly set by the user (vs derived from server)
+  const roleManuallySetRef = useRef(false);
 
   const handleRoleSwitch = async (newRole: 'client' | 'pro') => {
+    roleManuallySetRef.current = true;
+    setUserRole(newRole);
+    localStorage.setItem('fixam_user_role', newRole);
     try {
       const mode = newRole === 'pro' ? 'WORK' : 'PERSONAL';
-      const response = await api.put('/users/profile', { profileMode: mode });
-      if (response.data.success) {
-        setUserRole(newRole);
-        await refreshUser();
-      }
+      await api.put('/users/profile', { profileMode: mode }).catch(() => null);
+      if (refreshUser) await refreshUser().catch(() => null);
     } catch (err: any) {
-      console.error('Failed to switch role', err);
-      alert(err.response?.data?.message || 'Could not switch role. Please try again.');
+      console.warn('Switch role sync notice:', err);
+    } finally {
+      setTimeout(() => { roleManuallySetRef.current = false; }, 3000);
     }
   };
 
-  // Enforce auth
+  // Enforce auth + sync role from server (but not when user just manually switched)
   useEffect(() => {
     if (!isLoading) {
       if (page === 'dashboard' && !isLoggedIn) {
@@ -278,8 +287,14 @@ function App() {
       } else if (isLoggedIn && (page === 'login' || page === 'register' || page === 'otp')) {
         setPage('dashboard');
       }
-      if (user) {
-        setUserRole(user.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client');
+      // Only sync role from server data if user didn't just manually switch
+      if (user && !roleManuallySetRef.current) {
+        const savedRole = localStorage.getItem('fixam_user_role');
+        if (savedRole === 'client' || savedRole === 'pro') {
+          setUserRole(savedRole);
+        } else {
+          setUserRole(user.providerProfile?.profileMode === 'WORK' ? 'pro' : 'client');
+        }
       }
     }
   }, [page, isLoggedIn, isLoading, user]);
@@ -318,11 +333,11 @@ function App() {
 
       const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
       const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
-      if (validPages.includes(hash as Page)) {
+      if (page !== 'dashboard' && validPages.includes(hash as Page)) {
         setPage(hash as Page);
-      } else if (validPages.includes(pathPage as Page)) {
+      } else if (page !== 'dashboard' && validPages.includes(pathPage as Page)) {
         setPage(pathPage as Page);
-      } else if (!hash) {
+      } else if (!hash && page !== 'dashboard') {
         const token = localStorage.getItem('fixam_token');
         setPage(token ? 'dashboard' : 'home');
       }
@@ -1207,7 +1222,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     if (activeTab === 'Dashboard') {
       window.history.replaceState(null, '', window.location.pathname);
     } else {
-      window.location.hash = activeTab.toLowerCase().replace(/\s+/g, '-').replace('&', 'and');
+      window.history.replaceState(null, '', window.location.pathname + '#tab-' + activeTab.toLowerCase().replace(/\s+/g, '-').replace('&', 'and'));
     }
   }, [activeTab]);
 
@@ -1282,7 +1297,16 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   const catScrollRef = useRef<HTMLDivElement>(null);
   const [localLivePros, setLocalLivePros] = useState<any[]>([]);
-  const displayedPros = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : []);
+  const displayedPros = useMemo(() => {
+    const rawList = localLivePros.length > 0 ? localLivePros : (livePros && livePros.length > 0 ? livePros : []);
+    const currentUserId = user?.id || '';
+    const currentProviderId = user?.providerProfile?.id || '';
+    return rawList.filter((pro: any) => {
+      const proUserId = pro.originalData?.userId || pro.originalData?.user?.id || pro.originalData?.id || pro.userId || pro.id;
+      const proId = pro.originalData?.id || pro.id;
+      return proUserId !== currentUserId && proId !== currentProviderId;
+    });
+  }, [localLivePros, livePros, user]);
 
   // Client-specific interactive state hooks
   // Client-specific interactive state hooks
@@ -1501,27 +1525,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
               <Icon name="menu" />
             </button>
-            {/* Live Ticker instead of Search bar */}
-            <div className="header-news-ticker">
-              <span className="ticker-static-badge">Live Scores</span>
-              <div className="ticker-scroll-container">
-                <div className="ticker-marquee-track">
-                  {tickerItems.map((item, index) => (
-                    <span className="ticker-track-item" key={index}>
-                      <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
-                      <span>{item.text}</span>
-                    </span>
-                  ))}
-                  {/* Duplicate track items to make the marquee transition seamless */}
-                  {tickerItems.map((item, index) => (
-                    <span className="ticker-track-item" key={`dup-${index}`}>
-                      <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
-                      <span>{item.text}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <div style={{ flex: 1 }} />
 
             <div className="actions-right-dash">
               <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
@@ -1596,6 +1600,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 setActiveTab={setActiveTab}
                 setActiveChatUser={setActiveChatUser}
               />
+            ) : selectedBooking ? (
+              <BookingDetail
+                selectedBooking={selectedBooking}
+                setSelectedBooking={setSelectedBooking}
+                setActiveTab={setActiveTab}
+                setActiveChatUser={setActiveChatUser}
+              />
             ) : (
               <>
                 {activeTab === 'Dashboard' && (
@@ -1603,6 +1614,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       setActiveTab={setActiveTab}
                       setSelectedProvider={setSelectedProvider}
                       setSelectedProject={setSelectedProject}
+                      setSelectedBooking={setSelectedBooking}
                       services={services}
                       displayedPros={displayedPros}
                       clientBookings={clientBookings}
@@ -1620,6 +1632,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setClientTasks={setClientTasks}
                     setActiveTab={setActiveTab} 
                     setActiveChatUser={setActiveChatUser} 
+                    setSelectedBooking={setSelectedBooking}
                   />
                 )}
                 {activeTab === 'My Tasks' && (
@@ -1629,6 +1642,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab} 
                     walletBalance={walletBalance}
                     clientBookings={clientBookings}
+                    setSelectedBooking={setSelectedBooking}
                   />
                 )}
                 {activeTab === 'Saved Providers' && (
@@ -1711,23 +1725,39 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   // Fallback / Pro Dashboard (integrated with the premium responsive shell)
   const providerNavItems = [
     { name: 'Dashboard', icon: 'home' as IconName },
+    { name: 'Post a Project', icon: 'wrench' as IconName },
     { name: 'My Jobs', icon: 'briefcase' as IconName },
     { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-    { name: 'Job Leads', icon: 'search' as IconName },
-    { name: 'My Stats', icon: 'chart-bar' as IconName },
+    { name: 'Notifications', icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
+    { name: 'My Stats', icon: 'chart' as IconName },
     { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', icon: 'star' as IconName },
-    { name: 'Career Pathways', icon: 'briefcase' as IconName },
-    { name: 'Settings', icon: 'user' as IconName },
+    { name: 'My Profile', icon: 'user' as IconName },
+    { name: 'Settings', icon: 'wrench' as IconName },
     { name: 'Support', icon: 'message' as IconName }
   ];
+
+  const proNewsMessages = [
+    '📢 FIXAM UPDATE: Earn 50 bonus coins on your first 3 completed jobs this week!',
+    '⚡ DIRECT CONTRACTS: Low 5% service fee now active for bringing your own clients.',
+    '💡 PRO TIP: Complete 100% of your profile details to rank higher on client search results.',
+    '🎉 NEW FEATURE: Filter jobs instantly by Remote Only or On-Site locations in real time.',
+    '🔒 VERIFICATION: Get verified today to unlock high-budget client projects.'
+  ];
+
+  const [proNewsIndex, setProNewsIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProNewsIndex((prev) => (prev + 1) % proNewsMessages.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [proNewsMessages.length]);
 
   const handleNavClick = (itemName: string) => {
     setIsSidebarOpen(false);
     if (itemName === 'Log Out') {
       onNavigate('home');
-    } else if (itemName === 'Career Pathways') {
-      onNavigate('career_pathways');
     } else {
       setActiveTab(itemName);
     }
@@ -1748,7 +1778,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           <div 
             className="user-card-new" 
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-            onClick={() => handleNavClick(userRole === 'pro' ? 'Settings' : 'My Profile')}
+            onClick={() => handleNavClick(userRole === 'pro' ? 'My Profile' : 'My Profile')}
           >
             <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
             {!isSidebarCollapsed && (
@@ -1806,82 +1836,21 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
       {/* Main Dashboard Area */}
       <section className="dash-main-new">
-        <header className="dash-header-premium">
+        <header className="dash-header-premium" style={{ gap: '1rem' }}>
           <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
             <Icon name="menu" />
           </button>
-          {/* Live Ticker */}
-          <div className="header-news-ticker">
-            <span className="ticker-static-badge">Live Scores</span>
-            <div className="ticker-scroll-container">
-              <div className="ticker-marquee-track">
-                {tickerItems.map((item, index) => (
-                  <span className="ticker-track-item" key={index}>
-                    <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
-                    <span>{item.text}</span>
-                  </span>
-                ))}
-                {tickerItems.map((item, index) => (
-                  <span className="ticker-track-item" key={`dup-${index}`}>
-                    <span className={`ticker-item-badge ${item.isNews ? 'news' : ''}`}>{item.badgeText}</span>
-                    <span>{item.text}</span>
-                  </span>
-                ))}
-              </div>
+
+          {/* Animated Latest News & Updates Ticker */}
+          <div className="header-news-ticker-slider" style={{ flex: 1, margin: '0 0.5rem' }}>
+            <div className="ticker-slider-icon">📢</div>
+            <div className="ticker-slider-content">
+              <span className="ticker-slider-text" key={proNewsIndex}>
+                {proNewsMessages[proNewsIndex]}
+              </span>
             </div>
           </div>
-
-          <div className="actions-right-dash">
-            <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
-              <Icon name="chat" />
-              {unreadMessagesCount > 0 && <span className="badge-indicator">{unreadMessagesCount}</span>}
-            </button>
-            <button className="icon-btn-dash" onClick={() => setActiveTab('Notifications')} aria-label="Notifications">
-              <Icon name="bell" />
-              {unreadNotificationsCount > 0 && <span className="badge-indicator">{unreadNotificationsCount}</span>}
-            </button>
-
-
-              <div className="relative profile-dropdown-container">
-                <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
-                  <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="Profile" />
-                  <div className="profile-details-dash">
-                    <span className="profile-name-dash">
-                      {user?.firstName || 'User'}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem', transform: isProfileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </span>
-                    <span className="profile-role-dash">{userRole === 'pro' ? 'Provider' : 'Client'}</span>
-                  </div>
-                </button>
-                {isProfileDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
-                    {onRoleChange && (
-                      <button 
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                        onClick={() => {
-                          setIsProfileDropdownOpen(false);
-                          onRoleChange('client');
-                        }}
-                      >
-                        <Icon name="user" /> Switch to Client
-                      </button>
-                    )}
-                    <button 
-                      className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        setActiveTab('Settings');
-                      }}
-                    >
-                      <div className="flex items-center gap-2"><Icon name="briefcase" /> Provider</div>
-                      <Icon name="check" />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
+        </header>
 
         {/* Main Content Area */}
         <div className={`dash-content-premium`}>
@@ -1892,16 +1861,22 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             />
           )}
 
+          {activeTab === 'Post a Project' && (
+            <PostProject 
+              setActiveTab={setActiveTab}
+            />
+          )}
+
           {activeTab === 'My Jobs' && (
             <MyJobs 
               setActiveTab={setActiveTab} 
               setActiveChatUser={setActiveChatUser} 
             />
           )}
-          {activeTab === 'Job Leads' && <JobLeads />}
           {activeTab === 'Wallet' && <ProviderWallet />}
           {activeTab === 'Reviews' && <ProviderReviews />}
-          {activeTab === 'Settings' && <Settings />}
+          {activeTab === 'My Profile' && <ProviderProfile setActiveTab={setActiveTab} />}
+          {activeTab === 'Settings' && <Settings setActiveTab={setActiveTab} />}
           {activeTab === 'My Stats' && <Stats />}
           {activeTab === 'Support' && (
             <ProviderSupport 
@@ -1909,6 +1884,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setActiveChatUser={setActiveChatUser} 
             />
           )}
+          {activeTab === 'Notifications' && <Notifications />}
+          {activeTab === 'Boost Profile' && <BoostProfile />}
           {activeTab === 'Messages' && (
             <Messages 
               chatMessages={chatMessages} 
@@ -2001,6 +1978,41 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
       </div>
       
       <p className="footer-subtext">Fixam: Trusted Professional Services Platform</p>
+
+      <div className="footer-download-section">
+        <h4>DOWNLOAD THE FIXAM APP</h4>
+        <p>Find real jobs, both on-site and remote, and manage tasks directly from your phone.</p>
+        <div className="footer-app-badges">
+          <a 
+            href="https://apps.apple.com/app/com.fixam.app.iosapp" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="app-badge-btn"
+          >
+            <svg viewBox="0 0 384 512" fill="currentColor">
+              <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-48.4-19.2-77.5-19.2-38 0-77.3 22.8-96.6 57.5-39.6 71.1-10.1 176.4 28 232.4 18.7 27.1 40.5 56.6 69 52.8 26.9-3.5 37.2-20.3 69-20.3 31.8 0 41.4 20.3 69 20.3 28.5.3 48-26.7 66.8-54 21.6-31.5 30.5-62 31-63.6-.9-.3-59.7-23-60.2-91.8zM286.9 83c19.5-24 32.7-57.1 29.1-90.1-28 1.1-62.1 18.9-82.2 42.6-17.2 20.1-32.3 53.6-28.3 85.9 31.2 2.4 62.9-15.1 81.4-38.4z"/>
+            </svg>
+            <div className="app-badge-text">
+              <small>Download on the</small>
+              <strong>App Store</strong>
+            </div>
+          </a>
+          <a 
+            href="https://play.google.com/store/apps/details?id=com.fixam.app.android" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="app-badge-btn"
+          >
+            <svg viewBox="0 0 512 512" fill="currentColor">
+              <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58 33.3-60.1-60.1 60.1-60.1 58 33.3c15.3 8.8 25.3 23.3 25.3 40.1s-10 31.3-25.3 40.1zm-82.1 63.8L104.6 499l220.7-126.7 60.1-60.1z"/>
+            </svg>
+            <div className="app-badge-text">
+              <small>GET IT ON</small>
+              <strong>Google Play</strong>
+            </div>
+          </a>
+        </div>
+      </div>
 
       <div className="footer-bottom-bar">
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>

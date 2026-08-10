@@ -4,6 +4,8 @@ import { Page } from '../../App';
 import FloatingParticles from '../../components/FloatingParticles';
 import './Auth.css';
 
+import { api } from '../../services/api';
+
 export default function ForgotPassword({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
@@ -12,25 +14,47 @@ export default function ForgotPassword({ onNavigate }: { onNavigate: (page: Page
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
-      setEmailError(isFr ? 'Veuillez entrer votre email' : 'Please enter your email address');
+      setEmailError(isFr ? 'Veuillez entrer votre e-mail' : 'Please enter your email address');
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError(isFr ? 'Format d\'email invalide' : 'Invalid email format');
+      setEmailError(isFr ? 'Format d\'e-mail invalide' : 'Invalid email format');
       return;
     }
 
     setEmailError('');
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const res = await api.post('/auth/forgot-password', {
+        email,
+        language: isFr ? 'fr' : 'en'
+      });
+      if (res.data?.success) {
+        sessionStorage.setItem('pendingOTPEmail', email);
+        onNavigate('otp');
+      } else {
+        const msg = res.data?.message || (isFr ? 'Erreur lors de la demande. Veuillez réessayer.' : 'Failed to send reset code. Please try again.');
+        setEmailError(msg);
+      }
+    } catch (err: any) {
+      const rawMsg = err.response?.data?.message;
+      const errCode = err.response?.data?.errorCode;
+
+      if (errCode === 'USER_NOT_FOUND' || rawMsg?.toLowerCase().includes('not found')) {
+        setEmailError(isFr ? 'Aucun compte trouvé avec cette adresse e-mail.' : 'No account found with this email address.');
+      } else if (rawMsg) {
+        setEmailError(rawMsg);
+      } else {
+        setEmailError(isFr ? 'Une erreur est survenue. Veuillez réessayer.' : 'Something went wrong. Please try again.');
+      }
+    } finally {
       setIsLoading(false);
-      onNavigate('otp');
-    }, 1200);
+    }
   };
 
   const t = {

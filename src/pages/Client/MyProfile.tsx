@@ -215,10 +215,8 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
   };
 
   const toggleRole = () => {
-    if (user?.role === 'PROVIDER' && onRoleChange) {
+    if (onRoleChange) {
       onRoleChange(userRole === 'client' ? 'pro' : 'client');
-    } else {
-      alert("You need to register as a provider first to switch to the provider dashboard.");
     }
   };
 

@@ -12,9 +12,10 @@ interface MyTasksProps {
   clientBookings?: any[];
   savedProsState?: any[];
   setSelectedTask?: (task: any) => void;
+  setSelectedBooking?: (bk: any) => void;
 }
 
-export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask }: MyTasksProps) {
+export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask, setSelectedBooking }: MyTasksProps) {
   const [isPostTaskOpen, setIsPostTaskOpen] = useState(false);
 
   const handleJobCreated = (newJob: any) => {
@@ -95,8 +96,9 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                 className="task-detailed-card cursor-pointer hover:border-teal-300 transition-colors" 
                 key={tkId}
                 onClick={() => {
+                  if (setSelectedBooking) setSelectedBooking(tk);
                   if (setSelectedTask) setSelectedTask(tk);
-                  setActiveTab('Task Details');
+                  setActiveTab('Booking Details');
                 }}
               >
                 <div className="task-card-header">

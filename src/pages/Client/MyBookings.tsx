@@ -13,6 +13,7 @@ interface MyBookingsProps {
   setActiveChatUser: (user: string) => void;
   walletBalance?: number;
   savedProsState?: any[];
+  setSelectedBooking?: (bk: any) => void;
 }
 
 export default function MyBookings({ 
@@ -23,7 +24,8 @@ export default function MyBookings({
   setActiveTab, 
   setActiveChatUser,
   walletBalance = 0,
-  savedProsState = []
+  savedProsState = [],
+  setSelectedBooking
 }: MyBookingsProps) {
   const [activeSubTab, setActiveSubTab] = useState<'bookings' | 'tasks'>('bookings');
 
@@ -70,7 +72,14 @@ export default function MyBookings({
               const bkStatus = bk.status || 'PENDING';
 
               return (
-              <div className="booking-detailed-card" key={bk.id || bk._id}>
+              <div 
+                className="booking-detailed-card cursor-pointer hover:border-teal-400 transition" 
+                key={bk.id || bk._id}
+                onClick={() => {
+                  if (setSelectedBooking) setSelectedBooking(bk);
+                  setActiveTab('Booking Details');
+                }}
+              >
                 <div className="booking-card-left">
                   <img src={bkImage} alt={bkProvider} />
                   <div className="booking-info-details">

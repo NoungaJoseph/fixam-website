@@ -1,0 +1,466 @@
+/* Profile Settings stylesheet */
+.profile-settings-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.settings-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.settings-header h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 0.25rem 0;
+}
+
+.settings-header p {
+  color: #64748B;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Split grid */
+.settings-split-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* Panels */
+.settings-panel {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.settings-panel h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 1rem 0;
+  border-bottom: 1px solid #F1F5F9;
+  padding-bottom: 0.5rem;
+}
+
+.panel-subtext {
+  font-size: 0.88rem;
+  color: #64748B;
+  margin: -0.5rem 0 1.25rem 0;
+}
+
+/* Avatar photo panel */
+.avatar-uploader-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.avatar-frame {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #E2E8F0;
+  border: 3px solid #14B8A6;
+  flex-shrink: 0;
+}
+
+.avatar-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 2.2rem;
+}
+
+.avatar-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.uploader-controls h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 0.25rem 0;
+}
+
+.uploader-controls p {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin: 0 0 0.75rem 0;
+}
+
+.btn-file-select {
+  display: inline-block;
+  background: white;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-file-select:hover {
+  border-color: #14B8A6;
+  color: #14B8A6;
+}
+
+.btn-file-select input {
+  display: none;
+}
+
+/* Fields & Layouts */
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.settings-field label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.settings-field input,
+.settings-field select,
+.settings-field textarea {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #F8FAFC;
+  transition: border-color 0.2s, background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.settings-field input:focus,
+.settings-field select:focus,
+.settings-field textarea:focus {
+  border-color: #14B8A6;
+  background: white;
+}
+
+.form-row-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-row-three {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Skills Tag Styling */
+.skills-tags-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  border: 1px solid #E2E8F0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #F8FAFC;
+  margin-bottom: 1rem;
+  min-height: 48px;
+}
+
+.no-skills-tag {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  font-style: italic;
+}
+
+.skill-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.btn-skill-remove {
+  background: transparent;
+  border: none;
+  color: #0284C7;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.btn-skill-remove:hover {
+  color: #EF4444;
+}
+
+.skill-add-form-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skill-add-form-group input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.btn-skill-add {
+  background: #14B8A6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0 1.25rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-skill-add:hover {
+  background: #0D9488;
+}
+
+/* Certificate item cards */
+.cert-subform {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-cert-add-submit {
+  background: #0F172A;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.btn-cert-add-submit:hover {
+  background: #1E293B;
+}
+
+.empty-certificates-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.cert-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-certificates-state p {
+  font-size: 0.88rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.certificates-grid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.certificate-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.cert-details h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 0.25rem 0;
+}
+
+.cert-meta {
+  font-size: 0.82rem;
+  color: #64748B;
+  margin: 0 0 0.5rem 0;
+}
+
+.cert-doc-link {
+  font-size: 0.8rem;
+  color: #14B8A6;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.cert-doc-link:hover {
+  text-decoration: underline;
+}
+
+.btn-delete-cert {
+  background: #FEE2E2;
+  color: #EF4444;
+  border: 1px solid transparent;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-cert:hover {
+  background: #EF4444;
+  color: white;
+}
+
+/* Submit bar */
+.settings-submit-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.5rem;
+  border-top: 1px solid #E2E8F0;
+  padding-top: 1.5rem;
+  margin-top: 2rem;
+}
+
+.upload-status-pills {
+  background: #E0F2FE;
+  color: #0369A1;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-save-settings-main {
+  background: #14B8A6;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 2.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-save-settings-main:hover {
+  background: #0D9488;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(20, 184, 166, 0.35);
+}
+
+@media (max-width: 900px) {
+  .settings-split-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-settings-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .settings-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .form-row-two,
+  .form-row-three {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .settings-panel {
+    padding: 1.25rem;
+  }
+
+  .avatar-uploader-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .skill-add-form-group {
+    flex-direction: column;
+  }
+
+  .btn-skill-add {
+    width: 100%;
+    padding: 0.6rem;
+  }
+
+  .settings-submit-row {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .btn-save-settings-main {
+    width: 100%;
+    text-align: center;
+  }
+
+  .certificate-item-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .btn-delete-cert {
+    width: 100%;
+    text-align: center;
+  }
+}

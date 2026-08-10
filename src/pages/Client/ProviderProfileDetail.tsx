@@ -1,6 +1,7 @@
 import './ProviderProfileDetail.css';
 import { Icon } from '../../App';
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import BookingFormModal from '../../components/BookingFormModal';
 import { api } from '../../services/api';
 import { getMediaUrl } from '../../App';
@@ -26,6 +27,7 @@ export default function ProviderProfileDetail({
   savedProsState = [],
   setSavedProsState
 }: ProviderProfileDetailProps) {
+  const { user } = useAuth();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [activeProfileTab, setActiveProfileTab] = useState<'Overview' | 'Reviews' | 'Projects' | 'Certificates'>('Overview');
   
@@ -142,7 +144,24 @@ export default function ProviderProfileDetail({
             
             {/* Action Buttons Row */}
             <div className="profile-actions-row">
-              <button className="btn-book-now-top" onClick={() => setIsBookingModalOpen(true)}>
+              <button 
+                className="btn-book-now-top" 
+                onClick={() => {
+                  const isOwn = user && (
+                    original?.userId === user.id || 
+                    original?.user?.id === user.id || 
+                    original?._id === user.id || 
+                    original?.id === user.id ||
+                    selectedProvider?.id === user.id ||
+                    selectedProvider?.userId === user.id
+                  );
+                  if (isOwn) {
+                    alert("You cannot book your own provider profile.");
+                    return;
+                  }
+                  setIsBookingModalOpen(true);
+                }}
+              >
                 Book Now
               </button>
               <button className="btn-icon-action" onClick={handleShare} title="Share Profile">
@@ -244,15 +263,18 @@ export default function ProviderProfileDetail({
               <h3>Past Projects & Portfolio</h3>
               {portfolio.length > 0 ? (
                 <div className="portfolio-grid">
-                  {portfolio.map((proj: any, idx: number) => (
+                  {portfolio.map((proj: any, idx: number) => {
+                    const projectImage = proj.imageUrl || proj.image || proj.url || (Array.isArray(proj.images) ? proj.images[0] : '');
+                    return (
                     <div key={idx} className="portfolio-item">
-                      <img src={proj.image || 'https://via.placeholder.com/300x200'} alt={proj.title} />
+                      <img src={projectImage ? getMediaUrl(projectImage) : 'https://via.placeholder.com/300x200'} alt={proj.title} />
                       <div className="portfolio-info">
                         <h4>{proj.title}</h4>
                         <p>{proj.description}</p>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="empty-state-text">No projects available for this provider.</p>

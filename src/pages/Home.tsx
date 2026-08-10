@@ -753,6 +753,65 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
+      {/* Remote & On-site Jobs Announcement Section */}
+      <section className="opportunities-section-premium">
+        <div className="opportunities-container">
+          <div className="opportunities-visual">
+            <div className="badge-glow-pro">{i18n.language === 'fr' ? 'NOUVEAU' : 'NEW OPPORTUNITIES'}</div>
+            <div className="floating-sphere"></div>
+            <img src={images.appHomeScreen} alt="Fixam Mobile App Screen showing remote job listings" className="app-mockup-img" />
+          </div>
+          <div className="opportunities-content">
+            <h2>
+              {i18n.language === 'fr' 
+                ? 'Trouvez de réelles opportunités, sur site ou entièrement à distance' 
+                : 'Find real opportunities, on-site or fully remote'}
+            </h2>
+            <p className="lead-text">
+              {i18n.language === 'fr'
+                ? "Fixam ne se limite plus aux artisans locaux. Notre plateforme de services connecte les professionnels qualifiés avec des opportunités d'emploi concrètes et vérifiées."
+                : "Fixam is no longer just for local handymen. Our services platform connects skilled professionals with concrete, verified job opportunities."}
+            </p>
+            <div className="features-checklist">
+              <div className="checklist-item">
+                <span className="check-icon">✓</span>
+                <div>
+                  <strong>{i18n.language === 'fr' ? 'Missions sur site' : 'On-site assignments'}</strong>
+                  <p>{i18n.language === 'fr' ? 'Collaborez avec des clients locaux dans votre ville ou région.' : 'Collaborate with local clients in your city or region.'}</p>
+                </div>
+              </div>
+              <div className="checklist-item">
+                <span className="check-icon">✓</span>
+                <div>
+                  <strong>{i18n.language === 'fr' ? 'Projets entièrement à distance' : 'Fully remote projects'}</strong>
+                  <p>{i18n.language === 'fr' ? 'Prenez des projets numériques et collaborez depuis n\'importe où.' : 'Take on digital projects and collaborate from anywhere.'}</p>
+                </div>
+              </div>
+              <div className="checklist-item">
+                <span className="check-icon">✓</span>
+                <div>
+                  <strong>{i18n.language === 'fr' ? 'Tarifs et horaires libres' : 'Flexible rates & schedules'}</strong>
+                  <p>{i18n.language === 'fr' ? 'Définissez votre propre tarif horaire et travaillez selon vos conditions.' : 'Set your own hourly rate and work on your own terms.'}</p>
+                </div>
+              </div>
+            </div>
+            <p style={{ marginTop: '1.5rem', color: '#64748B', fontSize: '0.9rem' }}>
+              {i18n.language === 'fr'
+                ? "Téléchargez l'application mobile Fixam aujourd'hui pour publier votre profil, ajouter vos compétences, certifications et commencer à postuler."
+                : "Download the Fixam mobile app today to publish your profile, add your skills, certifications, and start applying."}
+            </p>
+            <div className="store-download-row">
+              <a href="https://apps.apple.com/app/com.fixam.app.iosapp" target="_blank" rel="noopener noreferrer" className="store-badge-premium apple">
+                Apple App Store
+              </a>
+              <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" className="store-badge-premium google">
+                Google Play Store
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Teal Gradient CTA Banner */}
       <section className="cta-banner-teal">
         <div className="cta-banner-content">

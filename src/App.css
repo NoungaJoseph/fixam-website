@@ -8802,6 +8802,90 @@ p {
   }
 }
 
+/* Footer Download Badges */
+.footer-download-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.footer-download-section h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.footer-download-section p {
+  font-size: 0.9rem;
+  color: #94A3B8;
+  max-width: 480px;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.footer-app-badges {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.app-badge-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 0.55rem 1.4rem;
+  color: #fff !important;
+  text-decoration: none;
+  transition: transform 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  min-width: 180px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.app-badge-btn:hover {
+  transform: translateY(-3px);
+  border-color: #14B8A6;
+  background: #0D1527;
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.15);
+}
+
+.app-badge-btn svg {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex-shrink: 0;
+}
+
+.app-badge-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.app-badge-text small {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.app-badge-text strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+
 
 
 

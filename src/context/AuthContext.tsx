@@ -15,6 +15,7 @@ type User = {
   location?: string;
   providerProfile?: any;
   isOnline?: boolean;
+  dob?: string;
 };
 
 type AuthContextType = {
@@ -88,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           location: response.data.user.location,
           providerProfile: response.data.user.providerProfile,
           isOnline: response.data.user.isOnline,
+          dob: response.data.user.dob,
         };
         setUser(freshUser);
         saveUserToStorage(freshUser);
