@@ -274,12 +274,16 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
             </div>
           </div>
           <div className="pb-1 mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
-            {user?.role === 'PROVIDER' && (
+            {onRoleChange && (
               <button 
-                className="bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-medium hover:bg-orange-200 transition flex items-center justify-center gap-2" 
+                className="bg-teal-50 text-teal-700 border border-teal-200 px-4 py-2 rounded-lg font-bold hover:bg-teal-100 transition flex items-center justify-center gap-2 shadow-sm" 
                 onClick={toggleRole}
               >
-                <Icon name="user" /> Switch to {userRole === 'client' ? 'Provider' : 'Client'}
+                <Icon name={userRole === 'client' ? 'briefcase' : 'user'} /> 
+                {userRole === 'client' 
+                  ? (i18n.language === 'fr' ? 'Passer en Mode Prestataire 🔄' : 'Switch to Provider Mode 🔄')
+                  : (i18n.language === 'fr' ? 'Passer en Mode Client 🔄' : 'Switch to Client Mode 🔄')
+                }
               </button>
             )}
             {!(user?.providerProfile?.verification === 'VERIFIED' || user?.providerProfile?.verification === 'PENDING' || (user as any)?.isVerified) && (

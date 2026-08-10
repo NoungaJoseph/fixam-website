@@ -38,6 +38,7 @@ interface ClientDashboardProps {
   setClientTasks?: (tasks: any[]) => void;
   walletBalance?: number;
   setSelectedBooking?: (booking: any) => void;
+  onRoleChange?: (role: 'client' | 'pro') => void;
 }
 
 export default function ClientDashboard({
@@ -51,6 +52,7 @@ export default function ClientDashboard({
   clientTasks = [],
   setClientTasks,
   setSelectedBooking,
+  onRoleChange,
 }: ClientDashboardProps) {
   const { user } = useAuth();
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -112,17 +114,32 @@ export default function ClientDashboard({
     });
     // Exclude own projects
     return projects.filter(p => p.provider.id !== currentUserId && p.provider.userId !== currentUserId);
-  }, [displayedPros, user]);
+  }, [displayedPros, user?.id]);
   
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'Good Morning';
+    if (hour < 18) return 'Good Afternoon';
+    return 'Good Evening';
   };
 
   return (
     <div className="max-w-7xl mx-auto w-full pt-6">
+      {onRoleChange && (
+        <div className="md:hidden mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold text-teal-900">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Client Mode Active</span>
+          </div>
+          <button 
+            className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-xs transition shadow-sm"
+            onClick={() => onRoleChange('pro')}
+          >
+            Switch to Provider Mode 🔄
+          </button>
+        </div>
+      )}
+
       {/* Greeting row */}
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
         <div>

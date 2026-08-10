@@ -1510,6 +1510,20 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             
 
 
+            {onRoleChange && (
+              <button 
+                className="side-link-new" 
+                style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  onRoleChange('pro');
+                }}
+              >
+                <Icon name="briefcase" />
+                <span>{i18n.language === 'fr' ? 'Passer en Mode Prestataire 🔄' : 'Switch to Provider Mode 🔄'}</span>
+              </button>
+            )}
+
             <button className="side-link-new" onClick={() => onNavigate('login')}>
               <Icon name="logout" />
               <span>Logout</span>
@@ -1621,6 +1635,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       walletBalance={walletBalance}
                       clientTasks={clientTasks}
                       setClientTasks={setClientTasks}
+                      onRoleChange={onRoleChange}
                     />
                 )}
 
@@ -1827,6 +1842,20 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           
 
 
+          {onRoleChange && (
+            <button 
+              className="side-link-new" 
+              style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
+              onClick={() => {
+                setIsSidebarOpen(false);
+                onRoleChange('client');
+              }}
+            >
+              <Icon name="user" />
+              <span>{i18n.language === 'fr' ? 'Passer en Mode Client 🔄' : 'Switch to Client Mode 🔄'}</span>
+            </button>
+          )}
+
           <button className="side-link-new" onClick={() => onNavigate('home')}>
             <Icon name="x" />
             <span>Logout</span>
@@ -1848,6 +1877,56 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               <span className="ticker-slider-text" key={proNewsIndex}>
                 {proNewsMessages[proNewsIndex]}
               </span>
+            </div>
+          </div>
+
+          <div className="actions-right-dash">
+            <button className="icon-btn-dash" onClick={() => setActiveTab('Messages')} aria-label="Messages">
+              <Icon name="chat" />
+              {unreadMessagesCount > 0 && <span className="badge-indicator">{unreadMessagesCount}</span>}
+            </button>
+            <button className="icon-btn-dash" onClick={() => setActiveTab('Notifications')} aria-label="Notifications">
+              <Icon name="bell" />
+              {unreadNotificationsCount > 0 && <span className="badge-indicator">{unreadNotificationsCount}</span>}
+            </button>
+
+            <div className="relative profile-dropdown-container">
+              <button className="profile-chip-dash" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}>
+                <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User profile" className="desktop-only" />
+                <div className="profile-details-dash">
+                  <span className="profile-name-dash">
+                    {user?.firstName || 'Provider'}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '0.8rem', height: '0.8rem', marginLeft: '0.3rem', transform: isProfileDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                  <span className="profile-role-dash" style={{ background: '#F0FDFA', color: '#0F766E' }}>Provider</span>
+                </div>
+              </button>
+              {isProfileDropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
+                  <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
+                  <button 
+                    className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
+                    onClick={() => {
+                      setIsProfileDropdownOpen(false);
+                      setActiveTab('My Profile');
+                    }}
+                  >
+                    <div className="flex items-center gap-2"><Icon name="briefcase" /> Provider</div>
+                    <Icon name="check" />
+                  </button>
+                  {onRoleChange && (
+                    <button 
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-bold"
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        onRoleChange('client');
+                      }}
+                    >
+                      <Icon name="user" /> Switch to Client Mode
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </header>
