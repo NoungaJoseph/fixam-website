@@ -298,21 +298,6 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
 
   return (
     <div className="upwork-dashboard-container animate-fade-in">
-      {onRoleChange && (
-        <div className="md:hidden mb-4 p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-2 text-xs font-bold text-teal-900">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Provider Mode Active</span>
-          </div>
-          <button 
-            className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-xs transition shadow-sm"
-            onClick={() => onRoleChange('client')}
-          >
-            Switch to Client Mode 🔄
-          </button>
-        </div>
-      )}
-
       {/* 2-COLUMN DASHBOARD GRID */}
       <div className="upwork-dashboard-grid">
 
@@ -459,11 +444,17 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
                       key={job.id}
                       onClick={() => setSelectedJob(job)}
                     >
-                      {/* Top Meta Pill & Action Icons */}
+                      {/* Topbar badge & actions */}
                       <div className="upwork-card-topbar">
-                        <span className="meta-time-badge">
-                          Posted {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'recently'} • Proposals: {job.applications?.length || 0}
-                        </span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="meta-time-badge">
+                            Posted {job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'recently'} • {job.applications?.length || 0} proposals
+                          </span>
+                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-bold">
+                            💰 {formatBudget(job)}
+                          </span>
+                        </div>
+
                         <div className="card-quick-actions" onClick={(e) => e.stopPropagation()}>
                           <button
                             className="icon-action-btn"
@@ -508,40 +499,47 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
                       <div className="upwork-card-submeta">
                         <span>Budget: <strong>{formatBudget(job)}</strong></span>
                         <span className="dot">•</span>
-                        <span>{job.priority ? `${job.priority.toUpperCase()} Level` : 'Intermediate'}</span>
+                        <span>{job.priority ? `${job.priority.toUpperCase()} Priority` : 'Standard'}</span>
                         <span className="dot">•</span>
                         <span>Est. Time: Short-term task</span>
                       </div>
 
                       {/* Job Description Excerpt */}
                       <p className="upwork-card-description">
-                        {job.description || 'We are seeking a detail-oriented freelancer for a flexible task. The candidate will be responsible for executing task deliverables and maintaining client updates...'}
+                        {job.description || 'We are seeking a qualified provider for this task...'}
                         <span className="more-link" onClick={() => setSelectedJob(job)}> more</span>
                       </p>
 
                       {/* Skill Pills */}
                       <div className="upwork-card-skills">
-                        <span className="skill-pill">{job.category || job.serviceCategory || 'General'}</span>
+                        <span className="skill-pill active-category">{job.category || job.serviceCategory || 'General'}</span>
                         {job.isRemote && <span className="skill-pill">Remote</span>}
-                        {job.preferences && job.preferences.length > 0 ? (
+                        {job.preferences && job.preferences.length > 0 && (
                           job.preferences.map((pref, i) => <span key={i} className="skill-pill">{pref}</span>)
-                        ) : (
-                          <>
-                            <span className="skill-pill">Data Entry</span>
-                            <span className="skill-pill">Customer Support</span>
-                          </>
                         )}
                       </div>
 
-                      {/* Client Verification Footer */}
-                      <div className="upwork-card-client-footer">
-                        <span className="check-verified flex items-center gap-1.5 text-emerald-600 font-bold">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
+                      {/* Client Verification Footer & Quick Apply Action */}
+                      <div className="upwork-card-client-footer flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
+                        <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold">
+                          <span className="check-verified flex items-center gap-1 text-emerald-600 font-bold">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            Verified Client
+                          </span>
+                          <span>📍 {job.country || job.location || 'Cameroon'}</span>
+                        </div>
+
+                        <button 
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-1.5 cursor-pointer"
+                          onClick={() => setSelectedJob(job)}
+                        >
+                          View & Submit Proposal
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
                           </svg>
-                          Verified Client
-                        </span>
-                        <span className="client-loc">📍 {job.country || job.location || 'Cameroon'}</span>
+                        </button>
                       </div>
                     </article>
                   );
