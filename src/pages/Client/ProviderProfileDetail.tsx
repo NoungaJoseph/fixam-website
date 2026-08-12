@@ -310,22 +310,52 @@ export default function ProviderProfileDetail({
         providerName={fullName}
         providerService={selectedProvider.role || 'Service'}
         providerImage={displayImage}
-        onSubmit={(bookingData) => {
-          const newBooking = {
-            id: Date.now(),
-            service: bookingData.service,
-            provider: bookingData.provider,
-            date: bookingData.date,
-            time: bookingData.time,
-            status: 'Confirmed',
-            price: bookingData.price,
-            image: bookingData.image
-          };
-          setClientBookings([newBooking, ...clientBookings]);
-          alert(`Booking requested successfully for ${bookingData.date}! ${bookingData.provider} has been notified.`);
-          setIsBookingModalOpen(false);
-          setSelectedProvider(null);
-          setActiveTab('My Bookings');
+        onSubmit={async (bookingData) => {
+          try {
+            const providerUserId = selectedProvider.originalData?.userId || selectedProvider.userId || selectedProvider.id;
+            
+            const COIN_COSTS: Record<string, number> = {
+              NORMAL: 1,
+              URGENT: 2,
+              EMERGENCY: 3
+            };
+            const urgencyLevel = bookingData.urgency || 'NORMAL';
+            const coinCost = COIN_COSTS[urgencyLevel] || 1;
+
+            const res = await api.post('/bookings', {
+              providerId: providerUserId,
+              bookingDate: bookingData.date,
+              bookingTime: bookingData.time,
+              location: bookingData.location,
+              notes: bookingData.notes,
+              urgencyLevel: urgencyLevel,
+              budget: coinCost
+            });
+
+            if (res.data?.success || res.status === 201) {
+              const booking = res.data?.data || res.data;
+              const newBooking = {
+                id: booking.id || Date.now(),
+                service: bookingData.service,
+                provider: bookingData.provider,
+                date: bookingData.date,
+                time: bookingData.time,
+                status: booking.status || 'PENDING',
+                price: bookingData.price,
+                image: bookingData.image
+              };
+              setClientBookings([newBooking, ...clientBookings]);
+              alert(`Booking requested successfully for ${bookingData.date}! ${bookingData.provider} has been notified.`);
+              setIsBookingModalOpen(false);
+              setSelectedProvider(null);
+              setActiveTab('My Bookings');
+            } else {
+              throw new Error(res.data?.message || 'Failed to create booking.');
+            }
+          } catch (err: any) {
+            console.error('Booking creation error:', err);
+            alert(err.response?.data?.message || err.message || 'Error requesting booking');
+          }
         }}
       />
     </div>

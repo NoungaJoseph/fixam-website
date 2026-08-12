@@ -25,27 +25,43 @@ export default function Notifications() {
 
   const handleClearAll = async () => {
     try {
+      setNotifications([]);
       await api.delete('/notifications/clear');
       fetchNotifs();
     } catch (err) {
       console.error("Failed to clear notifications", err);
+      fetchNotifs();
     }
   };
 
   const handleMarkAllRead = async () => {
     try {
-      // Assuming a generic read all endpoint or we can manually loop or backend handles it.
-      // Wait, is there a mark all read endpoint? Let me check backend. 
-      // If not, we can just fetchNotifs after calling a known endpoint, or iterate.
-      // But typically we can just do api.put('/notifications/read-all').
-      // Let's check backend notification controller later. For now, let's assume it exists or just visual.
-      // Actually backend didn't have read-all, but let's see. 
-      // I'll add the button and try to hit an endpoint or loop.
-      const unreadNotifs = notifications.filter(n => !n.isRead);
-      await Promise.all(unreadNotifs.map(n => api.put(`/notifications/${n.id}/read`)));
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      await api.put('/notifications/read-all');
       fetchNotifs();
     } catch (err) {
       console.error("Failed to mark all as read", err);
+      fetchNotifs();
+    }
+  };
+
+  const handleSingleRead = async (id: string) => {
+    try {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+      await api.put(`/notifications/${id}/read`);
+    } catch (err) {
+      console.error("Failed to mark notification as read", err);
+    }
+  };
+
+  const handleSingleArchive = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    try {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      await api.put(`/notifications/${id}/archive`);
+    } catch (err) {
+      console.error("Failed to archive notification", err);
+      fetchNotifs();
     }
   };
 
@@ -59,13 +75,17 @@ export default function Notifications() {
     }
   };
 
+  const hasUnread = notifications.some(n => !n.isRead);
+
   return (
     <div className="bg-transparent border-0 p-0 w-full animate-fade-in">
       <div className="dash-panel-header-new">
         <h2>Notifications Log</h2>
         {notifications.length > 0 && (
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="panel-link" onClick={handleMarkAllRead}>Mark all as read</button>
+            {hasUnread && (
+              <button className="panel-link" onClick={handleMarkAllRead}>Mark all as read</button>
+            )}
             <button className="panel-link" onClick={handleClearAll} style={{ color: '#ef4444' }}>Clear all</button>
           </div>
         )}
@@ -82,17 +102,41 @@ export default function Notifications() {
       ) : (
         <div className="activity-items-list large-list">
           {notifications.map((n) => (
-            <div className={`activity-item-row ${!n.isRead ? 'unread-row' : ''}`} key={n.id}>
+            <div 
+              className={`activity-item-row ${!n.isRead ? 'unread-row' : ''}`} 
+              key={n.id}
+              onClick={() => !n.isRead && handleSingleRead(n.id)}
+              style={{ cursor: !n.isRead ? 'pointer' : 'default', position: 'relative' }}
+            >
               <div className="activity-icon-container">
                 {getIconForType(n.type)}
               </div>
-              <div className="activity-details">
+              <div className="activity-details" style={{ flex: 1 }}>
                 <h4 className="activity-title">{n.title || n.heading || 'System Notification'}</h4>
                 <p className="activity-subtitle">{n.message || n.body || n.content}</p>
               </div>
-              <span className="activity-time">
-                {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span className="activity-time">
+                  {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+                <button 
+                  onClick={(e) => handleSingleArchive(e, n.id)}
+                  title="Remove notification"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    fontSize: '1.1rem',
+                    padding: '2px 6px',
+                    lineHeight: 1
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.color = '#ef4444')}
+                  onMouseOut={(e) => (e.currentTarget.style.color = '#94a3b8')}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           ))}
         </div>
