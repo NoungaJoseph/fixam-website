@@ -58,7 +58,8 @@ export default function ProviderProfileDetail({
   };
 
   const fullName = selectedProvider.name || `${selectedProvider.firstName || ''} ${selectedProvider.lastName || ''}`.trim() || 'Provider';
-  const displayImage = selectedProvider.image ? getMediaUrl(selectedProvider.image) : '';
+  const rawAvatar = selectedProvider.image || selectedProvider.avatar || original.user?.avatar || original.avatar || '';
+  const displayImage = rawAvatar ? getMediaUrl(rawAvatar) : '';
 
   const handleShare = async () => {
     try {
@@ -329,7 +330,8 @@ export default function ProviderProfileDetail({
               location: bookingData.location,
               notes: bookingData.notes,
               urgencyLevel: urgencyLevel,
-              budget: coinCost
+              bookingDuration: bookingData.duration || '1 Hour',
+              budget: Number(bookingData.budget) || 0
             });
 
             if (res.data?.success || res.status === 201) {

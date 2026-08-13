@@ -333,7 +333,8 @@ export default function FindServices({
             {sortedProviders.map((p, idx) => {
               const fullName = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Provider';
               const serviceRole = p.services && p.services.length > 0 ? p.services[0] : (p.role || 'Service Professional');
-              const displayImage = p.image ? getMediaUrl(p.image) : '';
+              const rawAvatar = p.image || p.avatar || p.user?.avatar || p.originalData?.user?.avatar || '';
+              const displayImage = rawAvatar ? getMediaUrl(rawAvatar) : '';
               const displayRating = p.rating || 'New';
               const numReviews = p.reviews || 0;
               const displayLoc = p.location || p.city || 'Nearby';
@@ -392,9 +393,7 @@ export default function FindServices({
                       </button>
                       <button 
                         className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-bold py-2 px-3 rounded transition-colors"
-                        onClick={() => {
-                          alert(`Booking initiated for ${fullName}`);
-                        }}
+                        onClick={() => setSelectedProvider(p)}
                       >
                         Book now
                       </button>

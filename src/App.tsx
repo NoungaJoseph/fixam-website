@@ -1365,10 +1365,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
                 const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
                 
-                let image = 'https://via.placeholder.com/150';
-                if (item.user?.avatar) {
-                  image = item.user.avatar.startsWith('http') ? item.user.avatar : `https://api.usefixam.com/api${item.user.avatar}`;
-                }
+                const rawAvatar = item.user?.avatar || item.avatar || '';
+                const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
                 
                 return {
                   id: item.id,

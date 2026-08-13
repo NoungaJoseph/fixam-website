@@ -24,6 +24,8 @@ export default function BookingFormModal({
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('Nearby');
+  const [duration, setDuration] = useState('1 Hour');
+  const [budgetAmount, setBudgetAmount] = useState('');
   const [urgency, setUrgency] = useState<'NORMAL' | 'URGENT' | 'EMERGENCY'>('NORMAL');
   const [notes, setNotes] = useState('');
 
@@ -39,6 +41,8 @@ export default function BookingFormModal({
       date,
       time,
       location,
+      duration,
+      budget: budgetAmount ? Number(budgetAmount) : 0,
       urgency,
       notes,
       provider: providerName,
@@ -82,16 +86,48 @@ export default function BookingFormModal({
             </div>
           </div>
 
+          <div className="form-row">
+            <div className="form-group">
+              <label>Location</label>
+              <input 
+                type="text" 
+                className="input-field" 
+                value={location} 
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Your neighborhood or city"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Service Duration</label>
+              <select 
+                className="input-field" 
+                value={duration} 
+                onChange={(e) => setDuration(e.target.value)}
+              >
+                <option value="1 Hour">1 Hour</option>
+                <option value="2-3 Hours">2 - 3 Hours</option>
+                <option value="Half Day (4 Hours)">Half Day (4 Hours)</option>
+                <option value="Full Day (8 Hours)">Full Day (8 Hours)</option>
+                <option value="Multi-Day Project">Multi-Day Project</option>
+                <option value="Flexible">Flexible / To be agreed</option>
+              </select>
+            </div>
+          </div>
+
           <div className="form-group">
-            <label>Location</label>
+            <label>Proposed Job Budget (FCFA / XAF)</label>
             <input 
-              type="text" 
+              type="number" 
               className="input-field" 
-              value={location} 
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g. Your neighborhood or city"
-              required
+              value={budgetAmount} 
+              onChange={(e) => setBudgetAmount(e.target.value)}
+              placeholder="e.g. 15000"
+              min="0"
             />
+            <span style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '4px', display: 'block' }}>
+              Specify your estimated pay for this job. You pay the provider directly upon job completion.
+            </span>
           </div>
 
           <div className="form-group">
