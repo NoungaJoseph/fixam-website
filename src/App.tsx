@@ -268,6 +268,9 @@ function App() {
     roleManuallySetRef.current = true;
     setUserRole(newRole);
     localStorage.setItem('fixam_user_role', newRole);
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
     try {
       const mode = newRole === 'pro' ? 'WORK' : 'PERSONAL';
       await api.put('/users/profile', { profileMode: mode }).catch(() => null);
@@ -1227,10 +1230,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, [activeTab]);
 
   useEffect(() => {
-    const hash = window.location.hash.replace('#', '');
-    if (!hash) setActiveTab('Dashboard');
+    setActiveTab('Dashboard');
     setSelectedProvider(null);
     setSelectedProject(null);
+    setSelectedBooking(null);
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   }, [userRole]);
 
   const [tickerItems, setTickerItems] = useState<Array<{ isNews: boolean; badgeText: string; text: string }>>([
@@ -1520,7 +1526,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 }}
               >
                 <Icon name="briefcase" />
-                <span>{i18n.language === 'fr' ? 'Passer en Mode Prestataire 🔄' : 'Switch to Provider Mode 🔄'}</span>
+                <span>{i18n.language === 'fr' ? 'Prestataire' : 'Provider'}</span>
               </button>
             )}
 
@@ -1578,13 +1584,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     </button>
                     {onRoleChange && (
                       <button 
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2 font-semibold"
                         onClick={() => {
                           setIsProfileDropdownOpen(false);
                           onRoleChange('pro');
                         }}
                       >
-                        <Icon name="briefcase" /> Switch to Provider
+                        <Icon name="briefcase" /> {i18n.language === 'fr' ? 'Prestataire' : 'Provider'}
                       </button>
                     )}
                   </div>
@@ -1852,7 +1858,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               }}
             >
               <Icon name="user" />
-              <span>{i18n.language === 'fr' ? 'Passer en Mode Client 🔄' : 'Switch to Client Mode 🔄'}</span>
+              <span>Client</span>
             </button>
           )}
 
@@ -1916,13 +1922,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   </button>
                   {onRoleChange && (
                     <button 
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 font-bold"
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2 font-semibold"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
                         onRoleChange('client');
                       }}
                     >
-                      <Icon name="user" /> Switch to Client Mode
+                      <Icon name="user" /> Client
                     </button>
                   )}
                 </div>

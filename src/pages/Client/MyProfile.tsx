@@ -281,8 +281,8 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
               >
                 <Icon name={userRole === 'client' ? 'briefcase' : 'user'} /> 
                 {userRole === 'client' 
-                  ? (i18n.language === 'fr' ? 'Passer en Mode Prestataire 🔄' : 'Switch to Provider Mode 🔄')
-                  : (i18n.language === 'fr' ? 'Passer en Mode Client 🔄' : 'Switch to Client Mode 🔄')
+                  ? (i18n.language === 'fr' ? 'Prestataire' : 'Provider')
+                  : 'Client'
                 }
               </button>
             )}
