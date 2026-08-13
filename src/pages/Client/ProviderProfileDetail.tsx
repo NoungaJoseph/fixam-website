@@ -33,8 +33,6 @@ export default function ProviderProfileDetail({
   
   const original = selectedProvider?.originalData || {};
   const providerId = original._id || original.id;
-  const initialSaved = savedProsState.some((p: any) => p._id === providerId || (p.provider && p.provider._id === providerId));
-  const [isSaved, setIsSaved] = useState(initialSaved);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -60,18 +58,22 @@ export default function ProviderProfileDetail({
   const fullName = selectedProvider.name || `${selectedProvider.firstName || ''} ${selectedProvider.lastName || ''}`.trim() || 'Provider';
   const rawAvatar = selectedProvider.image || selectedProvider.avatar || original.user?.avatar || original.avatar || '';
   const displayImage = rawAvatar ? getMediaUrl(rawAvatar) : '';
+  const targetFavId = selectedProvider?.id || selectedProvider?.userId || original?.id || original?.userId;
+  const [isSaved, setIsSaved] = useState(() => {
+    return savedProsState?.some((p: any) => p.id === targetFavId || p.userId === targetFavId || p.originalData?.id === targetFavId || p.originalData?.userId === targetFavId) || false;
+  });
 
   const handleShare = async () => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `Fixam Provider: ${fullName}`,
-          text: `Check out ${fullName}'s profile on Fixam!`,
+          title: fullName,
+          text: `Check out ${fullName} on Fixam!`,
           url: window.location.href,
         });
       } else {
-        navigator.clipboard.writeText(window.location.href);
-        alert('Profile link copied to clipboard!');
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
       }
     } catch (err) {
       console.error('Error sharing:', err);
@@ -79,24 +81,32 @@ export default function ProviderProfileDetail({
   };
 
   const handleSave = async () => {
-    if (!providerId) return;
+    if (!targetFavId) return;
     try {
       if (isSaved) {
-        await api.delete(`/providers/${providerId}/favorite`);
+        await api.delete(`/providers/${targetFavId}/favorite`);
         setIsSaved(false);
         if (setSavedProsState) {
-          setSavedProsState(savedProsState.filter((p: any) => p._id !== providerId && p.provider?._id !== providerId));
+          setSavedProsState(savedProsState.filter((p: any) => p.id !== targetFavId && p.userId !== targetFavId && p.originalData?.id !== targetFavId));
         }
       } else {
-        await api.post(`/providers/${providerId}/favorite`);
+        await api.post(`/providers/${targetFavId}/favorite`);
         setIsSaved(true);
         if (setSavedProsState) {
-          setSavedProsState([...savedProsState, original]);
+          setSavedProsState([...savedProsState, {
+            id: selectedProvider.id,
+            userId: selectedProvider.userId,
+            name: fullName,
+            role: selectedProvider.role || 'Service Provider',
+            rating: selectedProvider.rating || '5.0',
+            image: displayImage,
+            originalData: selectedProvider
+          }]);
         }
       }
     } catch (err) {
       console.error('Error toggling favorite:', err);
-      alert('Failed to update favorites. Please try again.');
+      setIsSaved(!isSaved);
     }
   };
 

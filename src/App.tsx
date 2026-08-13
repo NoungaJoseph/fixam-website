@@ -92,15 +92,23 @@ export const getMediaUrl = (path?: string, type?: 'image' | 'video') => {
       : 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
   }
 
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
-    return path;
-  }
-
   // Handle local device URIs from mobile emulators that cannot be rendered directly by web browsers
   if (path.startsWith('file://') || path.startsWith('content://')) {
     return type === 'video'
       ? 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
       : 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&auto=format&fit=crop&q=80';
+  }
+
+  // Normalize /uploads/ paths so they dynamically point to current active backend origin
+  if (path.includes('/uploads/')) {
+    const relativeUpload = '/uploads/' + path.split('/uploads/')[1];
+    const API_URL = getApiUrl();
+    const origin = API_URL.replace(/\/api\/?$/, '');
+    return `${origin}${relativeUpload}`;
+  }
+
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path;
   }
 
   const API_URL = getApiUrl();
@@ -1318,58 +1326,81 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   // Client-specific interactive state hooks
   const [clientTasks, setClientTasks] = useState<any[]>([]);
   const [clientBookings, setClientBookings] = useState<any[]>([]);
-  const [walletBalance, setWalletBalance] = useState(0);
+  const [walletBalance, setWalletBalance] = useState(() => (user as any)?.wallet?.balance || (user as any)?.walletBalance || 0);
   const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [leads, setLeads] = useState<any[]>([]);
   const [activeProposals, setActiveProposals] = useState<any[]>([]);
 
+  // Update initial wallet balance whenever user object updates
+  useEffect(() => {
+    if ((user as any)?.wallet?.balance !== undefined) {
+      setWalletBalance((user as any).wallet.balance);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (isLoggedIn) {
       const fetchData = async () => {
         try {
-          // Fetch badge & notification metrics
-          const [convsRes, notifsRes] = await Promise.all([
-            api.get('/chat/conversations').catch(() => null),
-            api.get('/notifications').catch(() => null)
-          ]);
-
-          if (convsRes?.data?.data) {
-            const totalUnread = convsRes.data.data.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
-            setUnreadMessagesCount(totalUnread);
-          }
-          if (notifsRes?.data) {
-            const unreadNotifs = notifsRes.data.unreadCount !== undefined 
-              ? notifsRes.data.unreadCount 
-              : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
-            setUnreadNotificationsCount(unreadNotifs);
-          }
-
           if (userRole === 'client') {
-            const [jobsRes, walletRes, providersRes, bookingsRes] = await Promise.all([
+            const [convsRes, notifsRes, jobsRes, walletRes, providersRes, bookingsRes, favsRes] = await Promise.all([
+              api.get('/chat/conversations').catch(() => null),
+              api.get('/notifications').catch(() => null),
               api.get('/jobs/client').catch(() => null),
               api.get('/wallet/balance').catch(() => null),
               api.get('/providers').catch(() => null),
-              api.get('/bookings/mine').catch(() => null)
+              api.get('/bookings/mine').catch(() => null),
+              api.get('/providers/favorites').catch(() => null)
             ]);
+
+            if (convsRes?.data?.data) {
+              const totalUnread = convsRes.data.data.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
+              setUnreadMessagesCount(totalUnread);
+            }
+            if (notifsRes?.data) {
+              const unreadNotifs = notifsRes.data.unreadCount !== undefined 
+                ? notifsRes.data.unreadCount 
+                : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
+              setUnreadNotificationsCount(unreadNotifs);
+            }
             if (bookingsRes?.data?.data) setClientBookings(bookingsRes.data.data);
             if (jobsRes?.data?.data) setClientTasks(jobsRes.data.data);
             if (walletRes?.data?.data) {
               setWalletBalance(walletRes.data.data.balance || 0);
               if (walletRes.data.data.transactions) setWalletTransactions(walletRes.data.data.transactions);
             }
+            if (favsRes?.data?.data) {
+              const formattedFavs = favsRes.data.data.map((item: any) => {
+                const name = item.user?.fullName || item.name || 'Provider';
+                const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : (item.role || 'Service Provider');
+                const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
+                const rawAvatar = item.user?.avatar || item.avatar || item.image || '';
+                const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
+                return {
+                  id: item.id,
+                  userId: item.user?.id || item.userId,
+                  name,
+                  role,
+                  rating,
+                  image,
+                  originalData: item
+                };
+              });
+              setSavedProsState(formattedFavs);
+            }
             if (providersRes?.data?.data) {
               const formattedPros = providersRes.data.data.map((item: any) => {
                 const name = item.user?.fullName || 'Anonymous Provider';
                 const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
                 const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-                
                 const rawAvatar = item.user?.avatar || item.avatar || '';
                 const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
                 
                 return {
                   id: item.id,
+                  userId: item.user?.id || item.userId,
                   name,
                   role,
                   rating,
@@ -1380,11 +1411,23 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setLocalLivePros(formattedPros);
             }
           } else if (userRole === 'pro') {
-            const [leadsRes, proposalsRes, walletRes] = await Promise.all([
+            const [convsRes, notifsRes, leadsRes, proposalsRes, walletRes] = await Promise.all([
+              api.get('/chat/conversations').catch(() => null),
+              api.get('/notifications').catch(() => null),
               api.get('/jobs/pro/matches').catch(() => null), 
               api.get('/jobs/pro/proposals').catch(() => null),
               api.get('/wallet/balance').catch(() => null)
             ]);
+            if (convsRes?.data?.data) {
+              const totalUnread = convsRes.data.data.reduce((sum: number, c: any) => sum + (c.unreadCount || 0), 0);
+              setUnreadMessagesCount(totalUnread);
+            }
+            if (notifsRes?.data) {
+              const unreadNotifs = notifsRes.data.unreadCount !== undefined 
+                ? notifsRes.data.unreadCount 
+                : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
+              setUnreadNotificationsCount(unreadNotifs);
+            }
             if (leadsRes?.data) setLeads(leadsRes.data.jobs || leadsRes.data.matches || []);
             if (proposalsRes?.data?.proposals) setActiveProposals(proposalsRes.data.proposals);
             if (walletRes?.data?.data) {
@@ -1410,6 +1453,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Dashboard', icon: 'home' as IconName },
       { name: 'Find Services', icon: 'search' as IconName },
       { name: 'My Bookings', icon: 'calendar' as IconName },
+      { name: 'Saved Providers', icon: 'heart' as IconName },
       { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Refer & Earn', icon: 'star' as IconName },
@@ -1617,6 +1661,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 setClientBookings={setClientBookings}
                 setActiveTab={setActiveTab}
                 setActiveChatUser={setActiveChatUser}
+                savedProsState={savedProsState}
+                setSavedProsState={setSavedProsState}
               />
             ) : selectedBooking ? (
               <BookingDetail
@@ -1670,6 +1716,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setSavedProsState={setSavedProsState} 
                     setActiveTab={setActiveTab} 
                     setActiveChatUser={setActiveChatUser} 
+                    setSelectedProvider={setSelectedProvider}
                   />
                 )}
                 {activeTab === 'Stats' && <Stats />}
