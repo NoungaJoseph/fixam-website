@@ -1323,7 +1323,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, [localLivePros, livePros, user]);
 
   // Client-specific interactive state hooks
-  // Client-specific interactive state hooks
   const [clientTasks, setClientTasks] = useState<any[]>([]);
   const [clientBookings, setClientBookings] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState(() => (user as any)?.wallet?.balance || (user as any)?.walletBalance || 0);
@@ -1332,6 +1331,39 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
   const [leads, setLeads] = useState<any[]>([]);
   const [activeProposals, setActiveProposals] = useState<any[]>([]);
+
+  // Fetch public providers on app mount for landing page display
+  useEffect(() => {
+    const fetchPublicProviders = async () => {
+      try {
+        const res = await api.get('/providers');
+        if (res.data?.data) {
+          const formattedPros = res.data.data.map((item: any) => {
+            const name = item.user?.fullName || 'Anonymous Provider';
+            const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
+            const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
+            const rawAvatar = item.user?.avatar || item.avatar || '';
+            const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
+            
+            return {
+              id: item.id,
+              userId: item.user?.id || item.userId,
+              name,
+              role,
+              rating,
+              image,
+              originalData: item,
+              isVerified: item.verification === 'VERIFIED'
+            };
+          });
+          setLocalLivePros(formattedPros);
+        }
+      } catch (err) {
+        console.warn('Error fetching public providers for landing page:', err);
+      }
+    };
+    fetchPublicProviders();
+  }, []);
 
   // Update initial wallet balance whenever user object updates
   useEffect(() => {
@@ -2194,20 +2226,41 @@ function ServiceCard(service: (typeof services)[number]) {
 
 export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: boolean; onNavigate?: (page: Page) => void }) {
   const { t } = useTranslation();
+  const displayImage = pro.image ? getMediaUrl(pro.image) : '';
 
   return (
     <article className={mini ? 'top-rated-card mini' : 'top-rated-card'}>
       <div className="top-rated-cover">
-        {pro.image ? (
-          <img src={pro.image} alt={pro.name} className="top-rated-img" />
+        {displayImage ? (
+          <img 
+            src={displayImage} 
+            alt={pro.name} 
+            className="top-rated-img" 
+            onError={(e) => {
+              (e.target as HTMLImageElement).onerror = null;
+              (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&auto=format&fit=crop&q=80`;
+            }}
+          />
         ) : (
           <div className="top-rated-img fallback-cover" style={{ backgroundColor: '#14b8a6', width: '100%', height: '100%' }}></div>
         )}
         <div className="top-rated-verified"><Icon name="shield" /> Verified</div>
       </div>
       <div className="top-rated-content">
-        <div className="top-rated-avatar">
-          {(pro.name || '').split(' ').map((n: string) => n[0]).join('')}
+        <div className="top-rated-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {displayImage ? (
+            <img 
+              src={displayImage} 
+              alt={pro.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              onError={(e) => {
+                (e.target as HTMLImageElement).onerror = null;
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            (pro.name || '').split(' ').map((n: string) => n[0]).join('')
+          )}
         </div>
         <div className="top-rated-header">
           <h3>{pro.name}</h3>
