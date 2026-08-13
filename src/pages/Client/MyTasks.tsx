@@ -2,6 +2,7 @@ import './MyTasks.css';
 import React, { useState } from 'react';
 import { Icon } from '../../App';
 import CreateTaskModal from './CreateTaskModal';
+import ReviewModal from '../../components/ReviewModal';
 import { api } from '../../services/api';
 
 interface MyTasksProps {
@@ -17,6 +18,7 @@ interface MyTasksProps {
 
 export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask, setSelectedBooking }: MyTasksProps) {
   const [isPostTaskOpen, setIsPostTaskOpen] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
 
   const handleJobCreated = (newJob: any) => {
     setClientTasks([newJob, ...clientTasks]);
@@ -123,6 +125,21 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                       View Offers
                     </button>
                   )}
+                  {status === 'COMPLETED' && (
+                    <button className="btn-view-offers" style={{ backgroundColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
+                      e.stopPropagation();
+                      const assignedPro = tk.assignments?.[0]?.provider?.user || tk.assignedTo || {};
+                      const targetUserId = assignedPro.id || assignedPro.userId || tk.assignedProviderId;
+                      const targetName = assignedPro.fullName || `${assignedPro.firstName || ''} ${assignedPro.lastName || ''}`.trim() || 'Assigned Provider';
+                      if (!targetUserId) {
+                        alert("No assigned provider record found for this completed task to review.");
+                        return;
+                      }
+                      setReviewTarget({ jobId: tkId, targetUserId, targetName });
+                    }}>
+                      ⭐ Review
+                    </button>
+                  )}
                   {status !== 'COMPLETED' && status !== 'CANCELLED' && (
                   <button className="btn-delete-task" onClick={async (e) => {
                     e.stopPropagation();
@@ -161,6 +178,16 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
         onClose={() => setIsPostTaskOpen(false)}
         onSuccess={handleJobCreated}
       />
+
+      {reviewTarget && (
+        <ReviewModal
+          isOpen={Boolean(reviewTarget)}
+          onClose={() => setReviewTarget(null)}
+          jobId={reviewTarget.jobId}
+          targetUserId={reviewTarget.targetUserId}
+          targetName={reviewTarget.targetName}
+        />
+      )}
     </div>
   );
 }

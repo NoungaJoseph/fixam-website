@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import ReviewModal from '../../components/ReviewModal';
 
 interface MyJobsProps {
   setActiveTab: (tab: string) => void;
@@ -33,6 +34,8 @@ export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps)
 
   const activeCount = jobs.filter(j => j.status !== 'COMPLETED' && j.status !== 'CANCELLED').length;
 
+  const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
+
   return (
     <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -52,7 +55,9 @@ export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps)
           </div>
         ) : (
           jobs.map((job) => {
-            const clientName = job.client?.fullName || 'Client';
+            const clientObj = job.client || {};
+            const clientName = clientObj.fullName || `${clientObj.firstName || ''} ${clientObj.lastName || ''}`.trim() || 'Client';
+            const clientUserId = clientObj.id || clientObj.userId || job.clientId || '';
             const initials = clientName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
             const isCompleted = job.status === 'COMPLETED';
             const isInProgress = job.status === 'IN_PROGRESS' || job.status === 'ASSIGNED';
@@ -108,6 +113,14 @@ export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps)
                         ✓ Complete
                       </button>
                     )}
+                    {isCompleted && clientUserId && (
+                      <button
+                        onClick={() => setReviewTarget({ jobId: job.id, targetUserId: clientUserId, targetName: clientName })}
+                        className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm"
+                      >
+                        ⭐ Review
+                      </button>
+                    )}
                     {!isCompleted && job.status !== 'CANCELLED' && (
                       <button
                         onClick={() => {
@@ -127,6 +140,16 @@ export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps)
           })
         )}
       </div>
+
+      {reviewTarget && (
+        <ReviewModal
+          isOpen={Boolean(reviewTarget)}
+          onClose={() => setReviewTarget(null)}
+          jobId={reviewTarget.jobId}
+          targetUserId={reviewTarget.targetUserId}
+          targetName={reviewTarget.targetName}
+        />
+      )}
     </div>
   );
 }

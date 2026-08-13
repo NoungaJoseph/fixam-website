@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Icon, images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import MyTasks from './MyTasks';
+import ReviewModal from '../../components/ReviewModal';
 
 interface MyBookingsProps {
   clientBookings: any[];
@@ -28,6 +29,7 @@ export default function MyBookings({
   setSelectedBooking
 }: MyBookingsProps) {
   const [activeSubTab, setActiveSubTab] = useState<'bookings' | 'tasks'>('bookings');
+  const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
 
   return (
     <div className="bookings-tasks-tab-wrapper animate-fade-in" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -104,6 +106,15 @@ export default function MyBookings({
                   }}>
                     <Icon name="chat" /> Chat
                   </button>
+                  {bk.status === 'COMPLETED' && (
+                    <button className="btn-chat-booking" style={{ backgroundColor: '#F59E0B', borderColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
+                      e.stopPropagation();
+                      const targetUserId = bk.provider?.id || bk.provider?.userId || bk.providerId;
+                      setReviewTarget({ jobId: bk.id || bk._id, targetUserId, targetName: bkProvider });
+                    }}>
+                      ⭐ Review
+                    </button>
+                  )}
                   {bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED' && (
                     <>
                       <button className="btn-cancel-booking" onClick={async (e) => {
@@ -133,6 +144,16 @@ export default function MyBookings({
           walletBalance={walletBalance}
           savedProsState={savedProsState}
           clientBookings={clientBookings}
+        />
+      )}
+
+      {reviewTarget && (
+        <ReviewModal
+          isOpen={Boolean(reviewTarget)}
+          onClose={() => setReviewTarget(null)}
+          jobId={reviewTarget.jobId}
+          targetUserId={reviewTarget.targetUserId}
+          targetName={reviewTarget.targetName}
         />
       )}
     </div>
