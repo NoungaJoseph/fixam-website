@@ -106,13 +106,15 @@ export default function MyBookings({
                   </button>
                   {bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED' && (
                     <>
-                      <button className="btn-cancel-booking" onClick={async () => {
+                      <button className="btn-cancel-booking" onClick={async (e) => {
+                        e.stopPropagation();
+                        const bkId = bk.id || bk._id;
                         if (confirm("Cancel this booking?")) {
                           try {
-                            await api.patch(`/bookings/${bk._id}/status`, { status: 'CANCELLED' });
-                            setClientBookings(clientBookings.map(b => b._id === bk._id ? {...b, status: 'CANCELLED'} : b));
+                            await api.patch(`/bookings/${bkId}/status`, { status: 'CANCELLED' });
+                            setClientBookings(clientBookings.map(b => (b.id === bkId || b._id === bkId) ? {...b, status: 'CANCELLED'} : b));
                           } catch (err: any) {
-                            alert("Failed to cancel: " + err.response?.data?.message);
+                            alert("Failed to cancel: " + (err.response?.data?.message || err.message));
                           }
                         }
                       }}>Cancel</button>

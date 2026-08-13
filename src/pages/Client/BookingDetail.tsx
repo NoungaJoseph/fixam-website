@@ -104,16 +104,24 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
               <div className="upwork-metric-box">
                 <span className="metric-icon">🏷️</span>
                 <div>
-                  <strong>{bookingData.amount || bookingData.price || bookingData.budget ? `${(bookingData.amount || bookingData.price || bookingData.budget).toLocaleString()} XAF` : 'Agreed Rate'}</strong>
-                  <small>Agreed Job Price</small>
+                  <strong>{bookingData.budget || bookingData.amount || bookingData.price ? `${(bookingData.budget || bookingData.amount || bookingData.price).toLocaleString()} XAF` : 'Agreed Rate'}</strong>
+                  <small>Proposed Budget</small>
                 </div>
               </div>
 
               <div className="upwork-metric-box">
-                <span className="metric-icon">⚙️</span>
+                <span className="metric-icon">⏱️</span>
                 <div>
-                  <strong>{bookingData.category || bookingData.serviceCategory || 'Standard'}</strong>
-                  <small>Service Category</small>
+                  <strong>{bookingData.bookingDuration || '1 Hour'}</strong>
+                  <small>Service Duration</small>
+                </div>
+              </div>
+
+              <div className="upwork-metric-box">
+                <span className="metric-icon">⚡</span>
+                <div>
+                  <strong>{bookingData.urgencyLevel || 'NORMAL'}</strong>
+                  <small>Urgency Level</small>
                 </div>
               </div>
             </div>

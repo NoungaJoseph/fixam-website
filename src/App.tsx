@@ -2020,6 +2020,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             <ProviderDashboard 
               setActiveTab={setActiveTab}
               onRoleChange={onRoleChange}
+              setActiveChatUser={setActiveChatUser}
             />
           )}
 

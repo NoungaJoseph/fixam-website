@@ -7,6 +7,7 @@ import './ProviderDashboard.css';
 interface ProviderDashboardProps {
   setActiveTab: (tab: string) => void;
   onRoleChange?: (role: 'client' | 'pro') => void;
+  setActiveChatUser?: (user: any) => void;
 }
 
 type JobLead = {
@@ -45,7 +46,7 @@ const formatBudget = (job: JobLead) => {
 // Module-level persistent cache across tab navigation remounts
 let cachedJobs: JobLead[] = [];
 
-export default function ProviderDashboard({ setActiveTab, onRoleChange }: ProviderDashboardProps) {
+export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser }: ProviderDashboardProps) {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
   const [search, setSearch] = useState('');
@@ -63,7 +64,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
   const [coverLetter, setCoverLetter] = useState<string>('');
   const [isSubmittingProposal, setIsSubmittingProposal] = useState<boolean>(false);
 
-  const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs'>('best_matches');
+  const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs' | 'direct_bookings'>('best_matches');
   const [isAlertVisible, setIsAlertVisible] = useState(true);
   const [isAvailable, setIsAvailable] = useState(user?.providerProfile?.isAvailable ?? true);
 
@@ -99,6 +100,33 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
   const [pendingBudgetMax, setPendingBudgetMax] = useState('');
   const [pendingSort, setPendingSort] = useState<'newest' | 'oldest' | 'price_high' | 'price_low'>('newest');
   const [pendingVerifiedOnly, setPendingVerifiedOnly] = useState(false);
+
+  // Direct Client Bookings Received by Provider
+  const [providerBookings, setProviderBookings] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchProviderBookings = async () => {
+      try {
+        const res = await api.get('/bookings/mine?role=PROVIDER');
+        if (res.data?.data) {
+          setProviderBookings(res.data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching provider bookings:', err);
+      }
+    };
+    fetchProviderBookings();
+  }, []);
+
+  const handleBookingStatus = async (bookingId: string, status: 'ACCEPTED' | 'REJECTED' | 'COMPLETED') => {
+    try {
+      await api.patch(`/bookings/${bookingId}/status`, { status });
+      setProviderBookings(prev => prev.map(b => (b.id === bookingId || b._id === bookingId) ? { ...b, status } : b));
+      alert(`Booking request ${status.toLowerCase()} successfully!`);
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to update booking status.');
+    }
+  };
 
   // Applied filter values (triggers API request)
   const [appliedJobType, setAppliedJobType] = useState<'all' | 'remote' | 'physical'>('all');
@@ -393,6 +421,12 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
                   Remote only
                 </button>
                 <button
+                  className={`feed-tab-btn ${activeFeedTab === 'direct_bookings' ? 'active' : ''}`}
+                  onClick={() => setActiveFeedTab('direct_bookings')}
+                >
+                  Direct Bookings {providerBookings.length > 0 && `(${providerBookings.length})`}
+                </button>
+                <button
                   className={`feed-tab-btn ${activeFeedTab === 'saved_jobs' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('saved_jobs')}
                 >
@@ -412,14 +446,111 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange }: Provid
                 {hasActiveFilters && <span className="filter-badge-dot" />}
               </button>
             </div>
-
-            <p className="feed-subtext">
+      <p className="feed-subtext">
               Browse jobs that match your experience to a client's hiring preferences. Ordered by most relevant.
             </p>
 
-            {/* JOB FEED CARDS */}
-            <div className="upwork-job-cards-list">
-              {isLoading ? (
+            {/* FEED JOB CARDS LIST */}
+            <div className="upwork-feed-cards-list">
+              {activeFeedTab === 'direct_bookings' ? (
+                providerBookings.length === 0 ? (
+                  <div className="feed-empty-state">
+                    <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>📅</span>
+                    <p style={{ fontWeight: 600, color: '#334155' }}>No direct booking requests yet</p>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '400px', margin: '0.5rem auto' }}>
+                      When clients book your services directly from your profile, their booking requests will appear here for you to accept, manage, or complete.
+                    </p>
+                  </div>
+                ) : (
+                  providerBookings.map((bk) => {
+                    const clientObj = bk.client || bk.user || {};
+                    const clientName = clientObj.fullName || `${clientObj.firstName || ''} ${clientObj.lastName || ''}`.trim() || 'Client';
+                    const clientAvatar = clientObj.avatar ? getMediaUrl(clientObj.avatar) : DEFAULT_AVATAR;
+                    const status = bk.status || 'PENDING';
+                    const bkId = bk.id || bk._id;
+                    const formattedDate = bk.bookingDate ? new Date(bk.bookingDate).toLocaleDateString() : 'Scheduled';
+                    const formattedTime = bk.bookingTime || '09:00';
+
+                    return (
+                      <article className="upwork-job-card" key={bkId} style={{ borderLeft: '4px solid #14B8A6' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <img src={clientAvatar} alt={clientName} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #CBD5E1' }} />
+                            <div>
+                              <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>{clientName}</h4>
+                              <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
+                                📅 {formattedDate} • ⏰ {formattedTime}
+                              </span>
+                            </div>
+                          </div>
+                          <span 
+                            style={{ 
+                              padding: '4px 12px', 
+                              borderRadius: '20px', 
+                              fontSize: '0.75rem', 
+                              fontWeight: 800, 
+                              textTransform: 'uppercase',
+                              backgroundColor: status === 'ACCEPTED' ? '#DCFCE7' : status === 'COMPLETED' ? '#DBEAFE' : status === 'REJECTED' || status === 'CANCELLED' ? '#FEE2E2' : '#FEF9C3',
+                              color: status === 'ACCEPTED' ? '#166534' : status === 'COMPLETED' ? '#1E40AF' : status === 'REJECTED' || status === 'CANCELLED' ? '#991B1B' : '#854D0E'
+                            }}
+                          >
+                            {status}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0', fontSize: '0.8rem', marginBottom: '0.75rem' }}>
+                          <div><span style={{ color: '#64748B' }}>Duration:</span> <strong style={{ color: '#334155' }}>{bk.bookingDuration || '1 Hour'}</strong></div>
+                          <div><span style={{ color: '#64748B' }}>Budget:</span> <strong style={{ color: '#0D9488' }}>{bk.budget ? `${Number(bk.budget).toLocaleString()} XAF` : 'Agreed Rate'}</strong></div>
+                          <div><span style={{ color: '#64748B' }}>Urgency:</span> <strong style={{ color: '#334155' }}>{bk.urgencyLevel || 'NORMAL'}</strong></div>
+                          <div style={{ gridColumn: '1 / -1' }}><span style={{ color: '#64748B' }}>Location:</span> <strong style={{ color: '#334155' }}>{bk.location || 'Client Location'}</strong></div>
+                        </div>
+
+                        {bk.notes && (
+                          <p style={{ fontSize: '0.82rem', color: '#475569', backgroundColor: '#FFFFFF', padding: '0.5rem 0.75rem', borderRadius: '6px', border: '1px solid #F1F5F9', fontStyle: 'italic', margin: '0 0 0.75rem 0' }}>
+                            "{bk.notes}"
+                          </p>
+                        )}
+
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #F1F5F9' }}>
+                          {status === 'PENDING' && (
+                            <>
+                              <button
+                                style={{ backgroundColor: '#10B981', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                                onClick={() => handleBookingStatus(bkId, 'ACCEPTED')}
+                              >
+                                ✓ Accept Booking
+                              </button>
+                              <button
+                                style={{ backgroundColor: '#FEF2F2', color: '#EF4444', border: '1px solid #FCA5A5', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                                onClick={() => handleBookingStatus(bkId, 'REJECTED')}
+                              >
+                                ✕ Reject
+                              </button>
+                            </>
+                          )}
+                          {status === 'ACCEPTED' && (
+                            <button
+                              style={{ backgroundColor: '#2563EB', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                              onClick={() => handleBookingStatus(bkId, 'COMPLETED')}
+                            >
+                              ✓ Mark Completed
+                            </button>
+                          )}
+                          <button
+                            style={{ backgroundColor: '#F1F5F9', color: '#334155', border: '1px solid #CBD5E1', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                            onClick={() => {
+                              setActiveTab('Messages');
+                              if (setActiveChatUser) setActiveChatUser(clientName);
+                            }}
+                          >
+                            💬 Chat Client
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })
+                )
+              ) : isLoading ? (
                 <div className="feed-status-message">Loading jobs...</div>
               ) : error ? (
                 <div className="feed-status-message error">{error}</div>
