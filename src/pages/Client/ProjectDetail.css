@@ -1,7 +1,7 @@
 .project-detail-page-wrapper {
-  max-width: 100%;
-  margin: -1.5rem -2rem 0; /* pulls up and out to the sides to cancel the parent padding */
-  width: calc(100% + 4rem);
+  max-width: none !important;
+  margin: -1.5rem -2rem 0 !important;
+  width: auto !important;
   padding: 0 0 40px;
 }
 
@@ -770,12 +770,8 @@
 }
 
 @media (max-width: 768px) {
-  .project-detail-page-wrapper {
-    margin: -1.5rem -1rem 0;
-    width: calc(100% + 2rem);
-  }
   .active-media-view {
-    height: 300px;
+    height: 260px;
     border-radius: 0;
   }
   .project-detail-text-content {
