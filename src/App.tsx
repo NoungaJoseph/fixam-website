@@ -1479,8 +1479,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const [convsRes, notifsRes, leadsRes, proposalsRes, walletRes] = await Promise.all([
               api.get('/chat/conversations').catch(() => null),
               api.get('/notifications').catch(() => null),
-              api.get('/jobs/pro/matches').catch(() => null), 
-              api.get('/jobs/pro/proposals').catch(() => null),
+              api.get('/jobs/available').catch(() => null), 
+              api.get('/jobs/my-jobs').catch(() => null),
               api.get('/wallet/balance').catch(() => null)
             ]);
             if (convsRes?.data?.data) {
