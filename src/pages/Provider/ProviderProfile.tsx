@@ -6,6 +6,7 @@ import { api } from '../../services/api';
 
 interface ProviderProfileProps {
   setActiveTab?: (tab: string) => void;
+  setSelectedProject?: (proj: any) => void;
 }
 
 type Certificate = {
@@ -16,9 +17,16 @@ type Certificate = {
 };
 
 type PortfolioItem = {
+  id?: string;
   title: string;
   description: string;
+  category?: string;
+  price?: number;
   imageUrl?: string;
+  images?: string[];
+  video?: string;
+  videoUrl?: string;
+  videos?: string[];
   link?: string;
 };
 
@@ -38,8 +46,9 @@ const SKILL_SUGGESTIONS = [
   'Make-up Artist', 'Barbing', 'Nail Technician', 'Massage Therapy',
 ];
 
-export default function ProviderProfile({ setActiveTab }: ProviderProfileProps) {
+export default function ProviderProfile({ setActiveTab, setSelectedProject }: ProviderProfileProps) {
   const { user, refreshUser } = useAuth();
+  const [selectedModalProject, setSelectedModalProject] = useState<any | null>(null);
   const [activeSubTab, setActiveSubTab] = useState('Overview');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -625,27 +634,124 @@ export default function ProviderProfile({ setActiveTab }: ProviderProfileProps) 
               </div>
             ) : (
               <div className="pp-portfolio-grid">
-                {portfolio.map((item, i) => (
-                  <div key={i} className="pp-portfolio-card">
-                    {item.imageUrl && (
-                      <img src={getMediaUrl(item.imageUrl)} alt={item.title} className="pp-portfolio-img" />
-                    )}
-                    <div className="pp-portfolio-body">
-                      <h4 className="pp-portfolio-title">{item.title}</h4>
-                      {item.description && <p className="pp-portfolio-desc">{item.description}</p>}
-                      {item.link && (
-                        <a href={item.link} target="_blank" rel="noopener noreferrer" className="pp-portfolio-link">
-                          🔗 View Project
-                        </a>
+                {portfolio.map((item, i) => {
+                  const coverImg = item.imageUrl || (Array.isArray(item.images) && item.images[0]) || '';
+                  const rawImgs = Array.isArray(item.images) && item.images.length > 0 ? item.images : (coverImg ? [coverImg] : []);
+                  const rawVids = Array.isArray(item.videos) ? item.videos : (item.video ? (Array.isArray(item.video) ? item.video : [item.video]) : []);
+
+                  const handleCardClick = () => {
+                    const fullProj = {
+                      ...item,
+                      imageUrl: coverImg,
+                      images: rawImgs,
+                      videos: rawVids,
+                      provider: {
+                        id: user?.id,
+                        userId: user?.id,
+                        name: fullName,
+                        avatar: user?.avatar || '',
+                        rating: (user as any)?.rating || 5.0,
+                        reviewCount: (user as any)?.reviewCount || 0
+                      }
+                    };
+                    setSelectedModalProject(fullProj);
+                  };
+
+                  return (
+                    <div 
+                      key={item.id || i} 
+                      className="pp-portfolio-card"
+                      style={{ cursor: 'pointer', position: 'relative' }}
+                      onClick={handleCardClick}
+                    >
+                      {coverImg ? (
+                        <img src={getMediaUrl(coverImg)} alt={item.title} className="pp-portfolio-img" />
+                      ) : (
+                        <div style={{ width: '100%', height: '140px', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
+                          🎬 Demo Video ({rawVids.length})
+                        </div>
                       )}
+                      <div className="pp-portfolio-body">
+                        <h4 className="pp-portfolio-title">{item.title}</h4>
+                        {item.description && <p className="pp-portfolio-desc">{item.description}</p>}
+                        {item.link && (
+                          <a 
+                            href={item.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="pp-portfolio-link"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            🔗 External Link
+                          </a>
+                        )}
+                        <span style={{ fontSize: '0.75rem', color: '#14b8a6', fontWeight: 700, marginTop: '8px', display: 'inline-block' }}>
+                          View Full Details →
+                        </span>
+                      </div>
+                      <button
+                        className="pp-btn-delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePortfolio(i);
+                        }}
+                        title="Delete"
+                      >✕</button>
                     </div>
-                    <button
-                      className="pp-btn-delete"
-                      onClick={() => handleDeletePortfolio(i)}
-                      title="Delete"
-                    >✕</button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Quick Preview Modal for Provider Portfolio */}
+            {selectedModalProject && (
+              <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, padding: '20px' }}>
+                <div style={{ background: '#fff', borderRadius: '16px', maxWidth: '700px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }}>
+                  <button 
+                    onClick={() => setSelectedModalProject(null)}
+                    style={{ position: 'absolute', top: '16px', right: '16px', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: 'bold' }}
+                  >
+                    ✕
+                  </button>
+
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>{selectedModalProject.title}</h3>
+                  {selectedModalProject.category && (
+                    <span style={{ fontSize: '0.75rem', background: '#ccfbf1', color: '#0d9488', padding: '4px 10px', borderRadius: '12px', fontWeight: 700, display: 'inline-block', marginBottom: '16px' }}>
+                      {selectedModalProject.category}
+                    </span>
+                  )}
+
+                  {/* Images Showcase */}
+                  {selectedModalProject.images && selectedModalProject.images.length > 0 && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+                      {selectedModalProject.images.map((img: string, idx: number) => (
+                        <img key={idx} src={getMediaUrl(img)} alt={`Project media ${idx}`} style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '10px' }} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Videos Showcase */}
+                  {selectedModalProject.videos && selectedModalProject.videos.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                      {selectedModalProject.videos.map((vid: string, idx: number) => (
+                        <video key={idx} src={getMediaUrl(vid, 'video')} controls style={{ width: '100%', maxHeight: '300px', borderRadius: '10px', background: '#000' }} />
+                      ))}
+                    </div>
+                  )}
+
+                  <p style={{ fontSize: '0.95rem', color: '#334155', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+                    {selectedModalProject.description}
+                  </p>
+
+                  <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button 
+                      onClick={() => setSelectedModalProject(null)}
+                      style={{ background: '#0d9488', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      Close
+                    </button>
                   </div>
-                ))}
+                </div>
               </div>
             )}
           </div>

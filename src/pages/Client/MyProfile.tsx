@@ -342,14 +342,14 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
 
       {profileActiveSubTab === 'Overview' && (
         <div className="space-y-8 animate-fade-in w-full">
-          <section className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm w-full">
+          <section className="bg-transparent py-2 w-full">
             <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">About the Fixam Profile</h3>
             <p className="text-gray-600 leading-relaxed text-sm mb-4">
               Your profile is your digital identity on Fixam. A complete profile helps providers trust you, resulting in faster booking acceptances and better service. It gives professionals an idea of who they are working with before they even arrive.
             </p>
           </section>
 
-          <section className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm w-full">
+          <section className="bg-transparent py-2 w-full">
             <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Personal Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
               <div className="flex flex-col py-2 border-b border-gray-100">
@@ -376,7 +376,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       )}
 
       {profileActiveSubTab === 'Preferences' && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm animate-fade-in max-w-2xl">
+        <div className="bg-transparent py-2 animate-fade-in max-w-2xl">
           <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Account Preferences</h3>
           
           <div className="space-y-6">
@@ -405,7 +405,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       )}
 
       {profileActiveSubTab === 'Reviews' && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm animate-fade-in">
+        <div className="bg-transparent py-2 animate-fade-in">
           <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">My Reviews</h3>
           {reviews.length > 0 ? (
             <div className="space-y-4">
@@ -426,7 +426,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
       )}
 
       {profileActiveSubTab === 'Saved Providers' && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm animate-fade-in">
+        <div className="bg-transparent py-2 animate-fade-in">
           <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">Saved Providers</h3>
           {savedPros.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
