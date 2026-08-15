@@ -432,7 +432,7 @@ export default function ClientDashboard({
           </button>
         </div>
         
-        <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+        <div className="w-full">
           {(() => {
             const formatCardDate = (dateStr: string) => {
               if (!dateStr || dateStr === 'TBD') {

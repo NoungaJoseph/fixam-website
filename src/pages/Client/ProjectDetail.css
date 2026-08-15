@@ -1,24 +1,24 @@
 .project-detail-page-wrapper {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 16px 16px 40px;
-  width: 100%;
+  max-width: 100%;
+  margin: -1.5rem -2rem 0; /* pulls up and out to the sides to cancel the parent padding */
+  width: calc(100% + 4rem);
+  padding: 0 0 40px;
 }
 
 .project-detail-single-column {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0px;
 }
 
 /* Upper Hero Media Gallery Showcase (Clean Background Hero Banner - No text written on top) */
 .project-media-gallery {
   background: transparent;
   border: none;
-  border-radius: 20px;
+  border-radius: 0;
   padding: 0;
   box-shadow: none;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   position: relative;
   width: 100%;
 }
@@ -26,7 +26,7 @@
 .active-media-view {
   width: 100%;
   height: 420px;
-  border-radius: 20px;
+  border-radius: 0 0 20px 20px; /* rounded only at the bottom, flat at top and sides */
   overflow: hidden;
   background-color: #0f172a;
   display: flex;
@@ -34,6 +34,16 @@
   justify-content: center;
   position: relative;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.project-detail-text-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px; /* restored standard internal padding */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* Floating Overlay Back Button Inside Upper Hero (Top-Left) */
@@ -757,4 +767,18 @@
 .btn-submit-proposal-modal:hover {
   background: #0f9788;
   transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .project-detail-page-wrapper {
+    margin: -1.5rem -1rem 0;
+    width: calc(100% + 2rem);
+  }
+  .active-media-view {
+    height: 300px;
+    border-radius: 0;
+  }
+  .project-detail-text-content {
+    padding: 16px 12px;
+  }
 }

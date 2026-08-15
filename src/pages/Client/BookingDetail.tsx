@@ -77,8 +77,8 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
         
         {/* Top Drawer Navigation */}
         <div className="upwork-drawer-topbar">
-          <button className="btn-back-arrow flex items-center gap-2 text-slate-700 font-bold text-sm" onClick={() => setSelectedBooking(null)}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <button className="btn-back-arrow-text" onClick={() => setSelectedBooking(null)}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
             </svg>
             <span>Back</span>

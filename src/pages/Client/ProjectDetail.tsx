@@ -308,9 +308,10 @@ export default function ProjectDetail({
         </div>
 
         {/* Project Title and Category Header */}
-        <div className="project-info-header">
-          <h1 className="project-detail-title">{project.title || 'Untitled Project'}</h1>
-          {project.category && (
+        <div className="project-detail-text-content">
+          <div className="project-info-header">
+            <h1 className="project-detail-title">{project.title || 'Untitled Project'}</h1>
+            {project.category && (
             <span className="project-category-badge">{project.category}</span>
           )}
         </div>
@@ -501,6 +502,7 @@ export default function ProjectDetail({
           )}
         </div>
       </div>
+    </div>
 
       {/* SEND PROPOSAL / PROJECT ORDER MODAL */}
       {isOrderModalOpen && (

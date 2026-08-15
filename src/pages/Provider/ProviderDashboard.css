@@ -1506,5 +1506,31 @@
   }
 }
 
+/* Back button with text style */
+.btn-back-arrow-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 700;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.btn-back-arrow-text svg {
+  stroke: #10B981;
+}
+
+.btn-back-arrow-text:hover {
+  background: #f0fdf4;
+  border-color: #10B981;
+  color: #10B981;
+}
+
 
 

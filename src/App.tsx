@@ -73,7 +73,7 @@ export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
   | 'delivery' | 'electrical' | 'filter' | 'home' | 'location' | 'menu' | 'message'
   | 'painting' | 'plumbing' | 'search' | 'shield' | 'star' | 'user' | 'wallet' | 'wrench' | 'x'
-  | 'chevron-up' | 'chevron-down'
+  | 'chevron-up' | 'chevron-down' | 'heart'
   | 'sun' | 'moon' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'chart' | 'phone' | 'settings' | 'logout'
 
 export const asset = (fileName: string) => `/assets/${fileName}`
@@ -1223,9 +1223,23 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, []);
     // Dashboard navigation specific state
     const [activeTab, setActiveTab] = useState('Dashboard')
+    const [previousTab, setPreviousTab] = useState('Dashboard')
     const [selectedProvider, setSelectedProvider] = useState<any>(null)
     const [selectedBooking, setSelectedBooking] = useState<any>(null)
     const [selectedProject, setSelectedProject] = useState<any>(null)
+
+    useEffect(() => {
+      if (activeTab && activeTab !== 'Booking Details') {
+        setPreviousTab(activeTab);
+      }
+    }, [activeTab]);
+
+    const handleSetSelectedBooking = (val: any) => {
+      setSelectedBooking(val);
+      if (val === null) {
+        setActiveTab(previousTab);
+      }
+    };
     const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([])
 
     useEffect(() => {
@@ -1720,7 +1734,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             ) : selectedBooking ? (
               <BookingDetail
                 selectedBooking={selectedBooking}
-                setSelectedBooking={setSelectedBooking}
+                setSelectedBooking={handleSetSelectedBooking}
                 setActiveTab={setActiveTab}
                 setActiveChatUser={setActiveChatUser}
               />
@@ -1731,7 +1745,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       setActiveTab={setActiveTab}
                       setSelectedProvider={setSelectedProvider}
                       setSelectedProject={setSelectedProject}
-                      setSelectedBooking={setSelectedBooking}
+                      setSelectedBooking={handleSetSelectedBooking}
                       services={services}
                       displayedPros={displayedPros}
                       clientBookings={clientBookings}
@@ -1752,7 +1766,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setClientTasks={setClientTasks}
                     setActiveTab={setActiveTab} 
                     setActiveChatUser={setActiveChatUser} 
-                    setSelectedBooking={setSelectedBooking}
+                    setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}
                 {activeTab === 'My Tasks' && (
@@ -1762,7 +1776,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab} 
                     walletBalance={walletBalance}
                     clientBookings={clientBookings}
-                    setSelectedBooking={setSelectedBooking}
+                    setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}
                 {activeTab === 'Saved Providers' && (
@@ -2536,6 +2550,7 @@ export function Icon({ name }: { name: IconName }) {
     electrical: 'M13 2 4 14h7l-1 8 10-13h-7z',
     filter: 'M4 6h16 M7 12h10 M10 18h4',
     home: 'M3 11 12 3l9 8v10h-6v-6H9v6H3z',
+    heart: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z',
     location: 'M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z M12 10a2 2 0 1 0 0 .1z',
     menu: 'M4 7h16 M4 12h16 M4 17h16',
     message: 'M4 6h16v12H4z M4 7l8 6 8-6',
