@@ -175,9 +175,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
     try {
       const formData = new FormData();
       formData.append('image', file);
-      const res = await api.post('/upload/profile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await api.post('/upload/profile', formData);
       if (res.data?.url) {
         await api.put('/users/profile', { avatar: res.data.url });
         await refreshUser();
@@ -226,9 +224,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
       if (certFile) {
         const fd = new FormData();
         fd.append('file', certFile);
-        const res = await api.post('/upload/portfolio', fd, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await api.post('/upload/portfolio', fd);
         documentUrl = res.data?.url || res.data?.data?.url || '';
       }
       const newCert: Certificate = {
@@ -275,9 +271,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
       if (portfolioFile) {
         const fd = new FormData();
         fd.append('file', portfolioFile);
-        const res = await api.post('/upload/portfolio', fd, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await api.post('/upload/portfolio', fd);
         imageUrl = res.data?.url || res.data?.data?.url || '';
       }
       const newItem: PortfolioItem = {

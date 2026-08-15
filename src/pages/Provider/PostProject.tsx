@@ -243,9 +243,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
   const uploadSingleFile = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await api.post('/upload/portfolio', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    const response = await api.post('/upload/portfolio', formData);
     return response.data?.url || response.data?.data?.url || '';
   };
 

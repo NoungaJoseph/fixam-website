@@ -190,9 +190,7 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
 
     setIsUploadingAvatar(true);
     try {
-      const response = await api.post('/upload/profile', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await api.post('/upload/profile', formData);
       if (response.data?.url) {
         // Persist the new avatar URL to the database user record
         await api.put('/users/profile', { avatar: response.data.url });
