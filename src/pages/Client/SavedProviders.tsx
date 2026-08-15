@@ -94,13 +94,15 @@ export default function SavedProviders({
           try { parsedPackages = JSON.parse(parsedPackages); } catch (_) {}
         }
 
-        const itemImages = Array.isArray(item.images) && item.images.length > 0
+        const rawImages = Array.isArray(item.images) && item.images.length > 0
           ? item.images
           : (item.imageUrl ? [item.imageUrl] : (item.url ? [item.url] : (item.image ? [item.image] : [])));
+        const itemImages = rawImages.map((u: string) => getMediaUrl(u, 'image')).filter(Boolean);
 
-        const itemVideos = Array.isArray(item.videos) && item.videos.length > 0
+        const rawVideos = Array.isArray(item.videos) && item.videos.length > 0
           ? item.videos
           : (item.video ? (Array.isArray(item.video) ? item.video : [item.video]) : (item.videoUrl ? [item.videoUrl] : []));
+        const itemVideos = rawVideos.map((u: string) => getMediaUrl(u, 'video')).filter(Boolean);
 
         const projectId = item.id || `${raw.id}_${item.title || 'proj'}`;
 
@@ -108,7 +110,7 @@ export default function SavedProviders({
           id: projectId,
           title: item.title || 'Untitled Project',
           description: item.description || '',
-          imageUrl: itemImages[0] || item.imageUrl || item.url || item.image || '',
+          imageUrl: itemImages[0] || getMediaUrl(item.imageUrl || item.url || item.image, 'image') || '',
           images: itemImages,
           videos: itemVideos,
           video: itemVideos[0] || null,
