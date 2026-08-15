@@ -441,3 +441,21 @@
   border: 4px solid var(--surface);
   box-shadow: var(--shadow);
 }
+
+/* Remove Extra Background Boxes/Cards for clean look on normal website background */
+.profile-banner-card-centered,
+.profile-section-card,
+.pro-stat-card-centered {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.portfolio-info p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

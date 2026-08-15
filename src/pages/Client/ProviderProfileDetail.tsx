@@ -9,6 +9,7 @@ import { getMediaUrl } from '../../App';
 interface ProviderProfileDetailProps {
   selectedProvider: any;
   setSelectedProvider: (pro: any) => void;
+  setSelectedProject?: (proj: any) => void;
   clientBookings: any[];
   setClientBookings: (bookings: any[]) => void;
   setActiveTab: (tab: string) => void;
@@ -20,6 +21,7 @@ interface ProviderProfileDetailProps {
 export default function ProviderProfileDetail({
   selectedProvider,
   setSelectedProvider,
+  setSelectedProject,
   clientBookings,
   setClientBookings,
   setActiveTab,
@@ -277,7 +279,27 @@ export default function ProviderProfileDetail({
                   {portfolio.map((proj: any, idx: number) => {
                     const projectImage = proj.imageUrl || proj.image || proj.url || (Array.isArray(proj.images) ? proj.images[0] : '');
                     return (
-                    <div key={idx} className="portfolio-item">
+                    <div 
+                      key={idx} 
+                      className="portfolio-item" 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        if (setSelectedProject) {
+                          setSelectedProject({
+                            ...proj,
+                            provider: {
+                              id: selectedProvider?.id,
+                              userId: selectedProvider?.userId || selectedProvider?.id,
+                              name: selectedProvider?.name || 'Provider',
+                              avatar: selectedProvider?.image || '',
+                              rating: selectedProvider?.rating || 5.0,
+                              reviewCount: selectedProvider?.reviewCount || 0
+                            }
+                          });
+                          setActiveTab('Project Details');
+                        }
+                      }}
+                    >
                       <img src={projectImage ? getMediaUrl(projectImage) : 'https://via.placeholder.com/300x200'} alt={proj.title} />
                       <div className="portfolio-info">
                         <h4>{proj.title}</h4>
