@@ -13,6 +13,8 @@ interface ProjectDetailProps {
   clientBookings: any[];
   setClientBookings: (bookings: any[]) => void;
   displayedPros: any[];
+  favoriteProjectIds?: string[];
+  toggleFavoriteProject?: (projectId: string) => void;
 }
 
 export default function ProjectDetail({
@@ -22,7 +24,9 @@ export default function ProjectDetail({
   setActiveTab,
   clientBookings,
   setClientBookings,
-  displayedPros
+  displayedPros,
+  favoriteProjectIds = [],
+  toggleFavoriteProject
 }: ProjectDetailProps) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
@@ -211,6 +215,46 @@ export default function ProjectDetail({
               title={isFr ? 'Retour au tableau de bord' : 'Back to Dashboard'}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+
+            {/* Floating Favorite Heart Button Inside Upper Hero Section */}
+            <button 
+              className="floating-hero-fav-btn" 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (toggleFavoriteProject) toggleFavoriteProject(project.id);
+              }}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(0, 0, 0, 0.4)',
+                border: 'none',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                zIndex: 10,
+                transition: 'background-color 0.2s'
+              }}
+              title={favoriteProjectIds.includes(project.id) ? (isFr ? 'Retirer des favoris' : 'Remove from Favorites') : (isFr ? 'Ajouter aux favoris' : 'Add to Favorites')}
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill={favoriteProjectIds.includes(project.id) ? "#EF4444" : "none"}
+                stroke={favoriteProjectIds.includes(project.id) ? "#EF4444" : "currentColor"}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
             </button>
 
             {mediaList[activeMediaIndex].type === 'video' ? (

@@ -1226,6 +1226,25 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     const [selectedProvider, setSelectedProvider] = useState<any>(null)
     const [selectedBooking, setSelectedBooking] = useState<any>(null)
     const [selectedProject, setSelectedProject] = useState<any>(null)
+    const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([])
+
+    useEffect(() => {
+      if (user?.id) {
+        const stored = localStorage.getItem(`fixam:favorite-projects:${user.id}`);
+        setFavoriteProjectIds(stored ? JSON.parse(stored) : []);
+      } else {
+        setFavoriteProjectIds([]);
+      }
+    }, [user?.id]);
+
+    const toggleFavoriteProject = (projectId: string) => {
+      if (!user?.id) return;
+      const next = favoriteProjectIds.includes(projectId)
+        ? favoriteProjectIds.filter(id => id !== projectId)
+        : [...favoriteProjectIds, projectId];
+      setFavoriteProjectIds(next);
+      localStorage.setItem(`fixam:favorite-projects:${user.id}`, JSON.stringify(next));
+    };
 
   const [searchVal, setSearchVal] = useState('');
   
@@ -1485,7 +1504,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
       { name: 'Dashboard', icon: 'home' as IconName },
       { name: 'Find Services', icon: 'search' as IconName },
       { name: 'My Bookings', icon: 'calendar' as IconName },
-      { name: 'Saved Providers', icon: 'heart' as IconName },
+      { name: 'Saved Providers', label: 'Favorites', icon: 'heart' as IconName },
       { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
       { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Refer & Earn', icon: 'star' as IconName },
@@ -1582,7 +1601,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 onClick={() => handleNavClick(item.name)}
               >
                 <Icon name={item.icon} />
-                <span>{item.name}</span>
+                <span>{item.label || item.name}</span>
                 {item.badge !== undefined && <span className="badge-count">{item.badge}</span>}
                 {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
               </button>
@@ -1684,6 +1703,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 clientBookings={clientBookings}
                 setClientBookings={setClientBookings}
                 displayedPros={displayedPros}
+                favoriteProjectIds={favoriteProjectIds}
+                toggleFavoriteProject={toggleFavoriteProject}
               />
             ) : selectedProvider ? (
               <ProviderProfileDetail
@@ -1718,6 +1739,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       clientTasks={clientTasks}
                       setClientTasks={setClientTasks}
                       onRoleChange={onRoleChange}
+                      favoriteProjectIds={favoriteProjectIds}
+                      toggleFavoriteProject={toggleFavoriteProject}
                     />
                 )}
 
@@ -1749,6 +1772,10 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab} 
                     setActiveChatUser={setActiveChatUser} 
                     setSelectedProvider={setSelectedProvider}
+                    setSelectedProject={setSelectedProject}
+                    favoriteProjectIds={favoriteProjectIds}
+                    toggleFavoriteProject={toggleFavoriteProject}
+                    displayedPros={displayedPros}
                   />
                 )}
                 {activeTab === 'Stats' && <Stats />}
