@@ -287,11 +287,13 @@
 @media (max-width: 768px) {
   .messages-native-layout {
     display: block;
-    height: calc(100vh - 80px);
+    height: calc(100dvh - 120px);
+    max-height: calc(100dvh - 120px);
     border-radius: 0;
     box-shadow: none;
-    margin: -1.5rem; /* negate dashboard padding */
-    width: calc(100% + 3rem);
+    margin: 0;
+    width: 100%;
+    position: relative;
   }
 
   .chat-sidebar-native {
@@ -306,6 +308,19 @@
     width: 100%;
     height: 100%;
     z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages-scroll {
+    padding: 1rem;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .chat-input-area {
+    padding: 8px 10px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .mobile-back-btn {

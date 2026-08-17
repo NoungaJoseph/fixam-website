@@ -483,29 +483,20 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               </div>
             )}
 
-            {/* ── Tracking button (existing) ─────────────────────────────── */}
+            {/* ── Tracking button ─────────────────────────────── */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 12px 0' }}>
               {!activeConv.isSystem && (
                 <div style={{ marginLeft: 'auto' }}>
                   <button 
                     type="button"
                     onClick={() => setShowTrackingModal(true)}
-                    style={{
-                      background: 'linear-gradient(135deg, #14B8A6, #0D9488)',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '20px',
-                      padding: '8px 16px',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      boxShadow: '0 2px 8px rgba(20, 184, 166, 0.3)'
-                    }}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#14B8A6] hover:bg-[#0F9788] text-white rounded-full text-xs font-bold transition shadow-sm cursor-pointer border-none"
                   >
-                    📍 Track Provider
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>{isFr ? 'Suivre le prestataire' : 'Track Provider'}</span>
                   </button>
                 </div>
               )}
@@ -538,8 +529,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                   {/* Header */}
                   <div style={{ background: '#0F172A', color: '#fff', padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span style={{ fontSize: '1.2rem' }}>📍</span>
-                      <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>Live Provider Tracking</h3>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#fff', fontWeight: 700 }}>
+                        {isFr ? 'Suivi en direct du prestataire' : 'Live Provider Tracking'}
+                      </h3>
                     </div>
                     <button 
                       onClick={() => setShowTrackingModal(false)}
@@ -556,7 +552,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 0 4px rgba(34,197,94,0.2)' }}></span>
                         <span style={{ fontWeight: 700, color: '#166534', fontSize: '0.9rem' }}>
-                          {activeTask?.status === 'IN_PROGRESS' ? 'Provider On Site' : 'Provider En Route'}
+                          {activeTask?.status === 'IN_PROGRESS' ? (isFr ? 'Prestataire sur place' : 'Provider On Site') : (isFr ? 'Prestataire en route' : 'Provider En Route')}
                         </span>
                       </div>
                       <span style={{ fontSize: '0.8rem', color: '#15803D', fontWeight: 600 }}>ETA: ~10 mins</span>
@@ -568,14 +564,14 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: '0 0 2px 0', fontSize: '1rem', color: '#0F172A' }}>{activeDetails.name}</h4>
                         <span style={{ fontSize: '0.8rem', color: '#64748B' }}>
-                          {activeTask?.title || activeTask?.category || 'Assigned Service Specialist'}
+                          {activeTask?.title || activeTask?.category || (isFr ? 'Spécialiste de service' : 'Assigned Service Specialist')}
                         </span>
                       </div>
                       <a 
                         href={`tel:${activeDetails.other?.phone || ''}`} 
                         style={{ background: '#14B8A6', color: '#fff', padding: '8px 14px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
                       >
-                        📞 Call
+                        📞 {isFr ? 'Appeler' : 'Call'}
                       </a>
                     </div>
 
@@ -596,19 +592,19 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                     <div style={{ marginTop: '1.2rem', display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 10px' }}>
                       <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✓</div>
-                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>Accepted</span>
+                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>{isFr ? 'Accepté' : 'Accepted'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🚗</div>
-                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>En Route</span>
+                        <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>{isFr ? 'En route' : 'En Route'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>📍</div>
-                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>On Site</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{isFr ? 'Sur place' : 'On Site'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
                         <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🏁</div>
-                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Done</span>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{isFr ? 'Terminé' : 'Done'}</span>
                       </div>
                     </div>
                   </div>
@@ -620,11 +616,11 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               {isLoadingMessages ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94A3B8', gap: '0.5rem' }}>
                   <div style={{ width: '24px', height: '24px', border: '2px solid #E2E8F0', borderTopColor: '#14B8A6', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                  <span style={{ fontSize: '0.9rem' }}>Loading messages...</span>
+                  <span style={{ fontSize: '0.9rem' }}>{isFr ? 'Chargement des messages...' : 'Loading messages...'}</span>
                 </div>
               ) : messages.length === 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94A3B8' }}>
-                  <span style={{ fontSize: '0.9rem' }}>No messages here yet</span>
+                  <span style={{ fontSize: '0.9rem' }}>{isFr ? 'Aucun message pour le moment' : 'No messages here yet'}</span>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -646,7 +642,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                         {isAudio && (
                           <div className="w-[240px] py-1">
                             <div className="flex items-center gap-2 mb-1.5 font-semibold text-xs opacity-90">
-                              <span>🎤 Voice Note</span>
+                              <span>🎤 {isFr ? 'Note vocale' : 'Voice Note'}</span>
                             </div>
                             <audio 
                               src={msg.mediaUrl || msg.content} 
@@ -664,7 +660,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                               rel="noopener noreferrer"
                               style={{ color: isMe ? '#fff' : '#0284c7', textDecoration: 'underline', fontSize: '0.85rem', marginTop: '4px', display: 'inline-block' }}
                             >
-                              🗺️ Open in Google Maps
+                              🗺️ {isFr ? 'Ouvrir sur Google Maps' : 'Open in Google Maps'}
                             </a>
                           </div>
                         ) : (
@@ -702,67 +698,90 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               </div>
             )}
 
-            <div className="chat-input-area" style={{ flexDirection: 'row', alignItems: 'center', padding: '10px 15px', background: '#f0f2f5', gap: '8px' }}>
-              {isRecording ? (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '10px 20px', minHeight: '44px', justifyContent: 'space-between' }}>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
-                    <span className="text-red-500 font-bold text-sm tracking-wider">
-                      Recording voice note: {formatRecordTime(recordDuration)}
-                    </span>
-                  </div>
-                  <button 
-                    type="button" 
-                    onClick={() => stopAudioRecording(true)} 
-                    className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
-                  >
-                    Cancel
-                  </button>
+            {/* If booking is pending or countered, disable messaging until accepted by both parties */}
+            {activeTask && ['PENDING', 'COUNTER_PROPOSED'].includes(activeTask.status) ? (
+              <div className="p-4 bg-amber-50 border-t border-amber-200 text-center flex flex-col items-center justify-center gap-1.5 text-amber-900 shadow-inner">
+                <div className="flex items-center gap-1.5 font-bold text-xs">
+                  <span>🔒</span>
+                  <span>{isFr ? 'Messagerie temporairement verrouillée' : 'Messaging Locked Until Booking Acceptance'}</span>
                 </div>
-              ) : (
-                <>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    multiple 
-                    accept="image/*" 
-                    style={{ display: 'none' }} 
-                    onChange={handleImagePick} 
-                  />
-                  
-                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '5px 10px', minHeight: '44px' }}>
-                    <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
-                      📎
+                <p className="text-[11px] text-amber-700 max-w-md margin-0 leading-relaxed">
+                  {isFr 
+                    ? 'Les messages sont désactivés tant que la réservation n\'est pas acceptée par les deux parties. Ils se déverrouilleront automatiquement dès confirmation.'
+                    : 'Messaging is disabled while the booking offer is pending or countered. Chat unlocks automatically as soon as both parties accept the contract.'}
+                </p>
+              </div>
+            ) : (
+              <div className="chat-input-area" style={{ flexDirection: 'row', alignItems: 'center', padding: '10px 15px', background: '#f0f2f5', gap: '8px' }}>
+                {isRecording ? (
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '10px 20px', minHeight: '44px', justifyContent: 'space-between' }}>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                      <span className="text-red-500 font-bold text-sm tracking-wider">
+                        {isFr ? 'Enregistrement vocal : ' : 'Recording voice note: '}{formatRecordTime(recordDuration)}
+                      </span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => stopAudioRecording(true)} 
+                      className="text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition"
+                    >
+                      {isFr ? 'Annuler' : 'Cancel'}
                     </button>
+                  </div>
+                ) : (
+                  <>
                     <input 
-                      type="text" 
-                      placeholder="Type a message" 
-                      value={newMsgText}
-                      onChange={(e) => setNewMsgText(e.target.value)}
-                      onKeyDown={(e) => { if(e.key === 'Enter') handleSendMsg(); }}
-                      style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontSize: '1rem', padding: '8px', color: '#111b21' }}
+                      type="file" 
+                      ref={fileInputRef} 
+                      multiple 
+                      accept="image/*" 
+                      style={{ display: 'none' }} 
+                      onChange={handleImagePick} 
                     />
-                    <button type="button" title="Share Location" onClick={handleLocationShare} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 8px', cursor: 'pointer' }}>
-                      📍
-                    </button>
-                  </div>
-                </>
-              )}
+                    
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '4px 10px', minHeight: '44px' }}>
+                      <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 6px', cursor: 'pointer', flexShrink: 0 }}>
+                        📎
+                      </button>
+                      <input 
+                        type="text" 
+                        placeholder={isFr ? 'Écrire un message' : 'Type a message'} 
+                        value={newMsgText}
+                        onChange={(e) => setNewMsgText(e.target.value)}
+                        onKeyDown={(e) => { if(e.key === 'Enter') handleSendMsg(); }}
+                        style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: '0.95rem', padding: '6px', color: '#111b21' }}
+                      />
+                      <button 
+                        type="button" 
+                        title={isFr ? "Partager ma position" : "Share Location"} 
+                        onClick={handleLocationShare} 
+                        style={{ background: 'none', border: 'none', color: '#14B8A6', padding: '0 6px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+                          <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </>
+                )}
 
-              {isUploadingAudio ? (
-                <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              ) : (newMsgText.trim() || selectedImages.length > 0) && !isRecording ? (
-                <button type="button" onClick={(e) => handleSendMsg(e)} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                  ➤
-                </button>
-              ) : (
-                <button type="button" title={isRecording ? "Stop & Send" : "Send Voice Note"} onClick={handleVoiceRecord} style={{ width: '48px', height: '48px', borderRadius: '50%', background: isRecording ? '#ef4444' : '#00a884', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                  {isRecording ? '⏹️' : '🎤'}
-                </button>
-              )}
-            </div>
+                {isUploadingAudio ? (
+                  <div style={{ width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : (newMsgText.trim() || selectedImages.length > 0) && !isRecording ? (
+                  <button type="button" onClick={(e) => handleSendMsg(e)} style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
+                    ➤
+                  </button>
+                ) : (
+                  <button type="button" title={isRecording ? (isFr ? "Arrêter & Envoyer" : "Stop & Send") : (isFr ? "Envoyer une note vocale" : "Send Voice Note")} onClick={handleVoiceRecord} style={{ width: '44px', height: '44px', borderRadius: '50%', background: isRecording ? '#ef4444' : '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
+                    {isRecording ? '⏹️' : '🎤'}
+                  </button>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--gray-500)', background: '#f8fafc' }}>

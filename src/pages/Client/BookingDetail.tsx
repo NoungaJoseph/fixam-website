@@ -104,6 +104,54 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
 
             <div className="upwork-divider" />
 
+            {/* Counter Proposal Card if status is COUNTER_PROPOSED */}
+            {(status === 'COUNTER_PROPOSED' || bookingData.counterBudget) && (
+              <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 my-4 shadow-sm animate-fade-in">
+                <div className="flex items-center gap-2 mb-2 text-amber-900 font-bold text-base">
+                  <span>💡</span>
+                  <span>Provider Counter Offer Received</span>
+                </div>
+                <p className="text-xs text-amber-800 mb-3 leading-relaxed">
+                  The provider has proposed a counter offer for this booking request. Please review the updated price and terms below.
+                </p>
+
+                <div className="bg-white rounded-xl p-3.5 border border-amber-200 mb-3 space-y-2">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-semibold text-gray-600">Original Budget:</span>
+                    <span className="line-through text-gray-400 font-bold">{bookingData.budget ? `${Number(bookingData.budget).toLocaleString()} XAF` : 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm border-t border-gray-100 pt-2">
+                    <span className="font-bold text-amber-950">Counter Proposed Price:</span>
+                    <span className="font-extrabold text-teal-600 text-base">
+                      {bookingData.counterBudget ? `${Number(bookingData.counterBudget).toLocaleString()} XAF` : `${(bookingData.budget || 0).toLocaleString()} XAF`}
+                    </span>
+                  </div>
+                  {bookingData.counterNotes && (
+                    <div className="text-xs text-gray-700 bg-amber-50/50 p-2 rounded-lg border border-amber-100 mt-2">
+                      <strong>Provider Notes:</strong> {bookingData.counterNotes}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button 
+                    type="button"
+                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer"
+                    onClick={() => handleStatusChange('ACCEPTED')}
+                  >
+                    ✓ Accept Counter Offer
+                  </button>
+                  <button 
+                    type="button"
+                    className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer"
+                    onClick={() => handleStatusChange('REJECTED')}
+                  >
+                    ✕ Decline Counter Offer
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <div className="upwork-section">
               <h3>Task & Service Details</h3>
@@ -185,6 +233,23 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
 
             {/* Dynamic Actions Grid */}
             <div className="space-y-3 mt-4">
+              {status === 'COUNTER_PROPOSED' && (
+                <>
+                  <button 
+                    className="w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+                    onClick={() => handleStatusChange('ACCEPTED')}
+                  >
+                    ✓ Accept Counter Offer
+                  </button>
+                  <button 
+                    className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+                    onClick={() => handleStatusChange('REJECTED')}
+                  >
+                    ✕ Decline Counter Offer
+                  </button>
+                </>
+              )}
+
               {(status === 'ACCEPTED' || status === 'IN_PROGRESS') && (
                 <button 
                   className="w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm"

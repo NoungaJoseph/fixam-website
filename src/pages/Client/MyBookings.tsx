@@ -95,11 +95,20 @@ export default function MyBookings({
                     <Icon name="calendar" />
                     <span>{bkDate} • {bkTime}</span>
                   </div>
-                  <span className={`booking-status-badge ${bkStatus.toLowerCase()}`}>
-                    {bkStatus}
+                  <span className={`booking-status-badge ${bkStatus.toLowerCase()}`} style={bkStatus === 'COUNTER_PROPOSED' ? { background: '#FEF3C7', color: '#B45309', borderColor: '#FCD34D' } : {}}>
+                    {bkStatus === 'COUNTER_PROPOSED' ? 'Counter Offer Received' : bkStatus}
                   </span>
                 </div>
                 <div className="booking-card-actions">
+                  {bkStatus === 'COUNTER_PROPOSED' && (
+                    <button className="btn-chat-booking" style={{ backgroundColor: '#F59E0B', borderColor: '#F59E0B', color: '#FFFFFF', fontWeight: 'bold' }} onClick={(e) => {
+                      e.stopPropagation();
+                      if (setSelectedBooking) setSelectedBooking(bk);
+                      setActiveTab('Booking Details');
+                    }}>
+                      💡 Review Counter
+                    </button>
+                  )}
                   <button className="btn-chat-booking" onClick={() => {
                     setActiveTab('Messages');
                     setActiveChatUser(bkProvider);
