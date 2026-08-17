@@ -337,10 +337,14 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
           {/* DARK HERO BANNER */}
           <div className="upwork-hero-banner">
             <div className="upwork-hero-content">
-              <span className="upwork-hero-tag">Direct Contracts</span>
-              <h2>Maximize your earnings with a low 5% service fee when you bring new clients to Fixam.</h2>
+              <span className="upwork-hero-tag">{i18n.language === 'fr' ? 'Contrats directs' : 'Direct Contracts'}</span>
+              <h2>
+                {i18n.language === 'fr' 
+                  ? 'Maximisez vos gains avec des frais de service réduits à 5% lorsque vous amenez de nouveaux clients sur Fixam.' 
+                  : 'Maximize your earnings with a low 5% service fee when you bring new clients to Fixam.'}
+              </h2>
               <button className="btn-hero-white" onClick={() => setActiveTab('Post a Project')}>
-                Publish Project
+                {i18n.language === 'fr' ? 'Publier un projet' : 'Publish Project'}
               </button>
             </div>
             <div className="upwork-hero-graphic">
@@ -361,7 +365,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
             <div className="upwork-alert-banner">
               <div className="alert-text-group">
                 <span className="alert-icon">🎓</span>
-                <p>Explore professional career pathways & skill certifications on Fixam Career Hub to boost your earnings and win high-paying client contracts in Cameroon.</p>
+                <p>
+                  {i18n.language === 'fr'
+                    ? 'Explorez les parcours professionnels et certifications sur Fixam Career Hub pour augmenter vos revenus et décrocher des contrats au Cameroun.'
+                    : 'Explore professional career pathways & skill certifications on Fixam Career Hub to boost your earnings and win high-paying client contracts in Cameroon.'}
+                </p>
               </div>
               <div className="alert-actions">
                 <button 
@@ -371,7 +379,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     window.open(url, '_blank');
                   }}
                 >
-                  Explore Career Pathways
+                  {i18n.language === 'fr' ? 'Explorer les parcours' : 'Explore Career Pathways'}
                 </button>
                 <button className="alert-close-btn" onClick={() => setIsAlertVisible(false)} title="Close alert">
                   ✕
@@ -388,7 +396,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               </svg>
               <input
                 type="search"
-                placeholder="Search for jobs"
+                placeholder={i18n.language === 'fr' ? 'Rechercher des missions' : 'Search for jobs'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -398,7 +406,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
           {/* JOBS YOU MIGHT LIKE SECTION */}
           <div className="upwork-jobs-section">
             <div className="jobs-section-header">
-              <h2>Jobs you might like</h2>
+              <h2>{i18n.language === 'fr' ? 'Missions qui pourraient vous intéresser' : 'Jobs you might like'}</h2>
             </div>
 
             {/* TAB LINKS & FILTER BUTTON ROW */}
@@ -408,31 +416,31 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   className={`feed-tab-btn ${activeFeedTab === 'best_matches' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('best_matches')}
                 >
-                  Best matches
+                  {i18n.language === 'fr' ? 'Meilleures correspondances' : 'Best matches'}
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'most_recent' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('most_recent')}
                 >
-                  Most recent
+                  {i18n.language === 'fr' ? 'Plus récentes' : 'Most recent'}
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'remote_only' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('remote_only')}
                 >
-                  Remote only
+                  {i18n.language === 'fr' ? 'À distance' : 'Remote only'}
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'direct_bookings' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('direct_bookings')}
                 >
-                  Direct Bookings {providerBookings.length > 0 && `(${providerBookings.length})`}
+                  {i18n.language === 'fr' ? 'Réservations directes' : 'Direct Bookings'} {providerBookings.length > 0 && `(${providerBookings.length})`}
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'saved_jobs' ? 'active' : ''}`}
                   onClick={() => setActiveFeedTab('saved_jobs')}
                 >
-                  Saved jobs {savedJobIds.length > 0 && `(${savedJobIds.length})`}
+                  {i18n.language === 'fr' ? 'Missions enregistrées' : 'Saved jobs'} {savedJobIds.length > 0 && `(${savedJobIds.length})`}
                 </button>
               </div>
 
@@ -444,13 +452,15 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" />
                 </svg>
-                Filters
+                {i18n.language === 'fr' ? 'Filtres' : 'Filters'}
                 {hasActiveFilters && <span className="filter-badge-dot" />}
               </button>
             </div>
       <p className="feed-subtext">
-              Browse jobs that match your experience to a client's hiring preferences. Ordered by most relevant.
-            </p>
+        {i18n.language === 'fr' 
+          ? 'Parcourez les offres correspondant à votre expérience et aux préférences des clients. Triées par pertinence.'
+          : 'Browse jobs that match your experience to a client\'s hiring preferences. Ordered by most relevant.'}
+      </p>
 
             {/* FEED JOB CARDS LIST */}
             <div className="upwork-feed-cards-list">
@@ -772,7 +782,9 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               />
               <div className="flex-1 min-w-0">
                 <h4 className="user-name truncate">{user?.fullName || 'Nounga Joseph'}</h4>
-                <p className="user-tagline text-teal-600 font-bold">Provider & Specialist</p>
+                <p className="user-tagline text-teal-600 font-bold">
+                  {i18n.language === 'fr' ? 'Prestataire & Spécialiste' : 'Provider & Specialist'}
+                </p>
               </div>
             </div>
 
@@ -785,7 +797,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Client
+                    {i18n.language === 'fr' ? 'Espace Client' : 'Client'}
                   </span>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="9 18 15 12 9 6" />
@@ -797,7 +809,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
             <div className="profile-completion-box pt-2 border-t border-slate-100">
               <div className="flex justify-between items-center text-xs mb-1.5">
                 <button className="complete-profile-link" onClick={() => setActiveTab('My Profile')}>
-                  Complete your profile
+                  {i18n.language === 'fr' ? 'Complétez votre profil' : 'Complete your profile'}
                 </button>
                 <strong className="text-slate-700 font-extrabold">{completionPercentage}%</strong>
               </div>
@@ -810,14 +822,16 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
           {/* PROMOTE WITH ADS CARD */}
           <div className="upwork-sidebar-card">
             <div className="sidebar-card-header">
-              <h4>Promote with ads</h4>
+              <h4>{i18n.language === 'fr' ? 'Promouvoir avec des annonces' : 'Promote with ads'}</h4>
               <span className="chevron">^</span>
             </div>
             <div className="promote-option-row flex items-center justify-between py-2 border-b border-slate-100">
               <div>
-                <span className="label block font-semibold text-slate-800 text-xs">Availability badge</span>
+                <span className="label block font-semibold text-slate-800 text-xs">
+                  {i18n.language === 'fr' ? 'Badge de disponibilité' : 'Availability badge'}
+                </span>
                 <span className={`val text-xs font-bold ${isAvailable ? 'text-emerald-600' : 'text-slate-400'}`}>
-                  {isAvailable ? 'Available Now ●' : 'Off'}
+                  {isAvailable ? (i18n.language === 'fr' ? 'Disponible maintenant ●' : 'Available Now ●') : (i18n.language === 'fr' ? 'Désactivé' : 'Off')}
                 </span>
               </div>
               <button
@@ -838,11 +852,13 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
             </div>
             <div className="promote-option-row flex items-center justify-between py-2">
               <div>
-                <span className="label block font-semibold text-slate-800 text-xs">Boost your profile</span>
+                <span className="label block font-semibold text-slate-800 text-xs">
+                  {i18n.language === 'fr' ? 'Booster votre profil' : 'Boost your profile'}
+                </span>
                 <span className="val text-xs font-bold text-slate-400">
                   {user?.providerProfile?.boostExpiresAt && new Date(user.providerProfile.boostExpiresAt) > new Date()
-                    ? 'Active 🚀'
-                    : 'Off'}
+                    ? (i18n.language === 'fr' ? 'Actif 🚀' : 'Active 🚀')
+                    : (i18n.language === 'fr' ? 'Désactivé' : 'Off')}
                 </span>
               </div>
               <button
@@ -850,7 +866,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 onClick={() => setActiveTab('Boost Profile')}
                 title="Boost your profile"
               >
-                Boost 🚀
+                {i18n.language === 'fr' ? 'Booster 🚀' : 'Boost 🚀'}
               </button>
             </div>
           </div>
@@ -858,27 +874,27 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
           {/* COINS & WALLET CARD */}
           <div className="upwork-sidebar-card">
             <div className="sidebar-card-header">
-              <h4>Coins: {walletBalance !== null ? walletBalance : 0} XAF</h4>
+              <h4>{i18n.language === 'fr' ? 'Pièces' : 'Coins'}: {walletBalance !== null ? walletBalance : 0} XAF</h4>
               <span className="chevron">^</span>
             </div>
             <button
               className="btn-buy-connects"
               onClick={() => setActiveTab('Wallet')}
             >
-              Buy Coins
+              {i18n.language === 'fr' ? 'Acheter des pièces' : 'Buy Coins'}
             </button>
           </div>
 
           {/* QUICK LINKS CARD */}
           <div className="upwork-sidebar-card quick-links-card">
             <button className="quick-link-item" onClick={() => setActiveTab('Post a Project')}>
-              Post a Project ↗
+              {i18n.language === 'fr' ? 'Publier un projet ↗' : 'Post a Project ↗'}
             </button>
             <button className="quick-link-item" onClick={() => setActiveTab('My Stats')}>
-              My Stats & Earnings ↗
+              {i18n.language === 'fr' ? 'Mes stats & gains ↗' : 'My Stats & Earnings ↗'}
             </button>
             <button className="quick-link-item" onClick={() => setActiveTab('Support')}>
-              Help Center & Support ↗
+              {i18n.language === 'fr' ? 'Centre d\'aide & Support ↗' : 'Help Center & Support ↗'}
             </button>
           </div>
 

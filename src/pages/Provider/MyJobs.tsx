@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import ReviewModal from '../../components/ReviewModal';
 
@@ -9,6 +10,7 @@ interface MyJobsProps {
 
 export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps) {
   const [jobs, setJobs] = useState<any[]>([]);
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const fetchMyJobs = async () => {
@@ -40,18 +42,26 @@ export default function MyJobs({ setActiveTab, setActiveChatUser }: MyJobsProps)
     <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">My Jobs & Contracts</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage your active contracts, client communication, and statuses.</p>
+          <h2 className="text-2xl font-bold text-gray-800">
+            {i18n.language === 'fr' ? 'Mes missions & contrats' : 'My Jobs & Contracts'}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {i18n.language === 'fr'
+              ? 'Gérez vos contrats actifs, les communications clients et les statuts.'
+              : 'Manage your active contracts, client communication, and statuses.'}
+          </p>
         </div>
         <div className="bg-teal-50 border border-teal-100 rounded-xl px-4 py-2 text-sm font-bold text-[#14B8A6]">
-          Total active: {activeCount}
+          {i18n.language === 'fr' ? `Total actif: ${activeCount}` : `Total active: ${activeCount}`}
         </div>
       </div>
 
       <div className="space-y-4">
         {jobs.length === 0 ? (
           <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-            <p className="text-gray-500 font-medium">No jobs or contracts found.</p>
+            <p className="text-gray-500 font-medium">
+              {i18n.language === 'fr' ? 'Aucune mission ni contrat trouvé.' : 'No jobs or contracts found.'}
+            </p>
           </div>
         ) : (
           jobs.map((job) => {

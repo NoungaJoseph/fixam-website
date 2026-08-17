@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
@@ -6,6 +7,7 @@ import '../Client/Reviews.css';
 
 export default function ProviderReviews() {
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   const [reviews, setReviews] = useState<any[]>([]);
   const [stats, setStats] = useState({ average: 0, breakdown: [0,0,0,0,0] });
 
@@ -48,8 +50,14 @@ export default function ProviderReviews() {
     <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-800">Client Reviews Received</h2>
-        <p className="text-sm text-gray-500 mt-1">Feedback and ratings left for your completed services by clients.</p>
+        <h2 className="text-2xl font-bold text-gray-800">
+          {i18n.language === 'fr' ? 'Avis clients reçus' : 'Client Reviews Received'}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {i18n.language === 'fr'
+            ? 'Commentaires et évaluations laissés par les clients pour vos prestations réalisées.'
+            : 'Feedback and ratings left for your completed services by clients.'}
+        </p>
       </div>
 
       <div className="grid lg:grid-cols-5 gap-8">
@@ -57,7 +65,9 @@ export default function ProviderReviews() {
         {/* LEFT Column: Rating Overview (2 cols) */}
         <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
           <div>
-            <h3 className="text-lg font-bold text-gray-800 mb-6">Rating Overview</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-6">
+              {i18n.language === 'fr' ? 'Aperçu des notes' : 'Rating Overview'}
+            </h3>
             
             <div className="flex items-baseline gap-2 mb-8">
               <strong className="text-5xl font-black text-gray-900 tracking-tight">{stats.average.toFixed(1)}</strong>
@@ -71,7 +81,7 @@ export default function ProviderReviews() {
                 const pct = Math.round((count / totalReviews) * 100);
                 return (
                   <div key={stars} className="flex items-center gap-3 text-xs font-semibold text-gray-500">
-                    <span className="w-12 text-left">{stars} Stars</span>
+                    <span className="w-12 text-left">{stars} {i18n.language === 'fr' ? 'Étoiles' : 'Stars'}</span>
                     <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full bg-[#14B8A6] rounded-full" style={{ width: `${pct}%` }}></div>
                     </div>
@@ -83,7 +93,7 @@ export default function ProviderReviews() {
           </div>
           
           <div className="border-t border-gray-100 pt-5 mt-6 text-center text-xs font-semibold text-gray-400">
-            Based on {reviews.length} total client reviews
+            {i18n.language === 'fr' ? `Basé sur ${reviews.length} avis client au total` : `Based on ${reviews.length} total client reviews`}
           </div>
         </div>
 
@@ -91,13 +101,17 @@ export default function ProviderReviews() {
         <div className="lg:col-span-3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <span className="text-lg">💬</span>
-            <h3 className="text-lg font-bold text-gray-800">Received Client Feedback</h3>
+            <h3 className="text-lg font-bold text-gray-800">
+              {i18n.language === 'fr' ? 'Commentaires des clients reçus' : 'Received Client Feedback'}
+            </h3>
           </div>
 
           <div className="reviews-list-premium space-y-4">
             {reviews.length === 0 ? (
               <p className="text-center py-12 text-gray-400 font-medium bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-                No client reviews received yet. Completed jobs will show your ratings and comments here.
+                {i18n.language === 'fr'
+                  ? 'Aucun avis client reçu pour le moment. Vos missions terminées afficheront vos notes et commentaires ici.'
+                  : 'No client reviews received yet. Completed jobs will show your ratings and comments here.'}
               </p>
             ) : (
               reviews.map(r => {

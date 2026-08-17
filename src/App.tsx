@@ -1540,15 +1540,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   if (userRole === 'client') {
     const clientNavItems = [
-      { name: 'Dashboard', icon: 'home' as IconName },
-      { name: 'Find Services', icon: 'search' as IconName },
-      { name: 'My Bookings', icon: 'calendar' as IconName },
-      { name: 'Saved Providers', label: 'Favorites', icon: 'heart' as IconName },
-      { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-      { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
-      { name: 'Refer & Earn', icon: 'star' as IconName },
-      { name: 'Settings', icon: 'settings' as IconName },
-      { name: 'Support', icon: 'message' as IconName }
+      { name: 'Dashboard', label: t('dashboard.overview', 'Dashboard'), icon: 'home' as IconName },
+      { name: 'Find Services', label: t('nav.explore', 'Find Services'), icon: 'search' as IconName },
+      { name: 'My Bookings', label: t('dashboard.my_bookings', 'My Bookings'), icon: 'calendar' as IconName },
+      { name: 'Saved Providers', label: t('dashboard.saved_pros', 'Saved Providers'), icon: 'heart' as IconName },
+      { name: 'Messages', label: t('dashboard.messages', 'Messages'), icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
+      { name: 'Wallet', label: t('dashboard.wallet', 'Wallet'), icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+      { name: 'Refer & Earn', label: i18n.language === 'fr' ? 'Parrainer & Gagner' : 'Refer & Earn', icon: 'star' as IconName },
+      { name: 'Settings', label: t('dashboard.settings', 'Settings'), icon: 'settings' as IconName },
+      { name: 'Support', label: t('dashboard.support', 'Support'), icon: 'message' as IconName }
     ];
 
     const handleNavClick = async (itemName: string) => {
@@ -1888,17 +1888,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   // Fallback / Pro Dashboard (integrated with the premium responsive shell)
   const providerNavItems = [
-    { name: 'Dashboard', icon: 'home' as IconName },
-    { name: 'Post a Project', icon: 'wrench' as IconName },
-    { name: 'My Jobs', icon: 'briefcase' as IconName },
-    { name: 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-    { name: 'Notifications', icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
-    { name: 'My Stats', icon: 'chart' as IconName },
-    { name: 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
-    { name: 'Reviews', icon: 'star' as IconName },
-    { name: 'My Profile', icon: 'user' as IconName },
-    { name: 'Settings', icon: 'wrench' as IconName },
-    { name: 'Support', icon: 'message' as IconName }
+    { name: 'Dashboard', label: t('dashboard.overview', 'Dashboard'), icon: 'home' as IconName },
+    { name: 'Post a Project', label: t('dashboard.post_job', 'Post a Project'), icon: 'wrench' as IconName },
+    { name: 'My Jobs', label: t('dashboard.my_jobs', 'My Jobs'), icon: 'briefcase' as IconName },
+    { name: 'Messages', label: t('dashboard.messages', 'Messages'), icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
+    { name: 'Notifications', label: t('dashboard.notifications', 'Notifications'), icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
+    { name: 'My Stats', label: t('dashboard.stats', 'My Stats'), icon: 'chart' as IconName },
+    { name: 'Wallet', label: t('dashboard.wallet', 'Wallet'), icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+    { name: 'Reviews', label: i18n.language === 'fr' ? 'Avis clients' : 'Reviews', icon: 'star' as IconName },
+    { name: 'My Profile', label: t('dashboard.profile', 'My Profile'), icon: 'user' as IconName },
+    { name: 'Settings', label: t('dashboard.settings', 'Settings'), icon: 'wrench' as IconName },
+    { name: 'Support', label: t('dashboard.support', 'Support'), icon: 'message' as IconName }
   ];
 
   const proNewsMessages = [

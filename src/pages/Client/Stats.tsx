@@ -1,9 +1,11 @@
 import './Stats.css';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon, IconName } from '../../App';
 import { api } from '../../services/api';
 
 export default function Stats() {
+  const { i18n } = useTranslation();
   const [statsData, setStatsData] = useState({
     totalBookings: 0,
     activeBookings: 0,
@@ -57,15 +59,17 @@ export default function Stats() {
 
   return (
     <div className="stats-page-layout animate-fade-in">
-      <h1 className="page-title-dash">Stats & Overview</h1>
+      <h1 className="page-title-dash">
+        {i18n.language === 'fr' ? 'Statistiques & Aperçu' : 'Stats & Overview'}
+      </h1>
 
       {/* SUMMARY MINI CARDS */}
       <div className="stats-summary-row">
         {[
-          { icon: 'calendar' as IconName, val: statsData.totalBookings, label: 'Bookings', color: '#14B8A6' },
-          { icon: 'briefcase' as IconName, val: statsData.activeBookings, label: 'Active', color: '#3B82F6' },
-          { icon: 'check' as IconName, val: statsData.doneBookings, label: 'Done', color: '#22C55E' },
-          { icon: 'wallet' as IconName, val: `${statsData.coinsUsed} XAF`, label: 'Coins Used', color: '#A855F7' },
+          { icon: 'calendar' as IconName, val: statsData.totalBookings, label: i18n.language === 'fr' ? 'Réservations' : 'Bookings', color: '#14B8A6' },
+          { icon: 'briefcase' as IconName, val: statsData.activeBookings, label: i18n.language === 'fr' ? 'Actives' : 'Active', color: '#3B82F6' },
+          { icon: 'check' as IconName, val: statsData.doneBookings, label: i18n.language === 'fr' ? 'Terminées' : 'Done', color: '#22C55E' },
+          { icon: 'wallet' as IconName, val: `${statsData.coinsUsed} XAF`, label: i18n.language === 'fr' ? 'Pièces utilisées' : 'Coins Used', color: '#A855F7' },
         ].map((s, i) => (
           <div className="stats-mini-card" key={i}>
             <div className="stats-mini-icon" style={{ background: `${s.color}18`, color: s.color }}>
@@ -82,10 +86,10 @@ export default function Stats() {
       {/* SPENDING OVERVIEW PANEL */}
       <div className="dash-panel-premium" style={{ marginTop: '1.5rem' }}>
         <div className="dash-panel-header-new">
-          <h2>Spending Overview</h2>
+          <h2>{i18n.language === 'fr' ? 'Aperçu des dépenses' : 'Spending Overview'}</h2>
           <select className="select-month">
-            <option>This Month</option>
-            <option>All Time</option>
+            <option>{i18n.language === 'fr' ? 'Ce mois-ci' : 'This Month'}</option>
+            <option>{i18n.language === 'fr' ? 'Tout le temps' : 'All Time'}</option>
           </select>
         </div>
 
@@ -104,16 +108,18 @@ export default function Stats() {
             </svg>
             <div className="chart-inner-text">
               <span className="chart-num">{totalSpentCoins}</span>
-              <span className="chart-lbl">Total Coins<br/>Used</span>
+              <span className="chart-lbl">
+                {i18n.language === 'fr' ? 'Total Pièces' : 'Total Coins'}<br/>{i18n.language === 'fr' ? 'Utilisées' : 'Used'}
+              </span>
             </div>
           </div>
 
           <div className="chart-legend-list">
             {[
-              { color: '#14B8A6', name: 'Booking Payments', val: `${breakdown.bookingPayments} coins (${pPayments}%)` },
-              { color: '#3B82F6', name: 'Urgent Bookings', val: `${breakdown.urgentBookings} coins (${pUrgent}%)` },
-              { color: '#F59E0B', name: 'Service Add-ons', val: `${breakdown.serviceAddons} coins (${pAddons}%)` },
-              { color: '#A855F7', name: 'Other', val: `${breakdown.other} coins (${pOther}%)` },
+              { color: '#14B8A6', name: i18n.language === 'fr' ? 'Paiements de réservations' : 'Booking Payments', val: `${breakdown.bookingPayments} ${i18n.language === 'fr' ? 'pièces' : 'coins'} (${pPayments}%)` },
+              { color: '#3B82F6', name: i18n.language === 'fr' ? 'Réservations urgentes' : 'Urgent Bookings', val: `${breakdown.urgentBookings} ${i18n.language === 'fr' ? 'pièces' : 'coins'} (${pUrgent}%)` },
+              { color: '#F59E0B', name: i18n.language === 'fr' ? 'Options de service' : 'Service Add-ons', val: `${breakdown.serviceAddons} ${i18n.language === 'fr' ? 'pièces' : 'coins'} (${pAddons}%)` },
+              { color: '#A855F7', name: i18n.language === 'fr' ? 'Autre' : 'Other', val: `${breakdown.other} ${i18n.language === 'fr' ? 'pièces' : 'coins'} (${pOther}%)` },
             ].map((l, i) => (
               <div className="legend-item-dash" key={i}>
                 <span className="legend-color-dot" style={{ backgroundColor: l.color }}></span>
@@ -127,7 +133,9 @@ export default function Stats() {
 
       {/* MONTHLY TREND */}
       <div className="dash-panel-premium" style={{ marginTop: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem' }}>Monthly Trend</h2>
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem' }}>
+          {i18n.language === 'fr' ? 'Tendance mensuelle' : 'Monthly Trend'}
+        </h2>
         <div className="stats-bars-wrapper">
           {statsData.monthlyTrend.map((item, i) => {
             const heightPercent = Math.max(12, Math.round((item.count / maxTrend) * 100));

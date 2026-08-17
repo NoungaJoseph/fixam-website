@@ -1,5 +1,6 @@
 import './ProviderProfile.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -48,6 +49,7 @@ const SKILL_SUGGESTIONS = [
 
 export default function ProviderProfile({ setActiveTab, setSelectedProject }: ProviderProfileProps) {
   const { user, refreshUser } = useAuth();
+  const { t, i18n } = useTranslation();
   const [selectedModalProject, setSelectedModalProject] = useState<any | null>(null);
   const [activeSubTab, setActiveSubTab] = useState('Overview');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -308,7 +310,18 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
     }
   };
 
-  const subTabs = ['Overview', 'Skills', 'Portfolio', 'Certificates', 'Reviews'];
+  const rawSubTabs = ['Overview', 'Skills', 'Portfolio', 'Certificates', 'Reviews'];
+  const getSubTabLabel = (tab: string) => {
+    if (i18n.language !== 'fr') return tab;
+    switch (tab) {
+      case 'Overview': return 'Aperçu';
+      case 'Skills': return 'Compétences';
+      case 'Portfolio': return 'Portfolio';
+      case 'Certificates': return 'Certificats';
+      case 'Reviews': return 'Avis';
+      default: return tab;
+    }
+  };
 
   return (
     <div className="pp-root animate-fade-in">
@@ -354,24 +367,24 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
               <h2 className="pp-fullname">{fullName}</h2>
               {(user?.providerProfile?.verification === 'VERIFIED' || (user as any)?.isVerified) && (
                 <span className="pp-badge pp-verified">
-                  <Icon name="shield" /> Verified
+                  <Icon name="shield" /> {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
                 </span>
               )}
               {user?.providerProfile?.verification === 'PENDING' && (
-                <span className="pp-badge pp-pending">⏰ Pending Review</span>
+                <span className="pp-badge pp-pending">⏰ {i18n.language === 'fr' ? 'Vérification en attente' : 'Pending Review'}</span>
               )}
             </div>
             {user?.providerProfile?.experienceLevel && (
-              <p className="pp-experience-label">{user.providerProfile.experienceLevel} Professional</p>
+              <p className="pp-experience-label">{user.providerProfile.experienceLevel} {i18n.language === 'fr' ? 'Professionnel' : 'Professional'}</p>
             )}
             <div className="pp-contact-row">
-              <span><Icon name="message" /> {user?.email || 'No email'}</span>
-              <span><Icon name="phone" /> {user?.phone || 'No phone'}</span>
-              <span><Icon name="location" /> {user?.location || 'No location'}</span>
+              <span><Icon name="message" /> {user?.email || (i18n.language === 'fr' ? 'Pas d\'e-mail' : 'No email')}</span>
+              <span><Icon name="phone" /> {user?.phone || (i18n.language === 'fr' ? 'Pas de téléphone' : 'No phone')}</span>
+              <span><Icon name="location" /> {user?.location || (i18n.language === 'fr' ? 'Lieu non défini' : 'No location')}</span>
             </div>
             {user?.providerProfile?.rate && (
               <div className="pp-rate-badge">
-                💰 {Number(user.providerProfile.rate).toLocaleString()} XAF / hr
+                💰 {Number(user.providerProfile.rate).toLocaleString()} XAF / {i18n.language === 'fr' ? 'h' : 'hr'}
               </div>
             )}
           </div>
@@ -379,11 +392,11 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
           {/* Action Buttons */}
           <div className="pp-action-btns">
             <button className="pp-btn-edit" onClick={() => setIsEditModalOpen(true)}>
-              <Icon name="wrench" /> Edit Profile
+              <Icon name="wrench" /> {i18n.language === 'fr' ? 'Modifier le profil' : 'Edit Profile'}
             </button>
             {!(user?.providerProfile?.verification === 'VERIFIED' || user?.providerProfile?.verification === 'PENDING') && (
               <button className="pp-btn-verify" onClick={() => setActiveTab?.('Verification')}>
-                <Icon name="shield" /> Get Verified
+                <Icon name="shield" /> {i18n.language === 'fr' ? 'Se faire vérifier' : 'Get Verified'}
               </button>
             )}
           </div>
@@ -392,37 +405,37 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
         {/* Stats Row */}
         <div className="pp-stats-row">
           <div className="pp-stat">
-            <span className="pp-stat-label">Member Since</span>
+            <span className="pp-stat-label">{i18n.language === 'fr' ? 'Membre depuis' : 'Member Since'}</span>
             <strong className="pp-stat-val">
               <Icon name="calendar" /> {new Date((user as any)?.createdAt || Date.now()).toLocaleDateString()}
             </strong>
           </div>
           <div className="pp-stat">
-            <span className="pp-stat-label">Date of Birth</span>
+            <span className="pp-stat-label">{i18n.language === 'fr' ? 'Date de naissance' : 'Date of Birth'}</span>
             <strong className="pp-stat-val">
-              {user?.dob ? new Date(user.dob).toLocaleDateString() : 'Not set'}
+              {user?.dob ? new Date(user.dob).toLocaleDateString() : (i18n.language === 'fr' ? 'Non définie' : 'Not set')}
             </strong>
           </div>
           <div className="pp-stat">
-            <span className="pp-stat-label">Skills</span>
-            <strong className="pp-stat-val">{skills.length} Added</strong>
+            <span className="pp-stat-label">{i18n.language === 'fr' ? 'Compétences' : 'Skills'}</span>
+            <strong className="pp-stat-val">{skills.length} {i18n.language === 'fr' ? 'Ajoutées' : 'Added'}</strong>
           </div>
           <div className="pp-stat">
-            <span className="pp-stat-label">Certifications</span>
-            <strong className="pp-stat-val">{certificates.length} Uploaded</strong>
+            <span className="pp-stat-label">{i18n.language === 'fr' ? 'Certifications' : 'Certifications'}</span>
+            <strong className="pp-stat-val">{certificates.length} {i18n.language === 'fr' ? 'Téléchargées' : 'Uploaded'}</strong>
           </div>
         </div>
       </div>
 
       {/* Sub-Tab Navigation */}
       <div className="pp-tabs-scroll">
-        {subTabs.map(tab => (
+        {rawSubTabs.map(tab => (
           <button
             key={tab}
             className={`pp-tab-btn ${activeSubTab === tab ? 'active' : ''}`}
             onClick={() => setActiveSubTab(tab)}
           >
-            {tab}
+            {getSubTabLabel(tab)}
           </button>
         ))}
       </div>
@@ -434,17 +447,17 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
         {activeSubTab === 'Overview' && (
           <div className="pp-panel-group animate-fade-in">
             <div className="pp-panel">
-              <h3 className="pp-panel-title">About Me</h3>
+              <h3 className="pp-panel-title">{i18n.language === 'fr' ? 'À propos de moi' : 'About Me'}</h3>
               <p className="pp-bio-text">
-                {user?.providerProfile?.bio || 'No bio yet. Click Edit Profile to add a professional summary.'}
+                {user?.providerProfile?.bio || (i18n.language === 'fr' ? 'Aucune biographie pour le moment. Cliquez sur Modifier le profil pour ajouter un résumé professionnel.' : 'No bio yet. Click Edit Profile to add a professional summary.')}
               </p>
             </div>
 
             <div className="pp-panel">
-              <h3 className="pp-panel-title">Personal Information</h3>
+              <h3 className="pp-panel-title">{i18n.language === 'fr' ? 'Informations personnelles' : 'Personal Information'}</h3>
               <div className="pp-info-grid">
                 <div className="pp-info-item">
-                  <span className="pp-info-label"><Icon name="user" /> Full Name</span>
+                  <span className="pp-info-label"><Icon name="user" /> {i18n.language === 'fr' ? 'Nom complet' : 'Full Name'}</span>
                   <strong>{fullName}</strong>
                 </div>
                 <div className="pp-info-item">
@@ -452,28 +465,28 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                   <strong>{user?.email}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label"><Icon name="phone" /> Phone</span>
-                  <strong>{user?.phone || 'Not set'}</strong>
+                  <span className="pp-info-label"><Icon name="phone" /> {i18n.language === 'fr' ? 'Téléphone' : 'Phone'}</span>
+                  <strong>{user?.phone || (i18n.language === 'fr' ? 'Non défini' : 'Not set')}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label"><Icon name="location" /> Location</span>
-                  <strong>{user?.location || 'Not set'}</strong>
+                  <span className="pp-info-label"><Icon name="location" /> {i18n.language === 'fr' ? 'Lieu' : 'Location'}</span>
+                  <strong>{user?.location || (i18n.language === 'fr' ? 'Non défini' : 'Not set')}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label">📅 Date of Birth</span>
-                  <strong>{user?.dob ? new Date(user.dob).toLocaleDateString() : 'Not set'}</strong>
+                  <span className="pp-info-label">📅 {i18n.language === 'fr' ? 'Date de naissance' : 'Date of Birth'}</span>
+                  <strong>{user?.dob ? new Date(user.dob).toLocaleDateString() : (i18n.language === 'fr' ? 'Non définie' : 'Not set')}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label">💰 Hourly Rate</span>
-                  <strong>{user?.providerProfile?.rate ? `${Number(user.providerProfile.rate).toLocaleString()} XAF/hr` : 'Not set'}</strong>
+                  <span className="pp-info-label">💰 {i18n.language === 'fr' ? 'Tarif horaire' : 'Hourly Rate'}</span>
+                  <strong>{user?.providerProfile?.rate ? `${Number(user.providerProfile.rate).toLocaleString()} XAF/hr` : (i18n.language === 'fr' ? 'Non défini' : 'Not set')}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label">🎯 Experience Level</span>
-                  <strong>{user?.providerProfile?.experienceLevel || 'Not set'}</strong>
+                  <span className="pp-info-label">🎯 {i18n.language === 'fr' ? 'Niveau d\'expérience' : 'Experience Level'}</span>
+                  <strong>{user?.providerProfile?.experienceLevel || (i18n.language === 'fr' ? 'Non défini' : 'Not set')}</strong>
                 </div>
                 <div className="pp-info-item">
-                  <span className="pp-info-label">📍 Service Area</span>
-                  <strong>{user?.providerProfile?.serviceArea || 'Not set'}</strong>
+                  <span className="pp-info-label">📍 {i18n.language === 'fr' ? 'Zone d\'intervention' : 'Service Area'}</span>
+                  <strong>{user?.providerProfile?.serviceArea || (i18n.language === 'fr' ? 'Non définie' : 'Not set')}</strong>
                 </div>
               </div>
             </div>
