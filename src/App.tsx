@@ -1540,15 +1540,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   if (userRole === 'client') {
     const clientNavItems = [
-      { name: 'Dashboard', label: t('dashboard.overview', 'Dashboard'), icon: 'home' as IconName },
-      { name: 'Find Services', label: t('nav.explore', 'Find Services'), icon: 'search' as IconName },
-      { name: 'My Bookings', label: t('dashboard.my_bookings', 'My Bookings'), icon: 'calendar' as IconName },
-      { name: 'Saved Providers', label: t('dashboard.saved_pros', 'Saved Providers'), icon: 'heart' as IconName },
-      { name: 'Messages', label: t('dashboard.messages', 'Messages'), icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-      { name: 'Wallet', label: t('dashboard.wallet', 'Wallet'), icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+      { name: 'Dashboard', label: i18n.language === 'fr' ? 'Tableau de bord' : 'Dashboard', icon: 'home' as IconName },
+      { name: 'Find Services', label: i18n.language === 'fr' ? 'Trouver un service' : 'Find Services', icon: 'search' as IconName },
+      { name: 'My Bookings', label: i18n.language === 'fr' ? 'Mes réservations' : 'My Bookings', icon: 'calendar' as IconName },
+      { name: 'Saved Providers', label: i18n.language === 'fr' ? 'Prestataires enregistrés' : 'Saved Providers', icon: 'heart' as IconName },
+      { name: 'Messages', label: i18n.language === 'fr' ? 'Messages' : 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
+      { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
       { name: 'Refer & Earn', label: i18n.language === 'fr' ? 'Parrainer & Gagner' : 'Refer & Earn', icon: 'star' as IconName },
-      { name: 'Settings', label: t('dashboard.settings', 'Settings'), icon: 'settings' as IconName },
-      { name: 'Support', label: t('dashboard.support', 'Support'), icon: 'message' as IconName }
+      { name: 'Settings', label: i18n.language === 'fr' ? 'Paramètres' : 'Settings', icon: 'settings' as IconName },
+      { name: 'Support', label: i18n.language === 'fr' ? 'Support' : 'Support', icon: 'message' as IconName }
     ];
 
     const handleNavClick = async (itemName: string) => {
@@ -1618,7 +1618,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>Client</span>
                     <span className="verified-badge" style={{ fontSize: '10px' }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      Verified
+                      {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
                     </span>
                   </div>
                 </div>
@@ -1647,7 +1647,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             ))}
             
 
-
             {onRoleChange && (
               <button 
                 className="side-link-new" 
@@ -1664,7 +1663,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
             <button className="side-link-new" onClick={() => onNavigate('login')}>
               <Icon name="logout" />
-              <span>Logout</span>
+              <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
             </button>
           </nav>
 
@@ -1888,17 +1887,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   // Fallback / Pro Dashboard (integrated with the premium responsive shell)
   const providerNavItems = [
-    { name: 'Dashboard', label: t('dashboard.overview', 'Dashboard'), icon: 'home' as IconName },
-    { name: 'Post a Project', label: t('dashboard.post_job', 'Post a Project'), icon: 'wrench' as IconName },
-    { name: 'My Jobs', label: t('dashboard.my_jobs', 'My Jobs'), icon: 'briefcase' as IconName },
-    { name: 'Messages', label: t('dashboard.messages', 'Messages'), icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-    { name: 'Notifications', label: t('dashboard.notifications', 'Notifications'), icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
-    { name: 'My Stats', label: t('dashboard.stats', 'My Stats'), icon: 'chart' as IconName },
-    { name: 'Wallet', label: t('dashboard.wallet', 'Wallet'), icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+    { name: 'Dashboard', label: i18n.language === 'fr' ? 'Tableau de bord' : 'Dashboard', icon: 'home' as IconName },
+    { name: 'Post a Project', label: i18n.language === 'fr' ? 'Publier un projet' : 'Post a Project', icon: 'wrench' as IconName },
+    { name: 'My Jobs', label: i18n.language === 'fr' ? 'Mes missions' : 'My Jobs', icon: 'briefcase' as IconName },
+    { name: 'Messages', label: i18n.language === 'fr' ? 'Messages' : 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
+    { name: 'Notifications', label: i18n.language === 'fr' ? 'Notifications' : 'Notifications', icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
+    { name: 'My Stats', label: i18n.language === 'fr' ? 'Mes statistiques' : 'My Stats', icon: 'chart' as IconName },
+    { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
     { name: 'Reviews', label: i18n.language === 'fr' ? 'Avis clients' : 'Reviews', icon: 'star' as IconName },
-    { name: 'My Profile', label: t('dashboard.profile', 'My Profile'), icon: 'user' as IconName },
-    { name: 'Settings', label: t('dashboard.settings', 'Settings'), icon: 'wrench' as IconName },
-    { name: 'Support', label: t('dashboard.support', 'Support'), icon: 'message' as IconName }
+    { name: 'My Profile', label: i18n.language === 'fr' ? 'Mon profil' : 'My Profile', icon: 'user' as IconName },
+    { name: 'Settings', label: i18n.language === 'fr' ? 'Paramètres' : 'Settings', icon: 'wrench' as IconName },
+    { name: 'Support', label: i18n.language === 'fr' ? 'Support' : 'Support', icon: 'message' as IconName }
   ];
 
   const proNewsMessages = [
@@ -1950,11 +1949,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || (userRole === 'pro' ? 'Provider' : 'Client')}</h3>
                 <div className="role-row" style={{ marginTop: '2px' }}>
                   <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>
-                    {userRole === 'pro' ? 'Provider' : 'Client'}
+                    {userRole === 'pro' ? (i18n.language === 'fr' ? 'Prestataire' : 'Provider') : (i18n.language === 'fr' ? 'Client' : 'Client')}
                   </span>
                   <span className="verified-badge" style={{ fontSize: '10px' }}>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    Verified
+                    {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
                   </span>
                 </div>
               </div>
@@ -1983,13 +1982,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               onClick={() => handleNavClick(item.name)}
             >
               <Icon name={item.icon} />
-              <span>{item.name}</span>
+              <span>{item.label || item.name}</span>
               {item.badge && <span className="badge-count">{item.badge}</span>}
               {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
             </button>
           ))}
           
-
 
           {onRoleChange && (
             <button 
@@ -2001,13 +1999,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               }}
             >
               <Icon name="user" />
-              <span>Client</span>
+              <span>{i18n.language === 'fr' ? 'Espace Client' : 'Client'}</span>
             </button>
           )}
 
           <button className="side-link-new" onClick={() => onNavigate('home')}>
             <Icon name="x" />
-            <span>Logout</span>
+            <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
           </button>
         </nav>
       </aside>
