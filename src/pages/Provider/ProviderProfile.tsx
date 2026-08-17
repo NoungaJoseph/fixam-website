@@ -99,6 +99,9 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
   // Reviews
   const [reviews, setReviews] = useState<any[]>([]);
 
+  // Availability toggle (for mobile)
+  const [isProfileAvailable, setIsProfileAvailable] = useState(user?.providerProfile?.isAvailable ?? true);
+
   const fullName = user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Provider';
 
   // Populate form when user loads
@@ -391,6 +394,36 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
 
           {/* Action Buttons */}
           <div className="pp-action-btns">
+            {/* Availability Toggle - visible especially on mobile */}
+            <div className="pp-availability-toggle" style={{ 
+              display: 'flex', alignItems: 'center', gap: '0.75rem', 
+              background: isProfileAvailable ? '#ecfdf5' : '#f1f5f9', 
+              border: `1px solid ${isProfileAvailable ? '#6ee7b7' : '#cbd5e1'}`,
+              borderRadius: '12px', padding: '0.6rem 1rem', width: '100%', marginBottom: '0.75rem'
+            }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isProfileAvailable ? '#059669' : '#64748b', flex: 1 }}>
+                {isProfileAvailable 
+                  ? (i18n.language === 'fr' ? '🟢 En ligne — Disponible' : '🟢 Online — Available')
+                  : (i18n.language === 'fr' ? '⚪ Hors ligne — Indisponible' : '⚪ Offline — Unavailable')}
+              </span>
+              <button
+                className={`w-12 h-7 flex items-center rounded-full p-1 transition-colors cursor-pointer border-none outline-none ${isProfileAvailable ? 'bg-emerald-500 justify-end' : 'bg-slate-300 justify-start'}`}
+                onClick={async () => {
+                  const nextState = !isProfileAvailable;
+                  setIsProfileAvailable(nextState);
+                  try {
+                    await api.put('/providers/status', { isAvailable: nextState });
+                    await refreshUser();
+                  } catch (e) {
+                    console.error('Failed to update availability status', e);
+                    setIsProfileAvailable(!nextState);
+                  }
+                }}
+                title={isProfileAvailable ? (i18n.language === 'fr' ? 'Désactiver la disponibilité' : 'Turn off availability') : (i18n.language === 'fr' ? 'Activer la disponibilité' : 'Turn on availability')}
+              >
+                <span className="w-5 h-5 bg-white rounded-full shadow-md" />
+              </button>
+            </div>
             <button className="pp-btn-edit" onClick={() => setIsEditModalOpen(true)}>
               <Icon name="wrench" /> {i18n.language === 'fr' ? 'Modifier le profil' : 'Edit Profile'}
             </button>

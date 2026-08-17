@@ -40,11 +40,21 @@ export default function BookingFormModal({
       alert('Please select both date and time.');
       return;
     }
+    // Map human-readable duration to backend enum
+    const durationMap: Record<string, string> = {
+      '1 Hour': 'HOURLY',
+      '2-3 Hours': 'HOURLY',
+      'Half Day (4 Hours)': 'HALF_DAY',
+      'Full Day (8 Hours)': 'DAY',
+      'Multi-Day Project': 'DAY',
+      'Flexible': 'FIXED',
+    };
+    const mappedDuration = durationMap[duration] || 'HOURLY';
     onSubmit({
       date,
       time,
       location,
-      duration,
+      duration: mappedDuration,
       budget: budgetAmount ? Number(budgetAmount) : 0,
       urgency,
       notes,
