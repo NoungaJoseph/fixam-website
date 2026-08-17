@@ -60,7 +60,7 @@ export default function ClientDashboard({
   toggleFavoriteProject,
 }: ClientDashboardProps) {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showTaskModal, setShowTaskModal] = useState(false);
 
   // Auto-open task creation modal if redirected from the landing page
@@ -126,6 +126,11 @@ export default function ClientDashboard({
   
   const getGreeting = () => {
     const hour = new Date().getHours();
+    if (i18n.language === 'fr') {
+      if (hour < 12) return 'Bonjour';
+      if (hour < 18) return 'Bon après-midi';
+      return 'Bonsoir';
+    }
     if (hour < 12) return 'Good Morning';
     if (hour < 18) return 'Good Afternoon';
     return 'Good Evening';
@@ -136,12 +141,16 @@ export default function ClientDashboard({
       {/* Greeting row */}
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">{getGreeting()}, {user?.firstName || 'User'}! 👋</h1>
-          <p className="text-sm text-gray-500">Here's what's happening with your account today.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            {getGreeting()}, {user?.firstName || (i18n.language === 'fr' ? 'Utilisateur' : 'User')} ! 👋
+          </h1>
+          <p className="text-sm text-gray-500">
+            {i18n.language === 'fr' ? 'Voici ce qui se passe sur votre compte aujourd\'hui.' : 'Here\'s what\'s happening with your account today.'}
+          </p>
         </div>
         <button className="bg-[#14B8A6] text-white text-sm px-4 py-2 rounded font-medium hover:bg-[#0F9788] transition flex items-center gap-2 w-full md:w-auto justify-center" onClick={() => setActiveTab('Find Services')}>
           <Icon name="search" />
-          Browse Services
+          {i18n.language === 'fr' ? 'Parcourir les services' : 'Browse Services'}
         </button>
       </div>
 
@@ -149,33 +158,35 @@ export default function ClientDashboard({
       <div className="grid md:grid-cols-2 gap-5 mb-8">
         <div className="bg-orange-50/50 border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
           <div>
-            <p className="text-xs font-medium text-gray-400 mb-3">Post a Task</p>
+            <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Publier une tâche' : 'Post a Task'}</p>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-md bg-orange-100 flex items-center justify-center">
                 <span className="text-orange-600"><Icon name="briefcase" /></span>
               </div>
-              <span className="text-sm font-bold text-gray-800">New Job</span>
+              <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Nouvelle tâche' : 'New Job'}</span>
             </div>
-            <h3 className="text-base font-semibold text-gray-700 mb-4">What do you need help with?</h3>
+            <h3 className="text-base font-semibold text-gray-700 mb-4">
+              {i18n.language === 'fr' ? 'Avec quoi avez-vous besoin d\'aide ?' : 'What do you need help with?'}
+            </h3>
           </div>
           <div className="border-t border-gray-200 pt-3 flex justify-end">
             <button 
               className="bg-[#14B8A6] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:bg-[#0F9788] transition-colors shadow-sm"
               onClick={() => setShowTaskModal(true)}
             >
-              Create a Task
+              {i18n.language === 'fr' ? 'Créer une tâche' : 'Create a Task'}
             </button>
           </div>
         </div>
 
         <div className="bg-teal-50/50 border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
           <div>
-            <p className="text-xs font-medium text-gray-400 mb-3">Your Wallet</p>
+            <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Votre portefeuille' : 'Your Wallet'}</p>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-md bg-teal-100 flex items-center justify-center">
                 <span className="text-teal-600"><Icon name="wallet" /></span>
               </div>
-              <span className="text-sm font-bold text-gray-800">Fixam Coins</span>
+              <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Pièces Fixam' : 'Fixam Coins'}</span>
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-2">{walletBalance.toLocaleString()} XAF</h3>
           </div>
@@ -187,7 +198,7 @@ export default function ClientDashboard({
             >
               <span className="text-2xl leading-none">+</span>
             </button>
-            <span className="text-xs font-bold text-[#14B8A6]">Top Up</span>
+            <span className="text-xs font-bold text-[#14B8A6]">{i18n.language === 'fr' ? 'Recharger' : 'Top Up'}</span>
           </div>
         </div>
       </div>
