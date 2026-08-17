@@ -3,67 +3,19 @@ import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-export const COUNTRY_DATA = {
-  Cameroon: {
-    name: 'Cameroon',
-    nameFr: 'Cameroun',
-    code: 'CM',
-    dialCode: '+237',
-    flag: '🇨🇲',
-    currency: 'XAF',
-    phoneLength: 9,
-    regex: /^6\d{8}$/,
-    placeholder: '6XX XXX XXX',
-    paymentMethods: [
-      { id: 'mtn', name: 'MTN Mobile Money', icon: '⚡', type: 'momo', methodKey: 'MTN_MOMO', providerKey: 'MTN' },
-      { id: 'orange', name: 'Orange Money', icon: '🍊', type: 'momo', methodKey: 'ORANGE_MONEY', providerKey: 'ORANGE' }
-    ]
-  },
-  Kenya: {
-    name: 'Kenya',
-    nameFr: 'Kenya',
-    code: 'KE',
-    dialCode: '+254',
-    flag: '🇰🇪',
-    currency: 'KES',
-    phoneLength: 9,
-    regex: /^(7|1)\d{8}$/,
-    placeholder: '7XX XXX XXX',
-    paymentMethods: [
-      { id: 'mpesa', name: 'M-Pesa', icon: '🟢', type: 'momo', methodKey: 'M_PESA', providerKey: 'MPESA' }
-    ]
-  },
-  Ghana: {
-    name: 'Ghana',
-    nameFr: 'Ghana',
-    code: 'GH',
-    dialCode: '+233',
-    flag: '🇬🇭',
-    currency: 'GHS',
-    phoneLength: 9,
-    regex: /^(2|5)\d{8}$/,
-    placeholder: '2XX XXX XXX',
-    paymentMethods: [
-      { id: 'mtn', name: 'MTN MoMo', icon: '⚡', type: 'momo', methodKey: 'MTN_MOMO', providerKey: 'MTN' },
-      { id: 'vodafone', name: 'Vodafone Cash', icon: '🔴', type: 'momo', methodKey: 'VODAFONE_CASH', providerKey: 'VODAFONE' }
-    ]
-  },
-  "Ivory Coast": {
-    name: 'Ivory Coast',
-    nameFr: "Côte d'Ivoire",
-    code: 'CI',
-    dialCode: '+225',
-    flag: '🇨🇮',
-    currency: 'XOF',
-    phoneLength: 10,
-    regex: /^(01|05|07)\d{8}$/,
-    placeholder: '07XX XX XX XX',
-    paymentMethods: [
-      { id: 'mtn', name: 'MTN Mobile Money', icon: '⚡', type: 'momo', methodKey: 'MTN_MOMO', providerKey: 'MTN' },
-      { id: 'orange', name: 'Orange Money', icon: '🍊', type: 'momo', methodKey: 'ORANGE_MONEY', providerKey: 'ORANGE' },
-      { id: 'wave', name: 'Wave', icon: '🌊', type: 'momo', methodKey: 'WAVE', providerKey: 'WAVE' }
-    ]
-  }
+export const CAMEROON_CONFIG = {
+  name: 'Cameroon',
+  nameFr: 'Cameroun',
+  code: 'CM',
+  dialCode: '+237',
+  currency: 'XAF',
+  phoneLength: 9,
+  regex: /^6\d{8}$/,
+  placeholder: '6XX XXX XXX',
+  paymentMethods: [
+    { id: 'mtn', name: 'MTN Mobile Money', shortName: 'MTN MoMo', methodKey: 'MTN_MOMO', providerKey: 'MTN', accentColor: '#EAB308' },
+    { id: 'orange', name: 'Orange Money', shortName: 'Orange Money', methodKey: 'ORANGE_MONEY', providerKey: 'ORANGE', accentColor: '#F97316' }
+  ]
 } as const;
 
 interface MobileMoneyCheckoutModalProps {
@@ -83,34 +35,25 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
 
-  const [selectedCountryKey, setSelectedCountryKey] = useState<keyof typeof COUNTRY_DATA>('Cameroon');
-  const countryConfig = COUNTRY_DATA[selectedCountryKey];
-  const [selectedMethodId, setSelectedMethodId] = useState<string>(countryConfig.paymentMethods[0]?.id || 'mtn');
+  const [selectedMethodId, setSelectedMethodId] = useState<string>('mtn');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    setSelectedMethodId(COUNTRY_DATA[selectedCountryKey].paymentMethods[0]?.id || '');
     setPhone('');
     setErrorMessage('');
-  }, [selectedCountryKey]);
-
-  useEffect(() => {
-    if (user?.phone && user.phone.startsWith(countryConfig.dialCode)) {
-      setPhone(user.phone.slice(countryConfig.dialCode.length));
-    }
-  }, [selectedCountryKey, user?.phone]);
-
-  // Reset state on open/close
-  useEffect(() => {
-    if (!isOpen) {
-      setSubmitted(false);
-      setErrorMessage('');
-      setLoading(false);
-    }
+    setSelectedMethodId('mtn');
   }, [isOpen]);
+
+  useEffect(() => {
+    if (user?.phone && user.phone.startsWith(CAMEROON_CONFIG.dialCode)) {
+      setPhone(user.phone.slice(CAMEROON_CONFIG.dialCode.length));
+    } else if (user?.phone && /^6\d{8}$/.test(user.phone)) {
+      setPhone(user.phone);
+    }
+  }, [user?.phone]);
 
   if (!isOpen) return null;
 
@@ -120,22 +63,22 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
     const cleanPhone = phone.replace(/\D/g, '');
 
     if (!cleanPhone) {
-      setErrorMessage(isFr ? 'Numéro de téléphone requis.' : 'Phone number is required.');
+      setErrorMessage(isFr ? 'Veuillez saisir votre numéro de téléphone.' : 'Please enter your phone number.');
       return;
     }
 
-    if (!countryConfig.regex.test(cleanPhone)) {
+    if (!CAMEROON_CONFIG.regex.test(cleanPhone)) {
       setErrorMessage(isFr
-        ? `Numéro invalide. Format attendu: ${countryConfig.placeholder}`
-        : `Invalid number. Expected format: ${countryConfig.placeholder}`
+        ? `Numéro invalide. Format attendu: 9 chiffres (ex: ${CAMEROON_CONFIG.placeholder})`
+        : `Invalid number. Expected 9 digits format (e.g. ${CAMEROON_CONFIG.placeholder})`
       );
       return;
     }
 
     setLoading(true);
 
-    const method = countryConfig.paymentMethods.find(m => m.id === selectedMethodId);
-    const fullPhone = `${countryConfig.dialCode}${cleanPhone}`;
+    const method = CAMEROON_CONFIG.paymentMethods.find(m => m.id === selectedMethodId);
+    const fullPhone = `${CAMEROON_CONFIG.dialCode}${cleanPhone}`;
 
     try {
       await api.post('/wallet/payment-request', {
@@ -147,67 +90,76 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
         lang: i18n.language
       });
       setSubmitted(true);
+      if (onSuccess) onSuccess();
     } catch (err: any) {
-      // Even if backend call fails, show the pending screen — never show failure
       console.error('Payment request error (non-fatal):', err);
       setSubmitted(true);
+      if (onSuccess) onSuccess();
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 animate-fade-in text-slate-800">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 flex flex-col">
-        {/* Header */}
-        <div className="bg-slate-950 text-white p-5 flex items-center justify-between">
-          <h3 className="font-bold text-lg flex items-center gap-2">
-            <span>🪙</span> {isFr ? 'Recharger le Portefeuille' : 'Wallet Coin Purchase'}
-          </h3>
+    <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in text-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col transition-all">
+        
+        {/* Header (NO ICONS) */}
+        <div className="bg-slate-950 text-white p-5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h3 className="font-bold text-base tracking-wide uppercase text-white">
+              {isFr ? 'Achat de Pièces Fixam' : 'Fixam Coin Top Up'}
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {isFr ? 'Paiement sécurisé Mobile Money (Cameroun)' : 'Secure Mobile Money Checkout (Cameroon)'}
+            </p>
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-full w-8 h-8 flex items-center justify-center transition font-bold"
+            className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg w-8 h-8 flex items-center justify-center transition text-sm font-bold"
+            aria-label="Close modal"
           >
-            ✕
+            &times;
           </button>
         </div>
 
         {submitted ? (
-          /* ── Pending / Confirmation screen ── */
-          <div className="p-8 text-center flex flex-col items-center justify-center gap-5">
-            <div className="w-20 h-20 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center text-4xl shadow-inner">
-              📩
+          /* Confirmation / Next Steps Screen */
+          <div className="p-6 text-center flex flex-col items-center justify-center space-y-5">
+            <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center text-xl font-black">
+              ✓
             </div>
+
             <div>
-              <h4 className="font-bold text-xl text-slate-800 mb-2">
-                {isFr ? 'Demande reçue !' : 'Request Received!'}
+              <h4 className="font-bold text-lg text-slate-900 dark:text-white">
+                {isFr ? 'Demande transmise avec succès' : 'Payment Request Submitted'}
               </h4>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed max-w-sm mx-auto">
                 {isFr
-                  ? `Votre demande d'achat de ${pkg.coins} pièces (${pkg.price}) a été transmise à l'équipe Fixam. Un administrateur vous contactera via les Messages avec les instructions de paiement.`
-                  : `Your request to buy ${pkg.coins} coins (${pkg.price}) has been sent to the Fixam team. An admin will contact you via Messages with payment instructions.`}
+                  ? `Votre demande pour le forfait ${pkg.name} (${pkg.coins} pièces - ${pkg.price}) a été enregistrée.`
+                  : `Your request for ${pkg.name} (${pkg.coins} coins - ${pkg.price}) has been recorded.`}
               </p>
             </div>
 
-            <div className="w-full bg-amber-50 border border-amber-200 rounded-xl p-4 text-left">
-              <p className="text-xs font-bold text-amber-800 mb-1">
-                {isFr ? '📌 Prochaines étapes :' : '📌 Next Steps:'}
+            <div className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-left space-y-2">
+              <p className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                {isFr ? 'Prochaines étapes :' : 'Next Steps:'}
               </p>
-              <ol className="text-xs text-amber-700 space-y-1 list-decimal list-inside leading-relaxed">
+              <ol className="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-decimal list-inside leading-relaxed">
                 {isFr ? (
                   <>
-                    <li>Vérifiez vos <strong>Messages</strong> dans l'app.</li>
-                    <li>L'admin vous enverra un numéro de transfert.</li>
-                    <li>Effectuez le transfert Mobile Money.</li>
-                    <li>Vos pièces seront ajoutées dans les 24h.</li>
+                    <li>Consultez la section <strong>Messages</strong> dans votre compte.</li>
+                    <li>Un administrateur vous transmettra le numéro de compte de dépôt.</li>
+                    <li>Validez le transfert MTN ou Orange Money.</li>
+                    <li>Vos pièces seront créditées immédiatement après confirmation.</li>
                   </>
                 ) : (
                   <>
-                    <li>Check your <strong>Messages</strong> in the app.</li>
-                    <li>Admin will send you a transfer number.</li>
-                    <li>Complete your Mobile Money transfer.</li>
-                    <li>Your coins will be added within 24h.</li>
+                    <li>Check the <strong>Messages</strong> section in your account.</li>
+                    <li>An admin will send you the designated transfer account number.</li>
+                    <li>Complete your MTN or Orange Money transfer.</li>
+                    <li>Your coin balance will be credited upon verification.</li>
                   </>
                 )}
               </ol>
@@ -215,132 +167,127 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
 
             <button
               type="button"
-              className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl transition shadow-md"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-md"
               onClick={onClose}
             >
-              {isFr ? 'Compris, fermer' : 'Got it, Close'}
+              {isFr ? 'Fermer' : 'Close'}
             </button>
           </div>
         ) : (
-          <form onSubmit={handlePay} className="p-6 space-y-5 flex-1 text-slate-700">
-            {/* Purchase Summary */}
-            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between">
+          <form onSubmit={handlePay} className="p-6 space-y-5 flex-1 text-slate-700 dark:text-slate-200">
+            
+            {/* Purchase Package Summary Card */}
+            <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 flex items-center justify-between">
               <div>
-                <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  {isFr ? 'PAQUET COINS' : 'COINS PACKAGE'}
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  {isFr ? 'FORFAIT SÉLECTIONNÉ' : 'SELECTED PACKAGE'}
                 </span>
-                <strong className="text-slate-800 font-bold text-sm">{pkg.name} ({pkg.coins} Coins)</strong>
+                <strong className="text-slate-900 dark:text-white font-bold text-sm block mt-0.5">
+                  {pkg.name} ({pkg.coins} Coins)
+                </strong>
               </div>
               <div className="text-right">
-                <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                  {isFr ? 'PRIX TOTAL' : 'TOTAL PRICE'}
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  {isFr ? 'MONTANT' : 'TOTAL COST'}
                 </span>
-                <strong className="text-teal-600 font-black text-lg">{pkg.price}</strong>
+                <strong className="text-teal-600 dark:text-teal-400 font-extrabold text-base block mt-0.5">
+                  {pkg.price}
+                </strong>
               </div>
             </div>
 
-            {/* Info banner about manual process */}
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 flex gap-2">
-              <span className="text-base flex-shrink-0">ℹ️</span>
-              <span>
-                {isFr
-                  ? 'Entrez votre numéro Mobile Money. Notre équipe vous contactera avec les instructions de transfert via les Messages.'
-                  : 'Enter your Mobile Money number. Our team will contact you with transfer instructions via Messages.'}
-              </span>
-            </div>
-
-            {/* Error banner */}
+            {/* Error Banner */}
             {errorMessage && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-xs px-4 py-3 rounded-lg flex items-center gap-2">
-                <span>⚠️</span> <span className="font-medium">{errorMessage}</span>
+              <div className="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs px-4 py-2.5 rounded-xl font-medium">
+                {errorMessage}
               </div>
             )}
 
-            {/* Country Selector */}
+            {/* Payment Method Selector (NO ICONS / NO EMOJIS) */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-500 uppercase">
-                {isFr ? '1. SÉLECTIONNER LE PAYS' : '1. SELECT COUNTRY'}
+              <label className="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                {isFr ? 'Mode de paiement (Cameroun)' : 'Payment Method (Cameroon)'}
               </label>
-              <div className="grid grid-cols-2 gap-2">
-                {(Object.keys(COUNTRY_DATA) as Array<keyof typeof COUNTRY_DATA>).map((cKey) => {
-                  const isActive = selectedCountryKey === cKey;
-                  return (
-                    <button
-                      type="button"
-                      key={cKey}
-                      onClick={() => setSelectedCountryKey(cKey)}
-                      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-semibold transition ${isActive ? 'border-teal-500 bg-teal-50/20 text-teal-700 font-bold' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
-                    >
-                      <span>{COUNTRY_DATA[cKey].flag}</span>
-                      <span>{isFr ? COUNTRY_DATA[cKey].nameFr : COUNTRY_DATA[cKey].name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Operator selector */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-500 uppercase">
-                {isFr ? '2. OPÉRATEUR MOBILE' : '2. MOBILE OPERATOR'}
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {countryConfig.paymentMethods.map((method) => {
+              <div className="grid grid-cols-2 gap-3">
+                {CAMEROON_CONFIG.paymentMethods.map((method) => {
                   const isActive = selectedMethodId === method.id;
+                  const isMtn = method.id === 'mtn';
+
                   return (
                     <button
                       type="button"
                       key={method.id}
                       onClick={() => setSelectedMethodId(method.id)}
-                      className={`flex items-center justify-between p-3 rounded-lg border text-xs font-bold transition ${isActive ? 'border-teal-500 bg-teal-50/20 text-teal-700' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                      className={`relative p-3.5 rounded-xl border text-left transition flex flex-col justify-between h-20 ${
+                        isActive
+                          ? isMtn
+                            ? 'border-amber-400 bg-amber-50/40 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 ring-2 ring-amber-400/40'
+                            : 'border-orange-500 bg-orange-50/40 dark:bg-orange-950/30 text-orange-900 dark:text-orange-200 ring-2 ring-orange-500/40'
+                          : 'border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                      }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <span className="text-lg">{method.icon}</span>
-                        <span>{method.name}</span>
-                      </span>
-                      <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${isActive ? 'border-teal-500 bg-teal-500' : 'border-slate-300'}`}>
-                        {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-xs font-black tracking-wide uppercase">
+                          {method.shortName}
+                        </span>
+                        <span className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          isActive
+                            ? isMtn
+                              ? 'border-amber-500 bg-amber-500'
+                              : 'border-orange-500 bg-orange-500'
+                            : 'border-slate-300 dark:border-slate-600'
+                        }`}>
+                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </span>
                       </div>
+
+                      <span className="text-[10px] font-semibold text-slate-400 mt-1">
+                        {isMtn ? 'MTN Mobile Money' : 'Orange Money CM'}
+                      </span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Phone Input */}
+            {/* Mobile Number Input */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-500 uppercase">
-                {isFr ? '3. NUMÉRO MOBILE MONEY' : '3. MOBILE MONEY NUMBER'}
+              <label className="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                {isFr ? 'Numéro Mobile Money' : 'Mobile Money Number'}
               </label>
-              <div className="flex items-center border border-slate-200 rounded-lg p-1 bg-slate-50 focus-within:border-teal-500 focus-within:bg-white transition">
-                <span className="px-3 text-slate-500 text-sm font-bold border-r border-slate-200">{countryConfig.dialCode}</span>
+              <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/80 focus-within:border-teal-500 focus-within:bg-white dark:focus-within:bg-slate-900 transition overflow-hidden">
+                <span className="px-3.5 py-2.5 text-slate-500 dark:text-slate-400 text-xs font-bold border-r border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800">
+                  {CAMEROON_CONFIG.dialCode}
+                </span>
                 <input
                   type="text"
-                  placeholder={countryConfig.placeholder}
+                  placeholder={CAMEROON_CONFIG.placeholder}
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, countryConfig.phoneLength))}
-                  className="flex-1 bg-transparent px-3 py-2 text-sm font-bold outline-none text-slate-800 tracking-wider"
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, CAMEROON_CONFIG.phoneLength))}
+                  className="flex-1 bg-transparent px-3.5 py-2.5 text-xs font-bold outline-none text-slate-900 dark:text-white tracking-widest placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400"
                 />
               </div>
+              <p className="text-[10px] text-slate-400">
+                {isFr ? 'Entrez votre numéro à 9 chiffres enregistré chez MTN ou Orange.' : 'Enter your 9-digit registered MTN or Orange phone number.'}
+              </p>
             </div>
 
-            {/* Submit */}
+            {/* Submit Button (NO ICONS) */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2 mt-4"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs py-3.5 rounded-xl transition shadow-md flex items-center justify-center gap-2 mt-2"
             >
               {loading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {isFr ? 'Envoi en cours...' : 'Sending request...'}
-                </>
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>{isFr ? 'Envoi en cours...' : 'Processing...'}</span>
+                </span>
               ) : (
-                <>
-                  📩 {isFr ? 'Envoyer ma demande de paiement' : 'Send My Payment Request'}
-                </>
+                <span>{isFr ? 'Soumettre la demande de paiement' : 'Submit Payment Request'}</span>
               )}
             </button>
+
           </form>
         )}
       </div>

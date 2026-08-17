@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './BookingFormModal.css';
 import { Icon } from '../App';
+import { MaterialsListEditor, MaterialItem } from './MaterialsListEditor';
 
 interface BookingFormModalProps {
   isOpen: boolean;
@@ -28,6 +29,8 @@ export default function BookingFormModal({
   const [budgetAmount, setBudgetAmount] = useState('');
   const [urgency, setUrgency] = useState<'NORMAL' | 'URGENT' | 'EMERGENCY'>('NORMAL');
   const [notes, setNotes] = useState('');
+  const [materialsList, setMaterialsList] = useState<MaterialItem[]>([]);
+  const [requiresDiagnosis, setRequiresDiagnosis] = useState(false);
 
   if (!isOpen) return null;
 
@@ -45,6 +48,8 @@ export default function BookingFormModal({
       budget: budgetAmount ? Number(budgetAmount) : 0,
       urgency,
       notes,
+      materialsList,
+      requiresDiagnosis,
       provider: providerName,
       service: providerService,
       price: basePrice,
@@ -156,6 +161,13 @@ export default function BookingFormModal({
               </button>
             </div>
           </div>
+
+          <MaterialsListEditor
+            items={materialsList}
+            onChangeItems={setMaterialsList}
+            requiresDiagnosis={requiresDiagnosis}
+            onToggleDiagnosis={setRequiresDiagnosis}
+          />
 
           <div className="form-group">
             <label>Additional Notes</label>

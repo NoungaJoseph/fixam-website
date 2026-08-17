@@ -4,6 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import './ProjectDetail.css';
+import { MaterialsListEditor, MaterialItem } from '../../components/MaterialsListEditor';
+import { MaterialsListDisplay } from '../../components/MaterialsListDisplay';
 
 interface ProjectDetailProps {
   selectedProject: any;
@@ -43,6 +45,8 @@ export default function ProjectDetail({
   const [offeredBudget, setOfferedBudget] = useState('');
   const [expectedDays, setExpectedDays] = useState('');
   const [isSubmittingProposal, setIsSubmittingProposal] = useState(false);
+  const [materialsList, setMaterialsList] = useState<MaterialItem[]>([]);
+  const [requiresDiagnosis, setRequiresDiagnosis] = useState(false);
 
   const project = selectedProject || {};
   const provider = project.provider || {};
@@ -160,7 +164,9 @@ export default function ProjectDetail({
         bookingTime: '09:00',
         bookingDuration: `${expectedDays || 3} DAYS`,
         notes: `PROJECT PROPOSAL: ${project.title || 'Custom Service'}\nRequirements: ${proposalDescription.trim()}`,
-        location: `Project: ${project.title || 'Custom Service'} (${activeTier.name})`
+        location: `Project: ${project.title || 'Custom Service'} (${activeTier.name})`,
+        materialsList,
+        requiresDiagnosis,
       });
 
       // 2. Create or fetch chat conversation
@@ -356,6 +362,11 @@ export default function ProjectDetail({
             {project.description || (isFr ? 'Aucune description fournie pour ce projet.' : 'No description provided for this project.')}
           </p>
         </div>
+
+        <MaterialsListDisplay
+          materialsList={project.materialsList}
+          requiresDiagnosis={project.requiresDiagnosis}
+        />
 
         {/* Packages / Pricing Tiers (Positioned BEFORE Seller Rating Breakdown - Only ONCE) */}
         <div className="project-packages-section">
@@ -560,6 +571,13 @@ export default function ProjectDetail({
                 onChange={(e) => setProposalDescription(e.target.value)}
               />
             </div>
+
+            <MaterialsListEditor
+              items={materialsList}
+              onChangeItems={setMaterialsList}
+              requiresDiagnosis={requiresDiagnosis}
+              onToggleDiagnosis={setRequiresDiagnosis}
+            />
 
             {/* Price & Days Grid */}
             <div className="proposal-two-cols">

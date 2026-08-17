@@ -9,8 +9,8 @@ export default function Updates({ onNavigate }: { onNavigate: (page: Page) => vo
   const updatesList = [
     {
       date: 'August 13, 2026',
-      titleEn: '🛡️ Enterprise-Grade Platform Security Upgrade',
-      titleFr: '🛡️ Mise à jour de sécurité de niveau entreprise',
+      titleEn: 'Enterprise-Grade Platform Security Upgrade',
+      titleFr: 'Mise à jour de sécurité de niveau entreprise',
       tag: 'Security',
       tagClass: 'tag-security',
       highlightsEn: [
@@ -28,8 +28,8 @@ export default function Updates({ onNavigate }: { onNavigate: (page: Page) => vo
     },
     {
       date: 'August 12, 2026',
-      titleEn: '💰 Official Coin Purchase Approval Flow',
-      titleFr: '💰 Flux d\'approbation officiel d\'achat de pièces',
+      titleEn: 'Official Coin Purchase Approval Flow',
+      titleFr: 'Flux d\'approbation officiel d\'achat de pièces',
       tag: 'Billing',
       tagClass: 'tag-feature',
       highlightsEn: [
@@ -45,8 +45,8 @@ export default function Updates({ onNavigate }: { onNavigate: (page: Page) => vo
     },
     {
       date: 'August 10, 2026',
-      titleEn: '🔍 Provider Job Feed Filters & Saved Jobs',
-      titleFr: '🔍 Filtres du flux d\'offres et d\'emplois enregistrés',
+      titleEn: 'Provider Job Feed Filters & Saved Jobs',
+      titleFr: 'Filtres du flux d\'offres et d\'emplois enregistrés',
       tag: 'Mobile App',
       tagClass: 'tag-app',
       highlightsEn: [

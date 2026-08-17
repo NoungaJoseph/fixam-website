@@ -1,4 +1,7 @@
 import { Icon, getMediaUrl, images } from '../../App';
+import { MaterialsListDisplay } from '../../components/MaterialsListDisplay';
+import { DisputeSection } from '../../components/DisputeSection';
+import { ServiceAgreementSection } from '../../components/ServiceAgreementSection';
 
 interface BookingDetailsProps {
   booking: any;
@@ -113,6 +116,22 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
               </div>
             )}
           </div>
+        </div>
+
+        <div className="p-6 border-t border-gray-100">
+          <MaterialsListDisplay
+            materialsList={booking.materialsList}
+            requiresDiagnosis={booking.requiresDiagnosis}
+          />
+          <ServiceAgreementSection
+            agreement={booking.serviceAgreement || (booking.serviceAgreements && booking.serviceAgreements[0])}
+            isClient={true}
+          />
+          <DisputeSection
+            bookingId={booking._id || booking.id}
+            disputeData={booking.dispute || (booking.disputes && booking.disputes[0])}
+            isClient={true}
+          />
         </div>
       </div>
 

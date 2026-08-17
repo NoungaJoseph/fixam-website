@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { Icon } from '../../App';
+import { MaterialsListEditor, MaterialItem } from '../../components/MaterialsListEditor';
 
 const SERVICE_CATEGORIES = [
   { value: 'plumbing', label: 'Plumbing', fr: 'Plomberie', icon: '🔧' },
@@ -65,6 +66,8 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
     priority: 'NORMAL',
     taskScope: 'SMALL',
     scheduledTime: '',
+    materialsList: [] as MaterialItem[],
+    requiresDiagnosis: false,
   });
 
   useEffect(() => {
@@ -89,6 +92,8 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         priority: 'NORMAL',
         taskScope: 'SMALL',
         scheduledTime: '',
+        materialsList: [],
+        requiresDiagnosis: false,
       });
     }
   }, [isOpen]);
@@ -212,6 +217,9 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         providersNeeded: Number(form.providersNeeded),
         priority: form.priority,
         taskScope: form.taskScope,
+        scheduledTime: form.scheduledTime || undefined,
+        materialsList: form.materialsList,
+        requiresDiagnosis: form.requiresDiagnosis,
       };
       if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone;
       if (form.importantDetails) payload.importantDetails = form.importantDetails;
@@ -454,16 +462,23 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                   <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>{t.description} *</label>
                     <textarea
+                      rows={4}
                       value={form.description}
                       onChange={e => update('description', e.target.value)}
                       placeholder={t.descriptionPlaceholder}
-                      rows={3}
                       style={{
                         width: '100%', border: '1px solid #E2E8F0', borderRadius: '10px',
-                        padding: '0.7rem 1rem', fontSize: '0.875rem', outline: 'none', resize: 'none'
+                        padding: '0.7rem 1rem', fontSize: '0.875rem', outline: 'none', resize: 'vertical'
                       }}
                     />
                   </div>
+
+                  <MaterialsListEditor
+                    items={form.materialsList}
+                    onChangeItems={(items) => setForm(f => ({ ...f, materialsList: items }))}
+                    requiresDiagnosis={form.requiresDiagnosis}
+                    onToggleDiagnosis={(val) => setForm(f => ({ ...f, requiresDiagnosis: val }))}
+                  />
 
                   <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>{t.whatNeedsDone} ({isFr ? 'optionnel' : 'optional'})</label>
