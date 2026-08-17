@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from './i18n'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 import ForgotPassword from './pages/Auth/ForgotPassword'
@@ -255,9 +256,26 @@ function App() {
 
   useEffect(() => {
     if (user?.preferredLanguage) {
-      i18n.changeLanguage(user.preferredLanguage.toLowerCase());
+      const code = user.preferredLanguage.toLowerCase();
+      i18n.changeLanguage(code);
+      localStorage.setItem('fixam_lang', code);
+    } else {
+      const savedLang = localStorage.getItem('fixam_lang');
+      if (savedLang) {
+        i18n.changeLanguage(savedLang.toLowerCase());
+      }
     }
   }, [user?.preferredLanguage]);
+
+  const handleGlobalLanguageChange = async (langCode: string) => {
+    const code = langCode.toLowerCase();
+    i18n.changeLanguage(code);
+    localStorage.setItem('fixam_lang', code);
+    if (isLoggedIn) {
+      await api.put('/users/profile', { preferredLanguage: code.toUpperCase() }).catch(() => null);
+      if (refreshUser) refreshUser().catch(() => null);
+    }
+  };
 
   const completeOnboarding = () => {
     localStorage.setItem('fixam_onboarded', 'true');
@@ -766,6 +784,13 @@ export const translateServiceHelper = (name: string, desc: string, lang: string)
   return { name, desc };
 };
 
+const handleGlobalLanguageChange = (langCode: string) => {
+  const code = langCode.toLowerCase();
+  i18n.changeLanguage(code);
+  localStorage.setItem('fixam_lang', code);
+  api.put('/users/profile', { preferredLanguage: code.toUpperCase() }).catch(() => null);
+};
+
 function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
   const { t, i18n } = useTranslation();
   const { isLoggedIn, logout } = useAuth();
@@ -893,7 +918,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             <div className="language-dropdown-new desktop-only">
               <select 
                 value={i18n.language} 
-                onChange={(e) => i18n.changeLanguage(e.target.value)}
+                onChange={(e) => handleGlobalLanguageChange(e.target.value)}
                 style={{ background: 'transparent', border: 'none', fontWeight: 800, cursor: 'pointer' }}
               >
                 <option value="en">EN</option>
@@ -1167,7 +1192,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '1.5rem 0', marginTop: '1rem', borderTop: '1px solid var(--line)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Icon name="user" />
-                <select value={i18n.language} onChange={(e) => i18n.changeLanguage(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--ink)' }}>
+                <select value={i18n.language} onChange={(e) => handleGlobalLanguageChange(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--ink)' }}>
                     <option value="en">English</option>
                     <option value="fr">Français</option>
                 </select>

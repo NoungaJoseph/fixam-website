@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -48,6 +49,7 @@ let cachedJobs: JobLead[] = [];
 
 export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser }: ProviderDashboardProps) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(cachedJobs.length === 0);

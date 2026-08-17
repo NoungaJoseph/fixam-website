@@ -1,5 +1,6 @@
 import './Settings.css';
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
@@ -12,6 +13,7 @@ interface SettingsProps {
 
 export default function Settings({ setActiveTab }: SettingsProps) {
   const { user, refreshUser } = useAuth();
+  const { t, i18n } = useTranslation();
   const [activeSubTab, setActiveSubTab] = useState<'notifications' | 'privacy' | 'language'>('notifications');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileOverlay, setMobileOverlay] = useState<'notifications' | 'privacy' | 'language' | null>(null);
@@ -30,36 +32,44 @@ export default function Settings({ setActiveTab }: SettingsProps) {
   const [language, setLanguage] = useState<'EN' | 'FR'>('EN');
 
   useEffect(() => {
+    const currentCode = (i18n.language || user?.preferredLanguage || 'en').toUpperCase();
+    setLanguage(currentCode.includes('FR') ? 'FR' : 'EN');
+  }, [i18n.language, user?.preferredLanguage]);
+
+  useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Lock body scroll when mobile overlay is active
-  useEffect(() => {
-    if (mobileOverlay) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOverlay]);
-
   const menuItems = [
-    { id: 'notifications' as const, title: 'Notification Settings', desc: 'Manage updates, news, newsletters, and promotional alerts.', icon: '🔔' },
-    { id: 'privacy' as const, title: 'Privacy and Security Settings', desc: 'Change password, manage 2FA, data usage and analytics sharing.', icon: '🔒' },
-    { id: 'language' as const, title: 'Language', desc: 'Switch your preferred platform language.', icon: '🌐' }
+    { id: 'notifications' as const, title: t('dashboard.settings_notifications', 'Notification Settings'), desc: 'Manage updates, news, newsletters, and promotional alerts.', icon: '🔔' },
+    { id: 'privacy' as const, title: t('dashboard.settings_privacy', 'Privacy and Security Settings'), desc: 'Change password, manage 2FA, data usage and analytics sharing.', icon: '🔒' },
+    { id: 'language' as const, title: t('dashboard.settings_language', 'Language Preferences'), desc: 'Switch your preferred platform language.', icon: '🌐' }
   ];
+
+  const handleLanguageSelection = (selected: 'EN' | 'FR') => {
+    setLanguage(selected);
+    const code = selected.toLowerCase();
+    i18n.changeLanguage(code);
+    localStorage.setItem('fixam_lang', code);
+  };
 
   const handleSaveSettings = async () => {
     try {
-      // Mock API call to update settings
+      const code = language.toLowerCase();
+      i18n.changeLanguage(code);
+      localStorage.setItem('fixam_lang', code);
+
+      await api.put('/users/profile', { preferredLanguage: language });
       await api.put('/users/settings', {
         notifications: { notifyNews, notifySecurity, notifyNewsletter, notifyPromotions },
         privacy: { shareAnalytics, personalizeRecommendation },
         language
-      });
-      alert('Settings saved successfully!');
+      }).catch(() => {});
+
+      await refreshUser();
+      alert(t('dashboard.save_preferences', 'Settings saved successfully!'));
     } catch (err) {
       alert('Failed to save settings');
     }
@@ -166,12 +176,12 @@ export default function Settings({ setActiveTab }: SettingsProps) {
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', padding: '1rem', border: `1px solid ${language === 'EN' ? 'var(--teal)' : 'var(--line)'}`, borderRadius: '8px', background: language === 'EN' ? '#F0FDFA' : 'transparent' }}>
-                <input type="radio" name="language" value="EN" checked={language === 'EN'} onChange={() => setLanguage('EN')} style={{ transform: 'scale(1.2)' }} />
+                <input type="radio" name="language" value="EN" checked={language === 'EN'} onChange={() => handleLanguageSelection('EN')} style={{ transform: 'scale(1.2)' }} />
                 <span style={{ fontSize: '1rem', fontWeight: 500 }}>English</span>
               </label>
               
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', padding: '1rem', border: `1px solid ${language === 'FR' ? 'var(--teal)' : 'var(--line)'}`, borderRadius: '8px', background: language === 'FR' ? '#F0FDFA' : 'transparent' }}>
-                <input type="radio" name="language" value="FR" checked={language === 'FR'} onChange={() => setLanguage('FR')} style={{ transform: 'scale(1.2)' }} />
+                <input type="radio" name="language" value="FR" checked={language === 'FR'} onChange={() => handleLanguageSelection('FR')} style={{ transform: 'scale(1.2)' }} />
                 <span style={{ fontSize: '1rem', fontWeight: 500 }}>Français (French)</span>
               </label>
             </div>

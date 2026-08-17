@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import CreateTaskModal from './CreateTaskModal';
@@ -59,6 +60,7 @@ export default function ClientDashboard({
   toggleFavoriteProject,
 }: ClientDashboardProps) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [showTaskModal, setShowTaskModal] = useState(false);
 
   // Auto-open task creation modal if redirected from the landing page
