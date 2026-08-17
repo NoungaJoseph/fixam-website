@@ -674,7 +674,11 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                         {isAudio && (
                           <div className="w-[240px] py-1">
                             <div className="flex items-center gap-2 mb-1.5 font-semibold text-xs opacity-90">
-                              <span>🎤 {isFr ? 'Note vocale' : 'Voice Note'}</span>
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                              </svg>
+                              <span>{isFr ? 'Note vocale' : 'Voice Note'}</span>
                             </div>
                             <audio 
                               src={msg.mediaUrl || msg.content} 
@@ -690,9 +694,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                               href={msg.content?.match(/https:\/\/maps\.google\.com[^\s]*/)?.[0] || '#'} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              style={{ color: isMe ? '#fff' : '#0284c7', textDecoration: 'underline', fontSize: '0.85rem', marginTop: '4px', display: 'inline-block' }}
+                              style={{ color: isMe ? '#fff' : '#0284c7', textDecoration: 'underline', fontSize: '0.85rem', marginTop: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                             >
-                              🗺️ {isFr ? 'Ouvrir sur Google Maps' : 'Open in Google Maps'}
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                              </svg>
+                              <span>{isFr ? 'Ouvrir sur Google Maps' : 'Open in Google Maps'}</span>
                             </a>
                           </div>
                         ) : (
@@ -734,7 +742,10 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
             {activeTask && ['PENDING', 'COUNTER_PROPOSED'].includes(activeTask.status) ? (
               <div className="p-4 bg-amber-50 border-t border-amber-200 text-center flex flex-col items-center justify-center gap-1.5 text-amber-900 shadow-inner">
                 <div className="flex items-center gap-1.5 font-bold text-xs">
-                  <span>🔒</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
                   <span>{isFr ? 'Messagerie temporairement verrouillée' : 'Messaging Locked Until Booking Acceptance'}</span>
                 </div>
                 <p className="text-[11px] text-amber-700 max-w-md margin-0 leading-relaxed">
@@ -773,8 +784,15 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                     />
                     
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', background: '#fff', borderRadius: '24px', padding: '4px 10px', minHeight: '44px' }}>
-                      <button type="button" onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', color: '#8696a0', fontSize: '1.2rem', padding: '0 6px', cursor: 'pointer', flexShrink: 0 }}>
-                        📎
+                      <button 
+                        type="button" 
+                        onClick={() => fileInputRef.current?.click()} 
+                        title={isFr ? "Joindre un fichier" : "Attach File"}
+                        style={{ background: 'none', border: 'none', color: '#64748b', padding: '0 6px', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                        </svg>
                       </button>
                       <input 
                         type="text" 
@@ -804,12 +822,35 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                     <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (newMsgText.trim() || selectedImages.length > 0) && !isRecording ? (
-                  <button type="button" onClick={(e) => handleSendMsg(e)} style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
-                    ➤
+                  <button 
+                    type="button" 
+                    onClick={(e) => handleSendMsg(e)} 
+                    style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 6px rgba(20, 184, 166, 0.4)' }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '2px' }}>
+                      <line x1="22" y1="2" x2="11" y2="13" />
+                      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
                   </button>
                 ) : (
-                  <button type="button" title={isRecording ? (isFr ? "Arrêter & Envoyer" : "Stop & Send") : (isFr ? "Envoyer une note vocale" : "Send Voice Note")} onClick={handleVoiceRecord} style={{ width: '44px', height: '44px', borderRadius: '50%', background: isRecording ? '#ef4444' : '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.1rem', flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
-                    {isRecording ? '⏹️' : '🎤'}
+                  <button 
+                    type="button" 
+                    title={isRecording ? (isFr ? "Arrêter & Envoyer" : "Stop & Send") : (isFr ? "Envoyer une note vocale" : "Send Voice Note")} 
+                    onClick={handleVoiceRecord} 
+                    style={{ width: '44px', height: '44px', borderRadius: '50%', background: isRecording ? '#ef4444' : '#14B8A6', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 6px rgba(20, 184, 166, 0.4)' }}
+                  >
+                    {isRecording ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                        <line x1="12" y1="19" x2="12" y2="23" />
+                        <line x1="8" y1="23" x2="16" y2="23" />
+                      </svg>
+                    )}
                   </button>
                 )}
               </div>
