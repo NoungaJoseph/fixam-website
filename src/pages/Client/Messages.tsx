@@ -145,6 +145,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
    */
   const _dispatchSendMsg = async (contentToSend: string, customType: string, mediaUrl?: string) => {
     if (!activeConv) return;
+    const receiverId = activeDetails.other?.id;
 
     // Send images if attached
     if (selectedImages.length > 0) {
@@ -163,12 +164,14 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
         try {
           await api.post('/chat/send', {
             conversationId: activeConv.id,
+            receiverId,
             content: 'Sent an image',
             mediaUrl: imgUrl,
             type: 'IMAGE'
           });
-        } catch (err) {
+        } catch (err: any) {
           console.error('Failed to send image', err);
+          alert(err.response?.data?.message || 'Failed to send image');
         }
       }
     }
@@ -187,14 +190,21 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
       try {
         await api.post('/chat/send', {
           conversationId: activeConv.id,
+          receiverId,
           content: contentToSend,
           mediaUrl: mediaUrl || null,
           type: customType
         });
         const res = await api.get(`/chat/${activeConv.id}/messages`);
         setMessages(res.data.data || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to send msg', err);
+        const errMsg = err.response?.data?.message;
+        if (errMsg === 'requiresBooking') {
+          alert('Messaging is locked until a booking or service contract is accepted by both parties.');
+        } else if (errMsg) {
+          alert(errMsg);
+        }
       }
     }
   };
@@ -408,8 +418,30 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
         {activeConv ? (
           <>
             <div className="chat-header-row">
-              <button className="mobile-back-btn" onClick={() => setActiveChatUser('')}>
-                ←
+              <button 
+                type="button" 
+                className="chat-back-arrow-btn"
+                onClick={() => setActiveChatUser('')}
+                title={isFr ? "Retour aux discussions" : "Back to All Chats"}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '50%',
+                  background: '#F1F5F9',
+                  border: '1px solid #E2E8F0',
+                  color: '#0F172A',
+                  cursor: 'pointer',
+                  marginRight: '8px',
+                  flexShrink: 0
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
               </button>
               <img src={activeDetails.avatar} alt={activeDetails.name} />
               <div>
