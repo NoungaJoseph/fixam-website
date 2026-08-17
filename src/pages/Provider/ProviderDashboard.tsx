@@ -48,7 +48,7 @@ const formatBudget = (job: JobLead) => {
 let cachedJobs: JobLead[] = [];
 
 export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser }: ProviderDashboardProps) {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { t, i18n } = useTranslation();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
   const [search, setSearch] = useState('');
@@ -68,7 +68,14 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
   const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs' | 'direct_bookings'>('best_matches');
   const [isAlertVisible, setIsAlertVisible] = useState(true);
-  const [isAvailable, setIsAvailable] = useState(user?.providerProfile?.isAvailable ?? true);
+  const [isAvailable, setIsAvailable] = useState(() => user?.providerProfile?.isAvailable ?? user?.isOnline ?? true);
+
+  useEffect(() => {
+    if (user) {
+      const currentAvail = user.providerProfile?.isAvailable ?? user.isOnline ?? true;
+      setIsAvailable(currentAvail);
+    }
+  }, [user?.providerProfile?.isAvailable, user?.isOnline]);
 
   const completionPercentage = useMemo(() => {
     let score = 0;
@@ -840,9 +847,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   const nextState = !isAvailable;
                   setIsAvailable(nextState);
                   try {
-                    await api.put('/providers/status', { isAvailable: nextState });
+                    await api.put('/providers/status', { isAvailable: nextState, isOnline: nextState });
+                    await refreshUser();
                   } catch (e) {
                     console.error('Failed to update availability status', e);
+                    setIsAvailable(!nextState);
                   }
                 }}
                 title={isAvailable ? 'Turn off availability' : 'Turn on availability'}
@@ -1258,7 +1267,8 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     className="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs cursor-pointer transition border-none outline-none"
                     onClick={async () => {
                       try {
-                        await api.put('/providers/status', { isAvailable: true });
+                        await api.put('/providers/status', { isAvailable: true, isOnline: true });
+                        await refreshUser();
                         setIsAvailable(true);
                       } catch (e) {}
                     }}
