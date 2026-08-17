@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { Icon } from '../../App';
 
@@ -8,6 +9,7 @@ interface ProviderSupportProps {
 }
 
 export default function ProviderSupport({ setActiveTab, setActiveChatUser }: ProviderSupportProps) {
+  const { i18n } = useTranslation();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,28 +29,43 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
           content: `Subject: ${subject}\n\n${message}`
         });
         
-        alert('Support ticket submitted successfully!');
+        alert(i18n.language === 'fr' ? 'Ticket d\'assistance soumis avec succès !' : 'Support ticket submitted successfully!');
         if (setActiveTab && setActiveChatUser) {
           setActiveChatUser(supportConvId);
           setActiveTab('Messages');
         }
       } else {
-        alert('Support chat created. A support agent will contact you soon.');
+        alert(i18n.language === 'fr' ? 'Chat d\'assistance créé. Un agent de support vous contactera bientôt.' : 'Support chat created. A support agent will contact you soon.');
       }
       setSubject('');
       setMessage('');
     } catch (err: any) {
       console.error("Failed to submit support ticket", err);
-      alert(err.response?.data?.message || 'Failed to submit ticket');
+      alert(err.response?.data?.message || (i18n.language === 'fr' ? 'Échec de la soumission du ticket' : 'Failed to submit ticket'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const faqs = [
-    { q: 'How do I get paid by clients?', a: 'Clients pay you cash directly upon completion of the service. Fixam does not handle payments or charge transfer fees.' },
-    { q: 'How do I submit job proposals?', a: 'Browse leads under "Job Leads", click "Send Proposal", and specify your estimate. If accepted, you will get linked with the client.' },
-    { q: 'Why did my coin count drop?', a: 'Fixam deducts 1 to 3 coins when you successfully connect or book a job lead with a client as a matching fee.' }
+    {
+      q: i18n.language === 'fr' ? 'Comment suis-je payé par les clients ?' : 'How do I get paid by clients?',
+      a: i18n.language === 'fr'
+        ? 'Les clients vous paient directement en espèces à la fin du service. Fixam ne gère pas les paiements et ne prélevé aucun frais de transfert.'
+        : 'Clients pay you cash directly upon completion of the service. Fixam does not handle payments or charge transfer fees.'
+    },
+    {
+      q: i18n.language === 'fr' ? 'Comment soumettre des propositions de mission ?' : 'How do I submit job proposals?',
+      a: i18n.language === 'fr'
+        ? 'Parcourez les opportunités dans votre tableau de bord, cliquez sur "Envoyer une proposition" et indiquez votre estimation. Si acceptée, vous serez mis en relation avec le client.'
+        : 'Browse leads under "Job Leads", click "Send Proposal", and specify your estimate. If accepted, you will get linked with the client.'
+    },
+    {
+      q: i18n.language === 'fr' ? 'Pourquoi mon solde de pièces a-t-il diminué ?' : 'Why did my coin count drop?',
+      a: i18n.language === 'fr'
+        ? 'Fixam déduit 1 à 3 pièces lorsque vous entrez en contact avec un client pour une opportunité de travail comme frais de mise en relation.'
+        : 'Fixam deducts 1 to 3 coins when you successfully connect or book a job lead with a client as a matching fee.'
+    }
   ];
 
   return (
@@ -56,8 +73,12 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
       
       {/* Header */}
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Provider Support Center</h2>
-        <p className="text-gray-500">Need help? Browse our FAQs or submit a support request below.</p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          {i18n.language === 'fr' ? 'Centre d\'assistance prestataire' : 'Provider Support Center'}
+        </h2>
+        <p className="text-gray-500">
+          {i18n.language === 'fr' ? 'Besoin d\'aide ? Parcourez nos FAQ ou soumettez une demande ci-dessous.' : 'Need help? Browse our FAQs or submit a support request below.'}
+        </p>
       </div>
 
       {/* Grid */}
@@ -66,8 +87,12 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
         {/* LEFT: FAQ & Help */}
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Help Center & FAQs</h3>
-            <p className="text-xs text-gray-400">Quick answers to frequently asked provider questions.</p>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              {i18n.language === 'fr' ? 'Centre d\'aide & FAQ' : 'Help Center & FAQs'}
+            </h3>
+            <p className="text-xs text-gray-400">
+              {i18n.language === 'fr' ? 'Réponses rapides aux questions fréquentes des prestataires.' : 'Quick answers to frequently asked provider questions.'}
+            </p>
           </div>
           
           <div className="space-y-3">
@@ -89,14 +114,18 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
 
           {/* Contact Details Card */}
           <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
-            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">Direct Contact Information</h4>
+            <h4 className="text-sm font-bold text-gray-800 border-b border-gray-100 pb-2">
+              {i18n.language === 'fr' ? 'Coordonnées de contact direct' : 'Direct Contact Information'}
+            </h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
                 <div className="w-9 h-9 rounded-full bg-[#14B8A6] text-white flex items-center justify-center text-sm">
                   <Icon name="message" />
                 </div>
                 <div>
-                  <span className="block text-[10px] text-gray-400 font-bold uppercase">Email Support</span>
+                  <span className="block text-[10px] text-gray-400 font-bold uppercase">
+                    {i18n.language === 'fr' ? 'Assistance e-mail' : 'Email Support'}
+                  </span>
                   <a href="mailto:fixam8899@gmail.com" className="block text-sm font-bold text-slate-800 hover:text-[#14B8A6]">
                     fixam8899@gmail.com
                   </a>
@@ -122,31 +151,39 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">📧</span>
-            <h3 className="text-lg font-bold text-gray-800">Submit Support Ticket</h3>
+            <h3 className="text-lg font-bold text-gray-800">
+              {i18n.language === 'fr' ? 'Soumettre un ticket d\'assistance' : 'Submit Support Ticket'}
+            </h3>
           </div>
           <p className="text-xs text-gray-400 leading-relaxed mb-6">
-            Describe your issue and our support team will open a direct chat conversation to assist you.
+            {i18n.language === 'fr'
+              ? 'Décrivez votre problème et notre équipe de support ouvrira une discussion directe pour vous aider.'
+              : 'Describe your issue and our support team will open a direct chat conversation to assist you.'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">Subject</label>
+              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">
+                {i18n.language === 'fr' ? 'Sujet' : 'Subject'}
+              </label>
               <input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="e.g., Wallet payout issue"
+                placeholder={i18n.language === 'fr' ? 'ex: Problème de portefeuille' : 'e.g., Wallet payout issue'}
                 className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">Detailed Message</label>
+              <label className="block text-xs font-bold text-gray-550 uppercase tracking-wider mb-2">
+                {i18n.language === 'fr' ? 'Message détaillé' : 'Detailed Message'}
+              </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Please describe your problem or question in detail..."
+                placeholder={i18n.language === 'fr' ? 'Veuillez décrire votre problème ou question en détail...' : 'Please describe your problem or question in detail...'}
                 rows={5}
                 className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:border-[#14B8A6] focus:ring-1 focus:ring-[#14B8A6] transition resize-none font-sans"
                 required
@@ -160,7 +197,9 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
                 isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#14B8A6] hover:bg-[#0F9788]'
               }`}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Support Ticket'}
+              {isSubmitting 
+                ? (i18n.language === 'fr' ? 'Envoi en cours...' : 'Submitting...') 
+                : (i18n.language === 'fr' ? 'Soumettre le ticket d\'assistance' : 'Submit Support Ticket')}
             </button>
           </form>
         </div>

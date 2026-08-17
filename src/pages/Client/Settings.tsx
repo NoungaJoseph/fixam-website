@@ -43,9 +43,24 @@ export default function Settings({ setActiveTab }: SettingsProps) {
   }, []);
 
   const menuItems = [
-    { id: 'notifications' as const, title: t('dashboard.settings_notifications', 'Notification Settings'), desc: 'Manage updates, news, newsletters, and promotional alerts.', icon: '🔔' },
-    { id: 'privacy' as const, title: t('dashboard.settings_privacy', 'Privacy and Security Settings'), desc: 'Change password, manage 2FA, data usage and analytics sharing.', icon: '🔒' },
-    { id: 'language' as const, title: t('dashboard.settings_language', 'Language Preferences'), desc: 'Switch your preferred platform language.', icon: '🌐' }
+    {
+      id: 'notifications' as const,
+      title: i18n.language === 'fr' ? 'Paramètres de notification' : 'Notification Settings',
+      desc: i18n.language === 'fr' ? 'Gérez les mises à jour, actualités, bulletins et alertes promotionnelles.' : 'Manage updates, news, newsletters, and promotional alerts.',
+      icon: '🔔'
+    },
+    {
+      id: 'privacy' as const,
+      title: i18n.language === 'fr' ? 'Confidentialité & Sécurité' : 'Privacy & Security Settings',
+      desc: i18n.language === 'fr' ? 'Changer le mot de passe, gérer le 2FA et le partage des données.' : 'Change password, manage 2FA, data usage and analytics sharing.',
+      icon: '🔒'
+    },
+    {
+      id: 'language' as const,
+      title: i18n.language === 'fr' ? 'Préférences de langue' : 'Language Preferences',
+      desc: i18n.language === 'fr' ? 'Changer votre langue préférée sur la plateforme Fixam.' : 'Switch your preferred platform language.',
+      icon: '🌐'
+    }
   ];
 
   const handleLanguageSelection = (selected: 'EN' | 'FR') => {
@@ -69,18 +84,18 @@ export default function Settings({ setActiveTab }: SettingsProps) {
       }).catch(() => {});
 
       await refreshUser();
-      alert(t('dashboard.save_preferences', 'Settings saved successfully!'));
+      alert(i18n.language === 'fr' ? 'Paramètres enregistrés avec succès !' : 'Settings saved successfully!');
     } catch (err) {
-      alert('Failed to save settings');
+      alert(i18n.language === 'fr' ? 'Échec de l\'enregistrement des paramètres' : 'Failed to save settings');
     }
   };
 
   const handleDownloadData = () => {
-    alert("Downloading your personal data... (mock)");
+    alert(i18n.language === 'fr' ? 'Téléchargement de vos données personnelles...' : 'Downloading your personal data...');
   };
 
   const handleClearCache = () => {
-    alert("Cache cleared successfully!");
+    alert(i18n.language === 'fr' ? 'Cache vidé avec succès !' : 'Cache cleared successfully!');
   };
 
   const renderContent = (tabId: string) => {
@@ -88,82 +103,122 @@ export default function Settings({ setActiveTab }: SettingsProps) {
       case 'notifications':
         return (
           <div className="settings-section animate-fade-in">
-            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Notification Settings</h3>
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>
+              {i18n.language === 'fr' ? 'Paramètres de notification' : 'Notification Settings'}
+            </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Fixam News</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Get updates on platform changes.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Actualités Fixam' : 'Fixam News'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Recevez les mises à jour sur les changements de la plateforme.' : 'Get updates on platform changes.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={notifyNews} onChange={e => setNotifyNews(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Security Updates</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Important security alerts and login attempts.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Mises à jour de sécurité' : 'Security Updates'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Alertes de sécurité importantes et tentatives de connexion.' : 'Important security alerts and login attempts.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={notifySecurity} onChange={e => setNotifySecurity(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Newsletter</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Receive our monthly newsletter.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Bulletin d\'information' : 'Newsletter'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Recevez notre bulletin d\'information mensuel.' : 'Receive our monthly newsletter.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={notifyNewsletter} onChange={e => setNotifyNewsletter(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Promotions</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Special offers and discounts.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Promotions' : 'Promotions'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Offres spéciales et réductions.' : 'Special offers and discounts.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={notifyPromotions} onChange={e => setNotifyPromotions(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
             </div>
 
             <button onClick={handleSaveSettings} style={{ marginTop: '2rem', padding: '0.8rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              Save Notification Preferences
+              {i18n.language === 'fr' ? 'Enregistrer les préférences' : 'Save Notification Preferences'}
             </button>
           </div>
         );
       case 'privacy':
         return (
           <div className="settings-section animate-fade-in">
-            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Privacy & Security</h3>
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>
+              {i18n.language === 'fr' ? 'Confidentialité & Sécurité' : 'Privacy & Security'}
+            </h3>
             
             <div style={{ marginBottom: '2rem' }}>
-              <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>Account Security</h4>
-              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer', marginRight: '1rem' }}>Change Password</button>
-              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--teal)', background: '#F0FDFA', color: 'var(--teal)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Enable 2FA</button>
+              <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>
+                {i18n.language === 'fr' ? 'Sécurité du compte' : 'Account Security'}
+              </h4>
+              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer', marginRight: '1rem' }}>
+                {i18n.language === 'fr' ? 'Changer le mot de passe' : 'Change Password'}
+              </button>
+              <button style={{ padding: '0.6rem 1rem', border: '1px solid var(--teal)', background: '#F0FDFA', color: 'var(--teal)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                {i18n.language === 'fr' ? 'Activer le 2FA' : 'Enable 2FA'}
+              </button>
             </div>
 
-            <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>Data Usage</h4>
+            <h4 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--ink)' }}>
+              {i18n.language === 'fr' ? 'Utilisation des données' : 'Data Usage'}
+            </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Share Analytics</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Help us improve Fixam by sharing anonymous usage data.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Partager les analyses' : 'Share Analytics'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Aidez-nous à améliorer Fixam en partageant des données anonymes.' : 'Help us improve Fixam by sharing anonymous usage data.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={shareAnalytics} onChange={e => setShareAnalytics(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>Personalize Recommendations</h4>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>Use my data to recommend better services.</p>
+                  <h4 style={{ margin: '0 0 0.3rem', fontSize: '1rem' }}>
+                    {i18n.language === 'fr' ? 'Personnaliser les recommandations' : 'Personalize Recommendations'}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+                    {i18n.language === 'fr' ? 'Utiliser mes données pour recommander de meilleurs services.' : 'Use my data to recommend better services.'}
+                  </p>
                 </div>
                 <input type="checkbox" checked={personalizeRecommendation} onChange={e => setPersonalizeRecommendation(e.target.checked)} style={{ transform: 'scale(1.2)' }} />
               </div>
             </div>
 
             <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={handleDownloadData} style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer' }}>Download Personal Data</button>
-              <button onClick={handleClearCache} style={{ padding: '0.6rem 1rem', border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#B91C1C', borderRadius: '6px', cursor: 'pointer' }}>Clear Cache</button>
+              <button onClick={handleDownloadData} style={{ padding: '0.6rem 1rem', border: '1px solid var(--line)', background: 'transparent', borderRadius: '6px', cursor: 'pointer' }}>
+                {i18n.language === 'fr' ? 'Télécharger mes données' : 'Download Personal Data'}
+              </button>
+              <button onClick={handleClearCache} style={{ padding: '0.6rem 1rem', border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#B91C1C', borderRadius: '6px', cursor: 'pointer' }}>
+                {i18n.language === 'fr' ? 'Vider le cache' : 'Clear Cache'}
+              </button>
               <button onClick={handleSaveSettings} style={{ padding: '0.6rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', marginLeft: 'auto' }}>
-                Save Preferences
+                {i18n.language === 'fr' ? 'Enregistrer les préférences' : 'Save Preferences'}
               </button>
             </div>
           </div>
@@ -171,8 +226,12 @@ export default function Settings({ setActiveTab }: SettingsProps) {
       case 'language':
         return (
           <div className="settings-section animate-fade-in">
-            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>Language</h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>Select your preferred language for the Fixam platform.</p>
+            <h3 style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.8rem', marginBottom: '1.5rem', color: 'var(--ink)' }}>
+              {i18n.language === 'fr' ? 'Langue' : 'Language'}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '1.5rem' }}>
+              {i18n.language === 'fr' ? 'Sélectionnez votre langue préférée pour la plateforme Fixam.' : 'Select your preferred language for the Fixam platform.'}
+            </p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', padding: '1rem', border: `1px solid ${language === 'EN' ? 'var(--teal)' : 'var(--line)'}`, borderRadius: '8px', background: language === 'EN' ? '#F0FDFA' : 'transparent' }}>
@@ -187,7 +246,7 @@ export default function Settings({ setActiveTab }: SettingsProps) {
             </div>
 
             <button onClick={handleSaveSettings} style={{ marginTop: '2rem', padding: '0.8rem 1.5rem', background: 'var(--teal)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              Apply Language
+              {i18n.language === 'fr' ? 'Appliquer la langue' : 'Apply Language'}
             </button>
           </div>
         );
@@ -199,9 +258,13 @@ export default function Settings({ setActiveTab }: SettingsProps) {
   if (isMobile) {
     return (
       <div className="settings-mobile-container animate-fade-in" style={{ width: '100%' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Settings</h2>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+          {i18n.language === 'fr' ? 'Paramètres' : 'Settings'}
+        </h2>
         <p style={{ fontSize: '0.9rem', color: 'var(--muted)', marginBottom: '2rem', lineHeight: '1.4' }}>
-          Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations.
+          {i18n.language === 'fr'
+            ? 'Gérez vos préférences de compte, configurez les alertes de notification et ajustez vos paramètres de confidentialité. Modifier ces paramètres peut impacter les recommandations personnalisées.'
+            : 'Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations.'}
         </p>
         
         {/* Menu Cards */}
@@ -297,9 +360,13 @@ export default function Settings({ setActiveTab }: SettingsProps) {
   return (
     <div className="settings-desktop-container animate-fade-in">
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: 'var(--ink)' }}>Settings</h2>
+        <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem', color: 'var(--ink)' }}>
+          {i18n.language === 'fr' ? 'Paramètres' : 'Settings'}
+        </h2>
         <p style={{ fontSize: '0.95rem', color: 'var(--muted)', maxWidth: '800px', lineHeight: '1.5' }}>
-          Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations on the platform.
+          {i18n.language === 'fr'
+            ? 'Gérez vos préférences de compte, configurez les alertes de notification et ajustez vos paramètres de confidentialité. Modifier ces paramètres peut impacter les recommandations personnalisées sur la plateforme.'
+            : 'Manage your account preferences, configure notification alerts, and ensure your privacy settings are tailored to your needs. Please be aware that changing privacy settings may impact personalized recommendations on the platform.'}
         </p>
       </div>
       
