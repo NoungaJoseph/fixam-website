@@ -87,29 +87,29 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
           {/* Dynamic Field Rows */}
           <div className="space-y-2 mb-2">
             {rows.map((item, index) => (
-              <div key={item.id || index} className="flex items-center gap-2">
+              <div key={item.id || index} className="flex items-center gap-1.5 sm:gap-2 w-full">
                 <input
                   type="text"
                   placeholder="Material / Tool name"
                   value={item.name}
                   onChange={(e) => handleUpdateItem(index, 'name', e.target.value)}
                   disabled={readOnly}
-                  className="flex-1 px-3 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="flex-1 min-w-0 px-2.5 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                 />
                 <input
                   type="text"
-                  placeholder="Qty (e.g. 2)"
+                  placeholder="Qty"
                   value={item.quantity}
                   onChange={(e) => handleUpdateItem(index, 'quantity', e.target.value)}
                   disabled={readOnly}
-                  className="w-24 px-3 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  className="w-16 sm:w-20 shrink-0 px-2 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500 text-center"
                 />
 
                 {!readOnly && (
                   <button
                     type="button"
                     onClick={() => handleRemoveRow(index)}
-                    className="text-red-500 hover:text-red-700 p-1 text-xs"
+                    className="text-red-500 hover:text-red-700 p-1 text-xs shrink-0"
                     title="Remove item"
                   >
                     🗑️

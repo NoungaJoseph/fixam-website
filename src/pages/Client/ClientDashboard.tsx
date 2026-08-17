@@ -390,44 +390,64 @@ export default function ClientDashboard({
         </div>
       )}
 
-      {/* 2. Recommended For You (No box, larger profiles) */}
+      {/* 2. Recommended For You (2x2 Grid, Max 4 Pros) */}
       <div className="mb-10">
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-xl">🎯</span>
-          <h2 className="text-xl font-bold text-gray-800">Recommended for You</h2>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎯</span>
+            <h2 className="text-xl font-bold text-gray-800">
+              {i18n.language === 'fr' ? 'Recommandé pour vous' : 'Recommended for You'}
+            </h2>
+          </div>
+          <button 
+            type="button"
+            className="text-sm font-bold text-[#14B8A6] hover:text-[#0F9788] transition-colors flex items-center gap-1"
+            onClick={() => setActiveTab('Find Services')}
+          >
+            {i18n.language === 'fr' ? 'Voir tout' : 'View All'} &rarr;
+          </button>
         </div>
-        <div className="flex flex-wrap gap-6">
-          {displayedPros.slice(0, 5).map((pro, idx) => {
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {displayedPros.slice(0, 4).map((pro, idx) => {
             const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
-            const displayRole = roleArray.length > 0 ? roleArray[0] : 'Service Provider';
+            const displayRole = roleArray.length > 0 ? roleArray[0] : (i18n.language === 'fr' ? 'Prestataire' : 'Service Provider');
             return (
-              <div className="flex flex-col items-center text-center group cursor-pointer bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5" key={idx} onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }} style={{ width: '170px' }}>
-                <div className="relative mb-4">
+              <div 
+                className="flex flex-col items-center text-center group cursor-pointer bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all p-4 relative" 
+                key={idx} 
+                onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }}
+              >
+                <div className="relative mb-3">
                   {pro.image ? (
                     <img 
                       src={getMediaUrl(pro.image)} 
                       alt={pro.name || 'Provider'} 
-                      className="w-24 h-24 rounded-full object-cover shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
                       onError={(e) => {
                         (e.target as HTMLImageElement).onerror = null;
                         (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name || 'Provider')}&background=14B8A6&color=fff&size=96&rounded=true`;
                       }}
                     />
                   ) : (
-                    <div className="w-24 h-24 rounded-full shadow-inner bg-teal-500 text-white flex items-center justify-center font-bold text-3xl group-hover:ring-4 ring-teal-50 transition-all">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-inner bg-teal-500 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl group-hover:ring-4 ring-teal-50 transition-all">
                       {(pro.name || 'Provider').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
                     </div>
                   )}
-                  <button className="absolute -top-2 -right-2 bg-white rounded-full p-2 shadow border border-gray-50 text-gray-300 hover:text-[#F59E0B] hover:scale-110 transition z-10" onClick={(e) => { e.stopPropagation(); alert(`${pro.name} saved!`); }}>
+                  <button 
+                    type="button"
+                    className="absolute -top-1 -right-1 bg-white rounded-full p-1.5 shadow border border-gray-100 text-gray-300 hover:text-[#F59E0B] hover:scale-110 transition z-10" 
+                    onClick={(e) => { e.stopPropagation(); alert(`${pro.name} saved!`); }}
+                  >
                     <Icon name="star" />
                   </button>
                 </div>
-                <h4 className="text-[15px] font-bold text-gray-800 mb-1 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
-                <span className="block text-[11px] uppercase font-bold tracking-wider text-gray-500 mb-2 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
-                <div className="flex items-center justify-center gap-1 text-sm bg-orange-50 px-2 py-1 rounded-full text-[#F59E0B]">
+                <h4 className="text-[14px] sm:text-[15px] font-bold text-gray-800 mb-0.5 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
+                <span className="block text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-gray-500 mb-2 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
+                <div className="flex items-center justify-center gap-1 text-xs bg-orange-50 px-2.5 py-1 rounded-full text-[#F59E0B] font-semibold mt-auto">
                   <Icon name="star" />
-                  <span className="font-bold">{pro.rating}</span>
-                  <span className="text-orange-400 text-xs ml-1">({pro.originalData?.reviewsCount || 0})</span>
+                  <span className="font-bold">{pro.rating || '5.0'}</span>
+                  <span className="text-orange-400 text-[10px] ml-0.5">({pro.originalData?.reviewsCount || 0})</span>
                 </div>
               </div>
             );
