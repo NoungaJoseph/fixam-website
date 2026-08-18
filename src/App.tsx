@@ -1830,7 +1830,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab} 
                   />
                 )}
-                {activeTab === 'Notifications' && <Notifications />}
+                {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
                 {activeTab === 'Messages' && (
                   <Messages 
                     chatMessages={chatMessages} 
@@ -2080,6 +2080,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
         {/* Main Content Area */}
         <div className={`dash-content-premium`}>
+          {selectedBooking ? (
+            <BookingDetail
+              selectedBooking={selectedBooking}
+              setSelectedBooking={handleSetSelectedBooking}
+              setActiveTab={setActiveTab}
+              setActiveChatUser={setActiveChatUser}
+            />
+          ) : (
+          <>
           {activeTab === 'Dashboard' && (
             <ProviderDashboard 
               setActiveTab={setActiveTab}
@@ -2097,7 +2106,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           {activeTab === 'My Jobs' && (
             <MyJobs 
               setActiveTab={setActiveTab} 
-              setActiveChatUser={setActiveChatUser} 
+              setActiveChatUser={setActiveChatUser}
+              setSelectedBooking={handleSetSelectedBooking}
             />
           )}
           {activeTab === 'Wallet' && <ProviderWallet />}
@@ -2111,7 +2121,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setActiveChatUser={setActiveChatUser} 
             />
           )}
-          {activeTab === 'Notifications' && <Notifications />}
+          {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
           {activeTab === 'Boost Profile' && <BoostProfile />}
           {activeTab === 'Messages' && (
             <Messages 
@@ -2120,6 +2130,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               activeChatUser={activeChatUser} 
               setActiveChatUser={setActiveChatUser} 
             />
+          )}
+          </>
           )}
         </div>
       </section>
