@@ -226,11 +226,82 @@ function MaintenanceScreen({ message }: { message: string }) {
   );
 }
 
+const TAB_SLUG_MAP: Record<string, string> = {
+  'dashboard': 'Dashboard',
+  'find-services': 'Find Services',
+  'my-bookings': 'My Bookings',
+  'my-tasks': 'My Tasks',
+  'saved-providers': 'Saved Providers',
+  'stats': 'Stats',
+  'wallet-and-coins': 'Wallet & Coins',
+  'wallet': 'Wallet',
+  'buy-coins': 'Buy Coins',
+  'messages': 'Messages',
+  'notifications': 'Notifications',
+  'settings': 'Settings',
+  'reviews': 'Reviews',
+  'support': 'Support',
+  'referrals': 'Referrals',
+  'my-profile': 'My Profile',
+  'verification': 'Verification',
+  'my-jobs': 'My Jobs',
+  'job-leads': 'Job Leads',
+  'post-a-project': 'Post a Project',
+  'profile-settings': 'Profile Settings',
+  'public-profile': 'Public Profile',
+  'boost-profile': 'Boost Profile',
+  'booking-details': 'Booking Details',
+};
+
+function getInitialPageFromUrl(): Page {
+  if (typeof window === 'undefined') return 'home';
+  const path = window.location.pathname;
+  if (path.startsWith('/profile/')) return 'profile_view';
+  if (path.startsWith('/job/')) return 'job_view';
+  if (path === '/download' || path === '/download/') return 'download';
+
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+  if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
+    return 'dashboard';
+  }
+
+  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
+  if (validPages.includes(hash as Page)) {
+    return hash as Page;
+  }
+
+  const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
+  if (validPages.includes(pathPage as Page)) {
+    return pathPage as Page;
+  }
+
+  const savedPage = localStorage.getItem('fixam_last_page') as Page | null;
+  const token = localStorage.getItem('fixam_token');
+  if (savedPage && validPages.includes(savedPage)) {
+    if (savedPage === 'dashboard' && !token) return 'home';
+    return savedPage;
+  }
+
+  return token ? 'dashboard' : 'home';
+}
+
+function getInitialDashboardTab(role: 'client' | 'pro'): string {
+  if (typeof window !== 'undefined') {
+    const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+    if (hash.startsWith('tab-')) {
+      const slug = hash.substring(4);
+      if (TAB_SLUG_MAP[slug]) return TAB_SLUG_MAP[slug];
+    } else if (TAB_SLUG_MAP[hash]) {
+      return TAB_SLUG_MAP[hash];
+    }
+    const saved = localStorage.getItem(`fixam_active_tab_${role}`) || localStorage.getItem('fixam_active_tab');
+    if (saved) return saved;
+  }
+  return 'Dashboard';
+}
+
 function App() {
-  const [page, setPage] = useState<Page>(() => {
-    const token = localStorage.getItem('fixam_token');
-    return token ? 'dashboard' : 'home';
-  });
+  const [page, setPage] = useState<Page>(getInitialPageFromUrl);
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   const { i18n } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState('')
@@ -360,24 +431,22 @@ function App() {
         return;
       }
 
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
-      const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
-      if (page !== 'dashboard' && validPages.includes(hash as Page)) {
-        setPage(hash as Page);
-      } else if (page !== 'dashboard' && validPages.includes(pathPage as Page)) {
-        setPage(pathPage as Page);
-      } else if (!hash && page !== 'dashboard') {
-        const token = localStorage.getItem('fixam_token');
-        setPage(token ? 'dashboard' : 'home');
+      if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
+        setPage('dashboard');
+        return;
       }
 
-      // If the URL pathname is invalid, reset it to / to clean up browser URL
-      if (path !== '/' && path !== '' && 
-          !path.startsWith('/profile/') && 
-          !path.startsWith('/job/') && 
-          path !== '/download' && path !== '/download/' &&
-          !validPages.includes(pathPage as Page)) {
-        window.history.replaceState('', document.title, '/' + window.location.hash);
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
+      const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
+      
+      if (validPages.includes(hash as Page)) {
+        setPage(hash as Page);
+        return;
+      }
+      
+      if (validPages.includes(pathPage as Page)) {
+        setPage(pathPage as Page);
+        return;
       }
     };
 
@@ -392,6 +461,7 @@ function App() {
 
   // Update hash when page changes
   useEffect(() => {
+    localStorage.setItem('fixam_last_page', page);
     const currentHash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
     const path = window.location.pathname;
 
@@ -400,10 +470,10 @@ function App() {
     }
 
     if (page === 'home') {
-      if (currentHash && currentHash !== 'home') {
+      if (currentHash && currentHash !== 'home' && !currentHash.startsWith('tab-')) {
         window.history.pushState('', document.title, window.location.pathname + window.location.search);
       }
-    } else {
+    } else if (page !== 'dashboard') {
       if (currentHash !== page && !path.includes(page)) {
         window.location.hash = page;
       }
@@ -1247,11 +1317,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
     // Dashboard navigation specific state
-    const [activeTab, setActiveTab] = useState('Dashboard')
-    const [previousTab, setPreviousTab] = useState('Dashboard')
-    const [selectedProvider, setSelectedProvider] = useState<any>(null)
-    const [selectedBooking, setSelectedBooking] = useState<any>(null)
-    const [selectedProject, setSelectedProject] = useState<any>(null)
+    const [activeTab, setActiveTab] = useState(() => getInitialDashboardTab(userRole));
+    const [previousTab, setPreviousTab] = useState('Dashboard');
+    const [selectedProvider, setSelectedProvider] = useState<any>(null);
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [selectedProject, setSelectedProject] = useState<any>(null);
+    const prevRoleRef = useRef(userRole);
 
     useEffect(() => {
       if (activeTab && activeTab !== 'Booking Details') {
@@ -1265,7 +1336,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         setActiveTab(previousTab);
       }
     };
-    const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([])
+    const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([]);
 
     useEffect(() => {
       if (user?.id) {
@@ -1288,20 +1359,24 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const [searchVal, setSearchVal] = useState('');
   
   useEffect(() => {
+    localStorage.setItem(`fixam_active_tab_${userRole}`, activeTab);
+    localStorage.setItem('fixam_active_tab', activeTab);
     if (activeTab === 'Dashboard') {
-      window.history.replaceState(null, '', window.location.pathname);
+      window.history.replaceState(null, '', window.location.pathname + '#tab-dashboard');
     } else {
-      window.history.replaceState(null, '', window.location.pathname + '#tab-' + activeTab.toLowerCase().replace(/\s+/g, '-').replace('&', 'and'));
+      const slug = activeTab.toLowerCase().replace(/\s+/g, '-').replace('&', 'and');
+      window.history.replaceState(null, '', window.location.pathname + '#tab-' + slug);
     }
-  }, [activeTab]);
+  }, [activeTab, userRole]);
 
   useEffect(() => {
-    setActiveTab('Dashboard');
-    setSelectedProvider(null);
-    setSelectedProject(null);
-    setSelectedBooking(null);
-    if (window.location.hash) {
-      window.history.replaceState(null, '', window.location.pathname);
+    if (prevRoleRef.current !== userRole) {
+      prevRoleRef.current = userRole;
+      const savedTab = localStorage.getItem(`fixam_active_tab_${userRole}`) || 'Dashboard';
+      setActiveTab(savedTab);
+      setSelectedProvider(null);
+      setSelectedProject(null);
+      setSelectedBooking(null);
     }
   }, [userRole]);
 

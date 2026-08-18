@@ -81,7 +81,7 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
     const fullPhone = `${CAMEROON_CONFIG.dialCode}${cleanPhone}`;
 
     try {
-      await api.post('/wallet/payment-request', {
+      const response = await api.post('/wallet/payment-request', {
         coins: pkg.coins,
         price: pkg.price,
         phone: fullPhone,
@@ -89,6 +89,9 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
         packageName: pkg.name,
         lang: i18n.language
       });
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || (isFr ? 'La demande de paiement n’a pas été soumise.' : 'Payment request was not submitted.'));
+      }
       setSubmitted(true);
       if (onSuccess) onSuccess();
     } catch (err: any) {
