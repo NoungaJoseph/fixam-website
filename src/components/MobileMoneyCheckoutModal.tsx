@@ -92,9 +92,8 @@ export default function MobileMoneyCheckoutModal({ isOpen, onClose, pkg, onSucce
       setSubmitted(true);
       if (onSuccess) onSuccess();
     } catch (err: any) {
-      console.error('Payment request error (non-fatal):', err);
-      setSubmitted(true);
-      if (onSuccess) onSuccess();
+      console.error('Payment request error:', err);
+      setErrorMessage(err.response?.data?.message || err.message || (isFr ? 'Erreur lors de la soumission de la demande.' : 'Failed to submit payment request.'));
     } finally {
       setLoading(false);
     }
