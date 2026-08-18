@@ -43,8 +43,8 @@ const WARNING_BODY_FR = "Déplacer cette conversation hors de Fixam nous empêch
 interface MessagesProps {
   chatMessages: any[];
   setChatMessages: React.Dispatch<React.SetStateAction<any[]>>;
-  activeChatUser: string;
-  setActiveChatUser: (user: string) => void;
+  activeChatUser: any;
+  setActiveChatUser: (user: any) => void;
 }
 
 export default function Messages({ activeChatUser, setActiveChatUser }: MessagesProps) {
@@ -105,13 +105,54 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     return { other, name, avatar };
   };
 
+  const targetIdOrName = typeof activeChatUser === 'object' && activeChatUser !== null
+    ? (activeChatUser as any).id || (activeChatUser as any).userId || (activeChatUser as any).name
+    : activeChatUser;
+
   const activeConv = conversations.find(c => {
-    if (c.id === activeChatUser) return true;
+    if (c.id === targetIdOrName) return true;
     const { name, other } = getParticipantDetails(c);
-    return name === activeChatUser || other?.id === activeChatUser;
+    if (typeof activeChatUser === 'object' && activeChatUser !== null) {
+      if (activeChatUser.id && (c.id === activeChatUser.id || other?.id === activeChatUser.id)) return true;
+      if (activeChatUser.userId && other?.id === activeChatUser.userId) return true;
+      if (activeChatUser.name && name && String(name).toLowerCase() === String(activeChatUser.name).toLowerCase()) return true;
+    }
+    return (targetIdOrName && (name === targetIdOrName || other?.id === targetIdOrName || String(name).toLowerCase() === String(targetIdOrName).toLowerCase()));
   });
 
-  const activeDetails = activeConv ? getParticipantDetails(activeConv) : { name: activeChatUser || 'Chat', avatar: DEFAULT_AVATAR, other: null };
+  const activeDetails = activeConv 
+    ? getParticipantDetails(activeConv) 
+    : { 
+        name: (typeof activeChatUser === 'object' && activeChatUser?.name) ? activeChatUser.name : (targetIdOrName || 'Chat'), 
+        avatar: (typeof activeChatUser === 'object' && activeChatUser?.avatar) ? getMediaUrl(activeChatUser.avatar) : DEFAULT_AVATAR, 
+        other: (typeof activeChatUser === 'object' && (activeChatUser?.id || activeChatUser?.userId)) 
+          ? { id: activeChatUser.id || activeChatUser.userId, fullName: activeChatUser.name } 
+          : (targetIdOrName && String(targetIdOrName).length > 20 ? { id: targetIdOrName } : null) 
+      };
+
+  // If activeChatUser was passed (e.g. after booking) and no conversation was found yet, auto-create/load it:
+  useEffect(() => {
+    if (!targetIdOrName) return;
+    if (activeConv) return;
+
+    const targetUserId = activeDetails.other?.id;
+    if (targetUserId && targetUserId !== user?.id && String(targetUserId).length > 20) {
+      api.post('/chat/conversations', { participantId: targetUserId })
+        .then(res => {
+          const conv = res.data.data || res.data;
+          if (conv?.id) {
+            setConversations(prev => {
+              if (prev.some(c => c.id === conv.id)) return prev;
+              return [conv, ...prev];
+            });
+            setActiveChatUser(conv.id);
+          }
+        })
+        .catch(err => {
+          console.warn('Auto conversation create notice:', err?.response?.data?.message || err.message);
+        });
+    }
+  }, [targetIdOrName, activeConv, activeDetails.other?.id, user?.id]);
 
   useEffect(() => {
     if (activeConv) {
@@ -144,8 +185,27 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
    * Do not invoke directly for TEXT messages; use handleSendMsg() instead.
    */
   const _dispatchSendMsg = async (contentToSend: string, customType: string, mediaUrl?: string) => {
-    if (!activeConv) return;
-    const receiverId = activeDetails.other?.id;
+    let currentConvId = activeConv?.id;
+    let receiverId = activeDetails.other?.id;
+
+    if (!currentConvId && receiverId) {
+      try {
+        const createRes = await api.post('/chat/conversations', { participantId: receiverId });
+        const newConv = createRes.data?.data || createRes.data;
+        if (newConv?.id) {
+          currentConvId = newConv.id;
+          setConversations(prev => [newConv, ...prev]);
+          setActiveChatUser(newConv.id);
+        }
+      } catch (err: any) {
+        console.error('Failed to create conversation', err);
+      }
+    }
+
+    if (!currentConvId) {
+      alert(isFr ? 'Impossible de démarrer la discussion' : 'Unable to start chat conversation');
+      return;
+    }
 
     // Send images if attached
     if (selectedImages.length > 0) {
@@ -163,7 +223,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
         setMessages(prev => [...prev, tempMsg]);
         try {
           await api.post('/chat/send', {
-            conversationId: activeConv.id,
+            conversationId: currentConvId,
             receiverId,
             content: 'Sent an image',
             mediaUrl: imgUrl,
@@ -378,7 +438,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     };
   }, []);
 
-  const isMobileDetailView = activeConv ? 'viewing-chat' : 'viewing-list';
+  const isMobileDetailView = (activeConv || activeChatUser) ? 'viewing-chat' : 'viewing-list';
 
   return (
     <div className={`messages-native-layout ${isMobileDetailView} animate-fade-in`}>
@@ -415,7 +475,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
       </div>
 
       <div className="chat-viewport-native">
-        {activeConv ? (
+        {(activeConv || activeChatUser) ? (
           <>
             <div className="chat-header-row">
               <button 

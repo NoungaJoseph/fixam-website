@@ -11,7 +11,7 @@ interface MyBookingsProps {
   clientTasks: any[];
   setClientTasks: (tasks: any[]) => void;
   setActiveTab: (tab: string) => void;
-  setActiveChatUser: (user: string) => void;
+  setActiveChatUser: (user: any) => void;
   walletBalance?: number;
   savedProsState?: any[];
   setSelectedBooking?: (bk: any) => void;
@@ -110,8 +110,9 @@ export default function MyBookings({
                     </button>
                   )}
                   <button className="btn-chat-booking" onClick={() => {
+                    const targetId = bk.provider?.userId || bk.provider?.id || bk.providerId;
+                    setActiveChatUser({ id: targetId, name: bkProvider, avatar: bk.provider?.avatar || bk.image });
                     setActiveTab('Messages');
-                    setActiveChatUser(bkProvider);
                   }}>
                     <Icon name="chat" /> Chat
                   </button>
