@@ -105,7 +105,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
             <div className="upwork-divider" />
 
             {/* Counter Proposal Card if status is COUNTER_PROPOSED */}
-            {(status === 'COUNTER_PROPOSED' || bookingData.counterBudget) && (
+            {status === 'COUNTER_PROPOSED' && (
               <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 my-4 shadow-sm animate-fade-in">
                 <div className="flex items-center gap-2 mb-2 text-amber-900 font-bold text-base">
                   <span>💡</span>
@@ -147,6 +147,54 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                     onClick={() => handleStatusChange('REJECTED')}
                   >
                     ✕ Decline Counter Offer
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Downloadable Official Fixam Service Contract (PDF) */}
+            {['ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].includes(status) && (
+              <div className="bg-teal-50/80 border-2 border-teal-200 rounded-2xl p-4 my-4 shadow-sm animate-fade-in">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex-1 min-w-[220px]">
+                    <div className="flex items-center gap-2 text-teal-950 font-bold text-sm">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                      </svg>
+                      <span>Official Fixam Service Contract</span>
+                    </div>
+                    <p className="text-xs text-teal-800 mt-1 mb-0 leading-relaxed">
+                      This legally binding contract was generated upon booking confirmation. Download the PDF file to read the complete service agreement and terms.
+                    </p>
+                  </div>
+                  <button 
+                    type="button"
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-md cursor-pointer flex items-center gap-2 shrink-0"
+                    onClick={async () => {
+                      try {
+                        const res = await api.get(`/bookings/${bkId}/contract-pdf`, { responseType: 'blob' });
+                        const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', `Fixam-Contract-${bkId}.pdf`);
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                      } catch (err: any) {
+                        alert(err.response?.data?.message || 'Failed to download contract PDF. Please try again.');
+                      }
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Download Contract (PDF)</span>
                   </button>
                 </div>
               </div>
