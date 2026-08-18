@@ -43,8 +43,14 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
       const isJob = Boolean(bookingData.clientId && !bookingData.providerId && bookingData.title);
       const endpoint = isJob ? `/jobs/${bkId}/status` : `/bookings/${bkId}/status`;
       await api.patch(endpoint, { status: newStatus });
-      setBookingData({ ...bookingData, status: newStatus });
-      alert(`Status updated to ${newStatus} successfully!`);
+      if (newStatus === 'CANCELLED') {
+        alert('Booking cancelled and removed successfully.');
+        setSelectedBooking(null);
+        setActiveTab('My Bookings');
+      } else {
+        setBookingData({ ...bookingData, status: newStatus });
+        alert(`Status updated to ${newStatus} successfully!`);
+      }
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update status.');
     }
