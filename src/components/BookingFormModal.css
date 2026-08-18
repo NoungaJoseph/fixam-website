@@ -166,8 +166,23 @@ textarea.input-field {
   transition: background-color 0.2s;
 }
 
-.btn-confirm:hover {
+.btn-confirm:hover:not(:disabled) {
   background: var(--teal);
+}
+
+.btn-confirm:disabled,
+.btn-cancel:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 600px) {

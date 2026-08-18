@@ -32,9 +32,11 @@ export default function BookingFormModal({
   const [materialsList, setMaterialsList] = useState<MaterialItem[]>([]);
   const [requiresDiagnosis, setRequiresDiagnosis] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !time) {
       alert('Please select both date and time.');
@@ -50,21 +52,29 @@ export default function BookingFormModal({
       'Flexible': 'FIXED',
     };
     const mappedDuration = durationMap[duration] || 'HOURLY';
-    onSubmit({
-      date,
-      time,
-      location,
-      duration: mappedDuration,
-      budget: budgetAmount ? Number(budgetAmount) : 0,
-      urgency,
-      notes,
-      materialsList,
-      requiresDiagnosis,
-      provider: providerName,
-      service: providerService,
-      price: basePrice,
-      image: providerImage
-    });
+    
+    setIsSubmitting(true);
+    try {
+      await onSubmit({
+        date,
+        time,
+        location,
+        duration: mappedDuration,
+        budget: budgetAmount ? Number(budgetAmount) : 0,
+        urgency,
+        notes,
+        materialsList,
+        requiresDiagnosis,
+        provider: providerName,
+        service: providerService,
+        price: basePrice,
+        image: providerImage
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -190,8 +200,26 @@ export default function BookingFormModal({
           </div>
 
           <div className="booking-modal-footer">
-            <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn-confirm">Confirm Booking</button>
+            <button type="button" className="btn-cancel" onClick={onClose} disabled={isSubmitting}>Cancel</button>
+            <button type="submit" className="btn-confirm" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="2" x2="12" y2="6"/>
+                    <line x1="12" y1="18" x2="12" y2="22"/>
+                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/>
+                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+                    <line x1="2" y1="12" x2="6" y2="12"/>
+                    <line x1="18" y1="12" x2="22" y2="12"/>
+                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/>
+                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+                  </svg>
+                  Confirming Booking...
+                </span>
+              ) : (
+                'Confirm Booking'
+              )}
+            </button>
           </div>
         </form>
       </div>
