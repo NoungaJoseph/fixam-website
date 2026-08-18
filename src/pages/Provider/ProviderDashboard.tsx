@@ -48,7 +48,7 @@ const formatBudget = (job: JobLead) => {
 let cachedJobs: JobLead[] = [];
 
 export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser }: ProviderDashboardProps) {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
   const [search, setSearch] = useState('');
@@ -846,12 +846,19 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 onClick={async () => {
                   const nextState = !isAvailable;
                   setIsAvailable(nextState);
+                  updateUser({
+                    isOnline: nextState,
+                    providerProfile: { ...user?.providerProfile, isAvailable: nextState }
+                  });
                   try {
                     await api.put('/providers/status', { isAvailable: nextState, isOnline: nextState });
-                    await refreshUser();
                   } catch (e) {
                     console.error('Failed to update availability status', e);
                     setIsAvailable(!nextState);
+                    updateUser({
+                      isOnline: !nextState,
+                      providerProfile: { ...user?.providerProfile, isAvailable: !nextState }
+                    });
                   }
                 }}
                 title={isAvailable ? 'Turn off availability' : 'Turn on availability'}

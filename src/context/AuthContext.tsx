@@ -25,6 +25,7 @@ type AuthContextType = {
   login: (token: string, userData: User) => void;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  updateUser: (partial: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: () => {},
   refreshUser: async () => {},
+  updateUser: () => {},
 });
 
 // Persist user data alongside the token so we can restore it on refresh
@@ -60,6 +62,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialise with stored user so the UI is populated immediately on refresh
   const [user, setUser] = useState<User | null>(loadUserFromStorage);
   const [isLoading, setIsLoading] = useState(true);
+
+  const updateUser = (partial: Partial<User>) => {
+    setUser(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...partial };
+      saveUserToStorage(updated);
+      return updated;
+    });
+  };
 
   const refreshUser = async () => {
     const token = localStorage.getItem('fixam_token');
@@ -107,8 +118,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         saveUserToStorage(null);
         localStorage.removeItem('fixam_token');
       }
-      // Any other error (network, 500, CORS hiccup) → keep existing stored user
-      // so a temporary server blip doesn't log the user out
     } finally {
       setIsLoading(false);
     }
@@ -136,7 +145,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, isLoading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, isLoading, login, logout, refreshUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
