@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import CreateTaskModal from './CreateTaskModal';
 
 interface Service {
@@ -72,11 +73,42 @@ export default function ClientDashboard({
     }
   }, []);
 
+  const [fallbackPros, setFallbackPros] = useState<Provider[]>([]);
+
+  // Self-healing provider fetch in case initial app boot occurred during server restart
+  useEffect(() => {
+    if (displayedPros.length === 0) {
+      const fetchFallbackPros = async () => {
+        try {
+          const res = await api.get('/providers');
+          if (res.data?.data && Array.isArray(res.data.data)) {
+            const formatted = res.data.data.map((item: any) => ({
+              id: item.id,
+              userId: item.user?.id || item.userId,
+              name: item.user?.fullName || 'Anonymous Provider',
+              role: item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider',
+              rating: item.rating ? Number(item.rating).toFixed(1) : '5.0',
+              image: item.user?.avatar ? getMediaUrl(item.user.avatar) : '',
+              originalData: item,
+              isVerified: item.verification === 'VERIFIED'
+            }));
+            setFallbackPros(formatted);
+          }
+        } catch (err) {
+          console.error('Failed to load fallback providers in dashboard:', err);
+        }
+      };
+      fetchFallbackPros();
+    }
+  }, [displayedPros.length]);
+
+  const activePros = displayedPros.length > 0 ? displayedPros : fallbackPros;
+
   // Extract portfolio projects from all providers (matching mobile app's projectShowcaseList)
   const portfolioProjects = useMemo(() => {
     const projects: any[] = [];
     const currentUserId = user?.id || '';
-    displayedPros.forEach((pro) => {
+    activePros.forEach((pro) => {
       const raw = pro.originalData;
       if (!raw || !Array.isArray(raw.portfolio)) return;
       raw.portfolio.forEach((item: any) => {
@@ -122,7 +154,7 @@ export default function ClientDashboard({
     });
     // Exclude own projects
     return projects.filter(p => p.provider.id !== currentUserId && p.provider.userId !== currentUserId);
-  }, [displayedPros, user?.id]);
+  }, [activePros, user?.id]);
   
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -409,7 +441,7 @@ export default function ClientDashboard({
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {displayedPros.slice(0, 4).map((pro, idx) => {
+          {activePros.slice(0, 4).map((pro, idx) => {
             const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
             const displayRole = roleArray.length > 0 ? roleArray[0] : (i18n.language === 'fr' ? 'Prestataire' : 'Service Provider');
             return (
