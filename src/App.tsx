@@ -59,6 +59,7 @@ import SkillDetail from './pages/Resources/SkillDetail'
 import CareerPathways from './pages/Resources/CareerPathways'
 import CareerPathwaysBrowsePage from './pages/Resources/CareerPathwaysBrowsePage'
 import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
+import SupportPage from './pages/SupportPage'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
@@ -68,7 +69,7 @@ import './marketplace.css'
 import './components/Megamenu.css'
 import './mobile-upgrades.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view'
+export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -259,13 +260,17 @@ function getInitialPageFromUrl(): Page {
   if (path.startsWith('/profile/')) return 'profile_view';
   if (path.startsWith('/job/')) return 'job_view';
   if (path === '/download' || path === '/download/') return 'download';
+  if (path === '/support' || path === '/support/') return 'support';
 
   const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+  if (hash === 'support' || hash === 'help') {
+    return 'support';
+  }
   if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
     return 'dashboard';
   }
 
-  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
+  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'support'];
   if (validPages.includes(hash as Page)) {
     return hash as Page;
   }
@@ -431,12 +436,22 @@ function App() {
         return;
       }
 
+      if (path === '/support' || path === '/support/') {
+        setPage('support');
+        return;
+      }
+
+      if (hash === 'support' || hash === 'help') {
+        setPage('support');
+        return;
+      }
+
       if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
         setPage('dashboard');
         return;
       }
 
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view'];
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'support'];
       const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
       
       if (validPages.includes(hash as Page)) {
@@ -466,6 +481,13 @@ function App() {
     const path = window.location.pathname;
 
     if (page === 'profile_view' || page === 'job_view' || page === 'download') {
+      return;
+    }
+
+    if (page === 'support') {
+      if (path !== '/support' && path !== '/support/') {
+        window.history.pushState('', document.title, '/support');
+      }
       return;
     }
 
@@ -555,6 +577,7 @@ function App() {
             {page === 'about' && <About onNavigate={setPage} />}
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
             {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
+            {page === 'support' && <SupportPage onNavigate={setPage} />}
             {page === 'success_stories' && <SuccessStories onNavigate={setPage} />}
             {page === 'reviews' && <ReviewsPage onNavigate={setPage} onSelectSkill={setSelectedSkill} />}
             {page === 'skill_detail' && <SkillDetail onNavigate={setPage} skillName={selectedSkill} onSelectSkill={setSelectedSkill} livePros={livePros} />}
@@ -2345,7 +2368,7 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
             onNavigate?.('privacy'); 
             setTimeout(() => document.getElementById('cookies')?.scrollIntoView({ behavior: 'smooth' }), 300); 
           }}>Cookie Policy</button>
-          <button onClick={() => alert('Support flow coming soon!')}>{t('footer.help') || 'Support'}</button>
+          <button onClick={() => onNavigate?.('support')}>{t('footer.help') || 'Support'}</button>
         </div>
       </div>
     </footer>
