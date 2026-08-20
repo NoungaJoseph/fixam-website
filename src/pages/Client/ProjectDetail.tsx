@@ -83,14 +83,62 @@ export default function ProjectDetail({
     return list;
   }, [project, provider]);
 
-  // Parse Real Packages/Tiers from DB (Safely handling JSON strings)
+  // Parse Real Packages/Tiers from DB (Safely handling JSON strings and ordering: Basic -> Standard -> Premium)
   const tiers = useMemo(() => {
+    const getTierOrder = (pkg: any) => {
+      const key = String(pkg?.id || pkg?.name || '').toLowerCase();
+      if (key.includes('basic')) return 1;
+      if (key.includes('standard')) return 2;
+      if (key.includes('premium')) return 3;
+      return 4;
+    };
+
+    let tiersArr = project.tiers;
+    if (typeof tiersArr === 'string') {
+      try { tiersArr = JSON.parse(tiersArr); } catch (_) { }
+    }
+    if (Array.isArray(tiersArr) && tiersArr.length > 0) {
+      const mapped = tiersArr.map((pkg: any, idx: number) => ({
+        id: pkg.id || `tier_${idx}`,
+        name: (pkg.name || `TIER ${idx + 1}`).toUpperCase(),
+        label: pkg.summary || pkg.label || '',
+        price: Number(pkg.price || 0),
+        deliveryDays: Number(pkg.deliveryDays || 1),
+        revisions: Number(pkg.revisions || 0),
+        expressDeliveryEnabled: pkg.expressDeliveryEnabled !== undefined ? Boolean(pkg.expressDeliveryEnabled) : true,
+        expressDeliveryDays: pkg.expressDeliveryDays ? Number(pkg.expressDeliveryDays) : 1,
+        expressDeliveryPrice: pkg.expressDeliveryPrice ? Number(pkg.expressDeliveryPrice) : Math.round(Number(pkg.price || 0) * 0.3),
+        features: Array.isArray(pkg.features) && pkg.features.length > 0
+          ? pkg.features.filter((f: any) => f && typeof f === 'string' && f.trim())
+          : []
+      }));
+      return mapped.sort((a, b) => getTierOrder(a) - getTierOrder(b));
+    }
+
     let packagesObj = project.packages;
     if (typeof packagesObj === 'string') {
       try { packagesObj = JSON.parse(packagesObj); } catch (_) { }
     }
 
     const baseRate = Number(project.price || provider.rate || 5000);
+    if (Array.isArray(packagesObj) && packagesObj.length > 0) {
+      const mapped = packagesObj.map((pkg: any, idx: number) => ({
+        id: pkg.id || `tier_${idx}`,
+        name: (pkg.name || `TIER ${idx + 1}`).toUpperCase(),
+        label: pkg.summary || pkg.label || '',
+        price: Number(pkg.price || 0),
+        deliveryDays: Number(pkg.deliveryDays || 1),
+        revisions: Number(pkg.revisions || 0),
+        expressDeliveryEnabled: pkg.expressDeliveryEnabled !== undefined ? Boolean(pkg.expressDeliveryEnabled) : true,
+        expressDeliveryDays: pkg.expressDeliveryDays ? Number(pkg.expressDeliveryDays) : 1,
+        expressDeliveryPrice: pkg.expressDeliveryPrice ? Number(pkg.expressDeliveryPrice) : Math.round(Number(pkg.price || 0) * 0.3),
+        features: Array.isArray(pkg.features) && pkg.features.length > 0
+          ? pkg.features.filter((f: any) => f && typeof f === 'string' && f.trim())
+          : []
+      }));
+      return mapped.sort((a, b) => getTierOrder(a) - getTierOrder(b));
+    }
+
     if (packagesObj && typeof packagesObj === 'object') {
       const parsed: any[] = [];
       ['basic', 'standard', 'premium'].forEach((key) => {
@@ -112,7 +160,7 @@ export default function ProjectDetail({
           });
         }
       });
-      if (parsed.length > 0) return parsed;
+      if (parsed.length > 0) return parsed.sort((a, b) => getTierOrder(a) - getTierOrder(b));
     }
 
     // Default Single Tier fallback based on actual project.price / provider.rate if no packages object
