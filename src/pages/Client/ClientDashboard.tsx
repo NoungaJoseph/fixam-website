@@ -4,6 +4,7 @@ import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import CreateTaskModal from './CreateTaskModal';
+import UserAvatar from '../../components/UserAvatar';
 
 interface Service {
   id: string;
@@ -444,6 +445,15 @@ export default function ClientDashboard({
           {activePros.slice(0, 4).map((pro, idx) => {
             const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
             const displayRole = roleArray.length > 0 ? roleArray[0] : (i18n.language === 'fr' ? 'Prestataire' : 'Service Provider');
+            const proObj = pro as any;
+            const rawAvatar = proObj.image 
+              || proObj.avatar 
+              || proObj.user?.avatar 
+              || proObj.user?.image 
+              || proObj.originalData?.user?.avatar 
+              || proObj.originalData?.avatar 
+              || (typeof proObj.originalData?.portfolio?.[0] === 'string' ? proObj.originalData.portfolio[0] : (proObj.originalData?.portfolio?.[0]?.imageUrl || proObj.originalData?.portfolio?.[0]?.url || proObj.originalData?.portfolio?.[0]?.image));
+
             return (
               <div 
                 className="flex flex-col items-center text-center group cursor-pointer bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all p-4 relative" 
@@ -451,21 +461,12 @@ export default function ClientDashboard({
                 onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }}
               >
                 <div className="relative mb-3">
-                  {pro.image ? (
-                    <img 
-                      src={getMediaUrl(pro.image)} 
-                      alt={pro.name || 'Provider'} 
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).onerror = null;
-                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name || 'Provider')}&background=14B8A6&color=fff&size=96&rounded=true`;
-                      }}
-                    />
-                  ) : (
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-inner bg-teal-500 text-white flex items-center justify-center font-bold text-2xl sm:text-3xl group-hover:ring-4 ring-teal-50 transition-all">
-                      {(pro.name || 'Provider').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-                    </div>
-                  )}
+                  <UserAvatar 
+                    uri={rawAvatar} 
+                    name={pro.name || 'Provider'} 
+                    size={88} 
+                    className="shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
+                  />
                   <button 
                     type="button"
                     className="absolute -top-1 -right-1 bg-white rounded-full p-1.5 shadow border border-gray-100 text-gray-300 hover:text-[#F59E0B] hover:scale-110 transition z-10" 

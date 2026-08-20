@@ -3,6 +3,7 @@ import './SavedProviders.css';
 import { api } from '../../services/api';
 import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
+import UserAvatar from '../../components/UserAvatar';
 
 interface SavedProvidersProps {
   savedProsState: any[];
@@ -233,20 +234,11 @@ export default function SavedProviders({
                   }}
                 >
                   <div className="avatar-wrapper">
-                    {displayImage ? (
-                      <img 
-                        src={displayImage} 
-                        alt={pro.name} 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).onerror = null;
-                          (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(pro.name)}&background=14B8A6&color=fff&size=64&rounded=true`;
-                        }}
-                      />
-                    ) : (
-                      <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#14B8A6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
-                        {pro.name ? pro.name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : 'PRO'}
-                      </div>
-                    )}
+                    <UserAvatar 
+                      uri={pro.image || pro.avatar || pro.user?.avatar || pro.originalData?.user?.avatar || (typeof pro.originalData?.portfolio?.[0] === 'string' ? pro.originalData.portfolio[0] : (pro.originalData?.portfolio?.[0]?.imageUrl || pro.originalData?.portfolio?.[0]?.url || pro.originalData?.portfolio?.[0]?.image))} 
+                      name={pro.name} 
+                      size={64} 
+                    />
                   </div>
                   <h4>{pro.name}</h4>
                   <span className="provider-cat-badge">{pro.role}</span>

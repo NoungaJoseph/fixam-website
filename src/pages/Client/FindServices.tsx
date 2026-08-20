@@ -2,6 +2,7 @@ import './FindServices.css';
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, images, getMediaUrl } from '../../App';
+import UserAvatar from '../../components/UserAvatar';
 
 interface FindServicesProps {
   setSelectedProvider: (pro: any) => void;
@@ -390,8 +391,13 @@ export default function FindServices({
             {sortedProviders.map((p, idx) => {
               const fullName = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Provider';
               const serviceRole = getCategoryLabel(p.services && p.services.length > 0 ? p.services[0] : (p.role || (i18n.language === 'fr' ? 'Prestataire de service' : 'Service Professional')));
-              const rawAvatar = p.image || p.avatar || p.user?.avatar || p.originalData?.user?.avatar || '';
-              const displayImage = rawAvatar ? getMediaUrl(rawAvatar) : '';
+              const rawAvatar = p.image 
+                || p.avatar 
+                || p.user?.avatar 
+                || p.user?.image 
+                || p.originalData?.user?.avatar 
+                || p.originalData?.avatar 
+                || (typeof p.originalData?.portfolio?.[0] === 'string' ? p.originalData.portfolio[0] : (p.originalData?.portfolio?.[0]?.imageUrl || p.originalData?.portfolio?.[0]?.url || p.originalData?.portfolio?.[0]?.image));
               const displayRating = p.rating || (i18n.language === 'fr' ? 'Nouveau' : 'New');
               const numReviews = p.reviews || 0;
               const displayLoc = p.location || p.city || (i18n.language === 'fr' ? 'À proximité' : 'Nearby');
@@ -402,21 +408,9 @@ export default function FindServices({
               return (
                 <div key={idx} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full relative p-5">
                   <div className="mb-4">
-                    {displayImage ? (
-                      <img 
-                        src={displayImage} 
-                        alt={fullName} 
-                        className="w-16 h-16 rounded-lg object-cover mb-3" 
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).onerror = null;
-                          (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=14B8A6&color=fff&size=64&rounded=true`;
-                        }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-lg mb-3 bg-teal-500 text-white flex items-center justify-center font-bold text-2xl">
-                        {fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-                      </div>
-                    )}
+                    <div className="mb-3">
+                      <UserAvatar uri={rawAvatar} name={fullName} size={64} radius={8} />
+                    </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-0.5 flex items-center gap-1">
                       {fullName} {isVerified && <span className="text-[#14B8A6]"><Icon name="shield" /></span>}
                     </h3>

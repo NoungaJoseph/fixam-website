@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import BookingFormModal from '../../components/BookingFormModal';
 import { api } from '../../services/api';
 import { getMediaUrl } from '../../App';
+import UserAvatar from '../../components/UserAvatar';
 
 interface ProviderProfileDetailProps {
   selectedProvider: any;
@@ -58,7 +59,11 @@ export default function ProviderProfileDetail({
   };
 
   const fullName = selectedProvider.name || `${selectedProvider.firstName || ''} ${selectedProvider.lastName || ''}`.trim() || 'Provider';
-  const rawAvatar = selectedProvider.image || selectedProvider.avatar || original.user?.avatar || original.avatar || '';
+  const rawAvatar = selectedProvider.image 
+    || selectedProvider.avatar 
+    || original.user?.avatar 
+    || original.avatar 
+    || (typeof original.portfolio?.[0] === 'string' ? original.portfolio[0] : (original.portfolio?.[0]?.imageUrl || original.portfolio?.[0]?.url || original.portfolio?.[0]?.image));
   const displayImage = rawAvatar ? getMediaUrl(rawAvatar) : '';
   const targetFavId = selectedProvider?.id || selectedProvider?.userId || original?.id || original?.userId;
   const [isSaved, setIsSaved] = useState(() => {
@@ -122,21 +127,12 @@ export default function ProviderProfileDetail({
       <div className="profile-banner-card-centered">
         <div className="profile-banner-bg-centered"></div>
         <div className="profile-header-main-centered">
-          {displayImage ? (
-            <img 
-              src={displayImage} 
-              alt={fullName} 
-              className="profile-avatar-xl" 
-              onError={(e) => {
-                (e.target as HTMLImageElement).onerror = null;
-                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=14B8A6&color=fff&size=120&rounded=true`;
-              }}
-            />
-          ) : (
-            <div className="profile-avatar-xl fallback-avatar-centered flex items-center justify-center font-bold text-3xl bg-teal-500 text-white">
-              {fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
-            </div>
-          )}
+          <UserAvatar
+            uri={rawAvatar}
+            name={fullName}
+            size={120}
+            className="profile-avatar-xl shadow-lg border-4 border-white"
+          />
           
           <div className="profile-header-info-centered">
             <h1 className="profile-name-centered">
