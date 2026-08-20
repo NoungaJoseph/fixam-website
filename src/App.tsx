@@ -1498,7 +1498,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const name = item.user?.fullName || 'Anonymous Provider';
             const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
             const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-            const rawAvatar = item.user?.avatar || item.avatar || '';
+            const rawAvatar = item.user?.avatar || item.user?.image || item.avatar || item.image || '';
             const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
             
             return {
@@ -1583,7 +1583,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 const name = item.user?.fullName || 'Anonymous Provider';
                 const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
                 const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-                const rawAvatar = item.user?.avatar || item.avatar || '';
+                const rawAvatar = item.user?.avatar || item.user?.image || item.avatar || item.image || '';
                 const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
                 
                 return {

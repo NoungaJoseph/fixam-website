@@ -325,9 +325,9 @@ export default function ProjectDetail({
         {/* Provider Info Row */}
         <div className="project-provider-card" onClick={handleViewProviderProfile}>
           <div className="provider-avatar-wrap">
-            {provider.avatar ? (
+            {(provider.avatar || provider.image || provider.user?.avatar || provider.user?.image) ? (
               <img
-                src={getMediaUrl(provider.avatar)}
+                src={getMediaUrl(provider.avatar || provider.image || provider.user?.avatar || provider.user?.image)}
                 alt={provider.name}
                 className="provider-avatar-img"
                 onError={(e) => {
