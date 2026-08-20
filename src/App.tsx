@@ -63,6 +63,7 @@ import SupportPage from './pages/SupportPage'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
+import { usePageAnalytics } from './hooks/usePageAnalytics'
 
 import './App.css'
 import './marketplace.css'
@@ -319,6 +320,7 @@ function App() {
   const [onboardingSlide, setOnboardingSlide] = useState(0);
 
   const { isLoggedIn, isLoading, user, refreshUser } = useAuth();
+  usePageAnalytics(page);
 
   useEffect(() => {
     if (isLoggedIn && page === 'dashboard') {

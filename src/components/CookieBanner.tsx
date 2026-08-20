@@ -17,11 +17,33 @@ export default function CookieBanner() {
   const handleAcceptAll = () => {
     localStorage.setItem('fixam_cookie_consent', 'all');
     setIsVisible(false);
+    try {
+      fetch(`${import.meta.env.VITE_API_URL || 'https://api.usefixam.com/api'}/analytics/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cookieConsent: 'ALL',
+          path: window.location.pathname || '/',
+          domain: window.location.hostname || 'usefixam.com'
+        })
+      }).catch(() => {});
+    } catch (_) {}
   };
 
   const handleRefuse = () => {
     localStorage.setItem('fixam_cookie_consent', 'essential');
     setIsVisible(false);
+    try {
+      fetch(`${import.meta.env.VITE_API_URL || 'https://api.usefixam.com/api'}/analytics/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cookieConsent: 'ESSENTIAL',
+          path: window.location.pathname || '/',
+          domain: window.location.hostname || 'usefixam.com'
+        })
+      }).catch(() => {});
+    } catch (_) {}
   };
 
   const handleShowChoices = () => {
