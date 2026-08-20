@@ -357,7 +357,7 @@ function App() {
     localStorage.setItem('fixam_onboarded', 'true');
     setShowOnboarding(false);
   };
-  
+
   const [userRole, setUserRole] = useState<'client' | 'pro'>(() => {
     const savedRole = localStorage.getItem('fixam_user_role');
     if (savedRole === 'client' || savedRole === 'pro') return savedRole;
@@ -453,12 +453,12 @@ function App() {
 
       const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'support'];
       const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
-      
+
       if (validPages.includes(hash as Page)) {
         setPage(hash as Page);
         return;
       }
-      
+
       if (validPages.includes(pathPage as Page)) {
         setPage(pathPage as Page);
         return;
@@ -516,7 +516,7 @@ function App() {
             const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
             const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
             const distance = item.serviceArea || 'Nearby';
-            
+
             let image = DEFAULT_AVATAR;
             if (item.user?.avatar) {
               image = getMediaUrl(item.user.avatar);
@@ -564,10 +564,10 @@ function App() {
           <Header page={page} onNavigate={setPage} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
           <main>
             {page === 'services' && (
-              <Services 
-                onNavigate={setPage} 
-                searchQuery={serviceSearchQuery} 
-                setSearchQuery={setServiceSearchQuery} 
+              <Services
+                onNavigate={setPage}
+                searchQuery={serviceSearchQuery}
+                setSearchQuery={setServiceSearchQuery}
                 serviceCategories={serviceCategories}
                 translateService={(name, desc) => translateServiceHelper(name, desc, i18n.language)}
                 translateCat={(cat) => translateCatHelper(cat, i18n.language)}
@@ -592,10 +592,10 @@ function App() {
             {page === 'profile_view' && <ProfileViewPage profileId={profileId} />}
             {page === 'job_view' && <JobViewPage jobId={jobId} />}
             {page === 'home' && (
-              <Home 
-                onNavigate={setPage} 
-                livePros={livePros} 
-                onSelectSkill={setSelectedSkill} 
+              <Home
+                onNavigate={setPage}
+                livePros={livePros}
+                onSelectSkill={setSelectedSkill}
                 setSearchQuery={setServiceSearchQuery}
               />
             )}
@@ -610,10 +610,10 @@ function App() {
       {showOnboarding && (
         <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-[3px] z-[9999] flex items-center justify-center p-4 animate-fade-in text-slate-800 font-sans">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 flex flex-col relative">
-            
+
             {/* Close Button */}
-            <button 
-              onClick={completeOnboarding} 
+            <button
+              onClick={completeOnboarding}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition font-bold z-10"
             >
               ✕
@@ -630,8 +630,8 @@ function App() {
                     {i18n.language === 'fr' ? 'Bienvenue sur Fixam' : 'Welcome to Fixam'}
                   </h3>
                   <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr' 
-                      ? 'Votre plateforme de confiance pour trouver et réserver instantanément des prestataires de services qualifiés à domicile (plomberie, électricité, ménage).' 
+                    {i18n.language === 'fr'
+                      ? 'Votre plateforme de confiance pour trouver et réserver instantanément des prestataires de services qualifiés à domicile (plomberie, électricité, ménage).'
                       : 'Your premium hub for on-demand home and expert professional services. Instantly book verified plumbing, electrical, and cleaning specialists.'}
                   </p>
                 </div>
@@ -646,8 +646,8 @@ function App() {
                     {i18n.language === 'fr' ? 'Profils 100% Vérifiés' : '100% Verified Profiles'}
                   </h3>
                   <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr' 
-                      ? 'Tous nos experts passent par une vérification d\'identité rigoureuse avec selfie vidéo et validation de document officiel.' 
+                    {i18n.language === 'fr'
+                      ? 'Tous nos experts passent par une vérification d\'identité rigoureuse avec selfie vidéo et validation de document officiel.'
                       : 'All service providers undergo strict background checks, including official document verification and live webcam selfie checks.'}
                   </p>
                 </div>
@@ -662,8 +662,8 @@ function App() {
                     {i18n.language === 'fr' ? 'Paiement Mobile Sécurisé' : 'Secure Mobile Payments'}
                   </h3>
                   <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr' 
-                      ? 'Rechargez votre portefeuille avec MTN MoMo, Orange Money ou M-Pesa. Suivez la confirmation de transaction en direct.' 
+                    {i18n.language === 'fr'
+                      ? 'Rechargez votre portefeuille avec MTN MoMo, Orange Money ou M-Pesa. Suivez la confirmation de transaction en direct.'
                       : 'Top up your wallet instantly using MTN MoMo, Orange Money, or M-Pesa. Poll for automated transaction updates in 3 seconds.'}
                   </p>
                 </div>
@@ -678,8 +678,8 @@ function App() {
                     {i18n.language === 'fr' ? 'Suivi en Direct & Vocal' : 'Live Tracking & Chat'}
                   </h3>
                   <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr' 
-                      ? 'Suivez le trajet de votre prestataire sur une carte interactive, partagez votre position GPS et envoyez des notes vocales.' 
+                    {i18n.language === 'fr'
+                      ? 'Suivez le trajet de votre prestataire sur une carte interactive, partagez votre position GPS et envoyez des notes vocales.'
                       : 'Track your provider\'s arrival on a live interactive map, share your GPS location, and send voice notes in the chat area.'}
                   </p>
                 </div>
@@ -705,13 +705,13 @@ function App() {
               <div className="flex gap-2">
                 {onboardingSlide < 3 ? (
                   <>
-                    <button 
-                      onClick={completeOnboarding} 
+                    <button
+                      onClick={completeOnboarding}
                       className="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-2"
                     >
                       {i18n.language === 'fr' ? 'Passer' : 'Skip'}
                     </button>
-                    <button 
+                    <button
                       onClick={() => setOnboardingSlide(prev => prev + 1)}
                       className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition"
                     >
@@ -719,7 +719,7 @@ function App() {
                     </button>
                   </>
                 ) : (
-                  <button 
+                  <button
                     onClick={completeOnboarding}
                     className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition"
                   >
@@ -906,7 +906,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
   const [tickerIndex, setTickerIndex] = useState(0);
   const tickerMessages = [
-    i18n.language === 'fr' 
+    i18n.language === 'fr'
       ? "« Maison nettoyée en 2 heures ! Excellent travail du prestataire Fixam ! » (Amélia N.)"
       : "“Cleaned my house in 2 hours! Excellent job by Fixam provider!” (Amélia N.)",
     i18n.language === 'fr'
@@ -979,8 +979,8 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
         {/* Upper Row */}
         <div className="header-upper-row">
           <div className="header-left">
-            <button 
-              className="mobile-menu-btn" 
+            <button
+              className="mobile-menu-btn"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -1009,8 +1009,8 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             </div>
 
             <div className="language-dropdown-new desktop-only">
-              <select 
-                value={i18n.language} 
+              <select
+                value={i18n.language}
                 onChange={(e) => handleGlobalLanguageChange(e.target.value)}
                 style={{ background: 'transparent', border: 'none', fontWeight: 800, cursor: 'pointer' }}
               >
@@ -1024,15 +1024,15 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             {/* Mobile Header Right */}
             <div className="mobile-header-right mobile-only">
               {isLoggedIn ? (
-                <button 
-                  className="mobile-header-signup" 
+                <button
+                  className="mobile-header-signup"
                   onClick={() => handleNavigate('dashboard')}
                 >
                   Dashboard
                 </button>
               ) : (
-                <button 
-                  className="mobile-header-signup" 
+                <button
+                  className="mobile-header-signup"
                   onClick={() => handleNavigate('login')}
                 >
                   {t('nav.signin') || 'Sign In'}
@@ -1046,9 +1046,9 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
           <nav className="desktop-nav">
             <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
             <span className="nav-divider">|</span>
-            
+
             {/* Explore Services Dropdown */}
-            <div 
+            <div
               className="nav-item-with-dropdown"
               onMouseEnter={() => { setActiveDropdown('services'); setActiveCategory('Home Services'); }}
               onMouseLeave={() => setActiveDropdown(null)}
@@ -1056,15 +1056,15 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               <button className={`nav-link-new ${page === 'services' ? 'active' : ''}`} onClick={() => handleNavigate('services')}>
                 {i18n.language === 'fr' ? 'Explorer les services' : 'Explore Services'}
               </button>
-              
+
               {activeDropdown === 'services' && (
                 <div className="megamenu-overlay">
                   <div className="megamenu-body">
                     {/* Left side categories */}
                     <div className="megamenu-left-col">
                       {Object.keys(serviceCategories).map((cat) => (
-                        <button 
-                          key={cat} 
+                        <button
+                          key={cat}
                           className={`megamenu-cat-item ${activeCategory === cat ? 'active' : ''}`}
                           onMouseEnter={() => setActiveCategory(cat)}
                           onClick={() => handleNavigate('services')}
@@ -1074,7 +1074,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
                         </button>
                       ))}
                     </div>
-                    
+
                     {/* Right side services grid */}
                     <div className="megamenu-right-col">
                       <div className="megamenu-grid-2col">
@@ -1103,9 +1103,9 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             </div>
 
             <span className="nav-divider">|</span>
-            
+
             {/* How It Works Dropdown */}
-            <div 
+            <div
               className="nav-item-with-dropdown"
               onMouseEnter={() => setActiveDropdown('guide')}
               onMouseLeave={() => setActiveDropdown(null)}
@@ -1113,7 +1113,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               <button className={`nav-link-new ${page === 'guide' ? 'active' : ''}`} onClick={() => handleNavigate('guide')}>
                 How it works
               </button>
-              
+
               {activeDropdown === 'guide' && (
                 <div className="megamenu-overlay" style={{ width: '800px' }}>
                   <div className="megamenu-body">
@@ -1165,7 +1165,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             </div>
 
             <span className="nav-divider">|</span>
-            
+
             {/* Career Pathways Link (No Dropdown) */}
             <button className={`nav-link-new ${page === 'career_pathways' ? 'active' : ''}`} onClick={() => handleNavigate('career_pathways')}>
               {i18n.language === 'fr' ? 'Parcours Pro' : 'Career Pathways'}
@@ -1174,7 +1174,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             <span className="nav-divider">|</span>
             <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
           </nav>
-          
+
           <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center', position: 'absolute', right: 0 }}>
             {isLoggedIn ? (
               <>
@@ -1192,7 +1192,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
         {/* Mobile Navigation Drawer */}
         <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          
+
           <div className="mobile-menu-header">
             <button className="brand brand-button" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('home'); }} aria-label="Go to homepage">
               <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '28px', transform: 'scale(5)', transformOrigin: 'left center' }} />
@@ -1286,8 +1286,8 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Icon name="user" />
                 <select value={i18n.language} onChange={(e) => handleGlobalLanguageChange(e.target.value)} style={{ background: 'transparent', border: 'none', fontWeight: 600, color: 'var(--ink)' }}>
-                    <option value="en">English</option>
-                    <option value="fr">Français</option>
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
                 </select>
               </div>
 
@@ -1327,7 +1327,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1339,48 +1339,48 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-    // Dashboard navigation specific state
-    const [activeTab, setActiveTab] = useState(() => getInitialDashboardTab(userRole));
-    const [previousTab, setPreviousTab] = useState('Dashboard');
-    const [selectedProvider, setSelectedProvider] = useState<any>(null);
-    const [selectedBooking, setSelectedBooking] = useState<any>(null);
-    const [selectedProject, setSelectedProject] = useState<any>(null);
-    const prevRoleRef = useRef(userRole);
+  // Dashboard navigation specific state
+  const [activeTab, setActiveTab] = useState(() => getInitialDashboardTab(userRole));
+  const [previousTab, setPreviousTab] = useState('Dashboard');
+  const [selectedProvider, setSelectedProvider] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const prevRoleRef = useRef(userRole);
 
-    useEffect(() => {
-      if (activeTab && activeTab !== 'Booking Details') {
-        setPreviousTab(activeTab);
-      }
-    }, [activeTab]);
+  useEffect(() => {
+    if (activeTab && activeTab !== 'Booking Details') {
+      setPreviousTab(activeTab);
+    }
+  }, [activeTab]);
 
-    const handleSetSelectedBooking = (val: any) => {
-      setSelectedBooking(val);
-      if (val === null) {
-        setActiveTab(previousTab);
-      }
-    };
-    const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([]);
+  const handleSetSelectedBooking = (val: any) => {
+    setSelectedBooking(val);
+    if (val === null) {
+      setActiveTab(previousTab);
+    }
+  };
+  const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([]);
 
-    useEffect(() => {
-      if (user?.id) {
-        const stored = localStorage.getItem(`fixam:favorite-projects:${user.id}`);
-        setFavoriteProjectIds(stored ? JSON.parse(stored) : []);
-      } else {
-        setFavoriteProjectIds([]);
-      }
-    }, [user?.id]);
+  useEffect(() => {
+    if (user?.id) {
+      const stored = localStorage.getItem(`fixam:favorite-projects:${user.id}`);
+      setFavoriteProjectIds(stored ? JSON.parse(stored) : []);
+    } else {
+      setFavoriteProjectIds([]);
+    }
+  }, [user?.id]);
 
-    const toggleFavoriteProject = (projectId: string) => {
-      if (!user?.id) return;
-      const next = favoriteProjectIds.includes(projectId)
-        ? favoriteProjectIds.filter(id => id !== projectId)
-        : [...favoriteProjectIds, projectId];
-      setFavoriteProjectIds(next);
-      localStorage.setItem(`fixam:favorite-projects:${user.id}`, JSON.stringify(next));
-    };
+  const toggleFavoriteProject = (projectId: string) => {
+    if (!user?.id) return;
+    const next = favoriteProjectIds.includes(projectId)
+      ? favoriteProjectIds.filter(id => id !== projectId)
+      : [...favoriteProjectIds, projectId];
+    setFavoriteProjectIds(next);
+    localStorage.setItem(`fixam:favorite-projects:${user.id}`, JSON.stringify(next));
+  };
 
   const [searchVal, setSearchVal] = useState('');
-  
+
   useEffect(() => {
     localStorage.setItem(`fixam_active_tab_${userRole}`, activeTab);
     localStorage.setItem('fixam_active_tab', activeTab);
@@ -1456,7 +1456,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         console.warn('Error loading live ticker:', err);
       }
     };
-    
+
     fetchTickerData();
     const interval = setInterval(fetchTickerData, 2 * 60 * 1000);
     return () => {
@@ -1498,9 +1498,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const name = item.user?.fullName || 'Anonymous Provider';
             const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
             const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-            const rawAvatar = item.user?.avatar || item.user?.image || item.avatar || item.image || '';
+            const rawAvatar = item.user?.avatar || item.avatar || '';
             const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
-            
+
             return {
               id: item.id,
               userId: item.user?.id || item.userId,
@@ -1548,8 +1548,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setUnreadMessagesCount(totalUnread);
             }
             if (notifsRes?.data) {
-              const unreadNotifs = notifsRes.data.unreadCount !== undefined 
-                ? notifsRes.data.unreadCount 
+              const unreadNotifs = notifsRes.data.unreadCount !== undefined
+                ? notifsRes.data.unreadCount
                 : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
               setUnreadNotificationsCount(unreadNotifs);
             }
@@ -1583,9 +1583,9 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 const name = item.user?.fullName || 'Anonymous Provider';
                 const role = item.skills && item.skills.length > 0 ? item.skills.join(', ') : 'Service Provider';
                 const rating = item.rating ? Number(item.rating).toFixed(1) : '5.0';
-                const rawAvatar = item.user?.avatar || item.user?.image || item.avatar || item.image || '';
+                const rawAvatar = item.user?.avatar || item.avatar || '';
                 const image = rawAvatar ? getMediaUrl(rawAvatar) : '';
-                
+
                 return {
                   id: item.id,
                   userId: item.user?.id || item.userId,
@@ -1602,7 +1602,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             const [convsRes, notifsRes, leadsRes, proposalsRes, walletRes] = await Promise.all([
               api.get('/chat/conversations').catch(() => null),
               api.get('/notifications').catch(() => null),
-              api.get('/jobs/available').catch(() => null), 
+              api.get('/jobs/available').catch(() => null),
               api.get('/jobs/my-jobs').catch(() => null),
               api.get('/wallet/balance').catch(() => null)
             ]);
@@ -1611,8 +1611,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setUnreadMessagesCount(totalUnread);
             }
             if (notifsRes?.data) {
-              const unreadNotifs = notifsRes.data.unreadCount !== undefined 
-                ? notifsRes.data.unreadCount 
+              const unreadNotifs = notifsRes.data.unreadCount !== undefined
+                ? notifsRes.data.unreadCount
                 : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
               setUnreadNotificationsCount(unreadNotifs);
             }
@@ -1633,7 +1633,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [activeChatUser, setActiveChatUser] = useState<string>('');
-  
+
   const [savedProsState, setSavedProsState] = useState<any[]>([]);
 
   if (userRole === 'client') {
@@ -1665,31 +1665,31 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     return (
       <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         {isSidebarOpen && (
-          <div 
-            className="sidebar-backdrop" 
-            onClick={() => setIsSidebarOpen(false)} 
+          <div
+            className="sidebar-backdrop"
+            onClick={() => setIsSidebarOpen(false)}
             style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
           ></div>
         )}
         {/* Left Sidebar */}
         <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
-          
+
           {/* Desktop Toggle Button placed outside the sidebar */}
-          <button 
+          <button
             className="desktop-only"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
-            style={{ 
-              position: 'absolute', 
-              right: '-45px', 
-              top: '20px', 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            style={{
+              position: 'absolute',
+              right: '-45px',
+              top: '20px',
               width: '40px',
               height: '40px',
-              background: '#fff', 
-              border: '1px solid var(--line)', 
-              borderRadius: '8px', 
-              cursor: 'pointer', 
-              display: 'flex', 
-              alignItems: 'center', 
+              background: '#fff',
+              border: '1px solid var(--line)',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
               zIndex: 10
@@ -1700,8 +1700,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           </button>
 
           <div className="brand-header" style={{ justifyContent: 'space-between' }}>
-            <div 
-              className="user-card-new" 
+            <div
+              className="user-card-new"
               style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
               onClick={() => {
                 setIsSidebarOpen(false);
@@ -1732,8 +1732,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
           <nav className="sidebar-links-new">
             {clientNavItems.map((item) => (
-              <button 
-                key={item.name} 
+              <button
+                key={item.name}
                 className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
                 onClick={() => handleNavClick(item.name)}
               >
@@ -1743,11 +1743,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
               </button>
             ))}
-            
+
 
             {onRoleChange && (
-              <button 
-                className="side-link-new" 
+              <button
+                className="side-link-new"
                 style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
                 onClick={() => {
                   setIsSidebarOpen(false);
@@ -1801,7 +1801,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 {isProfileDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
                     <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
-                    <button 
+                    <button
                       className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
@@ -1812,7 +1812,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       <Icon name="check" />
                     </button>
                     {onRoleChange && (
-                      <button 
+                      <button
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2 font-semibold"
                         onClick={() => {
                           setIsProfileDropdownOpen(false);
@@ -1863,50 +1863,50 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             ) : (
               <>
                 {activeTab === 'Dashboard' && (
-                    <ClientDashboard 
-                      setActiveTab={setActiveTab}
-                      setSelectedProvider={setSelectedProvider}
-                      setSelectedProject={setSelectedProject}
-                      setSelectedBooking={handleSetSelectedBooking}
-                      services={services}
-                      displayedPros={displayedPros}
-                      clientBookings={clientBookings}
-                      walletBalance={walletBalance}
-                      clientTasks={clientTasks}
-                      setClientTasks={setClientTasks}
-                      onRoleChange={onRoleChange}
-                      favoriteProjectIds={favoriteProjectIds}
-                      toggleFavoriteProject={toggleFavoriteProject}
-                    />
+                  <ClientDashboard
+                    setActiveTab={setActiveTab}
+                    setSelectedProvider={setSelectedProvider}
+                    setSelectedProject={setSelectedProject}
+                    setSelectedBooking={handleSetSelectedBooking}
+                    services={services}
+                    displayedPros={displayedPros}
+                    clientBookings={clientBookings}
+                    walletBalance={walletBalance}
+                    clientTasks={clientTasks}
+                    setClientTasks={setClientTasks}
+                    onRoleChange={onRoleChange}
+                    favoriteProjectIds={favoriteProjectIds}
+                    toggleFavoriteProject={toggleFavoriteProject}
+                  />
                 )}
 
                 {activeTab === 'My Bookings' && (
-                  <MyBookings 
-                    clientBookings={clientBookings} 
-                    setClientBookings={setClientBookings} 
+                  <MyBookings
+                    clientBookings={clientBookings}
+                    setClientBookings={setClientBookings}
                     clientTasks={clientTasks}
                     setClientTasks={setClientTasks}
-                    setActiveTab={setActiveTab} 
-                    setActiveChatUser={setActiveChatUser} 
+                    setActiveTab={setActiveTab}
+                    setActiveChatUser={setActiveChatUser}
                     setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}
                 {activeTab === 'My Tasks' && (
-                  <MyTasks 
-                    clientTasks={clientTasks} 
-                    setClientTasks={setClientTasks} 
-                    setActiveTab={setActiveTab} 
+                  <MyTasks
+                    clientTasks={clientTasks}
+                    setClientTasks={setClientTasks}
+                    setActiveTab={setActiveTab}
                     walletBalance={walletBalance}
                     clientBookings={clientBookings}
                     setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}
                 {activeTab === 'Saved Providers' && (
-                  <SavedProviders 
-                    savedProsState={savedProsState} 
-                    setSavedProsState={setSavedProsState} 
-                    setActiveTab={setActiveTab} 
-                    setActiveChatUser={setActiveChatUser} 
+                  <SavedProviders
+                    savedProsState={savedProsState}
+                    setSavedProsState={setSavedProsState}
+                    setActiveTab={setActiveTab}
+                    setActiveChatUser={setActiveChatUser}
                     setSelectedProvider={setSelectedProvider}
                     setSelectedProject={setSelectedProject}
                     favoriteProjectIds={favoriteProjectIds}
@@ -1916,63 +1916,63 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 )}
                 {activeTab === 'Stats' && <Stats />}
                 {activeTab === 'Wallet' && (
-                  <WalletAndCoins 
-                    setActiveTab={setActiveTab} 
-                    walletBalance={walletBalance} 
+                  <WalletAndCoins
+                    setActiveTab={setActiveTab}
+                    walletBalance={walletBalance}
                     clientBookings={clientBookings}
                     clientTasks={clientTasks}
                   />
                 )}
                 {activeTab === 'Coin Purchase' && (
-                  <CoinPurchase 
-                    setActiveTab={setActiveTab} 
+                  <CoinPurchase
+                    setActiveTab={setActiveTab}
                   />
                 )}
                 {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
                 {activeTab === 'Messages' && (
-                  <Messages 
-                    chatMessages={chatMessages} 
-                    setChatMessages={setChatMessages} 
-                    activeChatUser={activeChatUser} 
-                    setActiveChatUser={setActiveChatUser} 
+                  <Messages
+                    chatMessages={chatMessages}
+                    setChatMessages={setChatMessages}
+                    activeChatUser={activeChatUser}
+                    setActiveChatUser={setActiveChatUser}
                   />
                 )}
                 {activeTab === 'Reviews' && <Reviews />}
                 {activeTab === 'Refer & Earn' && <Referrals />}
                 {activeTab === 'Settings' && (
-                  <Settings 
-                    savedProsState={savedProsState} 
-                    setSavedProsState={setSavedProsState} 
-                    setActiveTab={setActiveTab} 
-                    setActiveChatUser={setActiveChatUser} 
+                  <Settings
+                    savedProsState={savedProsState}
+                    setSavedProsState={setSavedProsState}
+                    setActiveTab={setActiveTab}
+                    setActiveChatUser={setActiveChatUser}
                   />
                 )}
                 {activeTab === 'My Profile' && (
-                  <MyProfile 
-                    setActiveTab={setActiveTab} 
+                  <MyProfile
+                    setActiveTab={setActiveTab}
                     onRoleChange={onRoleChange}
                     userRole={userRole}
                   />
                 )}
                 {activeTab === 'Verification' && (
-                  <VerificationPage 
-                    setActiveTab={setActiveTab} 
+                  <VerificationPage
+                    setActiveTab={setActiveTab}
                   />
                 )}
                 {activeTab === 'Find Services' && (
-                  <FindServices 
-                    setSelectedProvider={setSelectedProvider} 
-                    setActiveTab={setActiveTab} 
-                    clientBookings={clientBookings} 
-                    setClientBookings={setClientBookings} 
+                  <FindServices
+                    setSelectedProvider={setSelectedProvider}
+                    setActiveTab={setActiveTab}
+                    clientBookings={clientBookings}
+                    setClientBookings={setClientBookings}
                     setActiveChatUser={setActiveChatUser}
                     displayedPros={displayedPros}
                   />
                 )}
                 {activeTab === 'Support' && (
-                  <Support 
-                    setActiveTab={setActiveTab} 
-                    setActiveChatUser={setActiveChatUser} 
+                  <Support
+                    setActiveTab={setActiveTab}
+                    setActiveChatUser={setActiveChatUser}
                   />
                 )}
               </>
@@ -2027,17 +2027,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   return (
     <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {isSidebarOpen && (
-        <div 
-          className="sidebar-backdrop" 
-          onClick={() => setIsSidebarOpen(false)} 
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setIsSidebarOpen(false)}
           style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
         ></div>
       )}
       {/* Left Sidebar */}
       <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
         <div className="brand-header" style={{ justifyContent: 'space-between' }}>
-          <div 
-            className="user-card-new" 
+          <div
+            className="user-card-new"
             style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
             onClick={() => handleNavClick(userRole === 'pro' ? 'My Profile' : 'My Profile')}
           >
@@ -2059,7 +2059,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button className="sidebar-toggle-btn" style={{display: 'flex'}} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+            <button className="sidebar-toggle-btn" style={{ display: 'flex' }} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
               {isSidebarCollapsed ? (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
               ) : (
@@ -2074,8 +2074,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
         <nav className="sidebar-links-new">
           {providerNavItems.map((item) => (
-            <button 
-              key={item.name} 
+            <button
+              key={item.name}
               className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
               onClick={() => handleNavClick(item.name)}
             >
@@ -2085,11 +2085,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
             </button>
           ))}
-          
+
 
           {onRoleChange && (
-            <button 
-              className="side-link-new" 
+            <button
+              className="side-link-new"
               style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
               onClick={() => {
                 setIsSidebarOpen(false);
@@ -2149,7 +2149,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               {isProfileDropdownOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-lg py-2 z-50">
                   <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Switch Account</div>
-                  <button 
+                  <button
                     className="w-full text-left px-4 py-2 text-sm bg-teal-50 text-teal-700 flex items-center justify-between"
                     onClick={() => {
                       setIsProfileDropdownOpen(false);
@@ -2160,7 +2160,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     <Icon name="check" />
                   </button>
                   {onRoleChange && (
-                    <button 
+                    <button
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2 font-semibold"
                       onClick={() => {
                         setIsProfileDropdownOpen(false);
@@ -2186,50 +2186,50 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               setActiveChatUser={setActiveChatUser}
             />
           ) : (
-          <>
-          {activeTab === 'Dashboard' && (
-            <ProviderDashboard 
-              setActiveTab={setActiveTab}
-              onRoleChange={onRoleChange}
-              setActiveChatUser={setActiveChatUser}
-            />
-          )}
+            <>
+              {activeTab === 'Dashboard' && (
+                <ProviderDashboard
+                  setActiveTab={setActiveTab}
+                  onRoleChange={onRoleChange}
+                  setActiveChatUser={setActiveChatUser}
+                />
+              )}
 
-          {activeTab === 'Post a Project' && (
-            <PostProject 
-              setActiveTab={setActiveTab}
-            />
-          )}
+              {activeTab === 'Post a Project' && (
+                <PostProject
+                  setActiveTab={setActiveTab}
+                />
+              )}
 
-          {activeTab === 'My Jobs' && (
-            <MyJobs 
-              setActiveTab={setActiveTab} 
-              setActiveChatUser={setActiveChatUser}
-              setSelectedBooking={handleSetSelectedBooking}
-            />
-          )}
-          {activeTab === 'Wallet' && <ProviderWallet />}
-          {activeTab === 'Reviews' && <ProviderReviews />}
-          {activeTab === 'My Profile' && <ProviderProfile setActiveTab={setActiveTab} setSelectedProject={setSelectedProject} />}
-          {activeTab === 'Settings' && <Settings setActiveTab={setActiveTab} />}
-          {activeTab === 'My Stats' && <Stats />}
-          {activeTab === 'Support' && (
-            <ProviderSupport 
-              setActiveTab={setActiveTab} 
-              setActiveChatUser={setActiveChatUser} 
-            />
-          )}
-          {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
-          {activeTab === 'Boost Profile' && <BoostProfile />}
-          {activeTab === 'Messages' && (
-            <Messages 
-              chatMessages={chatMessages} 
-              setChatMessages={setChatMessages} 
-              activeChatUser={activeChatUser} 
-              setActiveChatUser={setActiveChatUser} 
-            />
-          )}
-          </>
+              {activeTab === 'My Jobs' && (
+                <MyJobs
+                  setActiveTab={setActiveTab}
+                  setActiveChatUser={setActiveChatUser}
+                  setSelectedBooking={handleSetSelectedBooking}
+                />
+              )}
+              {activeTab === 'Wallet' && <ProviderWallet />}
+              {activeTab === 'Reviews' && <ProviderReviews />}
+              {activeTab === 'My Profile' && <ProviderProfile setActiveTab={setActiveTab} setSelectedProject={setSelectedProject} />}
+              {activeTab === 'Settings' && <Settings setActiveTab={setActiveTab} />}
+              {activeTab === 'My Stats' && <Stats />}
+              {activeTab === 'Support' && (
+                <ProviderSupport
+                  setActiveTab={setActiveTab}
+                  setActiveChatUser={setActiveChatUser}
+                />
+              )}
+              {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
+              {activeTab === 'Boost Profile' && <BoostProfile />}
+              {activeTab === 'Messages' && (
+                <Messages
+                  chatMessages={chatMessages}
+                  setChatMessages={setChatMessages}
+                  activeChatUser={activeChatUser}
+                  setActiveChatUser={setActiveChatUser}
+                />
+              )}
+            </>
           )}
         </div>
       </section>
@@ -2313,35 +2313,35 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <span className="separator">|</span>
         <button onClick={() => onNavigate?.('login')}>{t('nav.signin') || 'Sign In'}</button>
       </div>
-      
+
       <p className="footer-subtext">Fixam: Trusted Professional Services Platform</p>
 
       <div className="footer-download-section">
         <h4>DOWNLOAD THE FIXAM APP</h4>
         <p>Find real jobs, both on-site and remote, and manage tasks directly from your phone.</p>
         <div className="footer-app-badges">
-          <a 
-            href="https://apps.apple.com/app/com.fixam.app.iosapp" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://apps.apple.com/app/com.fixam.app.iosapp"
+            target="_blank"
+            rel="noopener noreferrer"
             className="app-badge-btn"
           >
             <svg viewBox="0 0 384 512" fill="currentColor">
-              <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-48.4-19.2-77.5-19.2-38 0-77.3 22.8-96.6 57.5-39.6 71.1-10.1 176.4 28 232.4 18.7 27.1 40.5 56.6 69 52.8 26.9-3.5 37.2-20.3 69-20.3 31.8 0 41.4 20.3 69 20.3 28.5.3 48-26.7 66.8-54 21.6-31.5 30.5-62 31-63.6-.9-.3-59.7-23-60.2-91.8zM286.9 83c19.5-24 32.7-57.1 29.1-90.1-28 1.1-62.1 18.9-82.2 42.6-17.2 20.1-32.3 53.6-28.3 85.9 31.2 2.4 62.9-15.1 81.4-38.4z"/>
+              <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-48.4-19.2-77.5-19.2-38 0-77.3 22.8-96.6 57.5-39.6 71.1-10.1 176.4 28 232.4 18.7 27.1 40.5 56.6 69 52.8 26.9-3.5 37.2-20.3 69-20.3 31.8 0 41.4 20.3 69 20.3 28.5.3 48-26.7 66.8-54 21.6-31.5 30.5-62 31-63.6-.9-.3-59.7-23-60.2-91.8zM286.9 83c19.5-24 32.7-57.1 29.1-90.1-28 1.1-62.1 18.9-82.2 42.6-17.2 20.1-32.3 53.6-28.3 85.9 31.2 2.4 62.9-15.1 81.4-38.4z" />
             </svg>
             <div className="app-badge-text">
               <small>Download on the</small>
               <strong>App Store</strong>
             </div>
           </a>
-          <a 
-            href="https://play.google.com/store/apps/details?id=com.fixam.app.android" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://play.google.com/store/apps/details?id=com.fixam.app.android"
+            target="_blank"
+            rel="noopener noreferrer"
             className="app-badge-btn"
           >
             <svg viewBox="0 0 512 512" fill="currentColor">
-              <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58 33.3-60.1-60.1 60.1-60.1 58 33.3c15.3 8.8 25.3 23.3 25.3 40.1s-10 31.3-25.3 40.1zm-82.1 63.8L104.6 499l220.7-126.7 60.1-60.1z"/>
+              <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58 33.3-60.1-60.1 60.1-60.1 58 33.3c15.3 8.8 25.3 23.3 25.3 40.1s-10 31.3-25.3 40.1zm-82.1 63.8L104.6 499l220.7-126.7 60.1-60.1z" />
             </svg>
             <div className="app-badge-text">
               <small>GET IT ON</small>
@@ -2353,7 +2353,7 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
 
       <div className="footer-bottom-bar">
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>
-        
+
         <div className="footer-socials">
           <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
           <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
@@ -2364,9 +2364,9 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <div className="footer-legal-links">
           <button onClick={() => onNavigate?.('terms')}>{t('footer.terms') || 'Terms of Service'}</button>
           <button onClick={() => onNavigate?.('privacy')}>{t('footer.privacy') || 'Privacy Policy'}</button>
-          <button onClick={() => { 
-            onNavigate?.('privacy'); 
-            setTimeout(() => document.getElementById('cookies')?.scrollIntoView({ behavior: 'smooth' }), 300); 
+          <button onClick={() => {
+            onNavigate?.('privacy');
+            setTimeout(() => document.getElementById('cookies')?.scrollIntoView({ behavior: 'smooth' }), 300);
           }}>Cookie Policy</button>
           <button onClick={() => onNavigate?.('support')}>{t('footer.help') || 'Support'}</button>
         </div>
@@ -2407,10 +2407,10 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
     <article className={mini ? 'top-rated-card mini' : 'top-rated-card'}>
       <div className="top-rated-cover">
         {displayImage ? (
-          <img 
-            src={displayImage} 
-            alt={pro.name} 
-            className="top-rated-img" 
+          <img
+            src={displayImage}
+            alt={pro.name}
+            className="top-rated-img"
             onError={(e) => {
               (e.target as HTMLImageElement).onerror = null;
               (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&auto=format&fit=crop&q=80`;
@@ -2424,10 +2424,10 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
       <div className="top-rated-content">
         <div className="top-rated-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {displayImage ? (
-            <img 
-              src={displayImage} 
-              alt={pro.name} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            <img
+              src={displayImage}
+              alt={pro.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={(e) => {
                 (e.target as HTMLImageElement).onerror = null;
                 (e.target as HTMLImageElement).style.display = 'none';
@@ -2533,11 +2533,11 @@ export function DownloadPage() {
           {isFr ? 'Télécharger l\'application Fixam' : 'Download the Fixam App'}
         </h1>
         <p style={{ fontSize: '1.1rem', color: '#64748B', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-          {isFr 
-            ? 'Gérez vos tâches, discutez avec des prestataires qualifiés et suivez vos projets en temps réel.' 
+          {isFr
+            ? 'Gérez vos tâches, discutez avec des prestataires qualifiés et suivez vos projets en temps réel.'
             : 'Manage your tasks, chat with qualified providers, and track your projects in real time.'}
         </p>
-        
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', justifyContent: 'center' }}>
           <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '220px', padding: '1rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: '1px solid #0F172A', transition: 'all 0.2s' }}>
             🤖 Google Play Store (Android)
@@ -2548,8 +2548,8 @@ export function DownloadPage() {
         </div>
 
         <div style={{ marginTop: '2.5rem', borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem', color: '#94A3B8', fontSize: '0.9rem' }}>
-          {isFr 
-            ? 'Redirection automatique vers votre store...' 
+          {isFr
+            ? 'Redirection automatique vers votre store...'
             : 'Automatically redirecting you to your store...'}
         </div>
       </div>
@@ -2575,8 +2575,8 @@ export function ProfileViewPage({ profileId }: { profileId: string }) {
           {isFr ? 'Profil du Prestataire' : 'Provider Profile'}
         </h1>
         <p style={{ fontSize: '1rem', color: '#64748B', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-          {isFr 
-            ? 'Vous consultez le profil d\'un prestataire vérifié sur Fixam. Pour voir ses avis complets et le réserver, ouvrez son profil directement dans l\'application.' 
+          {isFr
+            ? 'Vous consultez le profil d\'un prestataire vérifié sur Fixam. Pour voir ses avis complets et le réserver, ouvrez son profil directement dans l\'application.'
             : 'You are viewing a verified provider profile on Fixam. To see reviews and book them, open their profile in the app.'}
         </p>
 
@@ -2611,8 +2611,8 @@ export function JobViewPage({ jobId }: { jobId: string }) {
           {isFr ? 'Détails de la Mission' : 'Task Details'}
         </h1>
         <p style={{ fontSize: '1rem', color: '#64748B', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-          {isFr 
-            ? 'Vous consultez les détails d\'une mission publiée sur Fixam. Pour postuler ou gérer cette tâche, ouvrez-la directement dans l\'application.' 
+          {isFr
+            ? 'Vous consultez les détails d\'une mission publiée sur Fixam. Pour postuler ou gérer cette tâche, ouvrez-la directement dans l\'application.'
             : 'You are viewing details of a task posted on Fixam. To apply or manage this job, open it in the app.'}
         </p>
 

@@ -225,7 +225,16 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
         <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 relative">
           <div className="relative flex-shrink-0">
             <div className="relative w-28 h-28 rounded-full overflow-hidden shadow-md">
-              <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt={fullName} className="w-full h-full object-cover bg-gray-100" />
+              <img 
+                src={(user?.avatar || user?.image) ? getMediaUrl(user.avatar || user.image) : `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || 'User')}&background=14B8A6&color=fff&size=120&rounded=true`} 
+                alt={fullName} 
+                className="w-full h-full object-cover bg-gray-100" 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).onerror = null;
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName || 'User')}&background=14B8A6&color=fff&size=120&rounded=true`;
+                }}
+              />
+            </div>
               {isUploadingAvatar && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <svg className="animate-spin h-8 w-8 text-[#14B8A6]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -234,7 +243,6 @@ export default function MyProfile({ setActiveTab, onRoleChange, userRole }: MyPr
                   </svg>
                 </div>
               )}
-            </div>
             <button 
               className="absolute bottom-0 right-0 bg-[#14B8A6] text-white p-1.5 rounded-full shadow-sm hover:bg-[#0F9788] transition" 
               aria-label="Change Avatar" 

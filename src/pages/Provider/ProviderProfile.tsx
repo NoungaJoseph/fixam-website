@@ -395,14 +395,14 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
           {/* Action Buttons */}
           <div className="pp-action-btns">
             {/* Availability Toggle - visible especially on mobile */}
-            <div className="pp-availability-toggle" style={{ 
-              display: 'flex', alignItems: 'center', gap: '0.75rem', 
-              background: isProfileAvailable ? '#ecfdf5' : '#f1f5f9', 
+            <div className="pp-availability-toggle" style={{
+              display: 'flex', alignItems: 'center', gap: '0.75rem',
+              background: isProfileAvailable ? '#ecfdf5' : '#f1f5f9',
               border: `1px solid ${isProfileAvailable ? '#6ee7b7' : '#cbd5e1'}`,
               borderRadius: '12px', padding: '0.6rem 1rem', width: '100%', marginBottom: '0.75rem'
             }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isProfileAvailable ? '#059669' : '#64748b', flex: 1 }}>
-                {isProfileAvailable 
+                {isProfileAvailable
                   ? (i18n.language === 'fr' ? '🟢 En ligne — Disponible' : '🟢 Online — Available')
                   : (i18n.language === 'fr' ? '⚪ Hors ligne — Indisponible' : '⚪ Offline — Unavailable')}
               </span>
@@ -698,8 +698,8 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                   };
 
                   return (
-                    <div 
-                      key={item.id || i} 
+                    <div
+                      key={item.id || i}
                       className="pp-portfolio-card"
                       style={{ cursor: 'pointer', position: 'relative' }}
                       onClick={handleCardClick}
@@ -715,10 +715,10 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                         <h4 className="pp-portfolio-title">{item.title}</h4>
                         {item.description && <p className="pp-portfolio-desc">{item.description}</p>}
                         {item.link && (
-                          <a 
-                            href={item.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
+                          <a
+                            href={item.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="pp-portfolio-link"
                             onClick={(e) => e.stopPropagation()}
                           >
@@ -747,7 +747,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
             {selectedModalProject && (
               <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999, padding: '20px' }}>
                 <div style={{ background: '#fff', borderRadius: '16px', maxWidth: '700px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '24px', position: 'relative' }}>
-                  <button 
+                  <button
                     onClick={() => setSelectedModalProject(null)}
                     style={{ position: 'absolute', top: '16px', right: '16px', background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontWeight: 'bold' }}
                   >
@@ -784,7 +784,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                   </p>
 
                   <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button 
+                    <button
                       onClick={() => setSelectedModalProject(null)}
                       style={{ background: '#0d9488', color: '#fff', border: 'none', borderRadius: '8px', padding: '8px 20px', fontWeight: 700, cursor: 'pointer' }}
                     >
