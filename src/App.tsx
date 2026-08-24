@@ -608,124 +608,125 @@ function App() {
 
       <CookieBanner />
 
-      {/* Onboarding Slider Deck Modal */}
+      {/* Onboarding Slider Deck Modal - Flat Minimalist Zero-Radius Design */}
       {showOnboarding && (
-        <div className="fixed inset-0 bg-slate-950/75 backdrop-blur-[3px] z-[9999] flex items-center justify-center p-4 animate-fade-in text-slate-800 font-sans">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 flex flex-col relative">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 sm:p-6 animate-fade-in text-slate-900 font-['Outfit',sans-serif]">
+          <div className="bg-white rounded-none shadow-2xl max-w-xl w-full border-2 border-slate-900 flex flex-col relative">
 
             {/* Close Button */}
             <button
               onClick={completeOnboarding}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center transition font-bold z-10"
+              className="absolute top-5 right-5 text-slate-400 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-none w-10 h-10 flex items-center justify-center transition font-black text-lg z-10"
+              aria-label="Close"
             >
               ✕
             </button>
 
             {/* Slide Content */}
-            <div className="p-8 text-center flex flex-col items-center">
+            <div className="px-8 sm:px-12 pt-12 pb-10 text-center flex flex-col items-center">
               {onboardingSlide === 0 && (
-                <div className="animate-fade-in">
-                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
-                    👋
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-3">
-                    {i18n.language === 'fr' ? 'Bienvenue sur Fixam' : 'Welcome to Fixam'}
+                <div className="animate-fade-in w-full">
+                  <span className="text-xs uppercase tracking-widest text-teal-600 font-black mb-3 block">
+                    {i18n.language.startsWith('fr') ? 'BIENVENUE SUR FIXAM' : 'WELCOME TO FIXAM'}
+                  </span>
+                  <h3 className="text-3xl sm:text-4xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
+                    {i18n.language.startsWith('fr') ? 'Vos services de confiance en un clic' : 'Verified home & pro services at your fingertips'}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr'
-                      ? 'Votre plateforme de confiance pour trouver et réserver instantanément des prestataires de services qualifiés à domicile (plomberie, électricité, ménage).'
-                      : 'Your premium hub for on-demand home and expert professional services. Instantly book verified plumbing, electrical, and cleaning specialists.'}
+                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto font-normal">
+                    {i18n.language.startsWith('fr')
+                      ? 'Trouvez et réservez instantanément des spécialistes qualifiés (plomberie, électricité, menuiserie, ménage) pour tous vos travaux et urgences.'
+                      : 'Instantly find and book verified specialists for plumbing, electrical, carpentry, and home maintenance with full escrow security.'}
                   </p>
                 </div>
               )}
 
               {onboardingSlide === 1 && (
-                <div className="animate-fade-in">
-                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-pulse">
-                    🛡️
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-3">
-                    {i18n.language === 'fr' ? 'Profils 100% Vérifiés' : '100% Verified Profiles'}
+                <div className="animate-fade-in w-full">
+                  <span className="text-xs uppercase tracking-widest text-teal-600 font-black mb-3 block">
+                    {i18n.language.startsWith('fr') ? 'SÉCURITÉ & VÉRIFICATION' : 'SECURITY & VERIFICATION'}
+                  </span>
+                  <h3 className="text-3xl sm:text-4xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
+                    {i18n.language.startsWith('fr') ? 'Prestataires 100% vérifiés et certifiés' : '100% verified & background-checked experts'}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr'
-                      ? 'Tous nos experts passent par une vérification d\'identité rigoureuse avec selfie vidéo et validation de document officiel.'
-                      : 'All service providers undergo strict background checks, including official document verification and live webcam selfie checks.'}
+                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto font-normal">
+                    {i18n.language.startsWith('fr')
+                      ? 'Chaque professionnel passe par une vérification officielle de pièce d’identité, selfie vidéo et contrôle de compétences avant d’intervenir.'
+                      : 'Every service provider undergoes rigorous official government ID verification, webcam validation, and skill assessment.'}
                   </p>
                 </div>
               )}
 
               {onboardingSlide === 2 && (
-                <div className="animate-fade-in">
-                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">
-                    💳
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-3">
-                    {i18n.language === 'fr' ? 'Paiement Mobile Sécurisé' : 'Secure Mobile Payments'}
+                <div className="animate-fade-in w-full">
+                  <span className="text-xs uppercase tracking-widest text-teal-600 font-black mb-3 block">
+                    {i18n.language.startsWith('fr') ? 'PAIEMENT MOBILE' : 'MOBILE MONEY'}
+                  </span>
+                  <h3 className="text-3xl sm:text-4xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
+                    {i18n.language.startsWith('fr') ? 'Paiements rapides MTN MoMo & Orange Money' : 'Instant MTN MoMo & Orange Money payments'}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr'
-                      ? 'Rechargez votre portefeuille avec MTN MoMo, Orange Money ou M-Pesa. Suivez la confirmation de transaction en direct.'
-                      : 'Top up your wallet instantly using MTN MoMo, Orange Money, or M-Pesa. Poll for automated transaction updates in 3 seconds.'}
+                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto font-normal">
+                    {i18n.language.startsWith('fr')
+                      ? 'Rechargez facilement votre compte en pièces Fixam en quelques secondes avec vos numéros Mobile Money locaux en toute sécurité.'
+                      : 'Seamlessly top up Fixam coins in seconds using your local MTN Mobile Money, Orange Money, or M-Pesa account.'}
                   </p>
                 </div>
               )}
 
               {onboardingSlide === 3 && (
-                <div className="animate-fade-in">
-                  <div className="w-20 h-20 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-bounce">
-                    📍
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-3">
-                    {i18n.language === 'fr' ? 'Suivi en Direct & Vocal' : 'Live Tracking & Chat'}
+                <div className="animate-fade-in w-full">
+                  <span className="text-xs uppercase tracking-widest text-teal-600 font-black mb-3 block">
+                    {i18n.language.startsWith('fr') ? 'SUIVI & MESSAGERIE' : 'LIVE TRACKING & CHAT'}
+                  </span>
+                  <h3 className="text-3xl sm:text-4xl font-black text-slate-900 mb-5 tracking-tight leading-tight">
+                    {i18n.language.startsWith('fr') ? 'Suivi en temps réel et messagerie directe' : 'Real-time tracking and instant direct messaging'}
                   </h3>
-                  <p className="text-sm text-slate-500 leading-relaxed max-w-md mx-auto">
-                    {i18n.language === 'fr'
-                      ? 'Suivez le trajet de votre prestataire sur une carte interactive, partagez votre position GPS et envoyez des notes vocales.'
-                      : 'Track your provider\'s arrival on a live interactive map, share your GPS location, and send voice notes in the chat area.'}
+                  <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto font-normal">
+                    {i18n.language.startsWith('fr')
+                      ? 'Discutez directement avec votre prestataire, partagez votre localisation et suivez l’avancement de vos tâches en direct.'
+                      : 'Chat directly with your assigned pro, share location coordinates, and track task progress live from start to finish.'}
                   </p>
                 </div>
               )}
             </div>
 
             {/* Slider Navigation Bar */}
-            <div className="bg-slate-50 px-8 py-5 border-t border-slate-100 flex items-center justify-between">
-              {/* Dots */}
-              <div className="flex gap-2">
+            <div className="bg-slate-50 px-8 sm:px-12 py-6 border-t-2 border-slate-900 flex items-center justify-between">
+              {/* Progress Step Numbers */}
+              <div className="flex items-center gap-3">
                 {[0, 1, 2, 3].map((idx) => (
                   <button
                     type="button"
                     key={idx}
                     onClick={() => setOnboardingSlide(idx)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${onboardingSlide === idx ? 'bg-teal-500 w-6' : 'bg-slate-300'}`}
+                    className={`h-2 transition-all duration-300 rounded-none ${onboardingSlide === idx ? 'bg-teal-600 w-8' : 'bg-slate-300 w-3 hover:bg-slate-400'}`}
                     aria-label={`Slide ${idx + 1}`}
                   />
                 ))}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2">
+              <div className="flex items-center gap-3">
                 {onboardingSlide < 3 ? (
                   <>
                     <button
                       onClick={completeOnboarding}
-                      className="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-2"
+                      className="text-sm font-bold text-slate-600 hover:text-slate-900 px-3 py-2 transition rounded-none uppercase tracking-wider"
                     >
-                      {i18n.language === 'fr' ? 'Passer' : 'Skip'}
+                      {i18n.language.startsWith('fr') ? 'Passer' : 'Skip'}
                     </button>
                     <button
                       onClick={() => setOnboardingSlide(prev => prev + 1)}
-                      className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition"
+                      className="bg-slate-900 hover:bg-teal-600 text-white text-sm font-extrabold px-6 py-3 rounded-none shadow-md transition uppercase tracking-wider"
                     >
-                      {i18n.language === 'fr' ? 'Suivant' : 'Next'}
+                      {i18n.language.startsWith('fr') ? 'Suivant' : 'Next'}
                     </button>
                   </>
                 ) : (
                   <button
                     onClick={completeOnboarding}
-                    className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-5 py-2.5 rounded-lg shadow transition"
+                    className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-black px-7 py-3 rounded-none shadow-lg transition uppercase tracking-wider"
                   >
-                    {i18n.language === 'fr' ? 'Commencer' : 'Get Started'}
+                    {i18n.language.startsWith('fr') ? 'Commencer' : 'Get Started'}
                   </button>
                 )}
               </div>
