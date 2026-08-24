@@ -48,7 +48,7 @@ const SKILL_SUGGESTIONS = [
 ];
 
 export default function ProviderProfile({ setActiveTab, setSelectedProject }: ProviderProfileProps) {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
   const [selectedModalProject, setSelectedModalProject] = useState<any | null>(null);
   const [activeSubTab, setActiveSubTab] = useState('Overview');
@@ -99,14 +99,15 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
   // Reviews
   const [reviews, setReviews] = useState<any[]>([]);
 
-  // Availability toggle (for mobile)
-  const [isProfileAvailable, setIsProfileAvailable] = useState(user?.providerProfile?.isAvailable ?? true);
+  // Availability toggle (for mobile and desktop)
+  const [isProfileAvailable, setIsProfileAvailable] = useState(() => Boolean(user?.providerProfile?.isAvailable ?? user?.isOnline ?? true));
 
   const fullName = user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Provider';
 
-  // Populate form when user loads
+  // Populate form and sync availability when user loads
   useEffect(() => {
     if (user) {
+      setIsProfileAvailable(Boolean(user.providerProfile?.isAvailable ?? user.isOnline ?? true));
       setEditFirstName(user.firstName || user.fullName?.split(' ')[0] || '');
       setEditLastName(user.lastName || user.fullName?.split(' ')[1] || '');
       setEditPhone(user.phone || '');
@@ -411,12 +412,20 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                 onClick={async () => {
                   const nextState = !isProfileAvailable;
                   setIsProfileAvailable(nextState);
+                  updateUser({
+                    isOnline: nextState,
+                    providerProfile: { ...user?.providerProfile, isAvailable: nextState }
+                  });
                   try {
-                    await api.put('/providers/status', { isAvailable: nextState });
+                    await api.put('/providers/status', { isAvailable: nextState, isOnline: nextState });
                     await refreshUser();
                   } catch (e) {
                     console.error('Failed to update availability status', e);
                     setIsProfileAvailable(!nextState);
+                    updateUser({
+                      isOnline: !nextState,
+                      providerProfile: { ...user?.providerProfile, isAvailable: !nextState }
+                    });
                   }
                 }}
                 title={isProfileAvailable ? (i18n.language === 'fr' ? 'Désactiver la disponibilité' : 'Turn off availability') : (i18n.language === 'fr' ? 'Activer la disponibilité' : 'Turn on availability')}
