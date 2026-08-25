@@ -9,6 +9,7 @@ interface ProviderDashboardProps {
   setActiveTab: (tab: string) => void;
   onRoleChange?: (role: 'client' | 'pro') => void;
   setActiveChatUser?: (user: any) => void;
+  setSelectedBooking?: (booking: any) => void;
 }
 
 type JobLead = {
@@ -47,7 +48,7 @@ const formatBudget = (job: JobLead) => {
 // Module-level persistent cache across tab navigation remounts
 let cachedJobs: JobLead[] = [];
 
-export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser }: ProviderDashboardProps) {
+export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser, setSelectedBooking }: ProviderDashboardProps) {
   const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
@@ -556,13 +557,15 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                             </button>
                           )}
                           <button
-                            style={{ backgroundColor: '#F1F5F9', color: '#334155', border: '1px solid #CBD5E1', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}
+                            style={{ backgroundColor: '#F0FDFA', color: '#0D9488', border: '1px solid #99F6E4', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
                             onClick={() => {
-                              setActiveTab('Messages');
-                              if (setActiveChatUser) setActiveChatUser(clientName);
+                              if (setSelectedBooking) {
+                                setSelectedBooking(bk);
+                              }
+                              setActiveTab('Booking Details');
                             }}
                           >
-                            💬 Chat Client
+                            {i18n.language === 'fr' ? '📋 Voir la réservation' : '📋 View Booking Details'}
                           </button>
                         </div>
                       </article>

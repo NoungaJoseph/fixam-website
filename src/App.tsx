@@ -2195,6 +2195,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   setActiveTab={setActiveTab}
                   onRoleChange={onRoleChange}
                   setActiveChatUser={setActiveChatUser}
+                  setSelectedBooking={handleSetSelectedBooking}
                 />
               )}
 
