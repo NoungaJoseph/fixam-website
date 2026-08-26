@@ -890,6 +890,83 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
             </div>
           </div>
 
+          {/* PROFILE COMPLETION STEPS (FREE/BORDERLESS - DISAPPEARS WHEN 100% COMPLETE) */}
+          {(() => {
+            const hasAvatar = Boolean(user?.image);
+            const hasSkills = Array.isArray(user?.providerProfile?.skills) && user.providerProfile.skills.length > 0;
+            const hasBio = Boolean(user?.providerProfile?.bio && user.providerProfile.bio.trim().length > 10);
+            const hasRate = Boolean(user?.providerProfile?.rate && Number(user.providerProfile.rate) > 0);
+            const hasLocation = Boolean(user?.location || user?.providerProfile?.serviceArea);
+            const hasVerification = user?.providerProfile?.verification === 'VERIFIED' || user?.providerProfile?.verification === 'PENDING' || (user as any)?.isVerified;
+
+            const stepsList = [
+              { id: 'avatar', title: i18n.language === 'fr' ? 'Photo de profil' : 'Profile Photo', done: hasAvatar, tab: 'My Profile' },
+              { id: 'skills', title: i18n.language === 'fr' ? 'Compétences' : 'Skills & Services', done: hasSkills, tab: 'My Profile' },
+              { id: 'bio', title: i18n.language === 'fr' ? 'Bio professionnelle' : 'Professional Bio', done: hasBio, tab: 'My Profile' },
+              { id: 'rate', title: i18n.language === 'fr' ? 'Tarif horaire' : 'Hourly Rate', done: hasRate, tab: 'My Profile' },
+              { id: 'location', title: i18n.language === 'fr' ? 'Zone de service' : 'Service Location', done: hasLocation, tab: 'My Profile' },
+              { id: 'verification', title: i18n.language === 'fr' ? 'Vérification' : 'Identity Verification', done: hasVerification, tab: 'My Profile' },
+            ];
+
+            const completedSteps = stepsList.filter(s => s.done).length;
+            const percentage = Math.round((completedSteps / stepsList.length) * 100);
+
+            if (completedSteps === stepsList.length) return null;
+
+            return (
+              <div className="py-3 px-1 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
+                    {i18n.language === 'fr' ? 'Complétez votre profil' : 'Complete your profile'}
+                  </span>
+                  <span className="text-xs font-black text-teal-600 dark:text-teal-400">
+                    {completedSteps}/{stepsList.length} ({percentage}%)
+                  </span>
+                </div>
+
+                {/* Stepper Progress Bar */}
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex gap-1">
+                  {stepsList.map((step, idx) => (
+                    <div
+                      key={step.id}
+                      className={`h-full flex-1 rounded-full transition-all duration-300 ${step.done ? 'bg-teal-500' : 'bg-slate-300 dark:bg-slate-600'}`}
+                      title={`${idx + 1}. ${step.title}: ${step.done ? 'Done' : 'Pending'}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Steps List */}
+                <div className="space-y-1 pt-1">
+                  {stepsList.map((step, idx) => (
+                    <button
+                      key={step.id}
+                      onClick={() => setActiveTab(step.tab)}
+                      className={`w-full flex items-center justify-between text-left py-1 px-1.5 rounded transition text-xs ${
+                        step.done 
+                          ? 'text-slate-400 dark:text-slate-500 line-through' 
+                          : 'text-slate-700 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 font-semibold'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          step.done ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                        }`}>
+                          {step.done ? '✓' : idx + 1}
+                        </span>
+                        {step.title}
+                      </span>
+                      {!step.done && (
+                        <span className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">
+                          {i18n.language === 'fr' ? 'Ajouter +' : 'Add +'}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* COINS & WALLET CARD */}
           <div className="upwork-sidebar-card">
             <div className="sidebar-card-header">
