@@ -2215,6 +2215,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               {activeTab === 'Wallet' && <ProviderWallet />}
               {activeTab === 'Reviews' && <ProviderReviews />}
               {activeTab === 'My Profile' && <ProviderProfile setActiveTab={setActiveTab} setSelectedProject={setSelectedProject} />}
+              {activeTab === 'Verification' && <VerificationPage setActiveTab={setActiveTab} />}
               {activeTab === 'Settings' && <Settings setActiveTab={setActiveTab} />}
               {activeTab === 'My Stats' && <Stats />}
               {activeTab === 'Support' && (
