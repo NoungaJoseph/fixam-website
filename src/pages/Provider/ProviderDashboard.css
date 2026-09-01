@@ -1,4 +1,11 @@
-/* ====== Upwork-style Dashboard Layout ====== */
+/* ====== Modern Provider Dashboard Design System ====== */
+.upwork-dashboard-container,
+.provider-dashboard-container,
+.upwork-main-column,
+.upwork-right-sidebar {
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
 .upwork-dashboard-container {
   width: 100%;
   max-width: 1280px;

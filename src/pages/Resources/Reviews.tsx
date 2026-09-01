@@ -36,8 +36,8 @@ const reviewsContent = {
           desc: "Use the Fixam app to message your provider directly, share job details, and track progress from booking to completion."
         },
         {
-          title: "Simple Coin Payments",
-          desc: "Top up with MTN or Orange Mobile Money and use coins to book providers. Transparent pricing, no hidden fees."
+          title: "100% Free Booking",
+          desc: "Connect with verified providers with zero booking fees. Pay your provider directly upon satisfaction with no hidden charges."
         }
       ]
     },
@@ -234,8 +234,8 @@ const reviewsContent = {
       items: [
         {
           category: "Getting Started",
-          q: "Is Fixam free to join?",
-          a: "Yes, creating an account on Fixam is completely free for both clients and service providers. Clients can post tasks and browse provider profiles at no cost. Providers can create their profile and apply for jobs without any fee. You only spend coins when booking a provider or applying for certain featured jobs. New users receive 1 free welcome coin when they join, so you can get started right away."
+          q: "Is Fixam free to join and use?",
+          a: "Yes! Creating an account, posting tasks, booking providers, and applying for jobs are all 100% completely free on Fixam. Clients only pay their provider directly for completed work, with zero platform commissions or booking fees."
         },
         {
           category: "Getting Started",
@@ -260,17 +260,17 @@ const reviewsContent = {
         {
           category: "For Providers",
           q: "What do real users say about their Fixam experience?",
-          a: "Real Fixam users consistently highlight the ease of finding quality providers or clients, the trust that comes from verified profiles, and the convenience of Mobile Money payments. Clients love the ability to see real ratings and reviews before booking. Providers appreciate the steady flow of job opportunities and the professional communication tools in the app. You can read real reviews from our users in the section above."
+          a: "Real Fixam users consistently highlight the ease of finding quality providers or clients, the trust that comes from verified profiles, and the convenience of direct Mobile Money or cash payments. Clients love the ability to see real ratings and reviews before booking. Providers appreciate the steady flow of free job leads and the professional communication tools in the app."
         },
         {
           category: "Payments",
-          q: "How do Mobile Money payments work on Fixam?",
-          a: "Fixam uses a simple coin system for all platform transactions. To add coins to your wallet, open the app, go to your Wallet, and tap Top Up. Select MTN Mobile Money or Orange Money, enter your number and amount, and approve the payment prompt on your phone. Coins are added instantly after confirmation. The minimum top-up is 100 FCFA and the maximum per single transaction is 10,000 FCFA. Coins are then used to book providers — 1 coin for normal bookings, 2 for urgent, 3 for emergency."
+          q: "How do payments work on Fixam?",
+          a: "Payment on Fixam is direct and transparent. Clients and providers agree on the job price beforehand. Once the work is completed to full satisfaction, payment is made directly via cash or Mobile Money (MTN MoMo or Orange Money). Booking a provider and applying for jobs is completely free."
         },
         {
           category: "Safety",
           q: "Is Fixam a secure and legitimate platform?",
-          a: "Yes, Fixam is a legitimate and trusted service marketplace built for Cameroon. All providers go through identity verification. All payments are processed through secure Mobile Money channels — MTN and Orange. Your personal data is encrypted and stored securely. We never share your contact details without your consent. Our team monitors the platform and responds to reports of misconduct. We are committed to building a safe and reliable marketplace that Cameroonian families and businesses can trust."
+          a: "Yes, Fixam is a legitimate and trusted service marketplace built for Cameroon. All providers go through identity verification. Payments are settled directly and securely. Your personal data is encrypted and stored securely. We never share your contact details without your consent. Our team monitors the platform and responds to reports of misconduct. We are committed to building a safe and reliable marketplace that Cameroonian families and businesses can trust."
         }
       ]
     },
@@ -327,8 +327,8 @@ const reviewsContent = {
           desc: "Utilisez l'application Fixam pour envoyer des messages à votre prestataire, partager les détails et suivre l'avancement."
         },
         {
-          title: "Paiements Simples par Pièces",
-          desc: "Rechargez avec MTN ou Orange Mobile Money et utilisez des pièces pour réserver. Tarifs transparents, pas de frais cachés."
+          title: "Réservation 100% Gratuite",
+          desc: "Connectez-vous avec des prestataires vérifiés sans frais de réservation. Payez votre artisan directement après prestation."
         }
       ]
     },
@@ -555,13 +555,13 @@ const reviewsContent = {
         },
         {
           category: "Payments",
-          q: "Comment fonctionnent les paiements Mobile Money ?",
-          a: "Fixam utilise un système de pièces. Pour recharger vos pièces, allez dans votre Portefeuille dans l'application, choisissez MTN ou Orange Money, entrez le montant et validez. Les pièces servent de frais de réservation (1 pièce pour réservation standard)."
+          q: "Comment fonctionnent les paiements sur Fixam ?",
+          a: "Le paiement sur Fixam est direct et transparent. Le client et le prestataire s'accordent sur le prix. Le règlement s'effectue directement en espèces ou par Mobile Money (MTN MoMo ou Orange Money) une fois la mission achevée. La réservation et les candidatures sont 100% gratuites."
         },
         {
           category: "Safety",
           q: "La plateforme Fixam est-elle sécurisée ?",
-          a: "Oui, tous les paiements de recharges sont sécurisés via MTN et Orange Money. Les profils sont vérifiés par carte d'identité. Vos données personnelles sont chiffrées. Notre équipe d'assistance est à votre écoute pour tout problème de comportement."
+          a: "Oui, les profils sont vérifiés par carte nationale d'identité. Vos données personnelles sont chiffrées et protégées. Notre équipe d'assistance est à votre écoute pour assurer des prestations de qualité en toute confiance."
         }
       ]
     },

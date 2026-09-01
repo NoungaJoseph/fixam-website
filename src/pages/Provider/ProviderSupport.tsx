@@ -61,10 +61,10 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
         : 'Browse leads under "Job Leads", click "Send Proposal", and specify your estimate. If accepted, you will get linked with the client.'
     },
     {
-      q: i18n.language === 'fr' ? 'Pourquoi mon solde de pièces a-t-il diminué ?' : 'Why did my coin count drop?',
+      q: i18n.language === 'fr' ? 'À quoi servent les pièces Fixam ?' : 'What are Fixam coins used for?',
       a: i18n.language === 'fr'
-        ? 'Fixam déduit 1 à 3 pièces lorsque vous entrez en contact avec un client pour une opportunité de travail comme frais de mise en relation.'
-        : 'Fixam deducts 1 to 3 coins when you successfully connect or book a job lead with a client as a matching fee.'
+        ? 'Postuler et être mis en relation avec les clients est 100% gratuit. Les pièces Fixam sont des crédits optionnels utilisés uniquement si vous choisissez de booster votre profil ou de mettre vos propositions en tête de liste.'
+        : 'Applying for jobs and connecting with clients is 100% free. Fixam coins are optional credits used only if you choose to boost your profile or highlight your proposals at the top of client listings.'
     }
   ];
 

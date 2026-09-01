@@ -1,3 +1,472 @@
+/* ==========================================================================
+   TSI-INSPIRED ENTERPRISE DESIGN (Matching Screenshots 3, 4, 2, and 1)
+   ========================================================================== */
+
+.tsi-styled-page {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* 2. Top Hero Section (Image 3) */
+.tsi-hero-section {
+  background: #FFFFFF;
+  padding: 3.5rem 0 2.5rem;
+  position: relative;
+}
+
+.tsi-hero-container {
+  width: min(1320px, calc(100% - 4rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  align-items: center;
+  gap: 3.5rem;
+}
+
+.tsi-hero-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.tsi-hero-headline {
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(2.4rem, 3.8vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #071936;
+  letter-spacing: -0.015em;
+  margin: 0 0 1.5rem 0;
+}
+
+.tsi-hero-highlight {
+  color: #0D9488;
+  display: block;
+}
+
+.tsi-hero-subtitle {
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #212529;
+  max-width: 580px;
+  margin: 0 0 2rem 0;
+  font-weight: 400;
+}
+
+.tsi-hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.25rem;
+}
+
+.tsi-btn-primary {
+  background-color: #14B8A6;
+  color: #FFFFFF;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 11px 26px;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.tsi-btn-primary:hover {
+  background-color: #0D9488;
+}
+
+.tsi-btn-secondary {
+  background-color: #FFFFFF;
+  color: #071936;
+  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 26px;
+  border-radius: 2px;
+  border: 1.5px solid #071936;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.tsi-btn-secondary:hover {
+  background-color: #071936;
+  color: #FFFFFF;
+}
+
+.tsi-hero-quick-search-box {
+  width: 100%;
+  max-width: 540px;
+}
+
+.tsi-search-bar {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 0.35rem 0.35rem 0.35rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s;
+  margin-bottom: 0.85rem;
+}
+
+.tsi-search-bar:focus-within {
+  border-color: #14B8A6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.tsi-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.925rem;
+  color: #0F172A;
+  background: transparent;
+}
+
+.tsi-search-submit-btn {
+  background: #0B1B3D;
+  color: #FFFFFF;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.tsi-search-submit-btn:hover {
+  background: #14B8A6;
+}
+
+.tsi-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tsi-pills-label {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.tsi-pill-tag {
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.775rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tsi-pill-tag:hover {
+  background: #F0FDFA;
+  border-color: #99F6E4;
+  color: #0D9488;
+}
+
+.tsi-hero-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tsi-hero-illustration-wrapper,
+.tsi-diff-illustration-wrapper {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  justify-content: center;
+}
+
+.tsi-vector-svg {
+  width: 100%;
+  height: auto;
+  max-height: 460px;
+}
+
+/* 3. Floating Stats Ribbon & "What We Do" Section (Image 4) */
+.tsi-stats-and-what-we-do-section {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.tsi-floating-stats-bar {
+  width: min(1320px, calc(100% - 4rem));
+  margin: 0 auto -2.75rem auto;
+  position: relative;
+  z-index: 10;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1.5px solid #E2E8F0;
+  box-shadow: 0 14px 34px rgba(11, 27, 61, 0.08);
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr 1fr;
+  padding: 1.75rem 2rem;
+  gap: 1.5rem;
+}
+
+.tsi-stat-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid #F1F5F9;
+  padding-left: 1.5rem;
+}
+
+.tsi-stat-col-first {
+  border-left: none;
+  padding-left: 0;
+}
+
+.tsi-stat-brand-heading {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0B1B3D;
+  margin: 0 0 0.35rem 0;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+.tsi-stat-brand-sub {
+  font-size: 0.85rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tsi-stat-large-val {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0B1B3D;
+  line-height: 1.1;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.tsi-stat-sub-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #334155;
+  margin: 0.2rem 0 0.15rem 0;
+}
+
+.tsi-stat-detail {
+  font-size: 0.775rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* "What we do" Dark Banner */
+.tsi-what-we-do-banner {
+  background-color: #071936;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #FFFFFF;
+  padding: 6.5rem 0 5.5rem;
+}
+
+.tsi-what-we-do-content {
+  width: min(1320px, calc(100% - 4rem));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+.tsi-what-we-do-text {
+  max-width: 780px;
+}
+
+.tsi-what-we-do-heading {
+  font-size: clamp(2.2rem, 3.8vw, 3.25rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 1.25rem 0;
+  letter-spacing: -0.02em;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+.tsi-what-we-do-paragraph {
+  font-size: 1.15rem;
+  line-height: 1.68;
+  color: #CBD5E1;
+  margin: 0;
+  font-weight: 400;
+}
+
+.tsi-what-we-do-emblem {
+  flex-shrink: 0;
+}
+
+.what-we-do-emblem-box {
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emblem-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.25));
+}
+
+/* 4. The Fixam Difference / Why Clients Choose Fixam (Image 2) */
+.tsi-difference-section {
+  background: #FFFFFF;
+  padding: 5.5rem 0 4.5rem;
+}
+
+.tsi-difference-container {
+  width: min(1320px, calc(100% - 4rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: center;
+  gap: 4rem;
+}
+
+.tsi-diff-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tsi-diff-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.tsi-diff-eyebrow {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0B1B3D;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.tsi-diff-heading {
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  color: #0B1B3D;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 0 0 2rem 0;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+.tsi-diff-bullet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tsi-diff-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.tsi-bullet-square {
+  width: 7px;
+  height: 7px;
+  background-color: #14B8A6;
+  border-radius: 1.5px;
+  margin-top: 0.55rem;
+  flex-shrink: 0;
+}
+
+.tsi-bullet-content {
+  font-size: 0.975rem;
+  color: #334155;
+  line-height: 1.55;
+}
+
+.tsi-bullet-content strong {
+  font-weight: 700;
+  color: #0B1B3D;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .tsi-hero-container,
+  .tsi-difference-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .tsi-floating-stats-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: -2rem;
+  }
+  .tsi-stat-col {
+    border-left: none;
+    padding-left: 0;
+  }
+  .tsi-what-we-do-content {
+    flex-direction: column;
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .tsi-hero-section {
+    padding: 2rem 0 1.5rem;
+  }
+  .tsi-hero-container,
+  .tsi-floating-stats-bar,
+  .tsi-what-we-do-content,
+  .tsi-difference-container {
+    width: calc(100% - 2rem);
+  }
+  .tsi-floating-stats-bar {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+  .tsi-hero-headline {
+    font-size: 2.15rem;
+  }
+  .tsi-hero-cta-group {
+    width: 100%;
+    flex-direction: column;
+  }
+  .tsi-btn-primary,
+  .tsi-btn-secondary {
+    width: 100%;
+  }
+}
+
 .landing-page {
   overflow: visible;
   background: var(--soft);

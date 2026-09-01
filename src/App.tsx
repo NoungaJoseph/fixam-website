@@ -60,6 +60,9 @@ import CareerPathways from './pages/Resources/CareerPathways'
 import CareerPathwaysBrowsePage from './pages/Resources/CareerPathwaysBrowsePage'
 import CareerPathwayDetailPage from './pages/Resources/CareerPathwayDetailPage'
 import SupportPage from './pages/SupportPage'
+import WhyFixam from './pages/WhyFixam'
+import Solutions from './pages/Solutions'
+import Insights from './pages/Insights'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
@@ -70,7 +73,7 @@ import './marketplace.css'
 import './components/Megamenu.css'
 import './mobile-upgrades.css'
 
-export type Page = 'home' | 'services' | 'about' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support'
+export type Page = 'home' | 'services' | 'about' | 'why_fixam' | 'solutions' | 'insights' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -577,6 +580,9 @@ function App() {
             )}
             {page === 'guide' && <Guide onNavigate={setPage} />}
             {page === 'about' && <About onNavigate={setPage} />}
+            {page === 'why_fixam' && <WhyFixam onNavigate={setPage} />}
+            {page === 'solutions' && <Solutions onNavigate={setPage} />}
+            {page === 'insights' && <Insights onNavigate={setPage} />}
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
             {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
             {page === 'support' && <SupportPage onNavigate={setPage} />}
@@ -1167,30 +1173,26 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               )}
             </div>
 
-            <span className="nav-divider">|</span>
-
-            {/* Career Pathways Link (No Dropdown) */}
-            <button className={`nav-link-new ${page === 'career_pathways' ? 'active' : ''}`} onClick={() => handleNavigate('career_pathways')}>
-              {i18n.language === 'fr' ? 'Parcours Pro' : 'Career Pathways'}
+            <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>
+              {i18n.language === 'fr' ? 'À propos' : 'About'}
             </button>
-
             <span className="nav-divider">|</span>
-            <button className={`nav-link-new ${page === 'about' ? 'active' : ''}`} onClick={() => handleNavigate('about')}>{t('nav.about') || 'ABOUT US'}</button>
+            <button className={`nav-link-new ${page === 'why_fixam' ? 'active' : ''}`} onClick={() => handleNavigate('why_fixam')}>
+              {i18n.language === 'fr' ? 'Pourquoi Fixam' : 'Why Fixam'}
+            </button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'solutions' ? 'active' : ''}`} onClick={() => handleNavigate('solutions')}>
+              {i18n.language === 'fr' ? 'Solutions' : 'Solutions'}
+            </button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'services' ? 'active' : ''}`} onClick={() => handleNavigate('services')}>
+              {i18n.language === 'fr' ? 'Services' : 'Services'}
+            </button>
+            <span className="nav-divider">|</span>
+            <button className={`nav-link-new ${page === 'insights' ? 'active' : ''}`} onClick={() => handleNavigate('insights')}>
+              {i18n.language === 'fr' ? 'Ressources' : 'Insights'}
+            </button>
           </nav>
-
-          <div className="auth-buttons-desktop" style={{ display: 'flex', gap: '1rem', alignItems: 'center', position: 'absolute', right: 0 }}>
-            {isLoggedIn ? (
-              <>
-                <button className="nav-link-new" onClick={() => handleNavigate('dashboard')} style={{ fontWeight: '600' }}>DASHBOARD</button>
-                <button onClick={async () => { await logout(); handleNavigate('home'); }} style={{ backgroundColor: '#EF4444', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>LOG OUT</button>
-              </>
-            ) : (
-              <>
-                <button className="nav-link-new" onClick={() => handleNavigate('login')} style={{ fontWeight: '600' }}>{t('nav.signin') || 'SIGN IN'}</button>
-                <button onClick={() => handleNavigate('register')} style={{ backgroundColor: '#14B8A6', color: '#FFF', padding: '0.6rem 1.2rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', border: 'none' }}>GET STARTED</button>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Mobile Navigation Drawer */}
@@ -1228,13 +1230,32 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
           )}
 
           <div className="mobile-menu-content">
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('about'); }}>
+              {i18n.language === 'fr' ? 'À Propos' : 'About'}
+            </button>
+
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('why_fixam'); }}>
+              {i18n.language === 'fr' ? 'Pourquoi Fixam' : 'Why Fixam'}
+            </button>
+
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('solutions'); }}>
+              {i18n.language === 'fr' ? 'Solutions' : 'Solutions'}
+            </button>
+
             {/* Mobile Accordion for Explore Services */}
             <div>
               <button className="mobile-nav-accordion-btn" onClick={() => setMobileServicesOpen(!mobileServicesOpen)}>
-                {i18n.language === 'fr' ? 'Explorer les services' : 'Explore Services'}
+                {i18n.language === 'fr' ? 'Services' : 'Services'}
                 <Icon name={mobileServicesOpen ? "chevron-up" : "chevron-down"} />
               </button>
               <div className={`mobile-nav-accordion-content ${mobileServicesOpen ? 'open' : ''}`}>
+                <button 
+                  className="mobile-nav-subitem" 
+                  onClick={() => { setIsMobileMenuOpen(false); handleNavigate('services'); }}
+                  style={{ fontWeight: 700, color: '#2563EB', padding: '0.75rem 0' }}
+                >
+                  {i18n.language === 'fr' ? '→ Voir tous les services' : '→ Browse All Services'}
+                </button>
                 {Object.keys(serviceCategories).map((cat) => (
                   <div key={cat} className="mobile-cat-group" style={{ marginBottom: '1rem' }}>
                     <div className="mobile-cat-title" style={{ fontWeight: 700, padding: '0.5rem 0', color: 'var(--ink)' }}>{translateCat(cat)}</div>
@@ -1252,36 +1273,16 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               </div>
             </div>
 
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('insights'); }}>
+              {i18n.language === 'fr' ? 'Ressources & Insights' : 'Insights & Resources'}
+            </button>
+
             <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('career_pathways'); }}>
               {i18n.language === 'fr' ? 'Parcours Professionnels' : 'Career Pathways'}
             </button>
 
-            {/* Mobile Accordion for Resources */}
-            <div>
-              <button className="mobile-nav-accordion-btn" onClick={() => setMobileHowOpen(!mobileHowOpen)}>
-                {i18n.language === 'fr' ? 'Ressources' : 'Resources'}
-                <Icon name={mobileHowOpen ? "chevron-up" : "chevron-down"} />
-              </button>
-              <div className={`mobile-nav-accordion-content ${mobileHowOpen ? 'open' : ''}`}>
-                <div className="mobile-how-section">
-                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('success_stories'); }}>
-                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Histoires de succès' : 'Success stories'}</span>
-                  </button>
-                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('reviews'); }}>
-                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Avis' : 'Reviews'}</span>
-                  </button>
-                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('services'); }}>
-                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Comment engager' : 'How to hire'}</span>
-                  </button>
-                  <button className="mobile-nav-subitem" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('guide'); }}>
-                    <span className="mobile-nav-subitem-title">{i18n.language === 'fr' ? 'Comment trouver du travail' : 'How to find work'}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('about'); }}>
-              {t('nav.about') || 'About Us'}
+            <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('guide'); }}>
+              {i18n.language === 'fr' ? 'Comment ça Marche' : 'How It Works'}
             </button>
 
             {/* Settings (Language / Theme) inside menu */}
@@ -1325,7 +1326,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 }
 
 function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigate: (page: Page) => void; livePros: any[]; userRole: 'client' | 'pro'; onRoleChange?: (role: 'client' | 'pro') => void }) {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -1762,7 +1763,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               </button>
             )}
 
-            <button className="side-link-new" onClick={() => onNavigate('login')}>
+            <button className="side-link-new" onClick={async () => { await logout(); onNavigate('home'); }}>
               <Icon name="logout" />
               <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
             </button>
@@ -1825,6 +1826,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                         <Icon name="briefcase" /> {i18n.language === 'fr' ? 'Prestataire' : 'Provider'}
                       </button>
                     )}
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-semibold"
+                      onClick={async () => {
+                        setIsProfileDropdownOpen(false);
+                        await logout();
+                        onNavigate('home');
+                      }}
+                    >
+                      <Icon name="logout" /> {i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}
+                    </button>
                   </div>
                 )}
               </div>
@@ -2104,8 +2116,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             </button>
           )}
 
-          <button className="side-link-new" onClick={() => onNavigate('home')}>
-            <Icon name="x" />
+          <button className="side-link-new" onClick={async () => { await logout(); onNavigate('home'); }}>
+            <Icon name="logout" />
             <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
           </button>
         </nav>
@@ -2173,6 +2185,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                       <Icon name="user" /> Client
                     </button>
                   )}
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-semibold"
+                    onClick={async () => {
+                      setIsProfileDropdownOpen(false);
+                      await logout();
+                      onNavigate('home');
+                    }}
+                  >
+                    <Icon name="logout" /> {i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}
+                  </button>
                 </div>
               )}
             </div>

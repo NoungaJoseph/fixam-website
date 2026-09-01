@@ -147,20 +147,20 @@ export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page
     },
     {
       id: "coin-system",
-      title: isFr ? "Système de Pièces" : "Coin System",
+      title: isFr ? "Tarification et Système de Pièces" : "Pricing & Coin System",
       content: (
         <>
-          <p className="legal-body-text">{isFr ? "Fixam utilise un système de pièces virtuelles pour les frais de réservation de la plateforme :" : "Fixam uses a virtual coin system for platform booking fees:"}</p>
+          <p className="legal-body-text">{isFr ? "Fixam offre des fonctionnalités de base entièrement gratuites ainsi que des options de mise en valeur :" : "Fixam provides free core platform features alongside optional premium promotional credits:"}</p>
           <ul className="legal-list">
-            <li>{isFr ? "1 pièce = 5 000 FCFA (sujet à changement)" : "1 coin = 5,000 FCFA (subject to change)"}</li>
-            <li>{isFr ? "Bonus de bienvenue : 1 pièce gratuite à l'inscription" : "Welcome bonus: 1 free coin on registration"}</li>
-            <li>{isFr ? "Récompense de parrainage : 1 pièce par parrainage réussi" : "Referral reward: 1 coin per successful referral"}</li>
-            <li>{isFr ? "Coûts de réservation : 1 pièce (Normal), 2 pièces (Urgent), 3 pièces (Urgence)" : "Booking costs: 1 coin (Normal), 2 coins (Urgent), 3 coins (Emergency)"}</li>
+            <li>{isFr ? "Publication de tâches : 100% Gratuit pour tous les clients" : "Posting tasks: 100% Free for all clients"}</li>
+            <li>{isFr ? "Réservation de prestataires : 100% Gratuit, aucun frais de réservation" : "Booking providers: 100% Free, zero booking fees"}</li>
+            <li>{isFr ? "Candidatures des prestataires : 100% Gratuit" : "Job applications for providers: 100% Free"}</li>
+            <li>{isFr ? "Pièces Fixam (Optionnelles) : Utilisées par les prestataires pour booster leur profil et mettre leurs propositions en avant" : "Fixam Coins (Optional): Used by service providers to boost their profile visibility and feature proposal listings"}</li>
           </ul>
           <p className="legal-body-text">
             {isFr
-              ? "Les pièces n'ont aucune valeur monétaire et ne peuvent pas être transférées entre comptes. Fixam se réserve le droit de modifier la valeur ou le prix des pièces avec un préavis aux utilisateurs."
-              : "Coins have no cash value and cannot be transferred between accounts. Fixam reserves the right to modify coin values or pricing with notice to users."}
+              ? "Les pièces n'ont aucune valeur monétaire et ne peuvent pas être transférées entre comptes. Fixam se réserve le droit de modifier les fonctionnalités promotionnelles avec un préavis aux utilisateurs."
+              : "Coins have no cash value and cannot be transferred between accounts. Fixam reserves the right to modify promotional features with notice to users."}
           </p>
         </>
       )

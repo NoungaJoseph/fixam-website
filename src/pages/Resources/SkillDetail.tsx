@@ -252,15 +252,15 @@ export default function SkillDetail({ onNavigate, skillName, onSelectSkill, live
       ? `Publiez votre tâche gratuitement. Pour les travaux en ${displaySkill}, spécifiez les détails précis (taille de la pièce, type de panne, urgence).`
       : `Post your task for free. For ${displaySkill} jobs, detail the exact requirements (room size, appliance model, urgency level).`,
     
-    step2Title: isFr ? '2. Choisissez et liez sur l\'appli' : '2. Connect on the App',
+    step2Title: isFr ? '2. Choisissez et réservez gratuitement' : '2. Connect & Book for Free',
     step2Desc: isFr 
-      ? 'Consultez les profils et réservez le prestataire idéal avec vos pièces Fixam (1 pièce). Les pièces servent uniquement à vous mettre en relation.'
-      : 'Browse verified profiles and lock in your provider on the app using 1-3 Fixam coins. Coins are strictly used to connect you.',
+      ? 'Consultez les profils vérifiés et réservez votre artisan gratuitement sans aucuns frais de réservation.'
+      : 'Browse verified profiles and lock in your provider on the app with zero booking fees.',
     
-    step3Title: isFr ? '3. Paiement en espèces uniquement' : '3. Cash-Only Payment',
+    step3Title: isFr ? '3. Paiement direct après satisfaction' : '3. Direct Payment Upon Satisfaction',
     step3Desc: isFr 
-      ? 'TRÈS IMPORTANT : Le paiement du travail se fait uniquement en espèces (cash) directement au prestataire une fois le service inspecté et complété.'
-      : 'VERY IMPORTANT: You pay the provider directly in cash only upon job completion and inspect. No money transfers happen in the app.',
+      ? 'Le paiement du travail se fait directement au prestataire (en espèces ou Mobile Money) une fois le service inspecté et complété avec succès.'
+      : 'You pay the provider directly in cash or Mobile Money only upon successful job completion and inspection.',
   };
 
   return (

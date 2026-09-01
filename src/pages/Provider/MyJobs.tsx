@@ -277,8 +277,8 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                         {booking.status.replace(/_/g, ' ')}
                       </span>
                       {booking.urgencyLevel && booking.urgencyLevel !== 'NORMAL' && (
-                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider border bg-red-50 text-red-600 border-red-200">
-                          {booking.urgencyLevel}
+                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider border bg-amber-50 text-amber-700 border-amber-200">
+                          ⚡ High Priority
                         </span>
                       )}
                     </div>
@@ -306,10 +306,14 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                     {isPending && (
                       <>
                         <button
-                          onClick={() => handleBookingAction(booking.id, 'ACCEPTED')}
+                          onClick={() => {
+                            if (confirm('Accepting this booking will deduct 1 coin from your wallet. Do you want to proceed?')) {
+                              handleBookingAction(booking.id, 'ACCEPTED');
+                            }
+                          }}
                           className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm"
                         >
-                          ✓ Accept
+                          ✓ Accept (1 Coin)
                         </button>
                         <button
                           onClick={() => handleBookingAction(booking.id, 'REJECTED')}

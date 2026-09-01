@@ -65,6 +65,9 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [proposalModalJob, setProposalModalJob] = useState<JobLead | null>(null);
   const [boostCoins, setBoostCoins] = useState<number>(0);
   const [coverLetter, setCoverLetter] = useState<string>('');
+  const [proposedBudget, setProposedBudget] = useState<string>('');
+  const [proposalAttachments, setProposalAttachments] = useState<any[]>([]);
+  const [isUploadingProposalFile, setIsUploadingProposalFile] = useState<boolean>(false);
   const [isSubmittingProposal, setIsSubmittingProposal] = useState<boolean>(false);
 
   const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs' | 'direct_bookings'>('best_matches');
@@ -224,15 +227,42 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   };
 
   const isVerified = (user as any)?.verificationStatus === 'VERIFIED' || user?.providerProfile?.verification === 'VERIFIED' || user?.providerProfile?.verificationStatus === 'VERIFIED';
-  const totalProposalCoins = 1 + boostCoins;
+  const totalProposalCoins = boostCoins;
   const currentWalletBalance = walletBalance !== null ? walletBalance : 0;
-  const hasEnoughCoins = currentWalletBalance >= totalProposalCoins;
+  const hasEnoughCoins = boostCoins === 0 || currentWalletBalance >= boostCoins;
 
   const openProposalModal = (job: JobLead) => {
     setSelectedJob(null);
     setProposalModalJob(job);
     setBoostCoins(0);
     setCoverLetter('');
+    setProposedBudget(String(job.budget || ''));
+    setProposalAttachments([]);
+  };
+
+  const handleProposalFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingProposalFile(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/uploads/proposal', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const url = res.data?.url || res.data?.data?.url;
+      if (url) {
+        setProposalAttachments(prev => [...prev, { url, name: file.name, type: file.type }]);
+      }
+    } catch (err) {
+      alert('Failed to upload file. Please try again.');
+    } finally {
+      setIsUploadingProposalFile(false);
+    }
+  };
+
+  const removeProposalAttachment = (idxToRemove: number) => {
+    setProposalAttachments(prev => prev.filter((_, idx) => idx !== idxToRemove));
   };
 
   const topBidder = useMemo(() => {
@@ -271,7 +301,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
     }
 
     if (!hasEnoughCoins) {
-      alert(`Insufficient Fixam Coins: You need at least ${totalProposalCoins} Fixam Coin${totalProposalCoins > 1 ? 's' : ''} to submit this proposal.`);
+      alert(`Insufficient Fixam Coins: You need at least ${totalProposalCoins} Fixam Coin${totalProposalCoins > 1 ? 's' : ''} to boost this proposal.`);
       setProposalModalJob(null);
       setSelectedJob(null);
       setActiveTab('Wallet');
@@ -283,15 +313,19 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
       const response = await api.post(`/jobs/${proposalModalJob.id}/apply`, {
         boostCoins,
         coverLetter: coverLetter.trim() || undefined,
+        proposedBudget: proposedBudget ? Number(proposedBudget) : undefined,
+        proposalMedia: proposalAttachments.length > 0 ? proposalAttachments : undefined,
       });
 
-      // Update local wallet balance
-      setWalletBalance((prev) => Math.max(0, (prev || 0) - totalProposalCoins));
+      // Update local wallet balance if boosted
+      if (totalProposalCoins > 0) {
+        setWalletBalance((prev) => Math.max(0, (prev || 0) - totalProposalCoins));
+      }
 
       // Remove job from feed list
       setJobs((current) => current.filter((item) => item.id !== proposalModalJob.id));
 
-      const successMsg = response.data?.message || (boostCoins > 0 ? `🚀 Boosted Proposal Sent Successfully! (${boostCoins} boost coins used)` : '🎉 Proposal Sent Successfully!');
+      const successMsg = response.data?.message || (boostCoins > 0 ? `🚀 Boosted Proposal Sent Successfully! (${boostCoins} boost coins used)` : '🎉 Proposal Sent Successfully (FREE)!');
       alert(successMsg);
 
       setProposalModalJob(null);
@@ -1405,6 +1439,20 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 </div>
               )}
 
+              {/* Proposed Budget */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Your Proposed Price / Budget (XAF)
+                </label>
+                <input 
+                  type="number"
+                  className="w-full p-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 outline-none focus:border-emerald-500 bg-slate-50 focus:bg-white transition"
+                  placeholder="e.g. 50000"
+                  value={proposedBudget}
+                  onChange={(e) => setProposedBudget(e.target.value)}
+                />
+              </div>
+
               {/* Pitch / Cover Note Textarea */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
@@ -1419,13 +1467,47 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 />
               </div>
 
+              {/* Attach Photo CV / PDF Resume */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Attach Photo CV / PDF Resume / Samples
+                </label>
+                <label className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50/50 hover:bg-emerald-50 cursor-pointer transition">
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="hidden"
+                    onChange={handleProposalFileUpload}
+                    disabled={isUploadingProposalFile}
+                  />
+                  <span>{isUploadingProposalFile ? 'Uploading File...' : '+ Attach Photo or PDF Document'}</span>
+                </label>
+
+                {proposalAttachments.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    {proposalAttachments.map((att, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 bg-slate-100 rounded-lg text-xs">
+                        <span className="truncate max-w-[280px] font-medium text-slate-700">📎 {att.name}</span>
+                        <button
+                          type="button"
+                          className="text-red-500 hover:text-red-700 font-bold ml-2 cursor-pointer border-none bg-transparent"
+                          onClick={() => removeProposalAttachment(idx)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Boost Proposal Section (Manual Input Field) */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   Boost Your Proposal Rank (Optional)
                 </label>
                 <p className="text-[11px] text-slate-500 mb-2">
-                  Enter extra boost coins to outbid competitors and rank at the top of the client's applicant list.
+                  Enter extra boost coins to rank at the top of the client's applicant list. If not selected, boost coins are 100% refunded.
                 </p>
                 <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                   <div className="flex-1">
@@ -1444,7 +1526,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     />
                   </div>
                   <div className="text-right text-xs text-slate-600 font-medium">
-                    <div>Base Cost: <strong>1 Coin</strong></div>
+                    <div>Base Cost: <strong className="text-emerald-600">FREE</strong></div>
                     {boostCoins > 0 && <div className="text-emerald-600 font-bold">+ {boostCoins} Boost Coins</div>}
                   </div>
                 </div>
@@ -1453,7 +1535,9 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {/* Summary Cost Footer */}
               <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
                 <span className="text-slate-600 font-medium">Total Cost:</span>
-                <strong className="text-emerald-700 font-extrabold text-sm">{totalProposalCoins} Fixam Coin{totalProposalCoins > 1 ? 's' : ''}</strong>
+                <strong className="text-emerald-700 font-extrabold text-sm">
+                  {totalProposalCoins > 0 ? `${totalProposalCoins} Fixam Coin${totalProposalCoins > 1 ? 's' : ''}` : 'FREE (0 Coins)'}
+                </strong>
               </div>
 
             </div>
@@ -1473,7 +1557,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 onClick={handleSubmitProposalForm}
                 disabled={isSubmittingProposal || !isVerified || !isAvailable || !hasEnoughCoins}
               >
-                {isSubmittingProposal ? 'Submitting...' : 'Submit Proposal Now'}
+                {isSubmittingProposal ? 'Submitting...' : (totalProposalCoins > 0 ? `Submit Boosted Proposal (${totalProposalCoins} Coins)` : 'Submit Proposal (FREE)')}
               </button>
             </div>
 

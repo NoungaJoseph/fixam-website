@@ -344,12 +344,13 @@ export default function ProviderProfileDetail({
             const providerUserId = selectedProvider.originalData?.userId || selectedProvider.userId || selectedProvider.id;
             
             const COIN_COSTS: Record<string, number> = {
-              NORMAL: 1,
-              URGENT: 2,
-              EMERGENCY: 3
+              NORMAL: 0,
+              HIGH_PRIORITY: 1,
+              URGENT: 1,
+              EMERGENCY: 1
             };
             const urgencyLevel = bookingData.urgency || 'NORMAL';
-            const coinCost = COIN_COSTS[urgencyLevel] || 1;
+            const coinCost = COIN_COSTS[urgencyLevel] !== undefined ? COIN_COSTS[urgencyLevel] : 0;
 
             const res = await api.post('/bookings', {
               providerId: providerUserId,

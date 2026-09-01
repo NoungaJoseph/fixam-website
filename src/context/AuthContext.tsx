@@ -135,13 +135,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      api.post('/auth/logout').catch(() => {});
     } catch (error) {
       console.error("Logout failed", error);
     }
     localStorage.removeItem('fixam_token');
+    localStorage.removeItem(STORED_USER_KEY);
+    localStorage.removeItem('fixam_last_page');
+    localStorage.removeItem('fixam_active_tab');
+    localStorage.removeItem('fixam_active_tab_client');
+    localStorage.removeItem('fixam_active_tab_pro');
+    localStorage.removeItem('fixam_user_role');
     saveUserToStorage(null);
     setUser(null);
+    if (typeof window !== 'undefined') {
+      window.location.hash = '';
+      if (window.location.pathname.startsWith('/profile/') || window.location.pathname.startsWith('/job/')) {
+        window.history.replaceState(null, '', '/');
+      }
+    }
   };
 
   return (

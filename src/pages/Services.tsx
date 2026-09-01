@@ -23,19 +23,19 @@ const servicesContent = {
         {
           icon: 'briefcase' as IconName,
           title: 'Post Your Task',
-          desc: 'Describe the service you need, your location, preferred date, and your budget. Posting a task is completely free and takes less than 2 minutes.',
+          desc: 'Describe what you need, your location, and your budget. Posting a task is completely free and takes less than 2 minutes.',
           link: 'Post a task →'
         },
         {
           icon: 'user' as IconName,
           title: 'Review Providers',
-          desc: 'Browse provider profiles, read verified client reviews, and compare ratings. Our verification system ensures every provider has a confirmed identity.',
+          desc: 'Browse profiles, read reviews, and compare ratings. Our verification system ensures every provider has a confirmed identity.',
           link: 'Browse providers →'
         },
         {
           icon: 'check' as IconName,
           title: 'Get It Done',
-          desc: 'Book your chosen provider with just 1 coin as a booking fee, communicate directly through the app, and track your job from start to finish.',
+          desc: 'Book your provider with zero booking fees. Communicate directly in-app, track progress, and pay upon full satisfaction.',
           link: 'How booking works →'
         }
       ]
@@ -50,16 +50,16 @@ const servicesContent = {
       title: 'How Booking & Payment Works',
       items: [
         {
-          title: 'Book with Coins',
-          desc: 'Use coins as a small booking fee to reserve your provider. Top up your wallet using MTN Mobile Money or Orange Money — no bank account needed.'
+          title: '100% Free Booking',
+          desc: 'Book and connect with verified service professionals with zero booking fees. Reach out, discuss details, and hire with zero upfront charges.'
         },
         {
-          title: 'Pay Your Provider in Cash',
-          desc: 'Once the job is completed to your satisfaction, you pay your provider directly in cash. The price is agreed upon before they start working.'
+          title: 'Direct & Fair Payment',
+          desc: 'Once the job is completed to your satisfaction, pay your provider directly in cash or Mobile Money (MTN MoMo / Orange Money).'
         },
         {
-          title: 'Transparent & Simple',
-          desc: 'Standard bookings cost 1 coin. Urgent bookings cost 2 coins. Emergency bookings cost 3 coins. No hidden fees. Fixam only charges the booking fee.'
+          title: 'Zero Hidden Fees',
+          desc: 'Posting a task is free, booking is free, and applying for jobs is free. Transparent pricing with 100% of your payment going directly to the artisan.'
         }
       ],
       cta: 'Get Started'
@@ -68,20 +68,16 @@ const servicesContent = {
       title: 'Frequently Asked Questions',
       items: [
         {
-          q: 'How much does it cost to post a task?',
-          a: 'Posting a task on Fixam is completely free. You only pay a small coin booking fee when you actually book a specific provider.'
-        },
-        {
-          q: 'How do Fixam coins work?',
-          a: 'Coins are used as a booking fee to reserve a provider on Fixam. You can purchase them using Mobile Money. A standard booking costs 1 coin. The actual payment for the service is made directly in cash to the provider.'
+          q: 'How much does it cost to post a task and book a provider?',
+          a: 'Posting a task and booking a provider on Fixam is 100% completely free. There are zero platform booking fees or middleman commissions.'
         },
         {
           q: 'How do I pay the provider for their work?',
-          a: 'You pay the provider directly in cash after the service is completed to your satisfaction. The price is agreed upon before they start working. Fixam does not handle or transfer service payments.'
+          a: 'You pay the provider directly in cash or Mobile Money after the service is completed to your full satisfaction. The price is agreed upon before they start working.'
         },
         {
           q: 'Are the providers verified?',
-          a: 'Yes, every provider on Fixam goes through an identity verification process. We also encourage you to read their reviews from past clients.'
+          a: 'Yes, every provider on Fixam goes through an identity verification process with valid government IDs. We also encourage you to read their reviews from past clients.'
         },
         {
           q: 'What if I have a problem with a service?',
@@ -89,7 +85,7 @@ const servicesContent = {
         },
         {
           q: 'Do you offer services in my area?',
-          a: 'Fixam currently operates in multiple cities internationally. Enter your location in the app to see verified providers near you.'
+          a: 'Fixam currently operates across major Cameroonian cities including Douala, Yaoundé, and Bafoussam. Enter your location to see verified providers near you.'
         }
       ]
     },
@@ -130,7 +126,7 @@ const servicesContent = {
         {
           icon: 'check' as IconName,
           title: 'C\'est Fait',
-          desc: 'Réservez votre prestataire avec seulement 1 pièce comme frais de réservation, communiquez directement via l\'application et suivez votre travail du début à la fin.',
+          desc: 'Réservez votre prestataire sans frais de réservation, échangez directement via l\'application et suivez votre travail du début à la fin.',
           link: 'Comment fonctionne la réservation →'
         }
       ]
@@ -145,16 +141,16 @@ const servicesContent = {
       title: 'Comment Fonctionnent la Réservation et le Paiement',
       items: [
         {
-          title: 'Réservez avec des Pièces',
-          desc: 'Utilisez des pièces comme petit frais de réservation pour réserver votre prestataire. Rechargez votre portefeuille avec MTN Mobile Money ou Orange Money — aucun compte bancaire nécessaire.'
+          title: 'Réservation 100% Gratuite',
+          desc: 'Réservez et contactez des professionnels vérifiés sans aucuns frais de réservation. Discutez des détails et engagez en toute sérénité.'
         },
         {
-          title: 'Payez Votre Prestataire en Espèces',
-          desc: 'Une fois le travail terminé à votre satisfaction, vous payez votre prestataire directement en espèces. Le prix est convenu avant le début du travail.'
+          title: 'Paiement Direct et Équitable',
+          desc: 'Une fois le travail terminé à votre satisfaction, vous payez votre prestataire directement en espèces ou par Mobile Money (MTN MoMo / Orange Money).'
         },
         {
-          title: 'Transparent et Simple',
-          desc: 'Les réservations standards coûtent 1 pièce. Les urgentes 2 pièces. Les urgences absolues 3 pièces. Pas de frais cachés. Fixam ne facture que les frais de réservation.'
+          title: 'Zéro Frais Cachés',
+          desc: 'La publication est gratuite, la réservation est gratuite et les candidatures sont gratuites. 100% de votre paiement va directement à l\'artisan.'
         }
       ],
       cta: 'Commencer'
@@ -163,28 +159,24 @@ const servicesContent = {
       title: 'Foire Aux Questions',
       items: [
         {
-          q: 'Combien coûte la publication d\'une tâche ?',
-          a: 'La publication d\'une tâche sur Fixam est entièrement gratuite. Vous ne payez qu\'un petit frais de réservation en pièces lorsque vous réservez un prestataire.'
-        },
-        {
-          q: 'Comment fonctionnent les pièces Fixam ?',
-          a: 'Les pièces servent de frais de réservation pour réserver un prestataire sur Fixam. Une réservation standard coûte 1 pièce. Le paiement du service se fait directement en espèces au prestataire.'
+          q: 'Combien coûte la publication d\'une tâche et la réservation ?',
+          a: 'La publication d\'une tâche et la réservation d\'un prestataire sur Fixam sont 100% gratuites. Il n\'y a aucun frais de réservation ni commission intermédiaire.'
         },
         {
           q: 'Comment payer le prestataire pour son travail ?',
-          a: 'Vous payez le prestataire directement en espèces une fois le service terminé à votre satisfaction. Fixam ne gère pas et ne transfère pas les paiements de services.'
+          a: 'Vous payez le prestataire directement en espèces ou par Mobile Money une fois le service terminé à votre satisfaction. Le prix est convenu avant le début du travail.'
         },
         {
           q: 'Les prestataires sont-ils vérifiés ?',
-          a: 'Oui, chaque prestataire sur Fixam passe par un processus de vérification d\'identité. Nous vous encourageons également à lire leurs avis.'
+          a: 'Oui, chaque prestataire sur Fixam passe par un processus de vérification d\'identité officiel. Nous vous encourageons également à lire leurs avis clients.'
         },
         {
           q: 'Que faire en cas de problème avec un service ?',
-          a: 'Vous pouvez contacter notre équipe de support 24/7 via l\'application. Nous comptons sur vos avis honnêtes pour maintenir la qualité.'
+          a: 'Vous pouvez contacter notre équipe de support 24/7 via l\'application. Notre équipe intervient rapidement pour trouver une solution équitable.'
         },
         {
           q: 'Proposez-vous des services dans ma région ?',
-          a: 'Fixam opère actuellement dans plusieurs villes à l\'international. Entrez votre emplacement dans l\'application pour voir les prestataires disponibles.'
+          a: 'Fixam opère actuellement dans les principales villes du Cameroun (Douala, Yaoundé, Bafoussam). Entrez votre localisation pour trouver les prestataires proches.'
         }
       ]
     },

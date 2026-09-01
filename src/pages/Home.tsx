@@ -1,12 +1,64 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
+import AssistantModal from '../components/AssistantModal';
+import { HeroTechIllustration, DifferenceTechIllustration, WhatWeDoEmblem } from '../components/TechIllustrations';
 import './Home.css';
 
 const contentLocales = {
   en: {
     hero: {
+      eyebrow: 'Cameroon\'s #1 Verified Marketplace',
+      title1: 'The Leading Tech-Enabled',
+      titleHighlight: 'On-Demand Service',
+      title2: 'Marketplace.',
+      desc: 'Powered by verified trade professionals, smart matching algorithms, and direct transparent payments—so you get quality work done faster, safer, and reliably.',
+      btnPrimary: 'Post a Task Free',
+      btnSecondary: 'Explore Solutions',
       pills: ['Plumbing', 'Electrical', 'Cleaning', 'Moving', 'Beauty', 'Repairs']
+    },
+    metrics: {
+      col1Title: 'Why Choose Fixam?',
+      col1Desc: 'The leader in verified, on-demand & trusted trade services',
+      col2Num: '10,000+',
+      col2Title: 'Completed Tasks',
+      col2Desc: 'Trusted by households and businesses across Cameroon',
+      col3Num: '500+',
+      col3Title: 'Verified Trade Pros',
+      col3Desc: 'Across Douala, Yaoundé, Bafoussam, Buea, and Limbe',
+      col4Num: '100% Free',
+      col4Title: 'Zero Booking Fees',
+      col4Desc: 'Direct transparent pricing with cash or Mobile Money'
+    },
+    whatWeDo: {
+      title: 'What we do',
+      desc: 'Fixam provides key, technology-enabled and verified solutions for everyday home repairs, construction, plumbing, electrical installations, appliance maintenance, cleaning, and professional artisan services across Cameroon.'
+    },
+    difference: {
+      eyebrow: 'The Fixam Difference',
+      title: 'Why Clients Choose Fixam',
+      items: [
+        {
+          bold: '100% Free Booking & Direct Payments',
+          text: 'connect and book verified service providers with zero platform booking fees or middleman commissions.'
+        },
+        {
+          bold: 'Strict Identity & Skill Verification',
+          text: 'every professional undergoes national ID validation, background vetting, and skill assessment before taking jobs.'
+        },
+        {
+          bold: 'Real-Time Smart Matching',
+          text: 'smart matching connects your task with qualified local pros in minutes, saving you time and stress.'
+        },
+        {
+          bold: 'Authentic Client Reviews & Ratings',
+          text: 'read authentic reviews and track record scores from real homeowners before hiring.'
+        },
+        {
+          bold: 'Dedicated Support & Dispute Mediation',
+          text: 'our resolution team actively assists users to guarantee high quality and mutual satisfaction.'
+        }
+      ]
     },
     stats: {
       providers: 'Verified Providers',
@@ -16,24 +68,24 @@ const contentLocales = {
     },
     howItWorks: {
       title: 'How Fixam Works',
-      subtitle: 'Simple, fast, and secure',
+      subtitle: 'Simple, fast, and 100% free to connect',
       toggleClients: 'For Clients',
       toggleProviders: 'For Providers',
       clients: [
         {
           num: '01',
           title: 'Post Your Task',
-          desc: 'Describe what service you need, your location, and your budget. It takes less than 2 minutes.'
+          desc: 'Describe what service you need, your location, and your budget. It takes less than 2 minutes and is completely free.'
         },
         {
           num: '02',
           title: 'Choose Your Provider',
-          desc: 'Browse verified local providers, read their reviews, and book the one that fits your needs. Just 1 coin to reserve your booking.'
+          desc: 'Browse verified local providers, read their reviews, and book the one that fits your needs with zero booking fees.'
         },
         {
           num: '03',
           title: 'Get It Done',
-          desc: 'Your provider completes the job. Track progress in real time and leave a review when finished.'
+          desc: 'Your provider completes the job. Track progress in real time, pay directly upon satisfaction, and leave a review.'
         }
       ],
       providers: [
@@ -44,8 +96,8 @@ const contentLocales = {
         },
         {
           num: '02',
-          title: 'Find Available Jobs',
-          desc: 'Browse tasks posted by clients near you. Filter by category, location, and budget to find the right opportunities.'
+          title: 'Find & Apply for Jobs',
+          desc: 'Browse tasks posted by clients near you and apply for free. Filter by category, location, and budget.'
         },
         {
           num: '03',
@@ -74,8 +126,8 @@ const contentLocales = {
           icon: 'chat' as IconName
         },
         {
-          title: 'Simple Booking System',
-          desc: 'Use coins to book providers instantly. Pay your provider directly in cash after the job is done — no middleman.',
+          title: 'Free & Transparent Booking',
+          desc: 'Book providers directly with 0% platform booking fees. Pay your provider directly in cash or Mobile Money after the job is done.',
           icon: 'wallet' as IconName
         }
       ]
@@ -108,7 +160,7 @@ const contentLocales = {
     },
     faq: {
       title: 'Frequently Asked Questions',
-      categories: ['Getting Started', 'For Clients', 'For Providers', 'Booking & Coins', 'Safety & Trust', 'Account & Profile']
+      categories: ['Getting Started', 'For Clients', 'For Providers', 'Booking & Payments', 'Safety & Trust', 'Account & Profile']
     },
     cta: {
       title: 'Ready to get started with Fixam?',
@@ -119,7 +171,57 @@ const contentLocales = {
   },
   fr: {
     hero: {
+      eyebrow: 'Place de Marché N°1 Vérifiée au Cameroun',
+      title1: 'La Première Plateforme Technologique de',
+      titleHighlight: 'Services à la Demande',
+      title2: 'au Cameroun.',
+      desc: 'Alimentée par des artisans vérifiés, des algorithmes de mise en relation intelligente et des paiements directs et transparents—pour des travaux rapides, fiables et en toute sécurité.',
+      btnPrimary: 'Publier une Tâche Gratuite',
+      btnSecondary: 'Découvrir les Solutions',
       pills: ['Plomberie', 'Électricité', 'Nettoyage', 'Déménagement', 'Beauté', 'Réparations']
+    },
+    metrics: {
+      col1Title: 'Pourquoi Choisir Fixam ?',
+      col1Desc: 'Le leader des services professionnels vérifiés et à la demande',
+      col2Num: '10 000+',
+      col2Title: 'Missions Réalisées',
+      col2Desc: 'Recommandé par les foyers et entreprises du Cameroun',
+      col3Num: '500+',
+      col3Title: 'Artisans Vérifiés',
+      col3Desc: 'À Douala, Yaoundé, Bafoussam, Buéa et Limbé',
+      col4Num: '100% Gratuit',
+      col4Title: 'Zéro Frais de Réservation',
+      col4Desc: 'Tarifs directs et transparents en espèces ou Mobile Money'
+    },
+    whatWeDo: {
+      title: 'Ce que nous faisons',
+      desc: 'Fixam fournit des solutions technologiques et vérifiées pour les réparations domestiques, la plomberie, l\'électricité, la maintenance, le nettoyage, les chantiers et les services d\'artisanat au Cameroun.'
+    },
+    difference: {
+      eyebrow: 'La Différence Fixam',
+      title: 'Pourquoi les Clients Choisissent Fixam',
+      items: [
+        {
+          bold: 'Réservation 100% Gratuite & Paiements Directs :',
+          text: 'réservez et contactez des artisans vérifiés avec zéro frais de réservation ni commission intermédiaire.'
+        },
+        {
+          bold: 'Vérification Stricte d\'Identité et de Compétences :',
+          text: 'chaque professionnel est validé par pièce d\'identité officielle avant toute intervention.'
+        },
+        {
+          bold: 'Mise en Relation Intelligente et Instantanée :',
+          text: 'trouvez le prestataire qualifié et le plus proche en quelques minutes seulement.'
+        },
+        {
+          bold: 'Avis Clients et Notations Authentiques :',
+          text: 'consultez l\'historique réel et les retours d\'expérience certifiés avant d\'embaucher.'
+        },
+        {
+          bold: 'Assistance et Médiation Dédiées :',
+          text: 'notre équipe veille au bon déroulement de chaque prestation pour une satisfaction totale.'
+        }
+      ]
     },
     stats: {
       providers: 'Prestataires Vérifiés',
@@ -129,24 +231,24 @@ const contentLocales = {
     },
     howItWorks: {
       title: 'Comment Fixam Fonctionne',
-      subtitle: 'Simple, rapide et sécurisé',
+      subtitle: 'Simple, rapide et 100% gratuit pour se connecter',
       toggleClients: 'Pour les Clients',
       toggleProviders: 'Pour les Prestataires',
       clients: [
         {
           num: '01',
           title: 'Publiez Votre Tâche',
-          desc: 'Décrivez le service dont vous avez besoin, votre emplacement et votre budget. Cela prend moins de 2 minutes.'
+          desc: 'Décrivez le service dont vous avez besoin, votre emplacement et votre budget. Cela prend moins de 2 minutes et c\'est totalement gratuit.'
         },
         {
           num: '02',
           title: 'Choisissez Votre Prestataire',
-          desc: 'Parcourez les prestataires locaux vérifiés, lisez leurs avis et réservez celui qui correspond à vos besoins. Seulement 1 pièce pour réserver.'
+          desc: 'Parcourez les prestataires locaux vérifiés, lisez leurs avis et réservez celui qui correspond à vos besoins sans aucun frais de réservation.'
         },
         {
           num: '03',
           title: "C'est Fait",
-          desc: 'Votre prestataire termine le travail. Suivez les progrès en temps réel et laissez un avis une fois terminé.'
+          desc: 'Votre prestataire termine le travail. Suivez les progrès en temps réel, payez directement après satisfaction et laissez un avis.'
         }
       ],
       providers: [
@@ -157,8 +259,8 @@ const contentLocales = {
         },
         {
           num: '02',
-          title: 'Trouvez des Emplois',
-          desc: 'Parcourez les tâches publiées par les clients près de chez vous. Filtrez par catégorie, emplacement et budget.'
+          title: 'Trouvez et Postulez aux Emplois',
+          desc: 'Parcourez les tâches publiées par les clients près de chez vous et postulez gratuitement. Filtrez par catégorie, emplacement et budget.'
         },
         {
           num: '03',
@@ -187,8 +289,8 @@ const contentLocales = {
           icon: 'chat' as IconName
         },
         {
-          title: 'Système de Réservation Simple',
-          desc: 'Utilisez des pièces pour réserver des prestataires instantanément. Payez votre prestataire directement en espèces après le travail — sans intermédiaire.',
+          title: 'Réservation Gratuite et Transparente',
+          desc: 'Réservez des prestataires sans frais de réservation. Payez directement votre artisan en espèces ou Mobile Money après prestation.',
           icon: 'wallet' as IconName
         }
       ]
@@ -221,7 +323,7 @@ const contentLocales = {
     },
     faq: {
       title: 'Questions Fréquemment Posées',
-      categories: ['Démarrage', 'Pour les Clients', 'Pour les Prestataires', 'Réservation et Pièces', 'Sécurité et Confiance', 'Compte et Profil']
+      categories: ['Démarrage', 'Pour les Clients', 'Pour les Prestataires', 'Réservation et Paiements', 'Sécurité et Confiance', 'Compte et Profil']
     },
     cta: {
       title: 'Prêt à commencer avec Fixam ?',
@@ -236,10 +338,10 @@ const faqQuestions = [
   {
     categoryEn: 'Getting Started',
     categoryFr: 'Démarrage',
-    qEn: 'Is it free to create an account on Fixam?',
-    qFr: 'Est-il gratuit de créer un compte sur Fixam ?',
-    aEn: 'Yes, creating an account on Fixam is completely free for both clients and service providers. Clients can post tasks and browse providers at no cost. Providers can create their profile, list their services, and apply to jobs for free. You only use coins to book a provider — the actual service payment is made directly in cash to the provider.',
-    aFr: 'Oui, la création d\'un compte sur Fixam est entièrement gratuite pour les clients et les prestataires de services. Les clients peuvent publier des tâches et parcourir les prestataires gratuitement. Les prestataires peuvent créer leur profil, lister leurs services et postuler à des emplois gratuitement. Vous n\'utilisez des pièces que pour réserver un prestataire — le paiement du service se fait directement en espèces au prestataire.'
+    qEn: 'Is it free to create an account and use Fixam?',
+    qFr: 'Est-il gratuit de créer un compte et d\'utiliser Fixam ?',
+    aEn: 'Yes! Creating an account, posting tasks, booking providers, and applying for jobs are all 100% completely free on Fixam. Clients pay their providers directly after the service is completed to satisfaction.',
+    aFr: 'Oui ! La création de compte, la publication de missions, la réservation de prestataires et les candidatures aux emplois sont 100% gratuites sur Fixam. Les clients paient directement leurs prestataires une fois la prestation terminée à leur satisfaction.'
   },
   {
     categoryEn: 'Getting Started',
@@ -254,24 +356,24 @@ const faqQuestions = [
     categoryFr: 'Démarrage',
     qEn: 'What areas does Fixam currently serve?',
     qFr: 'Dans quelles zones Fixam est-il disponible ?',
-    aEn: 'Fixam is currently available in multiple cities, with plans to expand internationally to more regions soon. Check the app to see if providers are active in your specific area.',
-    aFr: 'Fixam est actuellement disponible dans plusieurs villes, avec des projets d\'expansion internationale vers d\'autres régions prochainement. Consultez l\'application pour voir si des prestataires sont actifs dans votre zone.'
+    aEn: 'Fixam is currently available in multiple cities across Cameroon including Douala, Yaoundé, and Bafoussam. Check the app to find verified providers active in your neighborhood.',
+    aFr: 'Fixam est actuellement disponible dans plusieurs villes du Cameroun, notamment Douala, Yaoundé et Bafoussam. Consultez l\'application pour trouver des prestataires vérifiés dans votre quartier.'
   },
   {
     categoryEn: 'For Clients',
     categoryFr: 'Pour les Clients',
-    qEn: 'How does the coin system work for clients?',
-    qFr: 'Comment fonctionne le système de pièces pour les clients ?',
-    aEn: 'Coins are used as a small booking fee to reserve a provider on Fixam. As a client, you receive 1 free coin when you join. Standard bookings cost 1 coin, urgent bookings cost 2 coins, and emergency bookings cost 3 coins. You can top up your coin balance anytime using MTN Mobile Money or Orange Money. The actual payment for the service is made directly in cash to the provider after the job is completed.',
-    aFr: 'Les pièces servent de petits frais de réservation pour réserver un prestataire sur Fixam. En tant que client, vous recevez 1 pièce gratuite à l\'inscription. Les réservations standard coûtent 1 pièce, les urgentes 2 pièces et les urgences absolues 3 pièces. Vous pouvez recharger votre solde de pièces à tout moment avec MTN Mobile Money ou Orange Money. Le paiement du service se fait directement en espèces au prestataire après la fin du travail.'
+    qEn: 'How much does it cost to book a provider?',
+    qFr: 'Combien coûte la réservation d\'un prestataire ?',
+    aEn: 'Booking a provider on Fixam is 100% free. There are no platform booking fees or middleman charges. You agree on the price with the professional and pay them directly in cash or Mobile Money once the work is completed.',
+    aFr: 'La réservation d\'un prestataire sur Fixam est 100% gratuite. Il n\'y a aucun frais de réservation ni commission intermédiaire. Vous convenez du tarif avec le professionnel et le réglez directement en espèces ou Mobile Money une fois le travail achevé.'
   },
   {
     categoryEn: 'For Clients',
     categoryFr: 'Pour les Clients',
     qEn: 'How do I book a provider?',
     qFr: 'Comment réserver un prestataire ?',
-    aEn: 'Browse provider profiles, read their reviews and ratings, then tap the Book Now button on their profile. A small coin booking fee is deducted from your wallet based on your urgency level. The provider will receive a notification and confirm the booking. You then pay the provider directly in cash once the job is completed.',
-    aFr: 'Parcourez les profils des prestataires, lisez leurs avis et notes, puis appuyez sur le bouton Réserver. Un petit frais de réservation en pièces est déduit de votre portefeuille en fonction du niveau d\'urgence. Le prestataire recevra une notification et confirmera la réservation. Vous payez ensuite le prestataire directement en espèces une fois le travail terminé.'
+    aEn: 'Browse provider profiles, read their reviews and ratings, then tap the Book Now button on their profile or post a task. The provider will receive an instant notification to accept and communicate with you directly.',
+    aFr: 'Parcourez les profils des prestataires, lisez leurs avis et notes, puis appuyez sur le bouton Réserver ou publiez votre tâche. Le prestataire recevra une notification instantanée pour accepter et échanger directement avec vous.'
   },
   {
     categoryEn: 'For Clients',
@@ -284,18 +386,18 @@ const faqQuestions = [
   {
     categoryEn: 'For Providers',
     categoryFr: 'Pour les Prestataires',
-    qEn: 'Is Fixam free for service providers?',
-    qFr: 'Fixam est-il gratuit pour les prestataires ?',
-    aEn: 'Yes, joining Fixam as a provider is free. You can create your profile, list your skills, and browse available tasks at no cost. Complete your identity verification to unlock the ability to apply for and accept jobs.',
-    aFr: 'Oui, rejoindre Fixam en tant que prestataire est gratuit. Vous pouvez créer votre profil, lister vos compétences et parcourir les tâches disponibles sans frais. Effectuez votre vérification d\'identité pour débloquer la possibilité de postuler et d\'accepter des emplois.'
+    qEn: 'Is applying for jobs free for service providers?',
+    qFr: 'Postuler à des emplois est-il gratuit pour les prestataires ?',
+    aEn: 'Yes! Service providers can join, complete their identity verification, and apply for client job posts completely free of charge. You keep 100% of the money you earn from clients.',
+    aFr: 'Oui ! Les prestataires peuvent s\'inscrire, valider leur pièce d\'identité et postuler aux missions des clients tout à fait gratuitement. Vous conservez 100% de ce que vous gagnez.'
   },
   {
     categoryEn: 'For Providers',
     categoryFr: 'Pour les Prestataires',
     qEn: 'How do I get my first client on Fixam?',
     qFr: 'Comment obtenir mon premier client sur Fixam ?',
-    aEn: 'After completing your profile and identity verification, you can start browsing and applying to tasks posted by clients in your area. A complete profile with a professional photo and detailed skills description significantly increases your chances of being selected.',
-    aFr: 'Après avoir complété votre profil et votre vérification d\'identité, vous pouvez commencer à parcourir et à postuler aux tâches publiées par les clients de votre région. Un profil complet avec une photo professionnelle et une description détaillée de vos compétences augmente considérablement vos chances d\'être sélectionné.'
+    aEn: 'After completing your profile and identity verification, you can start browsing and applying to tasks posted by clients in your area for free. A complete profile with a professional photo and detailed skills description significantly increases your chances of being selected.',
+    aFr: 'Après avoir complété votre profil et votre vérification d\'identité, vous pouvez commencer à parcourir et à postuler gratuitement aux tâches publiées par les clients de votre région. Un profil soigné augmente considérablement vos chances d\'être sélectionné.'
   },
   {
     categoryEn: 'For Providers',
@@ -306,28 +408,20 @@ const faqQuestions = [
     aFr: 'Terminez les tâches à temps, communiquez clairement avec les clients et fournissez un travail de qualité. Les clients satisfaits laissent des avis et des notes qui renforcent votre réputation publique. Les prestataires bien notés bénéficient de plus de visibilité et sont plus souvent recommandés.'
   },
   {
-    categoryEn: 'Booking & Coins',
-    categoryFr: 'Réservation et Pièces',
-    qEn: 'How do I add coins to my wallet?',
-    qFr: 'Comment ajouter des pièces à mon portefeuille ?',
-    aEn: 'Open the Fixam app, go to your Wallet, and tap Top Up. Select your preferred Mobile Money provider — MTN or Orange Money — enter your phone number and the amount, and approve the prompt on your phone. Coins are added to your wallet instantly after confirmation.',
-    aFr: 'Ouvrez l\'application Fixam, allez dans votre Portefeuille et appuyez sur Recharger. Sélectionnez votre fournisseur Mobile Money préféré — MTN ou Orange Money — entrez votre numéro de téléphone et le montant, puis validez l\'invitation sur votre téléphone. Les pièces sont ajoutées instantanément après confirmation.'
+    categoryEn: 'Booking & Payments',
+    categoryFr: 'Réservation et Paiements',
+    qEn: 'How do payments work between clients and providers?',
+    qFr: 'Comment fonctionnent les paiements entre clients et prestataires ?',
+    aEn: 'Payment is direct and hassle-free. Clients and providers agree on the job scope and price. Once the task is completed to full satisfaction, payment is made directly via cash or Mobile Money (MTN MoMo or Orange Money).',
+    aFr: 'Le paiement est direct et sans tracas. Le client et le prestataire conviennent du prix et du périmètre. Une fois la mission achevée avec succès, le règlement s\'effectue directement en espèces ou via Mobile Money (MTN MoMo ou Orange Money).'
   },
   {
-    categoryEn: 'Booking & Coins',
-    categoryFr: 'Réservation et Pièces',
-    qEn: 'What Mobile Money providers are supported for coin top-ups?',
-    qFr: 'Quels fournisseurs Mobile Money sont supportés pour les recharges de pièces ?',
-    aEn: 'Fixam currently supports MTN Mobile Money and Orange Money for coin top-ups. Both are available for Cameroon phone numbers. Simply select your provider when topping up and make sure to use the phone number registered with that provider.',
-    aFr: 'Fixam prend actuellement en charge MTN Mobile Money et Orange Money pour les recharges de pièces. Les deux sont disponibles pour les numéros de téléphone du Cameroun. Sélectionnez simplement votre fournisseur lors de la recharge et assurez-vous d\'utiliser le numéro enregistré chez ce fournisseur.'
-  },
-  {
-    categoryEn: 'Booking & Coins',
-    categoryFr: 'Réservation et Pièces',
-    qEn: 'What is the minimum and maximum top-up amount?',
-    qFr: 'Quel est le montant minimum et maximum de recharge ?',
-    aEn: 'The minimum top-up amount is 100 FCFA and the maximum per single transaction is 10,000 FCFA. You can make multiple top-ups to add more coins to your wallet.',
-    aFr: 'Le montant minimum de recharge est de 100 FCFA et le maximum par transaction unique est de 10 000 FCFA. Vous pouvez effectuer plusieurs recharges pour ajouter plus de pièces.'
+    categoryEn: 'Booking & Payments',
+    categoryFr: 'Réservation et Paiements',
+    qEn: 'What are Fixam Coins used for?',
+    qFr: 'À quoi servent les pièces Fixam ?',
+    aEn: 'Fixam Coins are optional platform credits used by providers who wish to boost their profile visibility or feature their listings at the top of search results. Standard booking and applying for regular tasks is always 100% free.',
+    aFr: 'Les pièces Fixam sont des crédits optionnels utilisés par les prestataires souhaitant booster la visibilité de leur profil ou mettre en avant leurs annonces en tête des résultats. La réservation standard et les candidatures sont toujours 100% gratuites.'
   },
   {
     categoryEn: 'Safety & Trust',
@@ -342,8 +436,8 @@ const faqQuestions = [
     categoryFr: 'Sécurité et Confiance',
     qEn: 'Is my personal information safe on Fixam?',
     qFr: 'Mes informations personnelles sont-elles sécurisées ?',
-    aEn: 'Yes. Fixam takes your privacy seriously. Your personal information is encrypted and stored securely. We never share your contact details with providers or clients without your consent. Coin top-ups are processed through secure Mobile Money channels.',
-    aFr: 'Oui. Fixam prend votre vie privée au sérieux. Vos informations personnelles sont chiffrées et stockées en toute sécurité. Nous ne partageons jamais vos coordonnées sans votre consentement. Les recharges de pièces sont traitées via des canaux Mobile Money sécurisés.'
+    aEn: 'Yes. Fixam takes your privacy seriously. Your personal information is encrypted and stored securely. We never share your contact details without your consent.',
+    aFr: 'Oui. Fixam prend votre vie privée au sérieux. Vos informations personnelles sont chiffrées et stockées en toute sécurité. Nous ne partageons jamais vos coordonnées sans votre consentement.'
   }
 ];
 
@@ -353,6 +447,23 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   
   const currentLang = i18n.language === 'fr' ? 'fr' : 'en';
   const tContent = contentLocales[currentLang];
+
+  // Assistant Pop-up Modal State (Only shows once, persists dismissal)
+  const [isAssistantOpen, setIsAssistantOpen] = useState(() => {
+    try {
+      const dismissed = localStorage.getItem('fixam_assistant_modal_dismissed');
+      return dismissed !== 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handleCloseAssistant = () => {
+    setIsAssistantOpen(false);
+    try {
+      localStorage.setItem('fixam_assistant_modal_dismissed', 'true');
+    } catch {}
+  };
 
   // Interactivity States
   const [localSearch, setLocalSearch] = useState('');
@@ -377,13 +488,12 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   }, [i18n.language]);
 
   useEffect(() => {
-    // Only auto-scroll on mobile where scrollWidth > clientWidth
     const interval = setInterval(() => {
       if (proGridRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = proGridRef.current;
         if (scrollWidth > clientWidth) {
           const maxScroll = scrollWidth - clientWidth;
-          const nextScroll = scrollLeft + clientWidth * 0.85; // scroll by ~85vw
+          const nextScroll = scrollLeft + clientWidth * 0.85;
           if (nextScroll >= maxScroll) {
             proGridRef.current.scrollTo({ left: 0, behavior: 'smooth' });
           } else {
@@ -413,110 +523,175 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   });
 
   return (
-    <div className="landing-page">
-      {/* Upgraded Hero with Video background/Image and Search/Pills */}
-      <section className="hero-video-section-premium">
-        <div className="hero-video-container">
-          <img src={images.heroBg} alt="" className="hero-bg-image" />
-          <div className="hero-video-overlay-premium"></div>
+    <div className="landing-page tsi-styled-page">
+      {/* 1. Assistant Pop-up Modal (Only shows once, closes permanently on dismissal) */}
+      <AssistantModal 
+        isOpen={isAssistantOpen} 
+        onClose={handleCloseAssistant} 
+        onNavigate={(page) => {
+          handleCloseAssistant();
+          onNavigate(page);
+        }}
+        isFr={currentLang === 'fr'}
+      />
+
+      {/* Floating Assistant Trigger ("Need help?" + Chat Bubble from screenshots) */}
+      <div 
+        className="floating-assistant-trigger" 
+        onClick={() => setIsAssistantOpen(true)}
+        title="Need help?"
+      >
+        <span className="floating-help-bubble">Need help?</span>
+        <div className="floating-chat-circle">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+          </svg>
         </div>
-        <div className="hero-copy video-copy reveal">
-          <h1 className="hero-title">
-            {t('hero.title1')} <span>{t('hero.title2')}</span> {t('hero.title3')}
-          </h1>
+      </div>
 
-          {/* Search Input (Desktop) */}
-          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper desktop-only">
-            <input 
-              type="text" 
-              placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
-              className="hero-search-input" 
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-            />
-            <button type="submit" className="hero-search-btn">
-              {i18n.language === 'fr' ? 'Rechercher' : 'Search'}
-            </button>
-          </form>
+      {/* Floating Accessibility Trigger (Bottom Left from screenshots) */}
+      <div 
+        className="floating-accessibility-icon"
+        onClick={() => setIsAssistantOpen(true)}
+        title="Accessibility & Assistant"
+      >
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <circle cx="12" cy="4" r="2"/>
+          <path d="M19 13v-2c-1.54.02-3.09-.75-4.07-1.83l-1.29-1.43c-.17-.19-.38-.34-.61-.45-.67-.32-1.47-.23-2.06.22l-1.92 1.48C8.38 9.5 7.7 9.85 7 9.94V13h2v-2.03l1.1-.85 1.9 4.88H7v2h7v-2h-3.13l-1.32-3.4 1.15-.89c.86.95 2.08 1.5 3.3 1.44V13h5z"/>
+        </svg>
+      </div>
 
-          {/* Search Input (Mobile) */}
-          <form onSubmit={handleSearchSubmit} className="hero-search-wrapper-mobile mobile-flex">
-            <input 
-              type="text" 
-              placeholder={i18n.language === 'fr' ? "De quoi avez-vous besoin ?" : "What do you need help with?"} 
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-            />
-            <button type="submit" className="hero-search-btn-circle" aria-label="Search">
-              <Icon name="search" />
-            </button>
-          </form>
+      {/* 2. Top Hero Section (Matching Image 3) */}
+      <section className="tsi-hero-section">
+        <div className="tsi-hero-container">
+          {/* Left Column: Copy & Actions */}
+          <div className="tsi-hero-left">
+            <h1 className="tsi-hero-headline">
+              {tContent.hero.title1}{' '}
+              <span className="tsi-hero-highlight">{tContent.hero.titleHighlight}</span>{' '}
+              {tContent.hero.title2}
+            </h1>
 
-          {/* Popular Pills (Desktop) */}
-          <div className="hero-pills-row desktop-only">
-            <span className="pills-label">{i18n.language === 'fr' ? 'Populaire :' : 'Popular:'}</span>
-            {tContent.hero.pills.map((pill, idx) => (
-              <button key={idx} className="hero-pill-btn" onClick={() => handlePillClick(pill)}>
-                {pill} →
+            <p className="tsi-hero-subtitle">
+              {tContent.hero.desc}
+            </p>
+
+            <div className="tsi-hero-cta-group">
+              <button 
+                className="tsi-btn-primary"
+                onClick={() => onNavigate('services')}
+              >
+                {tContent.hero.btnPrimary}
               </button>
-            ))}
-          </div>
-
-          {/* Quick Filter Chips (Mobile) */}
-          <div className="quick-filter-chips mobile-flex">
-            {tContent.hero.pills.map((pill, idx) => (
-              <button key={idx} className="quick-chip" onClick={() => handlePillClick(pill)}>
-                {pill} →
+              <button 
+                className="tsi-btn-secondary"
+                onClick={() => onNavigate('services')}
+              >
+                {tContent.hero.btnSecondary}
               </button>
-            ))}
+            </div>
+
+            {/* Quick Search & Popular Chips */}
+            <div className="tsi-hero-quick-search-box">
+              <form onSubmit={handleSearchSubmit} className="tsi-search-bar">
+                <input 
+                  type="text" 
+                  placeholder={currentLang === 'fr' ? "Rechercher un plombier, électricien, maçon..." : "Search for a plumber, electrician, painter..."} 
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                  className="tsi-search-input"
+                />
+                <button type="submit" className="tsi-search-submit-btn">
+                  {currentLang === 'fr' ? 'Rechercher' : 'Search'}
+                </button>
+              </form>
+
+              <div className="tsi-pills-row">
+                <span className="tsi-pills-label">{currentLang === 'fr' ? 'Populaire :' : 'Popular:'}</span>
+                {tContent.hero.pills.map((pill, idx) => (
+                  <button key={idx} className="tsi-pill-tag" onClick={() => handlePillClick(pill)}>
+                    {pill}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* Mobile Category Grid (Mobile Only) */}
-      <section className="mobile-category-grid-container mobile-only">
-        <h2 className="mobile-category-grid-title">{i18n.language === 'fr' ? 'Trouvez de l\'aide pour chaque type de travail' : 'Find help for every type of job'}</h2>
-        <div className="mobile-category-grid">
-          {Object.keys(serviceCategories).slice(0, 6).map((catKey) => {
-            const firstSvc = serviceCategories[catKey][0];
-            return (
-              <a href="#" key={catKey} className="mobile-category-card" onClick={(e) => { e.preventDefault(); handlePillClick(firstSvc.name); }}>
-                <span className="mobile-category-card-name">{i18n.language === 'fr' ? catKey : catKey}</span>
-                <span className="mobile-category-card-icon">{firstSvc?.icon || '🔧'}</span>
-              </a>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Statistics Social Proof Row */}
-      <section className="social-proof-bar">
-        <div className="social-proof-content">
-          <div className="social-proof-item">
-            <h3>500+</h3>
-            <span>{tContent.stats.providers}</span>
-          </div>
-          <span className="social-proof-divider">|</span>
-          <div className="social-proof-item">
-            <h3>2,000+</h3>
-            <span>{tContent.stats.tasks}</span>
-          </div>
-          <span className="social-proof-divider">|</span>
-          <div className="social-proof-item">
-            <h3>4.8★</h3>
-            <span>{tContent.stats.rating}</span>
-          </div>
-          <span className="social-proof-divider">|</span>
-          <div className="social-proof-item">
-            <h3>Global Reach</h3>
-            <span>{tContent.stats.coverage}</span>
+          {/* Right Column: Hero Vector Illustration (Matching Image 3) */}
+          <div className="tsi-hero-right">
+            <HeroTechIllustration />
           </div>
         </div>
       </section>
 
-      {/* Premium How It Works Section (Desktop) */}
-      <section className="how-it-works-premium desktop-only">
+      {/* 3. Floating Stats Ribbon & "What we do" Dark Banner (Matching Image 4) */}
+      <section className="tsi-stats-and-what-we-do-section">
+        {/* Floating 4-Column Metric Ribbon */}
+        <div className="tsi-floating-stats-bar">
+          <div className="tsi-stat-col tsi-stat-col-first">
+            <h3 className="tsi-stat-brand-heading">{tContent.metrics.col1Title}</h3>
+            <p className="tsi-stat-brand-sub">{tContent.metrics.col1Desc}</p>
+          </div>
+          <div className="tsi-stat-col">
+            <div className="tsi-stat-large-val">{tContent.metrics.col2Num}</div>
+            <div className="tsi-stat-sub-label">{tContent.metrics.col2Title}</div>
+            <p className="tsi-stat-detail">{tContent.metrics.col2Desc}</p>
+          </div>
+          <div className="tsi-stat-col">
+            <div className="tsi-stat-large-val">{tContent.metrics.col3Num}</div>
+            <div className="tsi-stat-sub-label">{tContent.metrics.col3Title}</div>
+            <p className="tsi-stat-detail">{tContent.metrics.col3Desc}</p>
+          </div>
+          <div className="tsi-stat-col">
+            <div className="tsi-stat-large-val">{tContent.metrics.col4Num}</div>
+            <div className="tsi-stat-sub-label">{tContent.metrics.col4Title}</div>
+            <p className="tsi-stat-detail">{tContent.metrics.col4Desc}</p>
+          </div>
+        </div>
+
+        {/* "What we do" Deep Navy Tech Banner */}
+        <div className="tsi-what-we-do-banner">
+          <div className="tsi-what-we-do-content">
+            <div className="tsi-what-we-do-text">
+              <h2 className="tsi-what-we-do-heading">{tContent.whatWeDo.title}</h2>
+              <p className="tsi-what-we-do-paragraph">{tContent.whatWeDo.desc}</p>
+            </div>
+            <div className="tsi-what-we-do-emblem">
+              <WhatWeDoEmblem />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. The Fixam Difference / Why Clients Choose Fixam (Matching Image 2) */}
+      <section className="tsi-difference-section">
+        <div className="tsi-difference-container">
+          {/* Left Column: Difference Vector Illustration */}
+          <div className="tsi-diff-left">
+            <DifferenceTechIllustration />
+          </div>
+
+          {/* Right Column: Copy and Styled Square Bullet List */}
+          <div className="tsi-diff-right">
+            <span className="tsi-diff-eyebrow">{tContent.difference.eyebrow}</span>
+            <h2 className="tsi-diff-heading">{tContent.difference.title}</h2>
+
+            <ul className="tsi-diff-bullet-list">
+              {tContent.difference.items.map((item, idx) => (
+                <li key={idx} className="tsi-diff-bullet-item">
+                  <span className="tsi-bullet-square"></span>
+                  <div className="tsi-bullet-content">
+                    <strong>{item.bold}</strong> {item.text}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. How Fixam Works Section */}
+      <section className="how-it-works-premium">
         <div className="how-it-works-header-row">
           <div className="how-it-works-title-block">
             <h2>{tContent.howItWorks.title}</h2>
@@ -561,76 +736,18 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
-      {/* Mobile How It Works Carousel (Mobile Only) */}
-      <section className="mobile-how-it-works-container mobile-only">
-        <h2 className="mobile-how-title">{tContent.howItWorks.title}</h2>
-        <div className="segmented-toggle-wrapper" style={{ margin: '0 1.5rem 1rem 1.5rem', width: 'auto' }}>
-          <button 
-            className={`segmented-toggle-btn ${workToggle === 'clients' ? 'active' : ''}`}
-            onClick={() => setWorkToggle('clients')}
-          >
-            {tContent.howItWorks.toggleClients}
-          </button>
-          <button 
-            className={`segmented-toggle-btn ${workToggle === 'providers' ? 'active' : ''}`}
-            onClick={() => setWorkToggle('providers')}
-          >
-            {tContent.howItWorks.toggleProviders}
-          </button>
-        </div>
-
-        <div className="how-carousel-scroll">
-          {(workToggle === 'clients' ? tContent.howItWorks.clients : tContent.howItWorks.providers).map((card, idx) => {
-            const cardImages = [
-              images.onboardingExperts,
-              images.onboardingVerified,
-              images.onboardingBook
-            ];
-            return (
-              <div className="how-carousel-card" key={idx}>
-                <img src={cardImages[idx]} alt={card.title} className="how-card-image" />
-                <h3 className="how-card-title">{card.num}. {card.title}</h3>
-                <p className="how-card-desc">{card.desc}</p>
-                <button className="how-card-btn" onClick={() => onNavigate(workToggle === 'clients' ? 'services' : 'register')}>
-                  {workToggle === 'clients' ? (i18n.language === 'fr' ? 'Trouver un prestataire' : 'Find a Pro') : (i18n.language === 'fr' ? 'Devenir prestataire' : 'Become a Pro')}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Why Clients Trust Fixam Section */}
-      <section className="why-trust-fixam">
-        <div className="trust-header">
-          <h2>{tContent.trust.title}</h2>
-          <p>{tContent.trust.subtitle}</p>
-        </div>
-        <div className="trust-cards-grid">
-          {tContent.trust.items.map((item, idx) => (
-            <div className="trust-card" key={idx}>
-              <div className="trust-card-visual">
-                <Icon name={item.icon} />
-              </div>
-              <div className="trust-card-content">
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Top Rated Professionals Grid */}
-      <section className="section" style={{ backgroundColor: 'var(--soft)' }}>
+      <section className="section" style={{ backgroundColor: '#F8FAFC', padding: '4.5rem 0' }}>
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
         <div className="pro-grid" ref={proGridRef}>
           {displayedPros.slice(0, 6).map((pro) => (
             <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
           ))}
         </div>
-        <div className="center-actions">
-          <button className="outline-button" onClick={() => onNavigate('login')}>{t('pros.view_all')}</button>
+        <div className="center-actions" style={{ marginTop: '2.5rem' }}>
+          <button className="tsi-btn-primary" onClick={() => onNavigate('services')}>
+            {t('pros.view_all')}
+          </button>
         </div>
       </section>
 
@@ -640,7 +757,6 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           <h2>{tContent.testimonials.title}</h2>
         </div>
 
-        {/* Desktop: 3-column grid (hidden on mobile) */}
         <div className="testimonials-grid-desktop">
           {tContent.testimonials.cards.map((card, idx) => (
             <div className="testimonial-card" key={idx}>
@@ -660,7 +776,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           ))}
         </div>
 
-        {/* Mobile: single-card carousel with arrows (hidden on desktop) */}
+        {/* Mobile Testimonials Carousel */}
         <div className="testimonial-carousel-mobile">
           <div className="testimonial-carousel-container">
             <button
@@ -713,12 +829,11 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
-
       {/* Categorized Sticky FAQ Section */}
       <section className="faq-section-upgraded">
         <div className="faq-container-2col">
           <div className="faq-left-col-sticky">
-            <h2>{i18n.language === 'fr' ? 'Questions Fréquemment Posées' : 'Frequently Asked Questions'}</h2>
+            <h2>{currentLang === 'fr' ? 'Questions Fréquemment Posées' : 'Frequently Asked Questions'}</h2>
             <div className="faq-category-list">
               {tContent.faq.categories.map((cat) => (
                 <button 
@@ -734,8 +849,8 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           
           <div className="faq-right-col-accordions">
             {filteredFaq.map((faq, idx) => {
-              const q = i18n.language === 'fr' ? faq.qFr : faq.qEn;
-              const a = i18n.language === 'fr' ? faq.aFr : faq.aEn;
+              const q = currentLang === 'fr' ? faq.qFr : faq.qEn;
+              const a = currentLang === 'fr' ? faq.aFr : faq.aEn;
               const isOpen = openFaqIndex === idx;
               return (
                 <div className={`faq-accordion-item ${isOpen ? 'open' : ''}`} key={idx}>
@@ -753,11 +868,11 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
-      {/* Remote & On-site Jobs Announcement Section */}
+      {/* Remote & On-site Jobs Announcement Section (Mobile App Showcase) */}
       <section className="opportunities-section-premium">
         <div className="opportunities-container">
           <div className="opportunities-visual">
-            <div className="badge-glow-pro">{i18n.language === 'fr' ? 'NOUVEAU' : 'NEW OPPORTUNITIES'}</div>
+            <div className="badge-glow-pro">{i18n.language === 'fr' ? 'APPLICATION MOBILE' : 'MOBILE APP'}</div>
             <div className="floating-sphere"></div>
             <img src={images.appHomeScreen} alt="Fixam Mobile App Screen showing remote job listings" className="app-mockup-img" />
           </div>
@@ -769,22 +884,22 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             </h2>
             <p className="lead-text">
               {i18n.language === 'fr'
-                ? "Fixam ne se limite plus aux artisans locaux. Notre plateforme de services connecte les professionnels qualifiés avec des opportunités d'emploi concrètes et vérifiées."
-                : "Fixam is no longer just for local handymen. Our services platform connects skilled professionals with concrete, verified job opportunities."}
+                ? "Fixam connecte les professionnels qualifiés et les clients au Cameroun avec des opportunités concrètes, vérifiées et 100% sans commission."
+                : "Fixam connects skilled trade professionals and clients across Cameroon with concrete, verified job opportunities with 0% platform commission."}
             </p>
             <div className="features-checklist">
               <div className="checklist-item">
                 <span className="check-icon">✓</span>
                 <div>
                   <strong>{i18n.language === 'fr' ? 'Missions sur site' : 'On-site assignments'}</strong>
-                  <p>{i18n.language === 'fr' ? 'Collaborez avec des clients locaux dans votre ville ou région.' : 'Collaborate with local clients in your city or region.'}</p>
+                  <p>{i18n.language === 'fr' ? 'Collaborez avec des clients locaux dans votre ville ou quartier.' : 'Collaborate with local clients in your city or neighborhood.'}</p>
                 </div>
               </div>
               <div className="checklist-item">
                 <span className="check-icon">✓</span>
                 <div>
-                  <strong>{i18n.language === 'fr' ? 'Projets entièrement à distance' : 'Fully remote projects'}</strong>
-                  <p>{i18n.language === 'fr' ? 'Prenez des projets numériques et collaborez depuis n\'importe où.' : 'Take on digital projects and collaborate from anywhere.'}</p>
+                  <strong>{i18n.language === 'fr' ? 'Réservations 100% gratuites' : '100% Free Bookings'}</strong>
+                  <p>{i18n.language === 'fr' ? 'Aucun frais de réservation prélevé sur vos missions.' : 'Zero booking fees charged on your bookings and tasks.'}</p>
                 </div>
               </div>
               <div className="checklist-item">
@@ -797,8 +912,8 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             </div>
             <p style={{ marginTop: '1.5rem', color: '#64748B', fontSize: '0.9rem' }}>
               {i18n.language === 'fr'
-                ? "Téléchargez l'application mobile Fixam aujourd'hui pour publier votre profil, ajouter vos compétences, certifications et commencer à postuler."
-                : "Download the Fixam mobile app today to publish your profile, add your skills, certifications, and start applying."}
+                ? "Téléchargez l'application mobile Fixam aujourd'hui pour publier votre profil, ajouter vos compétences, certifications et commencer à trouver du travail."
+                : "Download the Fixam mobile app today to publish your profile, add your skills, certifications, and start finding work."}
             </p>
             <div className="store-download-row">
               <a href="https://apps.apple.com/app/com.fixam.app.iosapp" target="_blank" rel="noopener noreferrer" className="store-badge-premium apple">
@@ -818,7 +933,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           <h2>{tContent.cta.title}</h2>
           <p>{tContent.cta.subtitle}</p>
           <div className="cta-banner-actions">
-            <button className="cta-pill-btn client" onClick={() => onNavigate('register')}>
+            <button className="cta-pill-btn client" onClick={() => onNavigate('services')}>
               {tContent.cta.btnClient}
             </button>
             <button className="cta-pill-btn pro" onClick={() => onNavigate('register')}>
@@ -832,3 +947,4 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     </div>
   );
 }
+

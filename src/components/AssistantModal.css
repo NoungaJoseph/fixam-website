@@ -1,0 +1,224 @@
+/* Assistant Popup Modal (Matching Image 1) */
+.assistant-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: assistantFadeIn 0.25s ease-out;
+}
+
+@keyframes assistantFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.assistant-modal-container {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35);
+  padding: 3.25rem 2.75rem 2.25rem;
+  border: 1px solid #E2E8F0;
+  animation: assistantPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes assistantPop {
+  from { transform: scale(0.95) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.assistant-modal-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #0F172A;
+  border-radius: 6px;
+  background: transparent;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.assistant-modal-close-btn:hover {
+  background: #0F172A;
+  color: #FFFFFF;
+}
+
+.assistant-modal-title {
+  text-align: center;
+  font-size: clamp(1.6rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  color: #0B1B3D;
+  margin: 0 0 2.25rem 0;
+  letter-spacing: -0.02em;
+  font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+}
+
+.assistant-modal-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.assistant-choice-card {
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem;
+  background: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.assistant-choice-card:hover {
+  border-color: #14B8A6;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(20, 184, 166, 0.2);
+}
+
+.assistant-card-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0B1B3D;
+  line-height: 1.35;
+  margin: 0 0 0.85rem 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.assistant-card-desc {
+  font-size: 0.865rem;
+  color: #475569;
+  line-height: 1.55;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+.assistant-card-link {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0D9488;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: color 0.15s;
+}
+
+.assistant-choice-card:hover .assistant-card-link {
+  color: #14B8A6;
+}
+
+.assistant-modal-bottom {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.assistant-modal-btn-primary {
+  background-color: #14B8A6;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.15s;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+}
+
+.assistant-modal-btn-primary:hover {
+  background-color: #0D9488;
+  transform: translateY(-1px);
+}
+
+/* Floating Help Widget (Present across the site as shown in all screenshots) */
+.floating-assistant-trigger {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  z-index: 900;
+  cursor: pointer;
+}
+
+.floating-help-bubble {
+  background: #F97316;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(249, 115, 22, 0.35);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.floating-chat-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #0B1B3D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(11, 27, 61, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+}
+
+.floating-assistant-trigger:hover .floating-chat-circle {
+  transform: scale(1.08);
+  background: #14B8A6;
+}
+
+/* Accessibility button bottom-left */
+.floating-accessibility-icon {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #14B8A6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(20, 184, 166, 0.35);
+  z-index: 900;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.floating-accessibility-icon:hover {
+  transform: scale(1.08);
+  background: #0D9488;
+}
+
+@media (max-width: 768px) {
+  .assistant-modal-container {
+    padding: 2.25rem 1.25rem 1.5rem;
+  }
+  .assistant-modal-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

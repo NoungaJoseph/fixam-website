@@ -27,7 +27,7 @@ export default function BookingFormModal({
   const [location, setLocation] = useState('Nearby');
   const [duration, setDuration] = useState('1 Hour');
   const [budgetAmount, setBudgetAmount] = useState('');
-  const [urgency, setUrgency] = useState<'NORMAL' | 'URGENT' | 'EMERGENCY'>('NORMAL');
+  const [urgency, setUrgency] = useState<'NORMAL' | 'HIGH_PRIORITY'>('NORMAL');
   const [notes, setNotes] = useState('');
   const [materialsList, setMaterialsList] = useState<MaterialItem[]>([]);
   const [requiresDiagnosis, setRequiresDiagnosis] = useState(false);
@@ -145,28 +145,21 @@ export default function BookingFormModal({
           </div>
 
           <div className="form-group">
-            <label>Urgency Level</label>
+            <label>Booking Priority</label>
             <div className="urgency-selector">
               <button 
                 type="button"
                 className={`urgency-btn ${urgency === 'NORMAL' ? 'active' : ''}`}
                 onClick={() => setUrgency('NORMAL')}
               >
-                Normal
+                Standard (FREE)
               </button>
               <button 
                 type="button"
-                className={`urgency-btn ${urgency === 'URGENT' ? 'active' : ''}`}
-                onClick={() => setUrgency('URGENT')}
+                className={`urgency-btn ${urgency === 'HIGH_PRIORITY' ? 'active' : ''}`}
+                onClick={() => setUrgency('HIGH_PRIORITY')}
               >
-                Urgent
-              </button>
-              <button 
-                type="button"
-                className={`urgency-btn ${urgency === 'EMERGENCY' ? 'active emergency' : ''}`}
-                onClick={() => setUrgency('EMERGENCY')}
-              >
-                Emergency
+                High Priority (1 Coin)
               </button>
             </div>
           </div>
