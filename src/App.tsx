@@ -1214,16 +1214,16 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
           {/* Mobile Search Bar (toggled by search icon) */}
           {mobileSearchOpen && (
-            <form onSubmit={handleMobileSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '0.75rem 1.5rem', gap: '0.5rem', borderBottom: '1px solid var(--line)', background: 'var(--soft)' }}>
+            <form onSubmit={handleMobileSearchSubmit} style={{ display: 'flex', alignItems: 'center', padding: '0.75rem 1rem', gap: '0.5rem', borderBottom: '1px solid var(--line)', background: 'var(--soft)' }}>
               <input
                 type="text"
                 placeholder={i18n.language === 'fr' ? 'Rechercher un service...' : 'Search for a service...'}
                 value={mobileSearchVal}
                 onChange={(e) => setMobileSearchVal(e.target.value)}
                 autoFocus
-                style={{ flex: 1, border: '1px solid var(--line)', borderRadius: '9999px', padding: '0.6rem 1rem', fontSize: '0.95rem', outline: 'none', background: 'var(--surface)', color: 'var(--ink)' }}
+                style={{ flex: 1, minWidth: 0, border: '1px solid var(--line)', borderRadius: '9999px', padding: '0.6rem 1rem', fontSize: '0.9rem', outline: 'none', background: 'var(--surface)', color: 'var(--ink)' }}
               />
-              <button type="submit" style={{ background: '#14B8A6', color: '#fff', border: 'none', borderRadius: '9999px', padding: '0.6rem 1.2rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem' }}>
+              <button type="submit" style={{ flexShrink: 0, whiteSpace: 'nowrap', background: '#14B8A6', color: '#fff', border: 'none', borderRadius: '9999px', padding: '0.6rem 1rem', fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem' }}>
                 {i18n.language === 'fr' ? 'Chercher' : 'Search'}
               </button>
             </form>

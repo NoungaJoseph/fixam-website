@@ -404,8 +404,8 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
             }}>
               <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isProfileAvailable ? '#059669' : '#64748b', flex: 1 }}>
                 {isProfileAvailable
-                  ? (i18n.language === 'fr' ? '🟢 En ligne — Disponible' : '🟢 Online — Available')
-                  : (i18n.language === 'fr' ? '⚪ Hors ligne — Indisponible' : '⚪ Offline — Unavailable')}
+                  ? (i18n.language === 'fr' ? '🟢 En ligne - Disponible' : '🟢 Online - Available')
+                  : (i18n.language === 'fr' ? '⚪ Hors ligne - Indisponible' : '⚪ Offline - Unavailable')}
               </span>
               <button
                 className={`w-12 h-7 flex items-center rounded-full p-1 transition-colors cursor-pointer border-none outline-none ${isProfileAvailable ? 'bg-emerald-500 justify-end' : 'bg-slate-300 justify-start'}`}
@@ -965,8 +965,8 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                 <div className="pp-form-field">
                   <label>Experience Level</label>
                   <select value={editExperience} onChange={e => setEditExperience(e.target.value)}>
-                    <option value="Beginner">Beginner (1–2 years)</option>
-                    <option value="Intermediate">Intermediate (3–5 years)</option>
+                    <option value="Beginner">Beginner (1-2 years)</option>
+                    <option value="Intermediate">Intermediate (3-5 years)</option>
                     <option value="Expert">Expert (5+ years)</option>
                   </select>
                 </div>

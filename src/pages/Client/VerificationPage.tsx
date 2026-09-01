@@ -421,7 +421,7 @@ export default function VerificationPage({ setActiveTab }: VerificationPageProps
                       >
                         📹 {i18n.language === 'fr' ? "Activer la caméra" : "Start Camera"}
                       </button>
-                      <div className="text-xs text-gray-400 mb-2">— OR —</div>
+                      <div className="text-xs text-gray-400 mb-2">OR</div>
                       <input
                         type="file"
                         accept="image/*"

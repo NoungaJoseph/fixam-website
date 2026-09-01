@@ -325,7 +325,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                     )}
                     {isCountered && (
                       <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-lg">
-                        Counter sent — awaiting response
+                        Counter sent - awaiting response
                       </span>
                     )}
                     {!isPending && !isCountered && (

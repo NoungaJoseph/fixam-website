@@ -340,7 +340,7 @@ export default function SkillDetail({ onNavigate, skillName, onSelectSkill, live
                           {isFr ? pro.review.textFr : pro.review.textEn}
                         </p>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                          <span className="review-quote-author">— {pro.review.author}</span>
+                          <span className="review-quote-author">- {pro.review.author}</span>
                           <span className="review-quote-stars">
                             {"★".repeat(pro.review.stars)}
                           </span>
@@ -381,7 +381,7 @@ export default function SkillDetail({ onNavigate, skillName, onSelectSkill, live
                       </span>
                     </div>
                     <p className="review-text">{r.text}</p>
-                    <span className="review-author">— {r.reviewer}</span>
+                    <span className="review-author">- {r.reviewer}</span>
                   </div>
                 ))}
               </div>

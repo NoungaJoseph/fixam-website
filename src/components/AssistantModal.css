@@ -235,6 +235,26 @@
 }
 
 @media (max-width: 768px) {
+  .floating-assistant-trigger {
+    bottom: 5.5rem;
+    right: 1rem;
+  }
+  .floating-accessibility-icon {
+    bottom: 5.5rem;
+    left: 1rem;
+  }
+  .floating-help-bubble {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.55rem;
+  }
+  .floating-chat-circle {
+    width: 46px;
+    height: 46px;
+  }
+  .floating-accessibility-icon {
+    width: 38px;
+    height: 38px;
+  }
   .assistant-modal-overlay {
     padding: 0.75rem;
     align-items: flex-end;

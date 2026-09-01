@@ -193,7 +193,7 @@ const MOCK_COURSES: Course[] = [
       'Apprenez à communiquer clairement avec les plombiers.',
       'Obtenez un certificat d\'apprentissage Fixam.'
     ],
-    cvLinkedInGuide: 'This simulation certificate shows your proactive approach to property management, safety compliance, and basic facility maintenance—skills highly valued for administrative, landlord, and office management roles.',
+    cvLinkedInGuide: 'This simulation certificate shows your proactive approach to property management, safety compliance, and basic facility maintenance, skills highly valued for administrative, landlord, and office management roles.',
     cvLinkedInGuideFr: 'Ce certificat démontre votre esprit d\'initiative en gestion de base des installations et en sécurité, utile pour les rôles administratifs ou de gestion.',
     briefVideoTitle: 'Under-Sink Leak Briefing - Sarah',
     briefVideoTitleFr: 'Briefing d\'évaluation de fuite - Sarah',

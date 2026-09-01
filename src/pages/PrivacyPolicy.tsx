@@ -20,7 +20,7 @@ export default function PrivacyPolicy({ onNavigate }: { onNavigate: (page: Page)
             <li>{isFr ? "Photo de profil (facultatif)" : "Profile photo (optional)"}</li>
             <li>{isFr ? "Documents d'identité gouvernementaux (pour la vérification)" : "Government ID documents (for verification)"}</li>
             <li>{isFr ? "Informations de localisation (lors de l'utilisation de l'application)" : "Location information (when using the app)"}</li>
-            <li>{isFr ? "Données de transaction de réservation (achats de pièces — montants et références uniquement)" : "Booking transaction data (coin purchases — amounts and references only)"}</li>
+            <li>{isFr ? "Données de transaction de réservation (achats de pièces : montants et références uniquement)" : "Booking transaction data (coin purchases: amounts and references only)"}</li>
             <li>{isFr ? "Messages et communications via l'application" : "Messages and communications through the app"}</li>
             <li>{isFr ? "Avis et notes que vous soumettez" : "Reviews and ratings you submit"}</li>
           </ul>

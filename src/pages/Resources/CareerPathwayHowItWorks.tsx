@@ -12,7 +12,7 @@ export default function CareerPathwayHowItWorks({ skill }: { skill: CareerPathwa
         <div className="career-icon-circle">1</div>
         <div>
           <strong>{isFr ? 'Tâches guidées' : 'Guided tasks'}</strong>
-          <p>{isFr ? 'Complétez les tâches guidées par des tutoriels vidéo et des exemples de réponses d\'experts. Aucune session live, tout est à votre rythme.' : 'Complete tasks guided by video tutorials and example answers from expert practitioners. No live sessions — all self-paced.'}</p>
+          <p>{isFr ? 'Complétez les tâches guidées par des tutoriels vidéo et des exemples de réponses d\'experts. Aucune session live, tout est à votre rythme.' : 'Complete tasks guided by video tutorials and example answers from expert practitioners. No live sessions, all self-paced.'}</p>
         </div>
       </div>
       <div className="career-how-item-panel">

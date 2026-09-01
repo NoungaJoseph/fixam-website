@@ -7,7 +7,7 @@ const servicesContent = {
   en: {
     hero: {
       title: 'Hire Trusted Local Professionals',
-      subtitle: 'Post your task, browse verified providers, and get the job done — all from your phone.',
+      subtitle: 'Post your task, browse verified providers, and get the job done - all from your phone.',
       cta1: 'Post a Task',
       cta2: 'Browse Providers'
     },
@@ -98,7 +98,7 @@ const servicesContent = {
   fr: {
     hero: {
       title: 'Engagez des Professionnels Locaux de Confiance',
-      subtitle: 'Publiez votre tâche, parcourez les prestataires vérifiés et faites le travail — tout depuis votre téléphone.',
+      subtitle: 'Publiez votre tâche, parcourez les prestataires vérifiés et faites le travail - tout depuis votre téléphone.',
       cta1: 'Publier une Tâche',
       cta2: 'Parcourir les Prestataires'
     },

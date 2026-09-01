@@ -12,7 +12,7 @@ const contentLocales = {
       title1: 'The Leading Tech-Enabled',
       titleHighlight: 'On-Demand Service',
       title2: 'Marketplace.',
-      desc: 'Powered by verified trade professionals, smart matching algorithms, and direct transparent payments—so you get quality work done faster, safer, and reliably.',
+      desc: 'Powered by verified trade professionals, smart matching algorithms, and direct transparent payments, so you get quality work done faster, safer, and reliably.',
       btnPrimary: 'Post a Task Free',
       btnSecondary: 'Explore Solutions',
       pills: ['Plumbing', 'Electrical', 'Cleaning', 'Moving', 'Beauty', 'Repairs']
@@ -175,7 +175,7 @@ const contentLocales = {
       title1: 'La Première Plateforme Technologique de',
       titleHighlight: 'Services à la Demande',
       title2: 'au Cameroun.',
-      desc: 'Alimentée par des artisans vérifiés, des algorithmes de mise en relation intelligente et des paiements directs et transparents—pour des travaux rapides, fiables et en toute sécurité.',
+      desc: 'Alimentée par des artisans vérifiés, des algorithmes de mise en relation intelligente et des paiements directs et transparents, pour des travaux rapides, fiables et en toute sécurité.',
       btnPrimary: 'Publier une Tâche Gratuite',
       btnSecondary: 'Découvrir les Solutions',
       pills: ['Plomberie', 'Électricité', 'Nettoyage', 'Déménagement', 'Beauté', 'Réparations']

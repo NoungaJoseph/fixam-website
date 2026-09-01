@@ -23,9 +23,9 @@ const SERVICE_CATEGORIES = [
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 'LOW', label: 'Low – Flexible schedule', fr: 'Faible – Flexible' },
-  { value: 'NORMAL', label: 'Normal – Within a few days', fr: 'Normal – Dans quelques jours' },
-  { value: 'HIGH', label: 'Urgent – As soon as possible', fr: 'Urgent – Dès que possible' },
+  { value: 'LOW', label: 'Low - Flexible schedule', fr: 'Faible - Flexible' },
+  { value: 'NORMAL', label: 'Normal - Within a few days', fr: 'Normal - Dans quelques jours' },
+  { value: 'HIGH', label: 'Urgent - As soon as possible', fr: 'Urgent - Dès que possible' },
 ];
 
 const PROVIDER_TIERS = [
@@ -37,9 +37,9 @@ const PROVIDER_TIERS = [
 ];
 
 const SCOPE_OPTIONS = [
-  { value: 'SMALL', label: 'Small – Less than a day', fr: 'Petit – Moins d\'une journée' },
-  { value: 'MEDIUM', label: 'Medium – 1 to 3 days', fr: 'Moyen – 1 à 3 jours' },
-  { value: 'LARGE', label: 'Large – More than 3 days', fr: 'Grand – Plus de 3 jours' },
+  { value: 'SMALL', label: 'Small - Less than a day', fr: 'Petit - Moins d\'une journée' },
+  { value: 'MEDIUM', label: 'Medium - 1 to 3 days', fr: 'Moyen - 1 à 3 jours' },
+  { value: 'LARGE', label: 'Large - More than 3 days', fr: 'Grand - Plus de 3 jours' },
 ];
 
 interface CreateTaskModalProps {
@@ -692,7 +692,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                     {form.whatNeedsDone && <ReviewRow label={t.whatNeedsDone} value={form.whatNeedsDone} />}
                     {form.importantDetails && <ReviewRow label={t.importantDetails} value={form.importantDetails} />}
                     <ReviewRow label={t.location} value={`${form.location}${form.isRemote ? (isFr ? ' (À distance)' : ' (Remote)') : ''}`} />
-                    <ReviewRow label={t.budgetMin} value={`XAF ${Number(form.budgetMin).toLocaleString()} – ${Number(form.budgetMax).toLocaleString()}`} />
+                    <ReviewRow label={t.budgetMin} value={`XAF ${Number(form.budgetMin).toLocaleString()} - ${Number(form.budgetMax).toLocaleString()}`} />
                     <ReviewRow label={t.providersNeeded} value={form.providersNeeded} />
                     <ReviewRow label={t.priority} value={PRIORITY_OPTIONS.find(o => o.value === form.priority)?.[isFr ? 'fr' : 'label'] || form.priority} />
                     <ReviewRow label={t.taskScope} value={SCOPE_OPTIONS.find(o => o.value === form.taskScope)?.[isFr ? 'fr' : 'label'] || form.taskScope} />

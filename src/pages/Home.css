@@ -124,6 +124,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   transition: border-color 0.2s;
   margin-bottom: 0.85rem;
+  gap: 0.5rem;
 }
 
 .tsi-search-bar:focus-within {
@@ -133,11 +134,13 @@
 
 .tsi-search-input {
   flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   font-size: 0.925rem;
   color: #0F172A;
   background: transparent;
+  padding-right: 0.25rem;
 }
 
 .tsi-search-submit-btn {
@@ -150,6 +153,8 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.15s;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .tsi-search-submit-btn:hover {
@@ -464,6 +469,18 @@
   .tsi-btn-primary,
   .tsi-btn-secondary {
     width: 100%;
+  }
+  .tsi-search-bar {
+    padding: 0.35rem 0.35rem 0.35rem 0.75rem;
+    gap: 0.35rem;
+  }
+  .tsi-search-input {
+    font-size: 0.85rem;
+    padding-right: 0.25rem;
+  }
+  .tsi-search-submit-btn {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.8rem;
   }
 }
 

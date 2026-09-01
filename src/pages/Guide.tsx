@@ -8,7 +8,7 @@ const guideContent = {
     hero: {
       title: 'Find Jobs the Way You Want',
       subtitle: 'Browse available tasks from clients across Cameroon. Apply, get selected, and grow your business.',
-      cta: 'Get Started — it\'s free'
+      cta: 'Get Started - it\'s free'
     },
     stats: {
       title: 'Trusted by providers across Cameroon',
@@ -131,7 +131,7 @@ const guideContent = {
     hero: {
       title: 'Trouvez des Emplois Comme Vous Voulez',
       subtitle: 'Parcourez les tâches disponibles des clients à travers le Cameroun. Postulez, soyez sélectionné et développez votre activité.',
-      cta: 'Commencer — c\'est gratuit'
+      cta: 'Commencer - c\'est gratuit'
     },
     stats: {
       title: 'Approuvé par des prestataires à travers le Cameroun',

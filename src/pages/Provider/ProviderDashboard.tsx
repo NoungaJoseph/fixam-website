@@ -40,7 +40,7 @@ type JobLead = {
 const formatBudget = (job: JobLead) => {
   const min = Number(job.budgetMin || 0);
   const max = Number(job.budgetMax || job.budget || 0);
-  if (min && max && min !== max) return `${min.toLocaleString()} – ${max.toLocaleString()} XAF`;
+  if (min && max && min !== max) return `${min.toLocaleString()} - ${max.toLocaleString()} XAF`;
   if (max) return `${max.toLocaleString()} XAF`;
   return 'Negotiable';
 };
@@ -1126,7 +1126,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     onChange={(e) => setPendingBudgetMin(e.target.value)}
                     className="modal-input"
                   />
-                  <span>–</span>
+                  <span>-</span>
                   <input
                     type="number"
                     placeholder="Max budget"
