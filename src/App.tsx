@@ -1028,6 +1028,81 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               </select>
             </div>
 
+            {/* Desktop Header Action Buttons */}
+            <div className="header-auth-buttons desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '0.5rem' }}>
+              {isLoggedIn ? (
+                <>
+                  <button
+                    className="nav-btn-secondary"
+                    onClick={() => handleNavigate('dashboard')}
+                    style={{
+                      background: '#FFFFFF',
+                      color: '#071936',
+                      border: '1.5px solid #CBD5E1',
+                      borderRadius: '4px',
+                      padding: '7px 16px',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Dashboard
+                  </button>
+                  <button
+                    className="nav-btn-logout"
+                    onClick={async () => { await logout(); handleNavigate('home'); }}
+                    style={{
+                      background: 'transparent',
+                      color: '#EF4444',
+                      border: 'none',
+                      padding: '7px 10px',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {i18n.language === 'fr' ? 'Déconnexion' : 'Log Out'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="nav-btn-signin"
+                    onClick={() => handleNavigate('login')}
+                    style={{
+                      background: 'transparent',
+                      color: '#071936',
+                      border: 'none',
+                      padding: '7px 12px',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {i18n.language === 'fr' ? 'Connexion' : 'Sign In'}
+                  </button>
+                  <button
+                    className="nav-btn-get-started"
+                    onClick={() => handleNavigate('register')}
+                    style={{
+                      background: '#14B8A6',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '8px 18px',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 6px rgba(20, 184, 166, 0.25)',
+                      transition: 'background-color 0.15s'
+                    }}
+                  >
+                    {i18n.language === 'fr' ? 'Commencer' : 'Get Started'}
+                  </button>
+                </>
+              )}
+            </div>
+
 
 
             {/* Mobile Header Right */}
