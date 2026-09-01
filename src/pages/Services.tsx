@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Icon, IconName, Footer, asset } from '../App';
+import { useSEO } from '../hooks/useSEO';
 import './Services.css';
 
 const servicesContent = {
@@ -207,6 +208,15 @@ export default function Services({
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = servicesContent[lang];
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useSEO({
+    title: lang === 'fr' ? 'Annuaire des Services & Artisans Vérifiés au Cameroun' : 'Verified Trade Services & Artisans Directory in Cameroon',
+    description: lang === 'fr'
+      ? 'Parcourez toutes les catégories de services Fixam : plomberie, électricité, menuiserie, froid & clim, ménage, peinture et BTP à Douala et Yaoundé.'
+      : 'Browse verified service categories on Fixam: plumbing, electrical, carpentry, AC repair, cleaning, painting, and construction across Cameroon.',
+    canonical: 'https://usefixam.com/services',
+    isFr: lang === 'fr'
+  });
 
   const matchingServices: Array<{ cat: string; name: string; desc: string; icon: string }> = [];
   

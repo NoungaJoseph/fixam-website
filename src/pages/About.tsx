@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { HeroTechIllustration, WhatWeDoEmblem } from '../components/TechIllustrations';
+import { useSEO } from '../hooks/useSEO';
 import './Home.css';
 
 const aboutContent = {
@@ -105,6 +106,15 @@ export default function About({ onNavigate }: { onNavigate: (page: Page) => void
   const { i18n } = useTranslation();
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = aboutContent[lang];
+
+  useSEO({
+    title: lang === 'fr' ? 'À Propos de Fixam - La Plateforme Technologique de Services au Cameroun' : 'About Fixam - The Leading On-Demand Service Platform in Cameroon',
+    description: lang === 'fr'
+      ? 'Notre mission est de transformer la fourniture de services au quotidien au Cameroun en connectant particuliers et artisans vérifiés.'
+      : 'Learn about Fixam mission to transform service delivery across Cameroon by bridging households, businesses, and verified trade professionals.',
+    canonical: 'https://usefixam.com/about',
+    isFr: lang === 'fr'
+  });
 
   return (
     <div className="landing-page tsi-styled-page">

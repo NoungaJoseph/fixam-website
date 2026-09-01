@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- 1. Homepage -->
+  <url>
+    <loc>https://usefixam.com/</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/" />
+  </url>
+
+  <!-- 2. About Us -->
+  <url>
+    <loc>https://usefixam.com/about</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/about?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/about?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/about" />
+  </url>
+
+  <!-- 3. Why Fixam -->
+  <url>
+    <loc>https://usefixam.com/why-fixam</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/why-fixam?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/why-fixam?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/why-fixam" />
+  </url>
+
+  <!-- 4. Solutions (Individuals, Businesses, Providers) -->
+  <url>
+    <loc>https://usefixam.com/solutions</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/solutions?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/solutions?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/solutions" />
+  </url>
+
+  <!-- 5. Services Directory -->
+  <url>
+    <loc>https://usefixam.com/services</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/services?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/services?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/services" />
+  </url>
+
+  <!-- 6. Insights & Research Hub -->
+  <url>
+    <loc>https://usefixam.com/insights</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/insights?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/insights?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/insights" />
+  </url>
+
+  <!-- 7. How It Works / Guide -->
+  <url>
+    <loc>https://usefixam.com/guide</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/guide?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/guide?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/guide" />
+  </url>
+
+  <!-- 8. Reviews & Testimonials -->
+  <url>
+    <loc>https://usefixam.com/reviews</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/reviews?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/reviews?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/reviews" />
+  </url>
+
+  <!-- 9. Terms of Service -->
+  <url>
+    <loc>https://usefixam.com/terms-of-service</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/terms-of-service?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/terms-of-service?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/terms-of-service" />
+  </url>
+
+  <!-- 10. Privacy Policy -->
+  <url>
+    <loc>https://usefixam.com/privacy-policy</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/privacy-policy?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/privacy-policy?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/privacy-policy" />
+  </url>
+
+</urlset>

@@ -2,11 +2,21 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { DifferenceTechIllustration } from '../components/TechIllustrations';
+import { useSEO } from '../hooks/useSEO';
 import './Home.css';
 
 export default function WhyFixam({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Pourquoi Choisir Fixam - Sécurité & Zéro Commission' : 'Why Choose Fixam - Trust, Speed & 0% Commission',
+    description: isFr 
+      ? 'Découvrez pourquoi des milliers de foyers et entreprises au Cameroun font confiance à Fixam pour leurs dépannages et travaux.' 
+      : 'Learn why thousands of households and businesses across Cameroon trust Fixam for on-demand home repairs, verified trades, and 0% commission.',
+    canonical: 'https://usefixam.com/why-fixam',
+    isFr
+  });
 
   return (
     <div className="landing-page tsi-styled-page">

@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { HeroTechIllustration } from '../components/TechIllustrations';
+import { useSEO } from '../hooks/useSEO';
 import './Home.css';
 
 export default function Solutions({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
   const [activeTab, setActiveTab] = useState<'individuals' | 'business' | 'providers'>('individuals');
+
+  useSEO({
+    title: isFr ? 'Solutions Fixam - Particuliers, Entreprises & Prestataires' : 'Fixam Solutions - Households, Property Managers & Trade Pros',
+    description: isFr
+      ? 'Découvrez nos solutions adaptées aux ménages, gestionnaires immobiliers et artisans au Cameroun. Dépannages rapides et maintenance planifiée.'
+      : 'Explore tailored service solutions for homeowners, commercial property managers, and trade professionals across Cameroon.',
+    canonical: 'https://usefixam.com/solutions',
+    isFr
+  });
 
   return (
     <div className="landing-page tsi-styled-page">

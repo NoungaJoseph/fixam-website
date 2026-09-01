@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
+import { useSEO } from '../hooks/useSEO';
 import './Home.css';
 
 interface ArticleItem {
@@ -71,6 +72,15 @@ export default function Insights({ onNavigate }: { onNavigate: (page: Page) => v
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
   const [activeFilter, setActiveFilter] = useState('all');
+
+  useSEO({
+    title: isFr ? 'Analyses, Rapports & Perspectives du Marché - Fixam Insights' : 'Market Intelligence & Practical Service Guides - Fixam Insights',
+    description: isFr
+      ? 'Rapports économiques, conseils de maintenance domestique et retours d\'expérience sur les métiers qualifiés au Cameroun.'
+      : 'Explore research reports, home maintenance best practices, and expert trade insights curated by the Fixam team in Cameroon.',
+    canonical: 'https://usefixam.com/insights',
+    isFr
+  });
 
   const categories = [
     { key: 'all', labelEn: 'All Insights', labelFr: 'Tous les Articles' },

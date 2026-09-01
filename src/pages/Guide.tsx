@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Icon, IconName, Footer } from '../App';
+import { useSEO } from '../hooks/useSEO';
 import './Guide.css';
 
 const guideContent = {
@@ -257,6 +258,15 @@ export default function Guide({ onNavigate }: { onNavigate: (page: Page) => void
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = guideContent[lang];
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  useSEO({
+    title: lang === 'fr' ? 'Comment Ça Marche - Guide Prestataire & Client Fixam' : 'How It Works - Provider & Client Guide Fixam',
+    description: lang === 'fr'
+      ? 'Découvrez comment trouver des missions, fixer vos tarifs et développer votre activité d\'artisan au Cameroun avec Fixam sans commission.'
+      : 'Learn how to find jobs, set your own rates, and grow your service business across Cameroon with Fixam 0% commission.',
+    canonical: 'https://usefixam.com/guide',
+    isFr: lang === 'fr'
+  });
 
   return (
     <div className="provider-page-premium">

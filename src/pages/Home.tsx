@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
 import AssistantModal from '../components/AssistantModal';
 import { HeroTechIllustration, DifferenceTechIllustration, WhatWeDoEmblem } from '../components/TechIllustrations';
+import { useSEO } from '../hooks/useSEO';
 import './Home.css';
 
 const contentLocales = {
@@ -520,6 +521,17 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   const filteredFaq = faqQuestions.filter(faq => {
     const cat = i18n.language === 'fr' ? faq.categoryFr : faq.categoryEn;
     return cat === faqCategory;
+  });
+
+  useSEO({
+    title: currentLang === 'fr' 
+      ? 'Fixam - Services Locaux à la Demande & Artisans Vérifiés au Cameroun' 
+      : 'Fixam - On-Demand Local Services & Verified Trade Professionals in Cameroon',
+    description: currentLang === 'fr'
+      ? 'Trouvez et réservez des plombiers, électriciens, menuisiers et techniciens vérifiés à Douala, Yaoundé et partout au Cameroun. 0% commission.'
+      : 'Connect with verified local plumbers, electricians, carpenters, and technicians across Douala, Yaoundé, and Cameroon. Post tasks for free with 0% commission.',
+    canonical: 'https://usefixam.com/',
+    isFr: currentLang === 'fr'
   });
 
   return (
