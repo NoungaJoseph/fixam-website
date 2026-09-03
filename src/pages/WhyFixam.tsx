@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { DifferenceTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
+import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Home.css';
 
 export default function WhyFixam({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+  const { formatCompletedTasks, formatVerifiedPros, formatCitiesList } = usePlatformStats();
 
   useSEO({
     title: isFr ? 'Pourquoi Choisir Fixam - Sécurité & Zéro Commission' : 'Why Choose Fixam - Trust, Speed & 0% Commission',
@@ -58,12 +60,12 @@ export default function WhyFixam({ onNavigate }: { onNavigate: (page: Page) => v
             <p className="tsi-stat-brand-sub">{isFr ? 'Transparence, sécurité et excellence sur chaque mission' : 'Transparency, safety and excellence across every job'}</p>
           </div>
           <div className="tsi-stat-col">
-            <span className="tsi-stat-large-val">10,000+</span>
+            <span className="tsi-stat-large-val">{formatCompletedTasks(isFr)}</span>
             <span className="tsi-stat-sub-label">{isFr ? 'Missions Réalisées' : 'Completed Tasks'}</span>
-            <p className="tsi-stat-detail">{isFr ? 'À travers Douala, Yaoundé et tout le Cameroun' : 'Across Douala, Yaoundé and all Cameroon'}</p>
+            <p className="tsi-stat-detail">{formatCitiesList(isFr)}</p>
           </div>
           <div className="tsi-stat-col">
-            <span className="tsi-stat-large-val">500+</span>
+            <span className="tsi-stat-large-val">{formatVerifiedPros()}</span>
             <span className="tsi-stat-sub-label">{isFr ? 'Artisans Vérifiés' : 'Verified Trade Pros'}</span>
             <p className="tsi-stat-detail">{isFr ? 'Identité et compétences rigoureusement testées' : 'ID & skill verified with background checks'}</p>
           </div>

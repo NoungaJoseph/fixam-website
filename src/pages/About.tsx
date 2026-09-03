@@ -1,8 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
-import { HeroTechIllustration, WhatWeDoEmblem } from '../components/TechIllustrations';
+import { HeroTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
+import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Home.css';
 
 const aboutContent = {
@@ -15,9 +16,7 @@ const aboutContent = {
     stats: {
       heading: 'Our Scale & Impact',
       sub: 'Building Africa\'s most reliable on-demand trade network',
-      val1: '10,000+',
       label1: 'Completed Tasks',
-      val2: '500+',
       label2: 'Verified Pros',
       val3: '100% Free',
       label3: 'Zero Booking Fees'
@@ -25,6 +24,11 @@ const aboutContent = {
     mission: {
       title: 'Our Mission & Vision',
       desc: 'Fixam is a premier digital marketplace dedicated to formalizing and modernizing local trades in Cameroon. We empower skilled professionals with the tools, visibility, and credibility to build sustainable businesses, while providing households and enterprises with safe, verified, and transparent service delivery.',
+      pillars: [
+        { title: 'Safe & Verified', desc: '100% CNI national ID vetting on all providers' },
+        { title: 'Zero Commission', desc: 'Direct pricing with 0% platform booking fee' },
+        { title: 'Instant Matching', desc: 'Find qualified artisans in your area in minutes' }
+      ]
     },
     values: {
       title: 'Our Core Values',
@@ -62,16 +66,19 @@ const aboutContent = {
     stats: {
       heading: 'Notre Impact',
       sub: 'Bâtir le réseau de services à la demande le plus fiable d\'Afrique',
-      val1: '10,000+',
       label1: 'Missions Réalisées',
-      val2: '500+',
       label2: 'Artisans Vérifiés',
-      val3: '100% Free',
+      val3: '100% Gratuit',
       label3: 'Zéro Frais de Réservation'
     },
     mission: {
       title: 'Notre Mission & Vision',
       desc: 'Fixam est une plateforme technologique dédiée à la formalisation et à la modernisation des métiers de l\'artisanat au Cameroun. Nous offrons aux professionnels les outils, la visibilité et la crédibilité nécessaires pour développer leur activité, tout en garantissant aux ménages et entreprises un service rapide, sûr et sans intermédiaires coûteux.',
+      pillars: [
+        { title: 'Sûr & Vérifié', desc: 'Contrôle CNI systématique de tous les artisans' },
+        { title: 'Zéro Commission', desc: 'Tarifs directs avec 0% frais de réservation' },
+        { title: 'Matching Instantané', desc: 'Trouvez un artisan qualifié en quelques minutes' }
+      ]
     },
     values: {
       title: 'Nos Valeurs Fondamentales',
@@ -106,6 +113,7 @@ export default function About({ onNavigate }: { onNavigate: (page: Page) => void
   const { i18n } = useTranslation();
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = aboutContent[lang];
+  const { formatCompletedTasks, formatVerifiedPros } = usePlatformStats();
 
   useSEO({
     title: lang === 'fr' ? 'À Propos de Fixam - La Plateforme Technologique de Services au Cameroun' : 'About Fixam - The Leading On-Demand Service Platform in Cameroon',
@@ -154,11 +162,11 @@ export default function About({ onNavigate }: { onNavigate: (page: Page) => void
             <p className="tsi-stat-brand-sub">{c.stats.sub}</p>
           </div>
           <div className="tsi-stat-col">
-            <span className="tsi-stat-large-val">{c.stats.val1}</span>
+            <span className="tsi-stat-large-val">{formatCompletedTasks(lang === 'fr')}</span>
             <span className="tsi-stat-sub-label">{c.stats.label1}</span>
           </div>
           <div className="tsi-stat-col">
-            <span className="tsi-stat-large-val">{c.stats.val2}</span>
+            <span className="tsi-stat-large-val">{formatVerifiedPros()}</span>
             <span className="tsi-stat-sub-label">{c.stats.label2}</span>
           </div>
           <div className="tsi-stat-col">
@@ -175,10 +183,13 @@ export default function About({ onNavigate }: { onNavigate: (page: Page) => void
             <h2 className="tsi-what-we-do-heading">{c.mission.title}</h2>
             <p className="tsi-what-we-do-paragraph">{c.mission.desc}</p>
           </div>
-          <div className="tsi-what-we-do-emblem">
-            <div className="what-we-do-emblem-box">
-              <WhatWeDoEmblem />
-            </div>
+          <div className="tsi-what-we-do-highlights" style={{ gridTemplateColumns: '1fr' }}>
+            {c.mission.pillars.map((pillar, idx) => (
+              <div key={idx} className="tsi-highlight-card" style={{ padding: '1rem 1.25rem' }}>
+                <h3 className="tsi-highlight-title" style={{ fontSize: '0.95rem' }}>✓ {pillar.title}</h3>
+                <p className="tsi-highlight-desc">{pillar.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -228,3 +239,4 @@ export default function About({ onNavigate }: { onNavigate: (page: Page) => void
     </div>
   );
 }
+

@@ -10,6 +10,7 @@ interface ProviderDashboardProps {
   onRoleChange?: (role: 'client' | 'pro') => void;
   setActiveChatUser?: (user: any) => void;
   setSelectedBooking?: (booking: any) => void;
+  initialSearch?: string;
 }
 
 type JobLead = {
@@ -48,11 +49,17 @@ const formatBudget = (job: JobLead) => {
 // Module-level persistent cache across tab navigation remounts
 let cachedJobs: JobLead[] = [];
 
-export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser, setSelectedBooking }: ProviderDashboardProps) {
+export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser, setSelectedBooking, initialSearch }: ProviderDashboardProps) {
   const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
   const [jobs, setJobs] = useState<JobLead[]>(cachedJobs);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(initialSearch || '');
+
+  useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearch(initialSearch);
+    }
+  }, [initialSearch]);
   const [isLoading, setIsLoading] = useState(cachedJobs.length === 0);
   const [error, setError] = useState('');
   const [applyingId, setApplyingId] = useState<string | null>(null);
@@ -82,15 +89,16 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   }, [user?.providerProfile?.isAvailable, user?.isOnline]);
 
   const completionPercentage = useMemo(() => {
-    let score = 0;
-    if (user?.firstName || user?.fullName) score += 15;
-    if (user?.avatar || user?.image) score += 15;
-    if (user?.phone) score += 15;
-    if (user?.location) score += 15;
-    if (user?.providerProfile?.bio) score += 15;
-    if (user?.providerProfile?.skills && user.providerProfile.skills.length > 0) score += 15;
-    if ((user as any)?.verificationStatus === 'VERIFIED' || user?.providerProfile?.verificationStatus === 'VERIFIED') score += 10;
-    return Math.min(100, score || 30);
+    let completed = 0;
+    const totalSteps = 6;
+    if (user?.avatar || user?.image) completed += 1;
+    if (user?.providerProfile?.bio && user.providerProfile.bio.trim().length > 0) completed += 1;
+    if (user?.providerProfile?.skills && user.providerProfile.skills.length > 0) completed += 1;
+    const sa = user?.providerProfile?.serviceArea?.trim();
+    if (sa && sa.length > 0 && sa.toLowerCase() !== (user?.location || '').toLowerCase().trim()) completed += 1;
+    if ((user?.providerProfile?.portfolio || []).length > 0) completed += 1;
+    if ((user as any)?.verificationStatus === 'VERIFIED' || user?.providerProfile?.verification === 'VERIFIED') completed += 1;
+    return Math.round((completed / totalSteps) * 100);
   }, [user]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -114,8 +122,70 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [pendingSort, setPendingSort] = useState<'newest' | 'oldest' | 'price_high' | 'price_low'>('newest');
   const [pendingVerifiedOnly, setPendingVerifiedOnly] = useState(false);
 
-  // Direct Client Bookings Received by Provider
+  // Direct Client Bookings Received by Provider & Unread Read-State Tracking
   const [providerBookings, setProviderBookings] = useState<any[]>([]);
+  const [readBookingIds, setReadBookingIds] = useState<string[]>(() => {
+    try {
+      const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+      return JSON.parse(localStorage.getItem(storageKey) || '[]');
+    } catch {
+      return [];
+    }
+  });
+
+  // Re-sync read bookings whenever storage or custom event changes
+  useEffect(() => {
+    const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+    const syncReadBookings = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        setReadBookingIds(stored);
+      } catch {}
+    };
+
+    window.addEventListener('storage', syncReadBookings);
+    window.addEventListener('fixam_bookings_read_changed', syncReadBookings);
+    return () => {
+      window.removeEventListener('storage', syncReadBookings);
+      window.removeEventListener('fixam_bookings_read_changed', syncReadBookings);
+    };
+  }, [user?.id, (user as any)?._id]);
+
+  const markBookingAsRead = (bookingId: string) => {
+    if (!bookingId) return;
+    const idStr = String(bookingId);
+    const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+    setReadBookingIds(prev => {
+      if (prev.includes(idStr)) return prev;
+      const next = [...prev, idStr];
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(next));
+        window.dispatchEvent(new CustomEvent('fixam_bookings_read_changed'));
+      } catch {}
+      return next;
+    });
+  };
+
+  const markAllBookingsAsRead = () => {
+    const allIds = providerBookings.map(b => String(b.id || b._id)).filter(Boolean);
+    if (allIds.length === 0) return;
+    const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+    setReadBookingIds(prev => {
+      const next = Array.from(new Set([...prev, ...allIds]));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(next));
+        window.dispatchEvent(new CustomEvent('fixam_bookings_read_changed'));
+      } catch {}
+      return next;
+    });
+  };
+
+  const unreadDirectBookingsCount = useMemo(() => {
+    return providerBookings.filter(b => {
+      const id = String(b.id || b._id);
+      return !readBookingIds.includes(id);
+    }).length;
+  }, [providerBookings, readBookingIds]);
 
   useEffect(() => {
     const fetchProviderBookings = async () => {
@@ -132,6 +202,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   }, []);
 
   const handleBookingStatus = async (bookingId: string, status: 'ACCEPTED' | 'REJECTED' | 'COMPLETED') => {
+    markBookingAsRead(bookingId);
     try {
       await api.patch(`/bookings/${bookingId}/status`, { status });
       setProviderBookings(prev => prev.map(b => (b.id === bookingId || b._id === bookingId) ? { ...b, status } : b));
@@ -474,9 +545,12 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'direct_bookings' ? 'active' : ''}`}
-                  onClick={() => setActiveFeedTab('direct_bookings')}
+                  onClick={() => {
+                    setActiveFeedTab('direct_bookings');
+                    markAllBookingsAsRead();
+                  }}
                 >
-                  {i18n.language === 'fr' ? 'Réservations directes' : 'Direct Bookings'} {providerBookings.length > 0 && `(${providerBookings.length})`}
+                  {i18n.language === 'fr' ? 'Réservations directes' : 'Direct Bookings'} {unreadDirectBookingsCount > 0 ? `(${unreadDirectBookingsCount})` : ''}
                 </button>
                 <button
                   className={`feed-tab-btn ${activeFeedTab === 'saved_jobs' ? 'active' : ''}`}
@@ -593,6 +667,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                           <button
                             style={{ backgroundColor: '#F0FDFA', color: '#0D9488', border: '1px solid #99F6E4', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
                             onClick={() => {
+                              markBookingAsRead(bkId);
                               if (setSelectedBooking) {
                                 setSelectedBooking(bk);
                               }

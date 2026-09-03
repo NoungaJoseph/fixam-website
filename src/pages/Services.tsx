@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Icon, IconName, Footer, asset } from '../App';
 import { useSEO } from '../hooks/useSEO';
+import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Services.css';
 
 const servicesContent = {
@@ -207,6 +208,7 @@ export default function Services({
   const { i18n } = useTranslation();
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = servicesContent[lang];
+  const { formatCompletedTasks, formatVerifiedPros, formatRating } = usePlatformStats();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useSEO({
@@ -365,7 +367,12 @@ export default function Services({
       <section className="client-stats-section">
         <div className="client-stats-box">
           <div className="client-stats-grid">
-            {c.stats.map((stat, idx) => (
+            {[
+              { value: formatCompletedTasks(lang === 'fr'), label: lang === 'fr' ? 'Missions Réalisées' : 'Tasks Completed' },
+              { value: formatVerifiedPros(), label: lang === 'fr' ? 'Artisans Vérifiés' : 'Verified Providers' },
+              { value: formatRating(), label: lang === 'fr' ? 'Satisfaction Client' : 'Client Satisfaction' },
+              { value: lang === 'fr' ? 'Cameroun Entier' : 'National Coverage', label: lang === 'fr' ? 'Zone Couverte' : 'Coverage Area' }
+            ].map((stat, idx) => (
               <div className="client-stat-item" key={idx}>
                 <h3>{stat.value}</h3>
                 <span>{stat.label}</span>

@@ -14,7 +14,6 @@ import MyBookings from './pages/Client/MyBookings'
 import MyTasks from './pages/Client/MyTasks'
 import Stats from './pages/Client/Stats'
 import WalletAndCoins from './pages/Client/WalletAndCoins'
-import CoinPurchase from './pages/Client/CoinPurchase'
 import Notifications from './pages/Client/Notifications'
 import Messages from './pages/Client/Messages'
 import SavedProviders from './pages/Client/SavedProviders'
@@ -40,6 +39,9 @@ import PostProject from './pages/Provider/PostProject'
 import ProviderSupport from './pages/Provider/ProviderSupport'
 import ProviderDashboard from './pages/Provider/ProviderDashboard'
 import BoostProfile from './pages/Provider/BoostProfile'
+import UpworkSidebar from './components/UpworkSidebar';
+import SearchModal from './components/SearchModal';
+import TransactionHistory from './pages/Shared/TransactionHistory';
 
 
 // Public landing pages
@@ -85,10 +87,11 @@ export type IconName =
 export const asset = (fileName: string) => `/assets/${fileName}`
 
 export const getApiUrl = () => {
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000/api';
+  }
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5000/api'
-    : 'https://api.usefixam.com/api';
+  return 'https://api.usefixam.com/api';
 };
 
 export const getMediaUrl = (path?: string, type?: 'image' | 'video') => {
@@ -527,12 +530,20 @@ function App() {
               image = getMediaUrl(item.user.avatar);
             }
 
+            const completedJobs = item.jobsCompleted || item.completedJobs || 0;
+            const reviewCount = item.reviewCount || 0;
+
             return {
+              id: item.id,
+              userId: item.userId,
               name,
               role,
               rating,
               distance,
-              image
+              image,
+              completedJobs,
+              reviewCount,
+              verification: item.verification
             };
           });
           setLivePros(formatted);
@@ -1029,37 +1040,18 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             </div>
 
             {/* Desktop Header Action Buttons */}
-            <div className="header-auth-buttons desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginLeft: '0.5rem' }}>
+            <div className="header-auth-buttons desktop-only">
               {isLoggedIn ? (
                 <>
                   <button
                     className="nav-btn-secondary"
                     onClick={() => handleNavigate('dashboard')}
-                    style={{
-                      background: '#FFFFFF',
-                      color: '#071936',
-                      border: '1.5px solid #CBD5E1',
-                      borderRadius: '4px',
-                      padding: '7px 16px',
-                      fontWeight: 700,
-                      fontSize: '13px',
-                      cursor: 'pointer'
-                    }}
                   >
                     Dashboard
                   </button>
                   <button
                     className="nav-btn-logout"
                     onClick={async () => { await logout(); handleNavigate('home'); }}
-                    style={{
-                      background: 'transparent',
-                      color: '#EF4444',
-                      border: 'none',
-                      padding: '7px 10px',
-                      fontWeight: 700,
-                      fontSize: '13px',
-                      cursor: 'pointer'
-                    }}
                   >
                     {i18n.language === 'fr' ? 'Déconnexion' : 'Log Out'}
                   </button>
@@ -1069,35 +1061,18 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
                   <button
                     className="nav-btn-signin"
                     onClick={() => handleNavigate('login')}
-                    style={{
-                      background: 'transparent',
-                      color: '#071936',
-                      border: 'none',
-                      padding: '7px 12px',
-                      fontWeight: 700,
-                      fontSize: '13px',
-                      cursor: 'pointer'
-                    }}
                   >
                     {i18n.language === 'fr' ? 'Connexion' : 'Sign In'}
                   </button>
                   <button
                     className="nav-btn-get-started"
                     onClick={() => handleNavigate('register')}
-                    style={{
-                      background: '#14B8A6',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '8px 18px',
-                      fontWeight: 700,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 6px rgba(20, 184, 166, 0.25)',
-                      transition: 'background-color 0.15s'
-                    }}
                   >
-                    {i18n.language === 'fr' ? 'Commencer' : 'Get Started'}
+                    <span>{i18n.language === 'fr' ? 'Commencer' : 'Get Started'}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
                   </button>
                 </>
               )}
@@ -1406,6 +1381,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -1459,6 +1435,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   };
 
   const [searchVal, setSearchVal] = useState('');
+
+  const handleExecuteSearch = (query: string, searchType: 'jobs' | 'talent' | 'projects') => {
+    setSearchVal(query);
+    if (searchType === 'talent' || userRole === 'client') {
+      setActiveTab('Find Services');
+    } else {
+      setActiveTab('Dashboard');
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem(`fixam_active_tab_${userRole}`, activeTab);
@@ -1743,108 +1728,27 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
     return (
       <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        {isSidebarOpen && (
-          <div
-            className="sidebar-backdrop"
-            onClick={() => setIsSidebarOpen(false)}
-            style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
-          ></div>
-        )}
-        {/* Left Sidebar */}
-        <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
-
-          {/* Desktop Toggle Button placed outside the sidebar */}
-          <button
-            className="desktop-only"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            style={{
-              position: 'absolute',
-              right: '-45px',
-              top: '20px',
-              width: '40px',
-              height: '40px',
-              background: '#fff',
-              border: '1px solid var(--line)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-              zIndex: 10
-            }}
-            title="Toggle Sidebar"
-          >
-            <Icon name="menu" />
-          </button>
-
-          <div className="brand-header" style={{ justifyContent: 'space-between' }}>
-            <div
-              className="user-card-new"
-              style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-              onClick={() => {
-                setIsSidebarOpen(false);
-                setActiveTab('My Profile');
-              }}
-            >
-              <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
-              {!isSidebarCollapsed && (
-                <div className="user-info-new">
-                  <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || 'Client'}</h3>
-                  <div className="role-row" style={{ marginTop: '2px' }}>
-                    <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>Client</span>
-                    <span className="verified-badge" style={{ fontSize: '10px' }}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                      {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
-                <Icon name="x" />
-              </button>
-            </div>
-          </div>
-
-          <nav className="sidebar-links-new">
-            {clientNavItems.map((item) => (
-              <button
-                key={item.name}
-                className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
-                onClick={() => handleNavClick(item.name)}
-              >
-                <Icon name={item.icon} />
-                <span>{item.label || item.name}</span>
-                {item.badge !== undefined && <span className="badge-count">{item.badge}</span>}
-                {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
-              </button>
-            ))}
-
-
-            {onRoleChange && (
-              <button
-                className="side-link-new"
-                style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  onRoleChange('pro');
-                }}
-              >
-                <Icon name="briefcase" />
-                <span>{i18n.language === 'fr' ? 'Prestataire' : 'Provider'}</span>
-              </button>
-            )}
-
-            <button className="side-link-new" onClick={async () => { await logout(); onNavigate('home'); }}>
-              <Icon name="logout" />
-              <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
-            </button>
-          </nav>
-
-        </aside>
+        {/* Upwork-Identical Mobile & Desktop Sidebar Navigation */}
+        <UpworkSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          user={user}
+          userRole={userRole}
+          onRoleChange={onRoleChange}
+          activeTab={activeTab}
+          onSelectTab={handleNavClick}
+          onOpenSearch={() => setIsSearchModalOpen(true)}
+          unreadMessagesCount={unreadMessagesCount}
+          unreadNotificationsCount={unreadNotificationsCount}
+          walletBalance={walletBalance}
+          onLogout={async () => {
+            await logout();
+            onNavigate('home');
+          }}
+          onNavigateHome={() => onNavigate('home')}
+        />
 
         {/* Main Dashboard Area */}
         <section className="dash-main-new">
@@ -2013,11 +1917,6 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientTasks={clientTasks}
                   />
                 )}
-                {activeTab === 'Coin Purchase' && (
-                  <CoinPurchase
-                    setActiveTab={setActiveTab}
-                  />
-                )}
                 {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
                 {activeTab === 'Messages' && (
                   <Messages
@@ -2059,6 +1958,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     displayedPros={displayedPros}
                   />
                 )}
+                {activeTab === 'Transaction History' && <TransactionHistory />}
                 {activeTab === 'Support' && (
                   <Support
                     setActiveTab={setActiveTab}
@@ -2069,6 +1969,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             )}
           </div>
         </section>
+
+        {/* Upwork-Identical Search Modal */}
+        <SearchModal
+          isOpen={isSearchModalOpen}
+          onClose={() => setIsSearchModalOpen(false)}
+          userRole={userRole}
+          onExecuteSearch={handleExecuteSearch}
+        />
       </main>
     );
   }
@@ -2116,87 +2024,27 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
   return (
     <main className={`dashboard-shell-new ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      {isSidebarOpen && (
-        <div
-          className="sidebar-backdrop"
-          onClick={() => setIsSidebarOpen(false)}
-          style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998 }}
-        ></div>
-      )}
-      {/* Left Sidebar */}
-      <aside className={`dash-sidebar-new ${isSidebarOpen ? 'open' : ''}`}>
-        <div className="brand-header" style={{ justifyContent: 'space-between' }}>
-          <div
-            className="user-card-new"
-            style={{ cursor: 'pointer', padding: '0', background: 'transparent', border: 'none' }}
-            onClick={() => handleNavClick(userRole === 'pro' ? 'My Profile' : 'My Profile')}
-          >
-            <img src={user?.image ? getMediaUrl(user.image) : DEFAULT_AVATAR} alt="User Avatar" style={{ width: '40px', height: '40px' }} />
-            {!isSidebarCollapsed && (
-              <div className="user-info-new">
-                <h3 style={{ fontSize: '14px', margin: 0 }}>{user?.firstName || (userRole === 'pro' ? 'Provider' : 'Client')}</h3>
-                <div className="role-row" style={{ marginTop: '2px' }}>
-                  <span className="role-text" style={{ background: '#E0F2FE', color: '#0369A1', fontSize: '10px', padding: '2px 6px' }}>
-                    {userRole === 'pro' ? (i18n.language === 'fr' ? 'Prestataire' : 'Provider') : (i18n.language === 'fr' ? 'Client' : 'Client')}
-                  </span>
-                  <span className="verified-badge" style={{ fontSize: '10px' }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '0.6rem', height: '0.6rem' }}><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button className="sidebar-toggle-btn" style={{ display: 'flex' }} onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
-              {isSidebarCollapsed ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              )}
-            </button>
-            <button className="hamburger-toggle" onClick={() => setIsSidebarOpen(false)}>
-              <Icon name="x" />
-            </button>
-          </div>
-        </div>
-
-        <nav className="sidebar-links-new">
-          {providerNavItems.map((item) => (
-            <button
-              key={item.name}
-              className={`side-link-new ${activeTab === item.name ? 'active' : ''}`}
-              onClick={() => handleNavClick(item.name)}
-            >
-              <Icon name={item.icon} />
-              <span>{item.label || item.name}</span>
-              {item.badge && <span className="badge-count">{item.badge}</span>}
-              {item.walletBadge && <span className="badge-wallet">{item.walletBadge}</span>}
-            </button>
-          ))}
-
-
-          {onRoleChange && (
-            <button
-              className="side-link-new"
-              style={{ background: '#F0FDFA', color: '#0F766E', fontWeight: 700, margin: '0.5rem 0' }}
-              onClick={() => {
-                setIsSidebarOpen(false);
-                onRoleChange('client');
-              }}
-            >
-              <Icon name="user" />
-              <span>{i18n.language === 'fr' ? 'Espace Client' : 'Client'}</span>
-            </button>
-          )}
-
-          <button className="side-link-new" onClick={async () => { await logout(); onNavigate('home'); }}>
-            <Icon name="logout" />
-            <span>{i18n.language === 'fr' ? 'Déconnexion' : 'Logout'}</span>
-          </button>
-        </nav>
-      </aside>
+      {/* Upwork-Identical Mobile & Desktop Sidebar Navigation */}
+      <UpworkSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        user={user}
+        userRole={userRole}
+        onRoleChange={onRoleChange}
+        activeTab={activeTab}
+        onSelectTab={handleNavClick}
+        onOpenSearch={() => setIsSearchModalOpen(true)}
+        unreadMessagesCount={unreadMessagesCount}
+        unreadNotificationsCount={unreadNotificationsCount}
+        walletBalance={walletBalance}
+        onLogout={async () => {
+          await logout();
+          onNavigate('home');
+        }}
+        onNavigateHome={() => onNavigate('home')}
+      />
 
       {/* Main Dashboard Area */}
       <section className="dash-main-new">
@@ -2288,12 +2136,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             />
           ) : (
             <>
-              {activeTab === 'Dashboard' && (
+              {(activeTab === 'Dashboard' || activeTab === 'Find Services' || activeTab === 'Search') && (
                 <ProviderDashboard
                   setActiveTab={setActiveTab}
                   onRoleChange={onRoleChange}
                   setActiveChatUser={setActiveChatUser}
                   setSelectedBooking={handleSetSelectedBooking}
+                  initialSearch={searchVal}
                 />
               )}
 
@@ -2310,7 +2159,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   setSelectedBooking={handleSetSelectedBooking}
                 />
               )}
-              {activeTab === 'Wallet' && <ProviderWallet />}
+              {activeTab === 'Wallet' && <ProviderWallet setActiveTab={setActiveTab} />}
+              {activeTab === 'Transaction History' && <TransactionHistory />}
               {activeTab === 'Reviews' && <ProviderReviews />}
               {activeTab === 'My Profile' && <ProviderProfile setActiveTab={setActiveTab} setSelectedProject={setSelectedProject} />}
               {activeTab === 'Verification' && <VerificationPage setActiveTab={setActiveTab} />}
@@ -2336,6 +2186,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           )}
         </div>
       </section>
+
+      {/* Upwork-Identical Search Modal */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        userRole={userRole}
+        onExecuteSearch={handleExecuteSearch}
+      />
     </main>
   );
 }
@@ -2542,7 +2400,7 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
         </div>
         <div className="top-rated-header">
           <h3>{pro.name}</h3>
-          <span className="pro-rating-row"><Icon name="star" /> {pro.rating} <span className="pro-reviews">(120+ reviews)</span></span>
+          <span className="pro-rating-row"><Icon name="star" /> {pro.rating} <span className="pro-reviews">({pro.reviewCount && pro.reviewCount > 0 ? `${pro.reviewCount} ${pro.reviewCount === 1 ? 'review' : 'reviews'}` : 'Verified'})</span></span>
         </div>
         <p className="top-rated-role">{pro.role}</p>
         <div className="top-rated-tags">
@@ -2550,7 +2408,7 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
           <span className="tag-pill">Reliable</span>
         </div>
         <div className="top-rated-stats">
-          <div className="stat-pill"><Icon name="check" /> 100+ Jobs</div>
+          <div className="stat-pill"><Icon name="check" /> {pro.completedJobs && pro.completedJobs > 0 ? `${pro.completedJobs} ${pro.completedJobs === 1 ? 'Job' : 'Jobs'}` : 'Verified Pro'}</div>
           <div className="stat-pill"><Icon name="location" /> {pro.distance}</div>
         </div>
         {!mini && <button className="btn-primary-pill full-width" onClick={() => onNavigate && onNavigate('login')}>Hire {pro.name.split(' ')[0]}</button>}

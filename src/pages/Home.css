@@ -66,47 +66,91 @@
 }
 
 .tsi-btn-primary {
-  background-color: #14B8A6;
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
   color: #FFFFFF;
-  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
   font-size: 15px;
-  padding: 11px 26px;
-  border-radius: 2px;
+  padding: 13px 28px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  box-shadow: none;
-  transition: background-color 0.15s ease;
+  box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   text-decoration: none;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.tsi-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+}
+
+.tsi-btn-primary:hover::before {
+  left: 100%;
 }
 
 .tsi-btn-primary:hover {
-  background-color: #0D9488;
+  background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(20, 184, 166, 0.45), 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tsi-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.tsi-btn-primary .btn-arrow-icon {
+  transition: transform 0.2s ease;
+}
+
+.tsi-btn-primary:hover .btn-arrow-icon {
+  transform: translateX(3px);
 }
 
 .tsi-btn-secondary {
   background-color: #FFFFFF;
   color: #071936;
-  font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
   font-size: 15px;
-  padding: 10px 26px;
-  border-radius: 2px;
-  border: 1.5px solid #071936;
+  padding: 12px 26px;
+  border-radius: 8px;
+  border: 1.5px solid #CBD5E1;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  letter-spacing: 0.01em;
 }
 
 .tsi-btn-secondary:hover {
-  background-color: #071936;
-  color: #FFFFFF;
+  background-color: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0B1B3D;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.tsi-btn-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .tsi-hero-quick-search-box {
@@ -284,61 +328,197 @@
   line-height: 1.35;
 }
 
-/* "What we do" Dark Banner */
+/* "What we do" Dark Banner with Captivating Feature Highlights */
 .tsi-what-we-do-banner {
   background-color: #071936;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
   color: #FFFFFF;
-  padding: 6.5rem 0 5.5rem;
+  padding: 6rem 0 5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.tsi-what-we-do-banner::after {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -120px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.15) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .tsi-what-we-do-content {
   width: min(1320px, calc(100% - 4rem));
   margin: 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
   align-items: center;
-  justify-content: space-between;
-  gap: 3rem;
+  gap: 3.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .tsi-what-we-do-text {
-  max-width: 780px;
+  max-width: 600px;
+}
+
+.tsi-what-we-do-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(20, 184, 166, 0.12);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: 9999px;
+  color: #2DD4BF;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.tsi-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #14B8A6;
+  box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.7);
+  animation: tsi-pulse 2s infinite;
+}
+
+@keyframes tsi-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(20, 184, 166, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(20, 184, 166, 0);
+  }
 }
 
 .tsi-what-we-do-heading {
-  font-size: clamp(2.2rem, 3.8vw, 3.25rem);
-  font-weight: 700;
+  font-size: clamp(2.2rem, 3.6vw, 3.1rem);
+  font-weight: 800;
   color: #FFFFFF;
   margin: 0 0 1.25rem 0;
   letter-spacing: -0.02em;
+  line-height: 1.15;
   font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
 
 .tsi-what-we-do-paragraph {
-  font-size: 1.15rem;
-  line-height: 1.68;
+  font-size: 1.05rem;
+  line-height: 1.65;
   color: #CBD5E1;
   margin: 0;
   font-weight: 400;
 }
 
-.tsi-what-we-do-emblem {
-  flex-shrink: 0;
+.tsi-what-we-do-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
 }
 
-.what-we-do-emblem-box {
-  width: 140px;
-  height: 140px;
+.tsi-highlight-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 1.35rem;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.tsi-highlight-card:hover {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(45, 212, 191, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(20, 184, 166, 0.15);
+}
+
+.tsi-highlight-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0.35rem;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
-.emblem-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.25));
+.tsi-highlight-icon-wrap.theme-teal {
+  background: rgba(45, 212, 191, 0.14);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  color: #2DD4BF;
+}
+
+.tsi-highlight-icon-wrap.theme-emerald {
+  background: rgba(52, 211, 153, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: #34D399;
+}
+
+.tsi-highlight-icon-wrap.theme-blue {
+  background: rgba(96, 165, 250, 0.14);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  color: #60A5FA;
+}
+
+.tsi-highlight-icon-wrap.theme-amber {
+  background: rgba(251, 191, 36, 0.14);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #FBBF24;
+}
+
+.tsi-highlight-card:hover .tsi-highlight-icon-wrap {
+  transform: scale(1.08);
+}
+
+.tsi-highlight-title {
+  font-size: 1.025rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.tsi-highlight-desc {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  line-height: 1.5;
+  margin: 0;
+  font-weight: 400;
+}
+
+@media (max-width: 968px) {
+  .tsi-what-we-do-content {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 580px) {
+  .tsi-what-we-do-highlights {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 /* 4. The Fixam Difference / Why Clients Choose Fixam (Image 2) */

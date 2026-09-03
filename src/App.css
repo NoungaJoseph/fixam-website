@@ -3218,11 +3218,12 @@ p {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex: 0 1 700px;
+  flex: 0 1 480px;
+  min-width: 0;
   background-color: rgba(20, 184, 166, 0.08);
   border: 1px solid rgba(20, 184, 166, 0.18);
   border-radius: 999px;
-  padding: 8px 20px;
+  padding: 8px 18px;
   height: 38px;
   box-sizing: border-box;
 }
@@ -3232,7 +3233,7 @@ p {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .ticker-slider-content {
@@ -3268,7 +3269,8 @@ p {
 .header-right-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex-shrink: 0;
 }
 
 .header-socials-desktop {
@@ -8916,6 +8918,175 @@ p {
 .app-badge-text strong {
   font-size: 0.95rem;
   font-weight: 700;
+}
+
+/* ==========================================================================
+   Header Auth & Navigation Buttons (Modern, Sleek, High-Converting)
+   ========================================================================== */
+.header-auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-left: 0.25rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.nav-btn-signin {
+  background: transparent;
+  color: #0F172A;
+  border: 1.5px solid transparent;
+  padding: 0 16px;
+  height: 38px;
+  min-height: 38px;
+  font-weight: 700;
+  font-size: 13.5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.nav-btn-signin:hover {
+  background: #F1F5F9;
+  color: #0D9488;
+  border-color: #E2E8F0;
+  transform: translateY(-1px);
+}
+
+.nav-btn-signin:active {
+  transform: translateY(0);
+}
+
+.nav-btn-get-started {
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 0 20px;
+  height: 38px;
+  min-height: 38px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(20, 184, 166, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.01em;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.nav-btn-get-started::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: 0.5s;
+}
+
+.nav-btn-get-started:hover::before {
+  left: 100%;
+}
+
+.nav-btn-get-started:hover {
+  background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px rgba(20, 184, 166, 0.45);
+}
+
+.nav-btn-get-started:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.3);
+}
+
+.nav-btn-get-started svg {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nav-btn-get-started:hover svg {
+  transform: translateX(2px);
+}
+
+.nav-btn-secondary {
+  background: #FFFFFF;
+  color: #071936;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 38px;
+  min-height: 38px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.nav-btn-secondary:hover {
+  background: #F8FAFC;
+  border-color: #94A3B8;
+  color: #0B1B3D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.nav-btn-logout {
+  background: transparent;
+  color: #EF4444;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 38px;
+  min-height: 38px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.nav-btn-logout:hover {
+  background: #FEE2E2;
+  border-color: #FECACA;
+  color: #DC2626;
 }
 
 

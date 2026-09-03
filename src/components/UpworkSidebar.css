@@ -1,0 +1,392 @@
+/* ==========================================================================
+   Upwork-Identical Mobile & Desktop Sidebar Navigation
+   Matches reference screenshot: Clean typography, vector SVG icons,
+   accordion groups with chevrons, floating white (X) close button, and user row.
+   ========================================================================== */
+
+/* ── Mobile Backdrop ── */
+.upwork-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 9998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.upwork-drawer-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Floating White Circular Close Button (as in screenshot) ── */
+.upwork-drawer-close-btn {
+  position: fixed;
+  top: 14px;
+  left: min(316px, 84vw);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #1E293B;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  z-index: 10001;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.upwork-drawer-close-btn:hover {
+  transform: scale(1.08);
+  background: #F8FAFC;
+}
+
+/* ── Main Sidebar Drawer Container ── */
+.upwork-sidebar-drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 290px;
+  max-width: 82vw;
+  background: #FFFFFF;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 6px 0 25px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.upwork-sidebar-drawer.open {
+  transform: translateX(0);
+}
+
+/* ── Top Brand Header ── */
+.upwork-sidebar-brand {
+  padding: 1.25rem 1.25rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.upwork-sidebar-brand-text {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0F172A;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.upwork-sidebar-brand-dot {
+  color: #14B8A6;
+}
+
+/* ── User Identity Row (Avatar + Name + Subtitle + Chevron >) ── */
+.upwork-sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1.25rem 0.95rem;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  background: transparent;
+  width: 100%;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  transition: background 0.15s ease;
+  box-sizing: border-box;
+}
+
+.upwork-sidebar-user-card:hover {
+  background: #F8FAFC;
+}
+
+.upwork-sidebar-user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #E2E8F0;
+  flex-shrink: 0;
+  border: 1.5px solid #E2E8F0;
+}
+
+.upwork-sidebar-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.upwork-sidebar-user-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upwork-sidebar-user-tier {
+  font-size: 0.82rem;
+  color: #64748B;
+  margin: 2px 0 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upwork-sidebar-user-chevron {
+  color: #94A3B8;
+  flex-shrink: 0;
+}
+
+/* ── Navigation Items List ── */
+.upwork-sidebar-nav-list {
+  flex: 1;
+  padding: 0.4rem 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upwork-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  border: none;
+  color: #334155;
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.upwork-sidebar-item:hover {
+  background: #F8FAFC;
+  color: #0F172A;
+}
+
+.upwork-sidebar-item.active {
+  color: #0D9488;
+  font-weight: 700;
+  background: #F0FDFA;
+}
+
+.upwork-sidebar-icon {
+  width: 20px;
+  height: 20px;
+  color: #475569;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upwork-sidebar-item:hover .upwork-sidebar-icon,
+.upwork-sidebar-item.active .upwork-sidebar-icon {
+  color: #0D9488;
+}
+
+.upwork-sidebar-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upwork-sidebar-badge {
+  background: #14B8A6;
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.upwork-sidebar-badge-wallet {
+  color: #D97706;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.upwork-sidebar-chevron {
+  color: #94A3B8;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.upwork-sidebar-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* ── Collapsible Sub-menu (Children) ── */
+.upwork-sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.2rem 0 0.4rem 3.4rem;
+  background: #F8FAFC;
+  border-left: 3px solid #14B8A6;
+  margin: 2px 0 4px 1.25rem;
+  border-radius: 0 8px 8px 0;
+}
+
+.upwork-sidebar-subitem {
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #475569;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  width: 100%;
+}
+
+.upwork-sidebar-subitem:hover {
+  color: #0D9488;
+  font-weight: 600;
+}
+
+.upwork-sidebar-subitem.active {
+  color: #0D9488;
+  font-weight: 700;
+}
+
+/* ── Bottom Fixed Group (Help, Role Switch, Logout) ── */
+.upwork-sidebar-bottom-group {
+  margin-top: auto;
+  border-top: 1px solid #F1F5F9;
+  padding: 0.5rem 0 1.25rem;
+  background: #FFFFFF;
+}
+
+.upwork-sidebar-role-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 2rem);
+  margin: 0.5rem 1rem;
+  padding: 0.55rem 0.85rem;
+  background: #F0FDFA;
+  color: #0F766E;
+  border: 1px solid #99F6E4;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.upwork-sidebar-role-btn:hover {
+  background: #CCFBF1;
+}
+
+.upwork-sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  border: none;
+  color: #EF4444;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.upwork-sidebar-logout-btn:hover {
+  background: #FEF2F2;
+}
+
+/* ── Desktop Integration (Transforms into sticky sidebar) ── */
+@media (min-width: 769px) {
+  .upwork-sidebar-drawer {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: none;
+    box-shadow: none;
+    border-right: 1px solid #E2E8F0;
+    z-index: 10;
+    width: 260px;
+    max-width: none;
+  }
+
+  .upwork-drawer-backdrop,
+  .upwork-drawer-close-btn {
+    display: none !important;
+  }
+
+  /* Desktop collapsed state */
+  .upwork-sidebar-drawer.collapsed {
+    width: 72px;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-label,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-chevron,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-badge,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-badge-wallet,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-user-info,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-user-chevron,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-submenu,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-brand-text,
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-role-btn span {
+    display: none !important;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-brand {
+    justify-content: center;
+    padding: 1.25rem 0.5rem;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-user-card {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-item {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-role-btn {
+    width: 44px;
+    height: 44px;
+    margin: 0.5rem auto;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+
+  .upwork-sidebar-drawer.collapsed .upwork-sidebar-logout-btn {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+  }
+}

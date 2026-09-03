@@ -2,6 +2,7 @@ import './MyBookings.css';
 import React, { useState } from 'react';
 import { Icon, images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import MyTasks from './MyTasks';
 import ReviewModal from '../../components/ReviewModal';
 
@@ -28,6 +29,7 @@ export default function MyBookings({
   savedProsState = [],
   setSelectedBooking
 }: MyBookingsProps) {
+  const { user } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState<'bookings' | 'tasks'>('bookings');
   const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
 
@@ -78,6 +80,18 @@ export default function MyBookings({
                 className="booking-detailed-card cursor-pointer hover:border-teal-400 transition" 
                 key={bk.id || bk._id}
                 onClick={() => {
+                  const bkId = String(bk.id || bk._id || '');
+                  if (bkId) {
+                    try {
+                      const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+                      const stored: string[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                      if (!stored.includes(bkId)) {
+                        stored.push(bkId);
+                        localStorage.setItem(storageKey, JSON.stringify(stored));
+                        window.dispatchEvent(new CustomEvent('fixam_bookings_read_changed', { detail: { id: bkId } }));
+                      }
+                    } catch {}
+                  }
                   if (setSelectedBooking) setSelectedBooking(bk);
                   setActiveTab('Booking Details');
                 }}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer, getApiUrl } from '../../App';
+import { usePlatformStats } from '../../hooks/usePlatformStats';
 import './Reviews.css';
 
 // Data structures for multi-language content
@@ -608,6 +609,7 @@ export default function ReviewsPage({ onNavigate, onSelectSkill }: { onNavigate:
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
   const content = isFr ? reviewsContent.fr : reviewsContent.en;
+  const { formatReviewsCount, formatRating } = usePlatformStats();
 
   // Interactivity state
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -753,13 +755,13 @@ export default function ReviewsPage({ onNavigate, onSelectSkill }: { onNavigate:
             <div className="hero-stats-container">
               <div className="stat-card">
                 <div className="stat-stars">★★★★★ <span style={{ color: '#6B7280', fontSize: '14px', marginLeft: '6px', fontWeight: 500 }}>5/5</span></div>
-                <div className="stat-number">{content.hero.stats.stat1Num}</div>
+                <div className="stat-number">{formatReviewsCount()}</div>
                 <div className="stat-desc">{content.hero.stats.stat1Label}</div>
               </div>
               <div className="stat-divider" />
               <div className="stat-card">
-                <div className="stat-stars">★★★★½ <span style={{ color: '#6B7280', fontSize: '14px', marginLeft: '6px', fontWeight: 500 }}>4.8/5</span></div>
-                <div className="stat-number">{content.hero.stats.stat2Num}</div>
+                <div className="stat-stars">★★★★½ <span style={{ color: '#6B7280', fontSize: '14px', marginLeft: '6px', fontWeight: 500 }}>{formatRating()}</span></div>
+                <div className="stat-number">{formatRating()}</div>
                 <div className="stat-desc">{content.hero.stats.stat2Label}</div>
               </div>
             </div>

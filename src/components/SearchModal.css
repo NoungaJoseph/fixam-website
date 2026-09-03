@@ -1,0 +1,237 @@
+/* ==========================================================================
+   Upwork-Identical Search Modal Popover
+   Matches reference screenshot: Clean input with 'Jobs ⌄' dropdown,
+   'Recent' searches, 'Suggestions' with lightbulb, and real-time job matches.
+   ========================================================================== */
+
+.upwork-search-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 999999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 8vh 1rem 2rem;
+  animation: searchBackdropFade 0.2s ease-out;
+}
+
+@keyframes searchBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.upwork-search-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  width: 100%;
+  max-width: 580px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: searchCardPop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes searchCardPop {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Top Input Line ── */
+.upwork-search-input-row {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem 0.85rem;
+  border-bottom: 2px solid #0F172A;
+  gap: 0.75rem;
+}
+
+.upwork-search-icon-left {
+  color: #64748B;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.upwork-search-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #0F172A;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.upwork-search-field::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.upwork-search-type-select {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #0F172A;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.upwork-search-type-select:hover {
+  background: #F1F5F9;
+}
+
+.upwork-search-clear-btn {
+  background: #F1F5F9;
+  border: none;
+  color: #64748B;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* ── Content Sections (Recent & Suggestions) ── */
+.upwork-search-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.upwork-search-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748B;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 0.65rem;
+}
+
+.upwork-search-section-icon {
+  display: flex;
+  align-items: center;
+  color: #64748B;
+}
+
+.upwork-search-tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upwork-search-item-btn {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1E293B;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.12s ease, color 0.12s ease;
+  width: 100%;
+}
+
+.upwork-search-item-btn:hover {
+  background: #F8FAFC;
+  color: #0D9488;
+}
+
+.upwork-search-item-delete {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  display: none;
+}
+
+.upwork-search-item-btn:hover .upwork-search-item-delete {
+  display: inline-block;
+}
+
+.upwork-search-item-delete:hover {
+  color: #EF4444;
+  background: #FEF2F2;
+}
+
+/* ── Live Search Results List ── */
+.upwork-search-live-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upwork-search-result-card {
+  padding: 0.85rem 1rem;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.upwork-search-result-card:hover {
+  border-color: #14B8A6;
+  background: #F0FDFA;
+}
+
+.upwork-search-result-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0 0 4px 0;
+}
+
+.upwork-search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #64748B;
+}
+
+.upwork-search-result-price {
+  font-weight: 700;
+  color: #0D9488;
+}
+
+/* ── Empty State ── */
+.upwork-search-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #64748B;
+  font-size: 0.9rem;
+}

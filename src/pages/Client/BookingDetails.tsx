@@ -1,4 +1,6 @@
+import React, { useEffect } from 'react';
 import { Icon, getMediaUrl, images } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 import { MaterialsListDisplay } from '../../components/MaterialsListDisplay';
 import { DisputeSection } from '../../components/DisputeSection';
 import { ServiceAgreementSection } from '../../components/ServiceAgreementSection';
@@ -10,6 +12,24 @@ interface BookingDetailsProps {
 }
 
 export default function BookingDetails({ booking, setActiveTab, setActiveChatUser }: BookingDetailsProps) {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (booking) {
+      const bkId = String(booking.id || booking._id || '');
+      if (bkId) {
+        try {
+          const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
+          const stored: string[] = JSON.parse(localStorage.getItem(storageKey) || '[]');
+          if (!stored.includes(bkId)) {
+            stored.push(bkId);
+            localStorage.setItem(storageKey, JSON.stringify(stored));
+            window.dispatchEvent(new CustomEvent('fixam_bookings_read_changed', { detail: { id: bkId } }));
+          }
+        } catch {}
+      }
+    }
+  }, [booking, user?.id, (user as any)?._id]);
   if (!booking) return (
     <div className="flex flex-col items-center justify-center p-12 text-center h-full">
       <p className="text-gray-500 mb-4">No booking selected.</p>

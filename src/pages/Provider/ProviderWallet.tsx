@@ -5,7 +5,7 @@ import { Icon } from '../../App';
 import MobileMoneyCheckoutModal from '../../components/MobileMoneyCheckoutModal';
 import { useAuth } from '../../context/AuthContext';
 
-export default function ProviderWallet() {
+export default function ProviderWallet({ setActiveTab }: { setActiveTab?: (tab: string) => void } = {}) {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [walletBalance, setWalletBalance] = useState(0);
   const { refreshUser } = useAuth();
@@ -106,45 +106,35 @@ export default function ProviderWallet() {
           }}
         />
 
-        {/* Transaction History */}
-        <div className="wallet-left-column" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <div className="transactions-panel-transparent" style={{ marginTop: '1rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginBottom: '1rem' }}>
+        {/* Quick link to dedicated Transaction History */}
+        <div style={{ marginTop: '0.5rem', padding: '1.25rem', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
               {i18n.language === 'fr' ? 'Historique des transactions' : 'Transaction History'}
-            </h2>
-            <div className="transactions-table-wrapper" style={{ overflowX: 'auto' }}>
-              <table className="transactions-table" style={{ width: '100%', minWidth: '500px', backgroundColor: 'transparent' }}>
-                <thead>
-                  <tr style={{ borderBottom: '2px solid #E2E8F0', textAlign: 'left' }}>
-                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>{i18n.language === 'fr' ? 'Date' : 'Date'}</th>
-                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>{i18n.language === 'fr' ? 'Description' : 'Description'}</th>
-                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>{i18n.language === 'fr' ? 'Type' : 'Type'}</th>
-                    <th style={{ padding: '1rem 0.5rem', color: '#64748B', fontWeight: 600 }}>{i18n.language === 'fr' ? 'Montant' : 'Amount'}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.length > 0 ? (
-                    transactions.map((tx) => (
-                      <tr key={tx.id || tx._id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                        <td style={{ padding: '1rem 0.5rem', color: '#334155' }}>{new Date(tx.createdAt).toLocaleDateString()}</td>
-                        <td style={{ padding: '1rem 0.5rem', color: '#334155', fontWeight: 500 }}>{tx.description || tx.reason || 'Transaction'}</td>
-                        <td style={{ padding: '1rem 0.5rem' }}>
-                          <span className={`tx-type ${(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? 'earn' : 'spend'}`}>
-                            {(tx.type === 'EARN' || tx.type === 'TOP_UP' || tx.amount > 0) ? (i18n.language === 'fr' ? 'Gagné' : 'Earn') : (i18n.language === 'fr' ? 'Dépense' : 'Spend')}
-                          </span>
-                        </td>
-                        <td style={{ padding: '1rem 0.5rem', color: '#0F172A', fontWeight: 700 }}>
-                          {tx.amount > 0 ? `+${tx.amount}` : tx.amount} {i18n.language === 'fr' ? 'pièces' : 'coins'}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: '#94A3B8' }}>{i18n.language === 'fr' ? 'Aucune transaction récente.' : 'No recent transactions.'}</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+            </h3>
+            <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '2px 0 0' }}>
+              {i18n.language === 'fr'
+                ? 'Accédez à vos relevés complets et exportations CSV sur la page dédiée'
+                : 'Access your full statement, receipts, and CSV downloads on the dedicated page'}
+            </p>
           </div>
+          {setActiveTab && (
+            <button
+              onClick={() => setActiveTab('Transaction History')}
+              style={{
+                backgroundColor: '#FFFFFF',
+                color: '#0D9488',
+                border: '1.5px solid #14B8A6',
+                borderRadius: '999px',
+                padding: '0.5rem 1.25rem',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+            >
+              {i18n.language === 'fr' ? 'Voir toutes les transactions →' : 'View Full History →'}
+            </button>
+          )}
         </div>
 
       </div>

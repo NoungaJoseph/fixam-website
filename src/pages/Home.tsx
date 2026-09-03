@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
 import AssistantModal from '../components/AssistantModal';
-import { HeroTechIllustration, DifferenceTechIllustration, WhatWeDoEmblem } from '../components/TechIllustrations';
+import { HeroTechIllustration, DifferenceTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
+import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Home.css';
 
 const contentLocales = {
@@ -21,10 +22,8 @@ const contentLocales = {
     metrics: {
       col1Title: 'Why Choose Fixam?',
       col1Desc: 'The leader in verified, on-demand & trusted trade services',
-      col2Num: '10,000+',
       col2Title: 'Completed Tasks',
       col2Desc: 'Trusted by households and businesses across Cameroon',
-      col3Num: '500+',
       col3Title: 'Verified Trade Pros',
       col3Desc: 'Across Douala, Yaoundé, Bafoussam, Buea, and Limbe',
       col4Num: '100% Free',
@@ -32,8 +31,31 @@ const contentLocales = {
       col4Desc: 'Direct transparent pricing with cash or Mobile Money'
     },
     whatWeDo: {
+      tag: 'Verified • Fast • 0% Commission',
       title: 'What we do',
-      desc: 'Fixam provides key, technology-enabled and verified solutions for everyday home repairs, construction, plumbing, electrical installations, appliance maintenance, cleaning, and professional artisan services across Cameroon.'
+      desc: 'Fixam provides key, technology-enabled and verified solutions for everyday home repairs, construction, plumbing, electrical installations, appliance maintenance, cleaning, and professional artisan services across Cameroon.',
+      highlights: [
+        {
+          type: 'matching',
+          title: 'Smart On-Demand Matching',
+          desc: 'Instantly connect with qualified, background-checked trade experts near your home or site.'
+        },
+        {
+          type: 'free_booking',
+          title: '100% Free Booking',
+          desc: 'Zero platform booking fees or middleman charges — direct pricing and transparent terms.'
+        },
+        {
+          type: 'id_vetted',
+          title: 'Government ID & Vetted Skills',
+          desc: 'Every artisan is strictly identity-verified with national ID checks and authentic ratings.'
+        },
+        {
+          type: 'payments',
+          title: 'Direct Cash & Mobile Money',
+          desc: 'Pay your provider directly via Cash, MTN MoMo, or Orange Money upon job satisfaction.'
+        }
+      ]
     },
     difference: {
       eyebrow: 'The Fixam Difference',
@@ -184,10 +206,8 @@ const contentLocales = {
     metrics: {
       col1Title: 'Pourquoi Choisir Fixam ?',
       col1Desc: 'Le leader des services professionnels vérifiés et à la demande',
-      col2Num: '10 000+',
       col2Title: 'Missions Réalisées',
       col2Desc: 'Recommandé par les foyers et entreprises du Cameroun',
-      col3Num: '500+',
       col3Title: 'Artisans Vérifiés',
       col3Desc: 'À Douala, Yaoundé, Bafoussam, Buéa et Limbé',
       col4Num: '100% Gratuit',
@@ -195,8 +215,31 @@ const contentLocales = {
       col4Desc: 'Tarifs directs et transparents en espèces ou Mobile Money'
     },
     whatWeDo: {
+      tag: 'Vérifié • Rapide • 0% Commission',
       title: 'Ce que nous faisons',
-      desc: 'Fixam fournit des solutions technologiques et vérifiées pour les réparations domestiques, la plomberie, l\'électricité, la maintenance, le nettoyage, les chantiers et les services d\'artisanat au Cameroun.'
+      desc: 'Fixam fournit des solutions technologiques et vérifiées pour les réparations domestiques, la plomberie, l\'électricité, la maintenance, le nettoyage, les chantiers et les services d\'artisanat au Cameroun.',
+      highlights: [
+        {
+          type: 'matching',
+          title: 'Matching Intelligent & Instantané',
+          desc: 'Trouvez et contactez en quelques minutes des artisans certifiés et géolocalisés près de chez vous.'
+        },
+        {
+          type: 'free_booking',
+          title: 'Réservation 100% Gratuite',
+          desc: 'Aucun frais de mise en relation ni commission cachée — tarifs justes et négociations directes.'
+        },
+        {
+          type: 'id_vetted',
+          title: 'Identité & Compétences Vérifiées',
+          desc: 'Chaque prestataire est contrôlé avec sa CNI officielle et évalué par les clients.'
+        },
+        {
+          type: 'payments',
+          title: 'Paiements Directs en Espèces ou MoMo',
+          desc: 'Réglez directement en espèces, MTN Mobile Money ou Orange Money après entière satisfaction.'
+        }
+      ]
     },
     difference: {
       eyebrow: 'La Différence Fixam',
@@ -445,6 +488,7 @@ const faqQuestions = [
 export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQuery }: { onNavigate: (page: Page) => void; livePros: any[]; onSelectSkill?: (skill: string) => void; setSearchQuery: (query: string) => void }) {
   const { t, i18n } = useTranslation();
   const proGridRef = useRef<HTMLDivElement>(null);
+  const { formatCompletedTasks, formatVerifiedPros, formatCitiesList } = usePlatformStats();
   
   const currentLang = i18n.language === 'fr' ? 'fr' : 'en';
   const tContent = contentLocales[currentLang];
@@ -505,8 +549,65 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+  // Only show strictly verified providers, ordered by highest rating & completed jobs, max 6
+  const verifiedPros = useMemo(() => {
+    const list = Array.isArray(livePros) ? livePros : [];
+    return list
+      .filter((pro: any) => pro.verification === 'VERIFIED' || pro.isVerified === true)
+      .sort((a: any, b: any) => {
+        const ratingA = parseFloat(a.rating) || 0;
+        const ratingB = parseFloat(b.rating) || 0;
+        if (ratingB !== ratingA) return ratingB - ratingA;
+        return (b.completedJobs || 0) - (a.completedJobs || 0);
+      })
+      .slice(0, 6);
+  }, [livePros]);
 
-  const displayedPros = livePros && livePros.length > 0 ? livePros : pros;
+  const renderHighlightIcon = (type: string) => {
+    switch (type) {
+      case 'matching':
+        return (
+          <div className="tsi-highlight-icon-wrap theme-teal">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+          </div>
+        );
+      case 'free_booking':
+        return (
+          <div className="tsi-highlight-icon-wrap theme-emerald">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </div>
+        );
+      case 'id_vetted':
+        return (
+          <div className="tsi-highlight-icon-wrap theme-blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="16" rx="3" />
+              <circle cx="9" cy="10" r="2" />
+              <line x1="15" y1="8" x2="17" y2="8" />
+              <line x1="15" y1="12" x2="17" y2="12" />
+              <path d="M6 16c0-1.5 1.5-2 3-2s3 .5 3 2" />
+            </svg>
+          </div>
+        );
+      case 'payments':
+      default:
+        return (
+          <div className="tsi-highlight-icon-wrap theme-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+              <circle cx="6" cy="15" r="1" />
+              <circle cx="10" cy="15" r="1" />
+            </svg>
+          </div>
+        );
+    }
+  };
 
   const handlePillClick = (pill: string) => {
     const cleanPill = pill.replace(/→$/, '').trim();
@@ -592,14 +693,20 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
               <button 
                 className="tsi-btn-primary"
                 onClick={() => onNavigate('register')}
+                id="hero-get-started-btn"
               >
-                {tContent.hero.btnPrimary}
+                <span>{tContent.hero.btnPrimary}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="btn-arrow-icon">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
               </button>
               <button 
                 className="tsi-btn-secondary"
                 onClick={() => onNavigate('services')}
+                id="hero-explore-services-btn"
               >
-                {tContent.hero.btnSecondary}
+                <span>{tContent.hero.btnSecondary}</span>
               </button>
             </div>
 
@@ -638,21 +745,21 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
 
       {/* 3. Floating Stats Ribbon & "What we do" Dark Banner (Matching Image 4) */}
       <section className="tsi-stats-and-what-we-do-section">
-        {/* Floating 4-Column Metric Ribbon */}
+        {/* Floating 4-Column Dynamic Metric Ribbon */}
         <div className="tsi-floating-stats-bar">
           <div className="tsi-stat-col tsi-stat-col-first">
             <h3 className="tsi-stat-brand-heading">{tContent.metrics.col1Title}</h3>
             <p className="tsi-stat-brand-sub">{tContent.metrics.col1Desc}</p>
           </div>
           <div className="tsi-stat-col">
-            <div className="tsi-stat-large-val">{tContent.metrics.col2Num}</div>
+            <div className="tsi-stat-large-val">{formatCompletedTasks(currentLang === 'fr')}</div>
             <div className="tsi-stat-sub-label">{tContent.metrics.col2Title}</div>
             <p className="tsi-stat-detail">{tContent.metrics.col2Desc}</p>
           </div>
           <div className="tsi-stat-col">
-            <div className="tsi-stat-large-val">{tContent.metrics.col3Num}</div>
+            <div className="tsi-stat-large-val">{formatVerifiedPros()}</div>
             <div className="tsi-stat-sub-label">{tContent.metrics.col3Title}</div>
-            <p className="tsi-stat-detail">{tContent.metrics.col3Desc}</p>
+            <p className="tsi-stat-detail">{formatCitiesList(currentLang === 'fr')}</p>
           </div>
           <div className="tsi-stat-col">
             <div className="tsi-stat-large-val">{tContent.metrics.col4Num}</div>
@@ -661,15 +768,25 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           </div>
         </div>
 
-        {/* "What we do" Deep Navy Tech Banner */}
+        {/* "What we do" Deep Navy Tech Banner with Captivating Feature Highlights */}
         <div className="tsi-what-we-do-banner">
           <div className="tsi-what-we-do-content">
             <div className="tsi-what-we-do-text">
+              <span className="tsi-what-we-do-tag">
+                <span className="tsi-pulse-dot"></span>
+                {tContent.whatWeDo.tag}
+              </span>
               <h2 className="tsi-what-we-do-heading">{tContent.whatWeDo.title}</h2>
               <p className="tsi-what-we-do-paragraph">{tContent.whatWeDo.desc}</p>
             </div>
-            <div className="tsi-what-we-do-emblem">
-              <WhatWeDoEmblem />
+            <div className="tsi-what-we-do-highlights">
+              {tContent.whatWeDo.highlights.map((item, idx) => (
+                <div key={idx} className="tsi-highlight-card">
+                  {renderHighlightIcon(item.type)}
+                  <h3 className="tsi-highlight-title">{item.title}</h3>
+                  <p className="tsi-highlight-desc">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -748,12 +865,12 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         </div>
       </section>
 
-      {/* Top Rated Professionals Grid */}
+      {/* Top Rated Verified Professionals Grid */}
       <section className="section" style={{ backgroundColor: '#F8FAFC', padding: '4.5rem 0' }}>
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
         <div className="pro-grid" ref={proGridRef}>
-          {displayedPros.slice(0, 6).map((pro) => (
-            <ProCard key={pro.name} pro={pro} onNavigate={onNavigate} />
+          {verifiedPros.map((pro: any) => (
+            <ProCard key={pro.id || pro.userId || pro.name} pro={pro} onNavigate={onNavigate} />
           ))}
         </div>
         <div className="center-actions" style={{ marginTop: '2.5rem' }}>

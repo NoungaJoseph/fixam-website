@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Icon, IconName, Footer } from '../App';
 import { useSEO } from '../hooks/useSEO';
+import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Guide.css';
 
 const guideContent = {
@@ -257,6 +258,7 @@ export default function Guide({ onNavigate }: { onNavigate: (page: Page) => void
   const { i18n } = useTranslation();
   const lang = i18n.language === 'fr' ? 'fr' : 'en';
   const c = guideContent[lang];
+  const { formatVerifiedPros, formatRating } = usePlatformStats();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useSEO({
@@ -298,7 +300,12 @@ export default function Guide({ onNavigate }: { onNavigate: (page: Page) => void
         <div className="prov-stats-box">
           <p className="prov-stats-title">{c.stats.title}</p>
           <div className="prov-stats-grid">
-            {c.stats.items.map((stat, idx) => (
+            {[
+              { value: formatVerifiedPros(), label: lang === 'fr' ? 'Prestataires Actifs' : 'Active Providers' },
+              { value: '13+', label: lang === 'fr' ? 'Catégories Métiers' : 'Categories' },
+              { value: formatRating(), label: lang === 'fr' ? 'Note Moyenne' : 'Provider Rating' },
+              { value: lang === 'fr' ? '100% Gratuit' : '100% Free', label: lang === 'fr' ? 'Pour Rejoindre' : 'To Join' }
+            ].map((stat, idx) => (
               <div className="prov-stat-item" key={idx}>
                 <h3>{stat.value}</h3>
                 <span>{stat.label}</span>
