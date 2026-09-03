@@ -499,11 +499,14 @@
 }
 
 .cta-banner-box {
-  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+  background: linear-gradient(135deg, rgba(7, 25, 54, 0.82) 0%, rgba(13, 148, 136, 0.86) 100%), url('/cta-difference-bg.jpg') center/cover no-repeat;
   border-radius: 24px;
   padding: 64px 24px;
   text-align: center;
   color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(7, 25, 54, 0.25);
 }
 
 .cta-banner-box h2 {

@@ -1,5 +1,5 @@
 import './FindServices.css';
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, images, getMediaUrl } from '../../App';
 import UserAvatar from '../../components/UserAvatar';
@@ -11,6 +11,7 @@ interface FindServicesProps {
   setClientBookings: (bookings: any[]) => void;
   setActiveChatUser: (user: string) => void;
   displayedPros?: any[];
+  initialSearch?: string;
 }
 
 export default function FindServices({
@@ -19,11 +20,12 @@ export default function FindServices({
   clientBookings,
   setClientBookings,
   setActiveChatUser,
-  displayedPros = []
+  displayedPros = [],
+  initialSearch = ''
 }: FindServicesProps) {
   const { i18n } = useTranslation();
-  // Find Services interactive states (relocated locally)
-  const [findServicesSearch, setFindServicesSearch] = useState('');
+  // Find Services interactive states
+  const [findServicesSearch, setFindServicesSearch] = useState(initialSearch || '');
   const [findServicesLoc, setFindServicesLoc] = useState('Nearby');
   const [findServicesRating, setFindServicesRating] = useState('All');
   const [findServicesCat, setFindServicesCat] = useState(() => {
@@ -42,6 +44,14 @@ export default function FindServices({
 
   const [showAllCategories, setShowAllCategories] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync initialSearch if passed from top Search modal or dashboard
+  useEffect(() => {
+    if (initialSearch !== undefined && initialSearch !== '') {
+      setFindServicesSearch(initialSearch);
+    }
+  }, [initialSearch]);
 
   // Category translation helper
   const getCategoryLabel = (catName: string) => {
@@ -92,27 +102,47 @@ export default function FindServices({
 
   // Filter logic simulation
   const filteredProviders = displayedPros.filter(p => {
-    const fullName = `${p.firstName || ''} ${p.lastName || ''}`.trim();
-    const serviceRole = p.services ? p.services.join(', ') : (p.role || '');
+    const fullName = `${p.firstName || ''} ${p.lastName || ''} ${p.fullName || ''} ${p.name || ''}`.trim().toLowerCase();
+    const serviceRole = (p.services ? p.services.join(' ') : (p.role || '')).toLowerCase();
+    const proCategory = (p.category || '').toLowerCase();
+    const proLocation = `${p.location || ''} ${p.city || ''} ${p.quarter || ''}`.toLowerCase();
+    const proBio = `${p.bio || ''} ${p.desc || ''} ${p.originalData?.bio || ''}`.toLowerCase();
     
-    if (findServicesSearch && !fullName.toLowerCase().includes(findServicesSearch.toLowerCase()) && !serviceRole.toLowerCase().includes(findServicesSearch.toLowerCase())) {
-      return false;
+    if (findServicesSearch.trim()) {
+      const q = findServicesSearch.trim().toLowerCase();
+      const matches =
+        fullName.includes(q) ||
+        serviceRole.includes(q) ||
+        proCategory.includes(q) ||
+        proLocation.includes(q) ||
+        proBio.includes(q) ||
+        (Array.isArray(p.services) && p.services.some((s: string) => String(s).toLowerCase().includes(q)));
+
+      if (!matches) return false;
     }
-    if (findServicesCat !== 'All Categories' && !serviceRole.toLowerCase().includes(findServicesCat.toLowerCase())) {
-      return false;
+
+    if (findServicesCat !== 'All Categories') {
+      const catLower = findServicesCat.toLowerCase();
+      const matchesCat =
+        serviceRole.includes(catLower) ||
+        proCategory.includes(catLower) ||
+        (Array.isArray(p.services) && p.services.some((s: string) => String(s).toLowerCase().includes(catLower)));
+
+      if (!matchesCat) return false;
     }
+
     const currentRating = p.rating || 0;
     if (findServicesRating === '4.5 & up' && Number(currentRating) < 4.5) return false;
     if (findServicesRating === '4.0 & up' && Number(currentRating) < 4.0) return false;
     
     if (findServicesPrice < 50000) {
-      const providerRate = p.originalData?.rate || 0;
+      const providerRate = p.originalData?.rate || p.hourlyRate || p.rate || 0;
       if (providerRate > findServicesPrice) return false;
     }
     
     if (findServicesLoc && findServicesLoc !== 'Nearby' && findServicesLoc !== 'Remote') {
-      const city = p.originalData?.city || '';
-      if (city && !city.toLowerCase().includes(findServicesLoc.toLowerCase())) return false;
+      const city = (p.originalData?.city || p.city || p.location || '').toLowerCase();
+      if (city && !city.includes(findServicesLoc.toLowerCase())) return false;
     }
 
     return true;
@@ -120,10 +150,25 @@ export default function FindServices({
 
   const sortedProviders = [...filteredProviders].sort((a, b) => {
     if (sortBy === 'Rating: High to Low') return Number(b.rating || 0) - Number(a.rating || 0);
-    if (sortBy === 'Price: Low to High') return Number(a.originalData?.rate || 0) - Number(b.originalData?.rate || 0);
+    if (sortBy === 'Price: Low to High') return Number(a.originalData?.rate || a.hourlyRate || 0) - Number(b.originalData?.rate || b.hourlyRate || 0);
     if (sortBy === 'Nearest') return (parseInt(a.distance) || Infinity) - (parseInt(b.distance) || Infinity);
     return 0;
   });
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    searchInputRef.current?.blur();
+  };
+
+  const handleResetFilters = () => {
+    setFindServicesSearch('');
+    setFindServicesCat('All Categories');
+    setFindServicesLoc('Nearby');
+    setFindServicesRating('All');
+    setFindServicesPrice(50000);
+    setAvailNow(false);
+    setAvailToday(false);
+  };
 
   const allCategoriesList = [
     { name: 'AC Repair', img: '/popular-services/ac-repair.jpg' },
@@ -201,20 +246,42 @@ export default function FindServices({
         <p>{i18n.language === 'fr' ? 'Trouvez des professionnels vérifiés pour tous vos besoins de services.' : 'Find verified professionals for any service you need.'}</p>
       </div>
 
-      <div className="search-bar-row-fs">
-        <div className="input-wrapper-fs query-input">
+      <form onSubmit={handleSearchSubmit} className="search-bar-row-fs">
+        <div className="input-wrapper-fs query-input" style={{ position: 'relative' }}>
           <Icon name="search" />
           <input 
+            ref={searchInputRef}
             type="text" 
-            placeholder={i18n.language === 'fr' ? 'De quel service avez-vous besoin ?' : 'What service do you need?'} 
+            placeholder={i18n.language === 'fr' ? 'De quel service ou prestataire avez-vous besoin ?' : 'What service or professional do you need?'} 
             value={findServicesSearch}
             onChange={(e) => setFindServicesSearch(e.target.value)}
           />
+          {findServicesSearch.trim() ? (
+            <button
+              type="button"
+              onClick={() => setFindServicesSearch('')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#94A3B8',
+                cursor: 'pointer',
+                padding: '4px 8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Clear search"
+            >
+              ✕
+            </button>
+          ) : null}
         </div>
         <div className="input-wrapper-fs location-input">
           <Icon name="location" />
           <select 
-            className="w-full bg-transparent border-0 outline-none text-gray-700"
+            className="w-full bg-transparent border-0 outline-none text-gray-700 font-medium cursor-pointer"
             value={findServicesLoc}
             onChange={(e) => setFindServicesLoc(e.target.value)}
           >
@@ -226,10 +293,10 @@ export default function FindServices({
             <option value="Remote">{i18n.language === 'fr' ? 'À distance' : 'Remote'}</option>
           </select>
         </div>
-        <button className="btn-search-fs" onClick={() => alert(i18n.language === 'fr' ? 'Recherche lancée !' : 'Search initiated!')}>
+        <button type="submit" className="btn-search-fs">
           {i18n.language === 'fr' ? 'Rechercher' : 'Search'}
         </button>
-      </div>
+      </form>
 
       <div className="mb-8 mt-2 relative">
         <div className="flex justify-between items-center mb-4 px-2">
@@ -354,13 +421,7 @@ export default function FindServices({
               </div>
 
               <div className="flex gap-2 mt-4">
-                <button type="button" className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md font-bold text-sm" onClick={() => {
-                  setFindServicesCat('All Categories');
-                  setFindServicesRating('All');
-                  setFindServicesPrice(50000);
-                  setAvailNow(false);
-                  setAvailToday(false);
-                }}>{i18n.language === 'fr' ? 'Tout effacer' : 'Clear All'}</button>
+                <button type="button" className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-md font-bold text-sm" onClick={handleResetFilters}>{i18n.language === 'fr' ? 'Tout effacer' : 'Clear All'}</button>
                 <button type="button" className="flex-1 bg-teal-500 text-white py-2 rounded-md font-bold text-sm" onClick={() => setActiveDropdown(null)}>
                   {i18n.language === 'fr' ? 'Appliquer' : 'Apply'}
                 </button>
@@ -368,13 +429,38 @@ export default function FindServices({
             </div>
           )}
         </div>
+
+        {/* Active Search / Filter Tag */}
+        {(findServicesSearch.trim() || findServicesCat !== 'All Categories') && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {findServicesSearch.trim() && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#F0FDFA', border: '1px solid #99F6E4', color: '#0D9488', padding: '4px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 600 }}>
+                🔍 "{findServicesSearch}"
+                <button type="button" onClick={() => setFindServicesSearch('')} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#0D9488', fontWeight: 800 }}>✕</button>
+              </span>
+            )}
+            {findServicesCat !== 'All Categories' && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#F0FDFA', border: '1px solid #99F6E4', color: '#0D9488', padding: '4px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 600 }}>
+                📁 {getCategoryLabel(findServicesCat)}
+                <button type="button" onClick={() => setFindServicesCat('All Categories')} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#0D9488', fontWeight: 800 }}>✕</button>
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              style={{ border: 'none', background: 'transparent', color: '#EF4444', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              {i18n.language === 'fr' ? 'Effacer tout' : 'Reset all'}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="fs-directory-layout" style={{ display: 'block', width: '100%' }}>
         <div className="fs-directory-main" style={{ width: '100%', maxWidth: '100%' }}>
           <div className="fs-results-header">
             <span>
-              {i18n.language === 'fr' ? `Affichage de ${sortedProviders.length} prestataires` : `Showing ${sortedProviders.length} providers`}
+              {i18n.language === 'fr' ? `Affichage de ${sortedProviders.length} prestataire(s)` : `Showing ${sortedProviders.length} provider(s)`}
             </span>
             <div className="fs-sort-dropdown">
               <span>{i18n.language === 'fr' ? 'Trier par : ' : 'Sort by: '}</span>
@@ -387,7 +473,36 @@ export default function FindServices({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          {sortedProviders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '4rem 1.5rem', background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', marginTop: '1.5rem' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
+                {i18n.language === 'fr' ? 'Aucun prestataire trouvé pour cette recherche' : 'No providers matched your search'}
+              </h3>
+              <p style={{ color: '#64748B', maxWidth: '480px', margin: '0 auto 1.5rem', fontSize: '0.92rem' }}>
+                {i18n.language === 'fr' 
+                  ? 'Essayez de rechercher un autre métier (ex: plombier, électricien, ménage) ou réinitialisez les filtres.' 
+                  : 'Try searching for a different service (e.g. plumber, electrician, cleaning) or reset your filters.'}
+              </p>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                style={{
+                  background: '#14B8A6',
+                  color: '#FFFFFF',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  padding: '10px 24px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {i18n.language === 'fr' ? 'Réinitialiser les filtres' : 'Reset Filters'}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             {sortedProviders.map((p, idx) => {
               const fullName = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Provider';
               const serviceRole = getCategoryLabel(p.services && p.services.length > 0 ? p.services[0] : (p.role || (i18n.language === 'fr' ? 'Prestataire de service' : 'Service Professional')));
@@ -454,6 +569,7 @@ export default function FindServices({
               );
             })}
           </div>
+        )}
 
           {/* Promo Card Banner at the bottom */}
           <div className="dash-panel-premium promo-card-fs" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '1.5rem', marginTop: '2.5rem', width: '100%', position: 'relative', overflow: 'hidden' }}>

@@ -585,20 +585,25 @@ p {
   color: var(--muted);
 }
 
-.stats-band,
-.cta-band {
+.stats-band {
   display: grid;
   align-items: center;
   border-radius: 0.9rem;
   background: linear-gradient(120deg, #009b8f, #126df5);
   color: #fff;
   box-shadow: 0 24px 48px rgba(18, 109, 245, 0.22);
-}
-
-.stats-band {
   grid-template-columns: repeat(4, 1fr);
   margin-top: 2rem;
   padding: 1.7rem 3rem;
+}
+
+.cta-band {
+  display: grid;
+  align-items: center;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, rgba(7, 25, 54, 0.82) 0%, rgba(13, 148, 136, 0.86) 100%), url('/cta-difference-bg.jpg') center/cover no-repeat;
+  color: #fff;
+  box-shadow: 0 24px 48px rgba(7, 25, 54, 0.22);
 }
 
 .stats-band div {

@@ -1956,6 +1956,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setClientBookings={setClientBookings}
                     setActiveChatUser={setActiveChatUser}
                     displayedPros={displayedPros}
+                    initialSearch={searchVal}
                   />
                 )}
                 {activeTab === 'Transaction History' && <TransactionHistory />}
@@ -1976,6 +1977,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           onClose={() => setIsSearchModalOpen(false)}
           userRole={userRole}
           onExecuteSearch={handleExecuteSearch}
+          onSelectProvider={(pro) => {
+            setSelectedProvider(pro);
+            setActiveTab('Find Services');
+          }}
+          onSelectProject={(project) => {
+            setSelectedProject(project);
+            setActiveTab('Find Services');
+          }}
+          displayedPros={displayedPros}
         />
       </main>
     );
@@ -2193,6 +2203,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         onClose={() => setIsSearchModalOpen(false)}
         userRole={userRole}
         onExecuteSearch={handleExecuteSearch}
+        displayedPros={displayedPros}
       />
     </main>
   );

@@ -150,51 +150,60 @@ export default function WhyFixam({ onNavigate }: { onNavigate: (page: Page) => v
       </section>
 
       {/* 4. Comparison Section */}
-      <section style={{ background: '#F8FAFC', padding: '5rem 0', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ width: 'min(1100px, calc(100% - 4rem))', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: 'clamp(1.85rem, 3vw, 2.5rem)', fontWeight: 800, color: '#071936', marginBottom: '0.75rem' }}>
+      <section style={{ background: '#F8FAFC', padding: '4rem 1rem', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ width: 'min(1100px, 100%)', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.25rem)', fontWeight: 800, color: '#071936', marginBottom: '0.75rem', lineHeight: 1.25 }}>
               {isFr ? 'Fixam vs Méthodes Traditionnelles' : 'Fixam vs Traditional Methods'}
             </h2>
-            <p style={{ color: '#64748B', fontSize: '1rem' }}>
+            <p style={{ color: '#64748B', fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', maxWidth: '650px', margin: '0 auto' }}>
               {isFr ? 'Pourquoi des milliers de ménages et entreprises choisissent Fixam chaque jour' : 'Why thousands of households and companies choose Fixam every day'}
             </p>
           </div>
 
-          <div style={{ background: '#FFFFFF', borderRadius: '10px', border: '1px solid #E2E8F0', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+          {/* Desktop & Tablet Table (Scrollable on intermediate viewports) */}
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '12px',
+            border: '1px solid #E2E8F0',
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            marginBottom: '1.5rem'
+          }}>
+            <table style={{ width: '100%', minWidth: '580px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
               <thead>
                 <tr style={{ background: '#071936', color: '#FFFFFF' }}>
-                  <th style={{ padding: '1.2rem 1.5rem', fontWeight: 700 }}>{isFr ? 'Critères de Qualité' : 'Feature / Criteria'}</th>
-                  <th style={{ padding: '1.2rem 1.5rem', fontWeight: 700, color: '#38BDF8' }}>Fixam</th>
-                  <th style={{ padding: '1.2rem 1.5rem', fontWeight: 700, opacity: 0.85 }}>{isFr ? 'Artisans de Rue' : 'Unverified Street Pros'}</th>
+                  <th style={{ padding: '1.1rem 1.25rem', fontWeight: 700, width: '40%' }}>{isFr ? 'Critères de Qualité' : 'Feature / Criteria'}</th>
+                  <th style={{ padding: '1.1rem 1.25rem', fontWeight: 700, color: '#38BDF8', width: '30%' }}>Fixam</th>
+                  <th style={{ padding: '1.1rem 1.25rem', fontWeight: 700, opacity: 0.85, width: '30%' }}>{isFr ? 'Artisans de Rue' : 'Unverified Street Pros'}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '1.1rem 1.5rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Vérification d\'identité (CNI)' : 'Government ID Verification'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? '100% Garanti' : '100% Verified'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#DC2626' }}>✗ {isFr ? 'Non vérifié' : 'Unverified'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Vérification d\'identité (CNI)' : 'Government ID Verification'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? '100% Garanti & Vérifié' : '100% Verified'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#DC2626', fontWeight: 500 }}>✗ {isFr ? 'Non vérifié / Inconnu' : 'Unverified'}</td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #F1F5F9', background: '#F8FAFC' }}>
-                  <td style={{ padding: '1.1rem 1.5rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Frais de réservation' : 'Platform Booking Fees'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#16A34A', fontWeight: 700 }}>0 FCFA (100% Free)</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#64748B' }}>{isFr ? 'Prix aléatoires' : 'Unpredictable markups'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Frais de réservation' : 'Platform Booking Fees'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#16A34A', fontWeight: 700 }}>0 FCFA (100% Free)</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#64748B' }}>{isFr ? 'Prix aléatoires et gonflés' : 'Unpredictable markups'}</td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '1.1rem 1.5rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Avis et notes clients authentiques' : 'Real Customer Reviews'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? 'Avis réels certifiés' : 'Authentic 5-star ratings'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#DC2626' }}>✗ {isFr ? 'Aucun historique' : 'No track record'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Avis et notes clients authentiques' : 'Real Customer Reviews'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? 'Avis réels certifiés' : 'Authentic 5-star ratings'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#DC2626', fontWeight: 500 }}>✗ {isFr ? 'Aucun historique vérifiable' : 'No track record'}</td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #F1F5F9', background: '#F8FAFC' }}>
-                  <td style={{ padding: '1.1rem 1.5rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Délai d\'intervention' : 'Response & Dispatch Time'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#16A34A', fontWeight: 700 }}>{isFr ? '< 30 minutes' : '< 30 minutes'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#64748B' }}>{isFr ? 'Plusieurs heures / jours' : 'Hours to days'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Délai d\'intervention' : 'Response & Dispatch Time'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#16A34A', fontWeight: 700 }}>{isFr ? '< 30 minutes' : '< 30 minutes'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#64748B' }}>{isFr ? 'Plusieurs heures / jours' : 'Hours to days'}</td>
                 </tr>
                 <tr>
-                  <td style={{ padding: '1.1rem 1.5rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Support client en cas de problème' : 'Mediation & Customer Support'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? 'Support dédié Fixam' : 'Dedicated Support Team'}</td>
-                  <td style={{ padding: '1.1rem 1.5rem', color: '#DC2626' }}>✗ {isFr ? 'Aucun recours' : 'Zero recourse'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', fontWeight: 600, color: '#0F172A' }}>{isFr ? 'Support client & Médiation' : 'Mediation & Customer Support'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#16A34A', fontWeight: 700 }}>✓ {isFr ? 'Support dédié Fixam 7j/7' : 'Dedicated Support Team'}</td>
+                  <td style={{ padding: '1.1rem 1.25rem', color: '#DC2626', fontWeight: 500 }}>✗ {isFr ? 'Aucun recours en cas de litige' : 'Zero recourse'}</td>
                 </tr>
               </tbody>
             </table>

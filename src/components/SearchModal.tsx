@@ -40,6 +40,9 @@ export interface SearchModalProps {
   userRole: 'client' | 'pro';
   onExecuteSearch: (query: string, searchType: 'jobs' | 'talent' | 'projects') => void;
   onSelectJob?: (job: any) => void;
+  onSelectProvider?: (provider: any) => void;
+  onSelectProject?: (project: any) => void;
+  displayedPros?: any[];
 }
 
 export default function SearchModal({
@@ -48,26 +51,32 @@ export default function SearchModal({
   userRole,
   onExecuteSearch,
   onSelectJob,
+  onSelectProvider,
+  onSelectProject,
+  displayedPros = [],
 }: SearchModalProps) {
   const { i18n } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchType, setSearchType] = useState<'jobs' | 'talent' | 'projects'>('jobs');
+  const [searchType, setSearchType] = useState<'jobs' | 'talent' | 'projects'>(
+    userRole === 'client' ? 'talent' : 'jobs'
+  );
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
   // Suggestions tailored to Fixam marketplace
   const suggestions = [
-    'website',
-    'virtual assistant',
-    'graphic designer',
-    'video editor',
-    'electrician',
     'plumber',
+    'electrician',
+    'house cleaning',
     'air conditioning',
     'house painting',
+    'carpenter',
+    'website design',
+    'app development',
+    'graphic designer',
   ];
 
   // Load recent searches from localStorage
@@ -77,22 +86,23 @@ export default function SearchModal({
       if (stored) {
         setRecentSearches(JSON.parse(stored));
       } else {
-        setRecentSearches(['website', 'virtual assistant']);
+        setRecentSearches(['plumbing', 'electrician', 'cleaning']);
       }
     } catch {
-      setRecentSearches(['website', 'virtual assistant']);
+      setRecentSearches(['plumbing', 'electrician', 'cleaning']);
     }
   }, []);
 
-  // Auto focus input when modal opens
+  // Auto focus input when modal opens & reset default searchType according to userRole
   useEffect(() => {
     if (isOpen) {
+      setSearchType(userRole === 'client' ? 'talent' : 'jobs');
       setTimeout(() => inputRef.current?.focus(), 50);
     } else {
       setSearchQuery('');
       setLiveResults([]);
     }
-  }, [isOpen]);
+  }, [isOpen, userRole]);
 
   // Live search query matching
   useEffect(() => {
@@ -104,25 +114,45 @@ export default function SearchModal({
 
     const timer = setTimeout(async () => {
       setIsSearching(true);
+      const q = searchQuery.trim().toLowerCase();
       try {
         if (searchType === 'jobs') {
           const res = await api.get(`/jobs/available?q=${encodeURIComponent(searchQuery.trim())}`);
           const jobs = res.data?.jobs || res.data?.data || [];
-          setLiveResults(Array.isArray(jobs) ? jobs.slice(0, 5) : []);
+          setLiveResults(Array.isArray(jobs) ? jobs.slice(0, 6) : []);
+        } else if (searchType === 'talent') {
+          // Fast matching from displayedPros if available
+          if (Array.isArray(displayedPros) && displayedPros.length > 0) {
+            const localMatches = displayedPros.filter(p => {
+              const name = `${p.firstName || ''} ${p.lastName || ''} ${p.fullName || ''}`.toLowerCase();
+              const services = (p.services ? p.services.join(' ') : (p.role || '')).toLowerCase();
+              const cat = (p.category || '').toLowerCase();
+              const loc = `${p.location || ''} ${p.city || ''}`.toLowerCase();
+              return name.includes(q) || services.includes(q) || cat.includes(q) || loc.includes(q);
+            });
+            if (localMatches.length > 0) {
+              setLiveResults(localMatches.slice(0, 6));
+              setIsSearching(false);
+              return;
+            }
+          }
+          const res = await api.get(`/providers?search=${encodeURIComponent(searchQuery.trim())}`);
+          const pros = res.data?.data || res.data?.providers || [];
+          setLiveResults(Array.isArray(pros) ? pros.slice(0, 6) : []);
         } else {
-          const res = await api.get(`/providers?q=${encodeURIComponent(searchQuery.trim())}`);
-          const pros = res.data?.data || [];
-          setLiveResults(Array.isArray(pros) ? pros.slice(0, 5) : []);
+          const res = await api.get(`/projects?q=${encodeURIComponent(searchQuery.trim())}`);
+          const projs = res.data?.data || res.data?.projects || [];
+          setLiveResults(Array.isArray(projs) ? projs.slice(0, 6) : []);
         }
       } catch {
         setLiveResults([]);
       } finally {
         setIsSearching(false);
       }
-    }, 250);
+    }, 200);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, searchType]);
+  }, [searchQuery, searchType, displayedPros]);
 
   const saveRecentSearch = (term: string) => {
     const trimmed = term.trim();
@@ -163,11 +193,28 @@ export default function SearchModal({
   };
 
   const handleSelectResult = (item: any) => {
-    saveRecentSearch(searchQuery || item.title || item.name);
-    if (onSelectJob && searchType === 'jobs') {
-      onSelectJob(item);
+    const itemName = item.title || item.fullName || item.name || searchQuery;
+    saveRecentSearch(itemName);
+    if (searchType === 'jobs') {
+      if (onSelectJob) {
+        onSelectJob(item);
+      } else {
+        onExecuteSearch(itemName, searchType);
+      }
+    } else if (searchType === 'talent') {
+      if (onSelectProvider) {
+        onSelectProvider(item);
+      } else {
+        onExecuteSearch(itemName, searchType);
+      }
+    } else if (searchType === 'projects') {
+      if (onSelectProject) {
+        onSelectProject(item);
+      } else {
+        onExecuteSearch(itemName, searchType);
+      }
     } else {
-      onExecuteSearch(item.title || item.name || searchQuery, searchType);
+      onExecuteSearch(itemName, searchType);
     }
     onClose();
   };
@@ -178,7 +225,7 @@ export default function SearchModal({
     <div className="upwork-search-backdrop" onClick={onClose}>
       <div className="upwork-search-card" onClick={(e) => e.stopPropagation()}>
         
-        {/* Top Input Row matching screenshot */}
+        {/* Top Input Row */}
         <form onSubmit={handleSubmit} className="upwork-search-input-row">
           <span className="upwork-search-icon-left">
             <SearchIcon />
@@ -188,7 +235,13 @@ export default function SearchModal({
             ref={inputRef}
             type="text"
             className="upwork-search-field"
-            placeholder={i18n.language === 'fr' ? 'Décrivez vos compétences ou un métier...' : 'Describe your skills'}
+            placeholder={
+              searchType === 'talent'
+                ? (i18n.language === 'fr' ? 'Rechercher un prestataire, métier, compétence...' : 'Search for a provider, trade, skill...')
+                : searchType === 'projects'
+                ? (i18n.language === 'fr' ? 'Rechercher un service clé en main...' : 'Search pre-packaged project services...')
+                : (i18n.language === 'fr' ? 'Rechercher des missions publiées...' : 'Search posted jobs & tasks...')
+            }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -204,15 +257,15 @@ export default function SearchModal({
             </button>
           )}
 
-          {/* Type dropdown (Jobs ⌄ / Talent ⌄ / Projects ⌄) */}
+          {/* Type dropdown (Talent ⌄ / Projects ⌄ / Jobs ⌄) */}
           <select
             className="upwork-search-type-select"
             value={searchType}
             onChange={(e) => setSearchType(e.target.value as any)}
           >
-            <option value="jobs">Jobs ▾</option>
-            <option value="talent">Talent ▾</option>
-            <option value="projects">Projects ▾</option>
+            <option value="talent">{i18n.language === 'fr' ? 'Prestataires' : 'Talent / Pros'} ▾</option>
+            <option value="projects">{i18n.language === 'fr' ? 'Services' : 'Services & Projects'} ▾</option>
+            <option value="jobs">{i18n.language === 'fr' ? 'Missions' : 'Jobs / Tasks'} ▾</option>
           </select>
         </form>
 
@@ -238,17 +291,28 @@ export default function SearchModal({
                       className="upwork-search-result-card"
                       onClick={() => handleSelectResult(item)}
                     >
-                      <h4 className="upwork-search-result-title">
-                        {item.title || item.name || item.fullName || 'Job Opportunity'}
-                      </h4>
-                      <div className="upwork-search-result-meta">
-                        {item.budget ? (
-                          <span className="upwork-search-result-price">{Number(item.budget).toLocaleString()} XAF</span>
-                        ) : item.rate ? (
-                          <span className="upwork-search-result-price">{Number(item.rate).toLocaleString()} XAF/hr</span>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <h4 className="upwork-search-result-title" style={{ margin: 0, color: '#0F172A', fontWeight: 700 }}>
+                          {item.fullName || item.title || item.name || 'Fixam Match'}
+                        </h4>
+                        {item.isVerified || item.verification === 'VERIFIED' ? (
+                          <span style={{ fontSize: '0.75rem', background: '#DCFCE7', color: '#16A34A', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                            ✓ {i18n.language === 'fr' ? 'Vérifié' : 'Verified'}
+                          </span>
                         ) : null}
-                        <span>📍 {item.location || item.quarter || 'Douala'}</span>
-                        {item.category && <span>• {item.category}</span>}
+                      </div>
+
+                      <div className="upwork-search-result-meta" style={{ marginTop: '4px', display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '0.8rem', color: '#64748B' }}>
+                        {item.budget ? (
+                          <span className="upwork-search-result-price" style={{ color: '#0D9488', fontWeight: 700 }}>{Number(item.budget).toLocaleString()} XAF</span>
+                        ) : item.rate || item.hourlyRate ? (
+                          <span className="upwork-search-result-price" style={{ color: '#0D9488', fontWeight: 700 }}>{Number(item.rate || item.hourlyRate).toLocaleString()} XAF/hr</span>
+                        ) : item.price ? (
+                          <span className="upwork-search-result-price" style={{ color: '#0D9488', fontWeight: 700 }}>{Number(item.price).toLocaleString()} XAF</span>
+                        ) : null}
+                        <span>📍 {item.location || item.city || item.quarter || 'Cameroon'}</span>
+                        {(item.category || item.role) && <span>• {item.category || item.role}</span>}
+                        {item.rating ? <span>⭐ {Number(item.rating).toFixed(1)}</span> : null}
                       </div>
                     </div>
                   ))}
@@ -274,22 +338,22 @@ export default function SearchModal({
                 </div>
               ) : !isSearching ? (
                 <div className="upwork-search-empty">
-                  <p>{i18n.language === 'fr' ? 'Aucun résultat direct. Appuyez sur Entrée pour rechercher dans toutes les catégories.' : 'No direct matches. Press Enter to search across all jobs.'}</p>
+                  <p>{i18n.language === 'fr' ? `Aucun résultat direct. Appuyez sur Entrée pour filtrer dans tous les services.` : `No direct preview matches. Press Enter to search across all services.`}</p>
                   <button
                     type="button"
                     onClick={() => handleSubmit()}
                     style={{
-                      marginTop: '6px',
+                      marginTop: '8px',
                       background: '#14B8A6',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '999px',
-                      padding: '6px 16px',
+                      padding: '8px 20px',
                       fontWeight: 700,
                       cursor: 'pointer'
                     }}
                   >
-                    Search Now
+                    {i18n.language === 'fr' ? 'Rechercher maintenant' : 'Search Now'}
                   </button>
                 </div>
               ) : null}
