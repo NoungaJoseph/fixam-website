@@ -4,6 +4,7 @@ export interface MaterialItem {
   id?: string;
   name: string;
   quantity?: string;
+  suppliedBy?: 'CLIENT' | 'PROVIDER';
 }
 
 interface MaterialsListEditorProps {
@@ -23,16 +24,16 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
 }) => {
 
   // Ensure at least one empty field row exists when not requiring diagnosis
-  const rows = items.length === 0 ? [{ id: '1', name: '', quantity: '' }] : items;
+  const rows = items.length === 0 ? [{ id: '1', name: '', quantity: '', suppliedBy: 'CLIENT' as const }] : items;
 
   const handleUpdateItem = (index: number, field: 'name' | 'quantity', value: string) => {
     const updated = [...rows];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value, suppliedBy: updated[index].suppliedBy || 'CLIENT' };
     onChangeItems(updated);
   };
 
   const handleAddRow = () => {
-    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', quantity: '' };
+    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', quantity: '', suppliedBy: 'CLIENT' };
     onChangeItems([...rows, newRow]);
   };
 

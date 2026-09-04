@@ -29,12 +29,22 @@ const PRIORITY_OPTIONS = [
 ];
 
 const PROVIDER_TIERS = [
-  { value: '1', label: '1 Provider (1 Coin)', fr: '1 Prestataire (1 Pièce)', coins: 1 },
-  { value: '2', label: '2 Providers (2 Coins)', fr: '2 Prestataires (2 Pièces)', coins: 2 },
-  { value: '3', label: '3+ Providers (3 Coins)', fr: '3+ Prestataires (3 Pièces)', coins: 3 },
-  { value: '7', label: '7+ Providers (4 Coins)', fr: '7+ Prestataires (4 Pièces)', coins: 4 },
-  { value: '10', label: '10+ Providers (5 Coins)', fr: '10+ Prestataires (5 Pièces)', coins: 5 },
+  { value: '1', label: '1 Provider (1 Coin)', fr: '1 Prestataire (1 Pièce)', coins: 1, desc: 'Needs 1 provider', defaultCount: 1 },
+  { value: '2', label: '2 Providers (2 Coins)', fr: '2 Prestataires (2 Pièces)', coins: 2, desc: 'Needs 2 providers', defaultCount: 2 },
+  { value: '3', label: '3+ Providers (3 Coins)', fr: '3+ Prestataires (3 Pièces)', coins: 3, desc: 'This job needs at least 3 to 6 providers (e.g. 5–6 people)', defaultCount: 5 },
+  { value: '7', label: '7+ Providers (4 Coins)', fr: '7+ Prestataires (4 Pièces)', coins: 4, desc: 'This job needs 7 to 9 providers', defaultCount: 7 },
+  { value: '10', label: '10+ Providers (5 Coins)', fr: '10+ Prestataires (5 Pièces)', coins: 5, desc: 'This job needs more than 10 people', defaultCount: 10 },
+  { value: 'custom', label: 'Custom Number of Providers...', fr: 'Nombre personnalisé de prestataires...', coins: 0, desc: 'Enter the exact number of people needed', defaultCount: 5 },
 ];
+
+const calculateJobCoinCost = (count: number) => {
+  const c = parseInt(String(count), 10) || 1;
+  if (c <= 1) return 1;
+  if (c === 2) return 2;
+  if (c >= 3 && c <= 6) return 3;
+  if (c >= 7 && c <= 9) return 4;
+  return 5; // 10 and above
+};
 
 const SCOPE_OPTIONS = [
   { value: 'SMALL', label: 'Small - Less than a day', fr: 'Petit - Moins d\'une journée' },
@@ -71,6 +81,8 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
     budgetMin: '',
     budgetMax: '',
     providersNeeded: '1',
+    providerTier: '1',
+    exactProviders: '1',
     priority: 'NORMAL',
     taskScope: 'SMALL',
     scheduledTime: '',
@@ -97,6 +109,8 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         budgetMin: '',
         budgetMax: '',
         providersNeeded: '1',
+        providerTier: '1',
+        exactProviders: '1',
         priority: 'NORMAL',
         taskScope: 'SMALL',
         scheduledTime: '',
@@ -213,25 +227,58 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
     setError('');
     try {
       const selectedCategory = form.category === 'other' ? form.customCategoryName : form.category;
+
+      // 1. Clean up materials list: filter out empty names and attach suppliedBy
+      const cleanedMaterialsList = (form.materialsList || [])
+        .filter((item: any) => item && typeof item.name === 'string' && item.name.trim().length > 0)
+        .map((item: any) => ({
+          id: item.id || undefined,
+          name: item.name.trim(),
+          quantity: item.quantity ? String(item.quantity).trim() : null,
+          suppliedBy: (item.suppliedBy === 'PROVIDER' || item.suppliedBy === 'CLIENT') ? item.suppliedBy : 'CLIENT'
+        }));
+
+      const numProviders = parseInt(form.exactProviders || form.providersNeeded, 10) || 1;
+
+      // 2. Append workforce requirements note to description if 3+, 7+, 10+
+      let providerNote = '';
+      if (numProviders >= 10) {
+        providerNote = isFr 
+          ? `\n\n[Effectif requis : Cette tâche nécessite plus de 10 personnes (${numProviders} prestataires demandés).]` 
+          : `\n\n[Workforce Required: This job needs more than 10 people (${numProviders} providers requested).]`;
+      } else if (numProviders >= 7) {
+        providerNote = isFr 
+          ? `\n\n[Effectif requis : Cette tâche nécessite 7 à 9 prestataires (${numProviders} demandés).]` 
+          : `\n\n[Workforce Required: This job needs 7 to 9 providers (${numProviders} requested).]`;
+      } else if (numProviders >= 3) {
+        providerNote = isFr 
+          ? `\n\n[Effectif requis : Cette tâche nécessite au moins 3 à 6 prestataires (${numProviders} demandés).]` 
+          : `\n\n[Workforce Required: This job needs at least 3 to 6 providers (${numProviders} requested).]`;
+      }
+
+      const finalDescription = form.description.trim() + (providerNote && !form.description.includes('Workforce Required') && !form.description.includes('Effectif requis') ? providerNote : '');
+
+      const bMin = Number(form.budgetMin) || 0;
+      const bMax = Number(form.budgetMax) || bMin;
+
       const payload: any = {
         category: selectedCategory,
-        title: form.title,
-        description: form.description,
-        location: form.location,
-        isRemote: form.isRemote,
-        budgetMin: Number(form.budgetMin),
-        budgetMax: Number(form.budgetMax),
-        budget: Number(form.budgetMax),
-        providersNeeded: Number(form.providersNeeded),
-        priority: form.priority,
-        taskScope: form.taskScope,
-        scheduledTime: form.scheduledTime || undefined,
-        materialsList: form.materialsList,
-        requiresDiagnosis: form.requiresDiagnosis,
+        title: form.title.trim(),
+        description: finalDescription,
+        location: form.location.trim(),
+        isRemote: Boolean(form.isRemote),
+        budgetMin: bMin > 0 ? bMin : bMax,
+        budgetMax: bMax > 0 ? bMax : bMin,
+        budget: bMax > 0 ? bMax : bMin,
+        providersNeeded: numProviders,
+        priority: form.priority || 'NORMAL',
+        taskScope: form.taskScope || 'SMALL',
+        scheduledTime: form.scheduledTime ? new Date(form.scheduledTime).toISOString() : undefined,
+        materialsList: cleanedMaterialsList.length > 0 ? cleanedMaterialsList : undefined,
+        requiresDiagnosis: Boolean(form.requiresDiagnosis),
       };
-      if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone;
-      if (form.importantDetails) payload.importantDetails = form.importantDetails;
-      if (form.scheduledTime) payload.scheduledTime = new Date(form.scheduledTime).toISOString();
+      if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone.trim();
+      if (form.importantDetails) payload.importantDetails = form.importantDetails.trim();
 
       const res = await api.post('/jobs', payload);
       if (res.data.success) {
@@ -239,8 +286,12 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         onClose();
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || (isFr ? 'Échec de la publication.' : 'Failed to publish job.');
-      setError(msg);
+      const backendErrors = err.response?.data?.errors;
+      let msg = err.response?.data?.message;
+      if (Array.isArray(backendErrors) && backendErrors.length > 0) {
+        msg = backendErrors.map((e: any) => `${e.message} (${e.path})`).join(' • ');
+      }
+      setError(msg || (isFr ? 'Échec de la publication de la tâche.' : 'Failed to publish job.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -577,10 +628,23 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>{t.providersNeeded}</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>{t.providersNeeded}</label>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0D9488', backgroundColor: '#E6F7F5', padding: '2px 8px', borderRadius: '6px' }}>
+                        {calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded))} {calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded)) === 1 ? (isFr ? 'Pièce' : 'Coin') : (isFr ? 'Pièces' : 'Coins')}
+                      </span>
+                    </div>
+
                     <select
-                      value={form.providersNeeded}
-                      onChange={(e) => update('providersNeeded', e.target.value)}
+                      value={form.providerTier}
+                      onChange={(e) => {
+                        const tierVal = e.target.value;
+                        const selectedTier = PROVIDER_TIERS.find(t => t.value === tierVal);
+                        const defCount = selectedTier?.defaultCount || (tierVal === 'custom' ? 5 : Number(tierVal));
+                        update('providerTier', tierVal);
+                        update('providersNeeded', String(tierVal));
+                        update('exactProviders', String(defCount));
+                      }}
                       style={{
                         width: '100%',
                         padding: '0.7rem 1rem',
@@ -600,6 +664,52 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                         </option>
                       ))}
                     </select>
+
+                    {/* Tier Description Hint */}
+                    {(() => {
+                      const currTier = PROVIDER_TIERS.find(t => t.value === form.providerTier);
+                      if (currTier?.desc) {
+                        return (
+                          <div style={{ marginTop: '0.4rem', fontSize: '0.78rem', color: '#0D9488', fontWeight: 600 }}>
+                            ℹ️ {isFr 
+                              ? (form.providerTier === '3' ? 'Cette tâche nécessite au moins 3 à 6 prestataires (ex: 5–6 personnes).' 
+                                 : form.providerTier === '7' ? 'Cette tâche nécessite 7 à 9 prestataires.' 
+                                 : form.providerTier === '10' ? 'Cette tâche nécessite plus de 10 personnes.' 
+                                 : currTier.desc)
+                              : currTier.desc}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                    {/* Exact count input for 3+, 7+, 10+, or custom */}
+                    {(form.providerTier === '3' || form.providerTier === '7' || form.providerTier === '10' || form.providerTier === 'custom') && (
+                      <div style={{ marginTop: '0.6rem', padding: '0.6rem 0.8rem', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                        <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                          {isFr ? 'Nombre exact de personnes nécessaires pour cette tâche :' : 'Exact number of people needed for this job:'}
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={form.exactProviders}
+                          onChange={(e) => update('exactProviders', e.target.value)}
+                          placeholder="e.g. 5"
+                          style={{
+                            width: '100%',
+                            padding: '0.5rem 0.75rem',
+                            borderRadius: '8px',
+                            border: '1px solid #CBD5E1',
+                            fontSize: '0.85rem',
+                            fontWeight: 700,
+                            color: '#0F172A',
+                            background: '#FFF',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -693,7 +803,10 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                     {form.importantDetails && <ReviewRow label={t.importantDetails} value={form.importantDetails} />}
                     <ReviewRow label={t.location} value={`${form.location}${form.isRemote ? (isFr ? ' (À distance)' : ' (Remote)') : ''}`} />
                     <ReviewRow label={t.budgetMin} value={`XAF ${Number(form.budgetMin).toLocaleString()} - ${Number(form.budgetMax).toLocaleString()}`} />
-                    <ReviewRow label={t.providersNeeded} value={form.providersNeeded} />
+                    <ReviewRow 
+                      label={t.providersNeeded} 
+                      value={`${form.exactProviders || form.providersNeeded} ${Number(form.exactProviders || form.providersNeeded) > 1 ? (isFr ? 'prestataires' : 'providers') : (isFr ? 'prestataire' : 'provider')} (${calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded))} ${calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded)) === 1 ? (isFr ? 'pièce' : 'coin') : (isFr ? 'pièces' : 'coins')})`} 
+                    />
                     <ReviewRow label={t.priority} value={PRIORITY_OPTIONS.find(o => o.value === form.priority)?.[isFr ? 'fr' : 'label'] || form.priority} />
                     <ReviewRow label={t.taskScope} value={SCOPE_OPTIONS.find(o => o.value === form.taskScope)?.[isFr ? 'fr' : 'label'] || form.taskScope} />
                     {form.scheduledTime && <ReviewRow label={t.scheduledTime} value={new Date(form.scheduledTime).toLocaleString()} />}
