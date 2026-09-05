@@ -3,14 +3,13 @@ import React, { useState } from 'react';
 import { Icon, images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
-import MyTasks from './MyTasks';
 import ReviewModal from '../../components/ReviewModal';
 
 interface MyBookingsProps {
   clientBookings: any[];
   setClientBookings: (bookings: any[]) => void;
-  clientTasks: any[];
-  setClientTasks: (tasks: any[]) => void;
+  clientTasks?: any[];
+  setClientTasks?: (tasks: any[]) => void;
   setActiveTab: (tab: string) => void;
   setActiveChatUser: (user: any) => void;
   walletBalance?: number;
@@ -30,32 +29,21 @@ export default function MyBookings({
   setSelectedBooking
 }: MyBookingsProps) {
   const { user } = useAuth();
-  const [activeSubTab, setActiveSubTab] = useState<'bookings' | 'tasks'>('bookings');
   const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
 
   return (
     <div className="bookings-tasks-tab-wrapper animate-fade-in" style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-      {/* Subtabs Header */}
-      <div className="dash-subtabs-header">
-        <button 
-          className={`subtab-btn ${activeSubTab === 'bookings' ? 'active' : ''}`} 
-          onClick={() => setActiveSubTab('bookings')}
-        >
-          My Bookings
-        </button>
-        <button 
-          className={`subtab-btn ${activeSubTab === 'tasks' ? 'active' : ''}`} 
-          onClick={() => setActiveSubTab('tasks')}
-        >
-          My Posted Tasks
-        </button>
-      </div>
-
-      {activeSubTab === 'bookings' ? (
-        <div className="bg-transparent border-0 p-0 w-full">
-          <div className="dash-panel-header-new">
-            <h2>Bookings List</h2>
+      <div className="bg-transparent border-0 p-0 w-full">
+        <div className="dash-panel-header-new">
+          <h2>My Bookings</h2>
+        </div>
+        {(!clientBookings || clientBookings.length === 0) ? (
+          <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', marginTop: '1rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📅</div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>No Bookings Yet</h3>
+            <p style={{ fontSize: '0.875rem', color: '#64748B', maxWidth: '380px', margin: '0 auto' }}>When you book a verified provider directly, your contracts and booking statuses will appear here.</p>
           </div>
+        ) : (
           <div className="bookings-detailed-list">
             {clientBookings.map((bk) => {
               const bkProvider = bk.provider ? `${bk.provider.firstName || ''} ${bk.provider.lastName || ''}`.trim() : 'Unknown Provider';
@@ -159,17 +147,8 @@ export default function MyBookings({
               </div>
             )})}
           </div>
-        </div>
-      ) : (
-        <MyTasks 
-          clientTasks={clientTasks} 
-          setClientTasks={setClientTasks} 
-          setActiveTab={setActiveTab} 
-          walletBalance={walletBalance}
-          savedProsState={savedProsState}
-          clientBookings={clientBookings}
-        />
-      )}
+        )}
+      </div>
 
       {reviewTarget && (
         <ReviewModal

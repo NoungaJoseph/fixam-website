@@ -325,11 +325,14 @@ export default function UpworkSidebar({
                 </>
               ) : (
                 <>
-                  <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('My Bookings')}>
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'My Bookings' ? 'active' : ''}`} onClick={() => handleItemClick('My Bookings')}>
                     {i18n.language === 'fr' ? 'Mes réservations' : 'My Bookings'}
                   </button>
-                  <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('Reviews')}>
-                    {i18n.language === 'fr' ? 'Avis rédigés' : 'Reviews & Feedback'}
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'My Tasks' ? 'active' : ''}`} onClick={() => handleItemClick('My Tasks')}>
+                    {i18n.language === 'fr' ? 'Mes tâches publiées' : 'My Posted Tasks'}
+                  </button>
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => handleItemClick('Reviews')}>
+                    {i18n.language === 'fr' ? 'Avis et retours' : 'Reviews & Feedback'}
                   </button>
                 </>
               )}

@@ -27,6 +27,7 @@ import ClientDashboard from './pages/Client/ClientDashboard'
 import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 import ProjectDetail from './pages/Client/ProjectDetail'
 import BookingDetail from './pages/Client/BookingDetail'
+import TaskDetails from './pages/Client/TaskDetails'
 
 // Provider Subpages
 import MyJobs from './pages/Provider/MyJobs'
@@ -259,6 +260,7 @@ const TAB_SLUG_MAP: Record<string, string> = {
   'public-profile': 'Public Profile',
   'boost-profile': 'Boost Profile',
   'booking-details': 'Booking Details',
+  'task-details': 'Task Details',
 };
 
 function getInitialPageFromUrl(): Page {
@@ -1399,11 +1401,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const [previousTab, setPreviousTab] = useState('Dashboard');
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const prevRoleRef = useRef(userRole);
 
   useEffect(() => {
-    if (activeTab && activeTab !== 'Booking Details') {
+    if (activeTab && activeTab !== 'Booking Details' && activeTab !== 'Task Details') {
       setPreviousTab(activeTab);
     }
   }, [activeTab]);
@@ -1411,7 +1414,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const handleSetSelectedBooking = (val: any) => {
     setSelectedBooking(val);
     if (val === null) {
-      setActiveTab(previousTab);
+      setActiveTab(previousTab || 'My Bookings');
+    }
+  };
+
+  const handleSetSelectedTask = (val: any) => {
+    setSelectedTask(val);
+    if (val === null) {
+      setActiveTab(previousTab || 'My Tasks');
     }
   };
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>([]);
@@ -1847,6 +1857,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 savedProsState={savedProsState}
                 setSavedProsState={setSavedProsState}
               />
+            ) : selectedTask ? (
+              <TaskDetails
+                task={selectedTask}
+                setActiveTab={setActiveTab}
+                setSelectedTask={handleSetSelectedTask}
+                setActiveChatUser={setActiveChatUser}
+              />
             ) : selectedBooking ? (
               <BookingDetail
                 selectedBooking={selectedBooking}
@@ -1892,6 +1909,30 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab}
                     walletBalance={walletBalance}
                     clientBookings={clientBookings}
+                    setSelectedBooking={handleSetSelectedBooking}
+                    setSelectedTask={handleSetSelectedTask}
+                  />
+                )}
+                {/* Prevent blank screen if user reloads on detail tabs */}
+                {activeTab === 'Task Details' && (
+                  <MyTasks
+                    clientTasks={clientTasks}
+                    setClientTasks={setClientTasks}
+                    setActiveTab={setActiveTab}
+                    walletBalance={walletBalance}
+                    clientBookings={clientBookings}
+                    setSelectedBooking={handleSetSelectedBooking}
+                    setSelectedTask={handleSetSelectedTask}
+                  />
+                )}
+                {activeTab === 'Booking Details' && (
+                  <MyBookings
+                    clientBookings={clientBookings}
+                    setClientBookings={setClientBookings}
+                    clientTasks={clientTasks}
+                    setClientTasks={setClientTasks}
+                    setActiveTab={setActiveTab}
+                    setActiveChatUser={setActiveChatUser}
                     setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}

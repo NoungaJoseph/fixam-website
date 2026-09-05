@@ -229,16 +229,24 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
               <div className="upwork-metric-box">
                 <span className="metric-icon">🏷️</span>
                 <div>
-                  <strong>{bookingData.budget || bookingData.amount || bookingData.price ? `${(bookingData.budget || bookingData.amount || bookingData.price).toLocaleString()} XAF` : 'Agreed Rate'}</strong>
-                  <small>Budget / Rate</small>
+                  <strong>{bookingData.budget || bookingData.amount || bookingData.price ? `${Number(bookingData.budget || bookingData.amount || bookingData.price).toLocaleString()} XAF` : 'Agreed Rate'}</strong>
+                  <small>{bookingData.hourlyRate ? 'Hourly Rate' : 'Agreed Budget'}</small>
                 </div>
               </div>
 
               <div className="upwork-metric-box">
                 <span className="metric-icon">⏱️</span>
                 <div>
-                  <strong>{bookingData.bookingDuration || '1 Hour'}</strong>
-                  <small>Service Duration</small>
+                  <strong>
+                    {bookingData.taskScope === 'SMALL'
+                      ? 'Less than a day'
+                      : bookingData.taskScope === 'MEDIUM'
+                      ? '1 to 3 days'
+                      : bookingData.taskScope === 'LARGE'
+                      ? 'More than 3 days'
+                      : (bookingData.bookingDuration || bookingData.duration || bookingData.estimatedDuration || 'Flexible / Project-Based')}
+                  </strong>
+                  <small>Duration / Period</small>
                 </div>
               </div>
 
@@ -357,7 +365,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 <span>Fixam Platform Safety</span>
               </div>
               <div className="client-meta-text mt-3">
-                <p>⏰ Time: {bookingData.bookingTime || bookingData.time || '09:00 AM'}</p>
+                <p>⏰ Time: {bookingData.scheduledTime ? new Date(bookingData.scheduledTime).toLocaleString() : (bookingData.bookingTime || bookingData.time || 'Flexible Schedule')}</p>
                 <p>📍 Location: {bookingData.location || 'On-Site'}</p>
               </div>
             </div>

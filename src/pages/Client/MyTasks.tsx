@@ -100,9 +100,13 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                 className="task-detailed-card cursor-pointer hover:border-teal-300 transition-colors" 
                 key={tkId}
                 onClick={() => {
-                  if (setSelectedBooking) setSelectedBooking(tk);
-                  if (setSelectedTask) setSelectedTask(tk);
-                  setActiveTab('Booking Details');
+                  if (setSelectedTask) {
+                    setSelectedTask(tk);
+                    setActiveTab('Task Details');
+                  } else if (setSelectedBooking) {
+                    setSelectedBooking(tk);
+                    setActiveTab('Booking Details');
+                  }
                 }}
               >
                 <div className="task-card-header">
