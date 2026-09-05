@@ -24,16 +24,16 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
 }) => {
 
   // Ensure at least one empty field row exists when not requiring diagnosis
-  const rows = items.length === 0 ? [{ id: '1', name: '', quantity: '', suppliedBy: 'CLIENT' as const }] : items;
+  const rows = items.length === 0 ? [{ id: '1', name: '', suppliedBy: 'CLIENT' as const }] : items;
 
-  const handleUpdateItem = (index: number, field: 'name' | 'quantity', value: string) => {
+  const handleUpdateItem = (index: number, value: string) => {
     const updated = [...rows];
-    updated[index] = { ...updated[index], [field]: value, suppliedBy: updated[index].suppliedBy || 'CLIENT' };
+    updated[index] = { ...updated[index], name: value, suppliedBy: updated[index].suppliedBy || 'CLIENT' };
     onChangeItems(updated);
   };
 
   const handleAddRow = () => {
-    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', quantity: '', suppliedBy: 'CLIENT' };
+    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', suppliedBy: 'CLIENT' };
     onChangeItems([...rows, newRow]);
   };
 
@@ -91,26 +91,18 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
               <div key={item.id || index} className="flex items-center gap-1.5 sm:gap-2 w-full">
                 <input
                   type="text"
-                  placeholder="Material / Tool name"
+                  placeholder="e.g. 5 bags of cement, 2 pipes, 1 wrench..."
                   value={item.name}
-                  onChange={(e) => handleUpdateItem(index, 'name', e.target.value)}
+                  onChange={(e) => handleUpdateItem(index, e.target.value)}
                   disabled={readOnly}
-                  className="flex-1 min-w-0 px-2.5 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Qty"
-                  value={item.quantity}
-                  onChange={(e) => handleUpdateItem(index, 'quantity', e.target.value)}
-                  disabled={readOnly}
-                  className="w-16 sm:w-20 shrink-0 px-2 py-1.5 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500 text-center"
+                  className="flex-1 min-w-0 px-3 py-2 text-xs rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
                 />
 
                 {!readOnly && (
                   <button
                     type="button"
                     onClick={() => handleRemoveRow(index)}
-                    className="text-red-500 hover:text-red-700 p-1 text-xs shrink-0"
+                    className="text-red-500 hover:text-red-700 p-1.5 text-xs shrink-0"
                     title="Remove item"
                   >
                     🗑️
