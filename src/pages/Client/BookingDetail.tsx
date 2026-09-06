@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 import ReviewModal from '../../components/ReviewModal';
 import '../Provider/ProviderDashboard.css';
 
@@ -12,6 +13,7 @@ interface BookingDetailProps {
 }
 
 export default function BookingDetail({ selectedBooking, setSelectedBooking, setActiveTab, setActiveChatUser }: BookingDetailProps) {
+  const { user } = useAuth();
   const [bookingData, setBookingData] = useState<any>(selectedBooking);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
@@ -330,17 +332,24 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 </button>
               )}
 
-              {pName !== 'Service Specialist' && setActiveChatUser && (
+              {status !== 'CANCELLED' && status !== 'REJECTED' && setActiveChatUser && (
                 <button 
-                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm"
+                  className="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => {
-                    setActiveChatUser({ id: provider?.userId || provider?.id, name: pName, avatar: pAvatar });
+                    const isCurrentUserProvider = user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id);
+                    const targetId = isCurrentUserProvider
+                      ? (client?.userId || client?.id || bookingData.clientId)
+                      : (provider?.userId || provider?.id || bookingData.providerId);
+                    const targetName = isCurrentUserProvider ? cName : pName;
+                    const targetAvatar = isCurrentUserProvider ? cAvatar : pAvatar;
+
+                    setActiveChatUser({ id: targetId, name: targetName, avatar: targetAvatar });
                     setSelectedBooking(null);
                     setActiveTab('Messages');
                   }}
                 >
                   <Icon name="chat" />
-                  <span>Message Specialist</span>
+                  <span>{user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id) ? 'Message Client' : 'Message Specialist'}</span>
                 </button>
               )}
 

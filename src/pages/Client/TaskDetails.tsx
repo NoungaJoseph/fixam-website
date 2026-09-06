@@ -241,7 +241,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
             {(taskData.importantDetails || (taskData.materialsList && taskData.materialsList.length > 0) || taskData.requiresDiagnosis) && (
               <div className="upwork-section mt-5">
                 <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  {isFr ? 'Détails & Matériaux' : 'Important Details & Materials'}
+                  {isFr ? 'Matériaux nécessaires pour cette mission' : 'Materials needed for this job'}
                 </h3>
                 <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-sm text-slate-700 space-y-3">
                   {taskData.importantDetails && (
@@ -259,14 +259,11 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
 
                   {taskData.materialsList && taskData.materialsList.length > 0 && (
                     <div>
-                      <strong className="block text-xs text-slate-700 mb-1.5">{isFr ? 'Liste du matériel :' : 'Materials List:'}</strong>
+                      <strong className="block text-xs text-slate-700 mb-1.5">{isFr ? 'Matériaux nécessaires pour cette mission :' : 'Materials needed for this job:'}</strong>
                       <div className="space-y-1">
                         {taskData.materialsList.map((mat: any, idx: number) => (
                           <div key={idx} className="flex items-center justify-between text-xs bg-white p-2 rounded border border-slate-200">
                             <span className="font-medium text-slate-800">{mat.name} {mat.quantity ? `(${mat.quantity})` : ''}</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">
-                              {mat.suppliedBy === 'PROVIDER' ? (isFr ? 'Fourni par le prestataire' : 'Provider Supplies') : (isFr ? 'Fourni par le client' : 'Client Supplies')}
-                            </span>
                           </div>
                         ))}
                       </div>
@@ -400,6 +397,36 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
             </div>
 
             <div className="space-y-3 mt-4">
+              {status !== 'CANCELLED' && setActiveChatUser && (
+                <button 
+                  className="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+                  onClick={() => {
+                    const assignedAssignment = proposals.find((p: any) => p.status === 'ACCEPTED' || p.status === 'ASSIGNED');
+                    const assignedPro = assignedAssignment?.provider?.user || assignedAssignment?.provider || taskData.assignedTo || taskData.assignedProvider;
+                    const assignedProUserId = assignedAssignment?.provider?.userId || assignedAssignment?.provider?.user?.id || assignedPro?.userId || assignedPro?.id || taskData.assignedProviderId;
+                    const assignedProName = assignedPro?.fullName || assignedPro?.name || (assignedPro?.firstName ? `${assignedPro.firstName} ${assignedPro.lastName || ''}`.trim() : null) || 'Specialist';
+                    const assignedProAvatar = (assignedPro?.avatar || assignedAssignment?.provider?.avatar) ? getMediaUrl(assignedPro?.avatar || assignedAssignment?.provider?.avatar) : DEFAULT_AVATAR;
+
+                    if (assignedProUserId) {
+                      setActiveChatUser({ id: assignedProUserId, name: assignedProName, avatar: assignedProAvatar });
+                    } else if (proposals.length > 0) {
+                      const firstP = proposals[0];
+                      const pUser = firstP.provider?.user || firstP.provider || {};
+                      const pId = firstP.provider?.userId || pUser.id || pUser.userId || firstP.providerId;
+                      const pN = pUser.fullName || pUser.name || (pUser.firstName ? `${pUser.firstName} ${pUser.lastName || ''}`.trim() : 'Applicant');
+                      const pA = pUser.avatar ? getMediaUrl(pUser.avatar) : DEFAULT_AVATAR;
+                      setActiveChatUser({ id: pId, name: pN, avatar: pA });
+                    } else {
+                      setActiveChatUser(null);
+                    }
+                    if (setSelectedTask) setSelectedTask(null);
+                    setActiveTab('Messages');
+                  }}
+                >
+                  <Icon name="chat" />
+                  <span>{isFr ? 'Discuter avec le prestataire' : 'Chat with Specialist'}</span>
+                </button>
+              )}
               {status === 'COMPLETED' && (
                 <button 
                   className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"

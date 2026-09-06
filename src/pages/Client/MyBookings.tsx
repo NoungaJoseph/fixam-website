@@ -111,13 +111,16 @@ export default function MyBookings({
                       💡 Review Counter
                     </button>
                   )}
-                  <button className="btn-chat-booking" onClick={() => {
-                    const targetId = bk.provider?.userId || bk.provider?.id || bk.providerId;
-                    setActiveChatUser({ id: targetId, name: bkProvider, avatar: bk.provider?.avatar || bk.image });
-                    setActiveTab('Messages');
-                  }}>
-                    <Icon name="chat" /> Chat
-                  </button>
+                  {bk.status !== 'CANCELLED' && bkStatus !== 'CANCELLED' && (
+                    <button className="btn-chat-booking" onClick={(e) => {
+                      e.stopPropagation();
+                      const targetId = bk.provider?.userId || bk.provider?.id || bk.providerId;
+                      setActiveChatUser({ id: targetId, name: bkProvider, avatar: bk.provider?.avatar || bk.image });
+                      setActiveTab('Messages');
+                    }}>
+                      <Icon name="chat" /> Chat
+                    </button>
+                  )}
                   {bk.status === 'COMPLETED' && (
                     <button className="btn-chat-booking" style={{ backgroundColor: '#F59E0B', borderColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
                       e.stopPropagation();

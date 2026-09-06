@@ -24,16 +24,16 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
 }) => {
 
   // Ensure at least one empty field row exists when not requiring diagnosis
-  const rows = items.length === 0 ? [{ id: '1', name: '', suppliedBy: 'CLIENT' as const }] : items;
+  const rows = items.length === 0 ? [{ id: '1', name: '', suppliedBy: 'PROVIDER' as const }] : items;
 
   const handleUpdateItem = (index: number, value: string) => {
     const updated = [...rows];
-    updated[index] = { ...updated[index], name: value, suppliedBy: updated[index].suppliedBy || 'CLIENT' };
+    updated[index] = { ...updated[index], name: value, suppliedBy: updated[index].suppliedBy || 'PROVIDER' };
     onChangeItems(updated);
   };
 
   const handleAddRow = () => {
-    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', suppliedBy: 'CLIENT' };
+    const newRow: MaterialItem = { id: String(Date.now() + Math.random()), name: '', suppliedBy: 'PROVIDER' };
     onChangeItems([...rows, newRow]);
   };
 
@@ -46,7 +46,7 @@ export const MaterialsListEditor: React.FC<MaterialsListEditorProps> = ({
     <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 my-3">
       {/* Header */}
       <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Materials & Equipment</h3>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Materials needed for this job</h3>
       </div>
 
       {/* Diagnosis Toggle */}

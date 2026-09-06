@@ -8,7 +8,7 @@ import { ServiceAgreementSection } from '../../components/ServiceAgreementSectio
 interface BookingDetailsProps {
   booking: any;
   setActiveTab: (tab: string) => void;
-  setActiveChatUser: (user: string) => void;
+  setActiveChatUser: (user: any) => void;
 }
 
 export default function BookingDetails({ booking, setActiveTab, setActiveChatUser }: BookingDetailsProps) {
@@ -113,12 +113,15 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-900">{providerName}</h4>
                   <p className="text-xs text-gray-500 mb-2">Service Professional</p>
-                  <button className="text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-full transition" onClick={() => {
-                    setActiveTab('Messages');
-                    setActiveChatUser(providerName);
-                  }}>
-                    <Icon name="chat" /> Message Provider
-                  </button>
+                  {booking.status !== 'CANCELLED' && booking.status !== 'Cancelled' && (
+                    <button className="text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-full transition cursor-pointer" onClick={() => {
+                      const targetId = booking.provider?.userId || booking.provider?.id || booking.providerId;
+                      setActiveChatUser({ id: targetId, name: providerName, avatar: avatarUrl });
+                      setActiveTab('Messages');
+                    }}>
+                      <Icon name="chat" /> Message Provider
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (

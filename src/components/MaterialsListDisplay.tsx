@@ -26,7 +26,7 @@ export const MaterialsListDisplay: React.FC<MaterialsListDisplayProps> = ({
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 my-3">
       <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Required Materials & Equipment</h3>
+        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Materials needed for this job</h3>
       </div>
 
       <div className="space-y-1.5 pl-1">

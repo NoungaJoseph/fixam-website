@@ -277,7 +277,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
           id: item.id || undefined,
           name: item.name.trim(),
           quantity: item.quantity ? String(item.quantity).trim() : null,
-          suppliedBy: (item.suppliedBy === 'PROVIDER' || item.suppliedBy === 'CLIENT') ? item.suppliedBy : 'CLIENT'
+          suppliedBy: 'PROVIDER'
         }));
 
       const numProviders = parseInt(form.exactProviders || form.providersNeeded, 10) || 1;
