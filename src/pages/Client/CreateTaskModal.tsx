@@ -281,24 +281,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         }));
 
       const numProviders = parseInt(form.exactProviders || form.providersNeeded, 10) || 1;
-
-      // 2. Append workforce requirements note to description if 3+, 7+, 10+
-      let providerNote = '';
-      if (numProviders >= 10) {
-        providerNote = isFr 
-          ? `\n\n[Effectif requis : Cette tâche nécessite plus de 10 personnes (${numProviders} prestataires demandés).]` 
-          : `\n\n[Workforce Required: This job needs more than 10 people (${numProviders} providers requested).]`;
-      } else if (numProviders >= 7) {
-        providerNote = isFr 
-          ? `\n\n[Effectif requis : Cette tâche nécessite 7 à 9 prestataires (${numProviders} demandés).]` 
-          : `\n\n[Workforce Required: This job needs 7 to 9 providers (${numProviders} requested).]`;
-      } else if (numProviders >= 3) {
-        providerNote = isFr 
-          ? `\n\n[Effectif requis : Cette tâche nécessite au moins 3 à 6 prestataires (${numProviders} demandés).]` 
-          : `\n\n[Workforce Required: This job needs at least 3 to 6 providers (${numProviders} requested).]`;
-      }
-
-      const finalDescription = form.description.trim() + (providerNote && !form.description.includes('Workforce Required') && !form.description.includes('Effectif requis') ? providerNote : '');
+      const finalDescription = form.description.trim();
 
       const bMin = Number(form.budgetMin) || 0;
       const bMax = Number(form.budgetMax) || bMin;

@@ -232,9 +232,9 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                 <span className="metric-icon text-2xl">👥</span>
                 <div>
                   <strong className="block text-slate-800 text-sm font-extrabold">
-                    {taskData.providersNeeded || 1} {isFr ? 'Personne(s)' : 'Specialist(s)'}
+                    {taskData.providersNeeded || 1}
                   </strong>
-                  <small className="text-slate-500 text-xs">{isFr ? 'Effectif requis' : 'Workforce Needed'}</small>
+                  <small className="text-slate-500 text-xs">{isFr ? 'Prestataires nécessaires' : 'Provider need'}</small>
                 </div>
               </div>
             </div>
@@ -252,7 +252,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                 {isFr ? 'Description de la mission' : 'Task Description'}
               </h3>
               <p className="upwork-text-block text-sm text-slate-700 leading-relaxed whitespace-pre-wrap bg-slate-50/70 p-4 rounded-xl border border-slate-100">
-                {taskData.description || (isFr ? 'Aucune description fournie.' : 'No description provided.')}
+                {(taskData.description || '').replace(/\[(?:Workforce Required|Effectif requis)[^\]]*\]/gi, '').trim() || (isFr ? 'Aucune description fournie.' : 'No description provided.')}
               </p>
             </div>
 
