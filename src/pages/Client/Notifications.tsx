@@ -159,6 +159,20 @@ export default function Notifications({ setActiveTab, setSelectedBooking }: Noti
       };
     }
 
+    // Weekly skill spotlight & marketing discovery
+    if (type.includes('SKILL') || type.includes('MARKETING') || data.type === 'WEEKLY_SKILL_SPOTLIGHT' || data.category) {
+      return {
+        label: data.category ? `Find ${data.category}` : 'Explore Services',
+        action: () => {
+          if (!notif.isRead) handleSingleRead(notif.id);
+          if (data.category) {
+            localStorage.setItem('fixam_search_cat', data.category);
+          }
+          if (setActiveTab) setActiveTab('Find Services');
+        }
+      };
+    }
+
     return null;
   };
 
