@@ -43,6 +43,7 @@ import BoostProfile from './pages/Provider/BoostProfile'
 import UpworkSidebar from './components/UpworkSidebar';
 import SearchModal from './components/SearchModal';
 import TransactionHistory from './pages/Shared/TransactionHistory';
+import ErrorBoundary from './components/ErrorBoundary';
 
 
 // Public landing pages
@@ -1414,7 +1415,12 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   const handleSetSelectedBooking = (val: any) => {
     setSelectedBooking(val);
     if (val === null) {
-      setActiveTab(previousTab || 'My Bookings');
+      setActiveTab(prev => {
+        if (prev && prev !== 'Booking Details' && prev !== 'Task Details') {
+          return prev;
+        }
+        return previousTab || (userRole === 'pro' ? 'My Jobs' : 'My Bookings');
+      });
     }
   };
 
@@ -1960,12 +1966,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 )}
                 {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
                 {activeTab === 'Messages' && (
-                  <Messages
-                    chatMessages={chatMessages}
-                    setChatMessages={setChatMessages}
-                    activeChatUser={activeChatUser}
-                    setActiveChatUser={setActiveChatUser}
-                  />
+                  <ErrorBoundary fallbackMessage="Unable to load chat messages">
+                    <Messages
+                      chatMessages={chatMessages}
+                      setChatMessages={setChatMessages}
+                      activeChatUser={activeChatUser}
+                      setActiveChatUser={setActiveChatUser}
+                    />
+                  </ErrorBoundary>
                 )}
                 {activeTab === 'Reviews' && <Reviews />}
                 {activeTab === 'Refer & Earn' && <Referrals />}
@@ -2203,7 +2211,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 />
               )}
 
-              {activeTab === 'My Jobs' && (
+              {(activeTab === 'My Jobs' || activeTab === 'Booking Details' || activeTab === 'My Bookings') && (
                 <MyJobs
                   setActiveTab={setActiveTab}
                   setActiveChatUser={setActiveChatUser}
@@ -2226,12 +2234,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
               {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
               {activeTab === 'Boost Profile' && <BoostProfile />}
               {activeTab === 'Messages' && (
-                <Messages
-                  chatMessages={chatMessages}
-                  setChatMessages={setChatMessages}
-                  activeChatUser={activeChatUser}
-                  setActiveChatUser={setActiveChatUser}
-                />
+                <ErrorBoundary fallbackMessage="Unable to load chat messages">
+                  <Messages
+                    chatMessages={chatMessages}
+                    setChatMessages={setChatMessages}
+                    activeChatUser={activeChatUser}
+                    setActiveChatUser={setActiveChatUser}
+                  />
+                </ErrorBoundary>
               )}
             </>
           )}

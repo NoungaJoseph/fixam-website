@@ -249,13 +249,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
 
       try {
         await api.post('/chat/send', {
-          conversationId: activeConv.id,
+          conversationId: currentConvId,
           receiverId,
           content: contentToSend,
           mediaUrl: mediaUrl || null,
           type: customType
         });
-        const res = await api.get(`/chat/${activeConv.id}/messages`);
+        const res = await api.get(`/chat/${currentConvId}/messages`);
         setMessages(res.data.data || []);
       } catch (err: any) {
         console.error('Failed to send msg', err);
@@ -277,18 +277,21 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
   const handleSendMsg = async (e?: React.FormEvent, customContent?: string, customType: string = 'TEXT', mediaUrl?: string) => {
     if (e) e.preventDefault();
     const contentToSend = customContent || newMsgText;
-    if ((!contentToSend.trim() && !mediaUrl && selectedImages.length === 0) || !activeConv) return;
+    if (!contentToSend.trim() && !mediaUrl && selectedImages.length === 0) return;
+    if (!activeConv && !activeDetails.other?.id) return;
 
     // ── Feature 2: External contact detection (TEXT only) ─────────────────────
     if (customType === 'TEXT' && contentToSend.trim()) {
       const detectedPattern = detectExternalContact(contentToSend);
       if (detectedPattern) {
         // Log warning event immediately (fire-and-forget)
-        api.post(`/chat/${activeConv.id}/log-contact-warning`, {
-          detectedPattern,
-          sentAnyway: false,
-          platform: 'web',
-        }).catch(() => {});
+        if (activeConv?.id) {
+          api.post(`/chat/${activeConv.id}/log-contact-warning`, {
+            detectedPattern,
+            sentAnyway: false,
+            platform: 'web',
+          }).catch(() => {});
+        }
 
         // Surface the inline confirmation dialog — do NOT send yet
         setContactWarning({
@@ -308,13 +311,15 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
 
   /** Called when the user clicks "Send Anyway" in the contact-warning dialog. */
   const handleSendAnyway = async () => {
-    if (!contactWarning || !activeConv) return;
+    if (!contactWarning) return;
     // Log that the user chose to send
-    api.post(`/chat/${activeConv.id}/log-contact-warning`, {
-      detectedPattern: contactWarning.detectedPattern,
-      sentAnyway: true,
-      platform: 'web',
-    }).catch(() => {});
+    if (activeConv?.id) {
+      api.post(`/chat/${activeConv.id}/log-contact-warning`, {
+        detectedPattern: contactWarning.detectedPattern,
+        sentAnyway: true,
+        platform: 'web',
+      }).catch(() => {});
+    }
     const { pendingContent, pendingType, pendingMediaUrl } = contactWarning;
     setContactWarning(null);
     setNewMsgText('');
@@ -577,7 +582,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
 
             {/* ── Tracking button ─────────────────────────────── */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 12px 0' }}>
-              {!activeConv.isSystem && (
+              {activeConv && !activeConv.isSystem && user?.role !== 'PROVIDER' && (
                 <div style={{ marginLeft: 'auto' }}>
                   <button 
                     type="button"

@@ -336,12 +336,25 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 <button 
                   className="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => {
-                    const isCurrentUserProvider = user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id);
+                    const currentUserId = user?.id || (user as any)?._id;
+                    const isCurrentUserProvider = Boolean(
+                      user?.role === 'PROVIDER' ||
+                      (currentUserId && (
+                        currentUserId === bookingData.providerId ||
+                        currentUserId === provider?.userId ||
+                        currentUserId === provider?.id
+                      ))
+                    );
                     const targetId = isCurrentUserProvider
-                      ? (client?.userId || client?.id || bookingData.clientId)
-                      : (provider?.userId || provider?.id || bookingData.providerId);
+                      ? (client?.userId || client?.id || (client as any)?._id || bookingData.clientId || bookingData.userId)
+                      : (provider?.userId || provider?.id || (provider as any)?._id || bookingData.providerId);
                     const targetName = isCurrentUserProvider ? cName : pName;
                     const targetAvatar = isCurrentUserProvider ? cAvatar : pAvatar;
+
+                    if (!targetId) {
+                      alert('Unable to identify conversation recipient.');
+                      return;
+                    }
 
                     setActiveChatUser({ id: targetId, name: targetName, avatar: targetAvatar });
                     setSelectedBooking(null);
@@ -349,7 +362,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                   }}
                 >
                   <Icon name="chat" />
-                  <span>{user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id) ? 'Message Client' : 'Message Specialist'}</span>
+                  <span>{user?.role === 'PROVIDER' || (user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id)) ? 'Message Client' : 'Message Specialist'}</span>
                 </button>
               )}
 
