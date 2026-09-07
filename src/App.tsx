@@ -28,6 +28,7 @@ import ProviderProfileDetail from './pages/Client/ProviderProfileDetail'
 import ProjectDetail from './pages/Client/ProjectDetail'
 import BookingDetail from './pages/Client/BookingDetail'
 import TaskDetails from './pages/Client/TaskDetails'
+import BrowseProjects from './pages/Client/BrowseProjects'
 
 // Provider Subpages
 import MyJobs from './pages/Provider/MyJobs'
@@ -239,6 +240,7 @@ function MaintenanceScreen({ message }: { message: string }) {
 const TAB_SLUG_MAP: Record<string, string> = {
   'dashboard': 'Dashboard',
   'find-services': 'Find Services',
+  'browse-projects': 'Browse Projects',
   'my-bookings': 'My Bookings',
   'my-tasks': 'My Tasks',
   'saved-providers': 'Saved Providers',
@@ -1242,6 +1244,20 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
               {i18n.language === 'fr' ? 'Services' : 'Services'}
             </button>
             <span className="nav-divider">|</span>
+            <button 
+              className={`nav-link-new`} 
+              onClick={() => {
+                if (isLoggedIn) {
+                  handleNavigate('dashboard');
+                  window.location.hash = 'tab-browse-projects';
+                } else {
+                  handleNavigate('services');
+                }
+              }}
+            >
+              {i18n.language === 'fr' ? 'Projets' : 'Browse Projects'}
+            </button>
+            <span className="nav-divider">|</span>
             <button className={`nav-link-new ${page === 'insights' ? 'active' : ''}`} onClick={() => handleNavigate('insights')}>
               {i18n.language === 'fr' ? 'Ressources' : 'Insights'}
             </button>
@@ -1332,6 +1348,18 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
             <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('career_pathways'); }}>
               {i18n.language === 'fr' ? 'Parcours Professionnels' : 'Career Pathways'}
+            </button>
+
+            <button className="mobile-nav-accordion-btn" onClick={() => {
+              setIsMobileMenuOpen(false);
+              if (isLoggedIn) {
+                handleNavigate('dashboard');
+                window.location.hash = 'tab-browse-projects';
+              } else {
+                handleNavigate('services');
+              }
+            }}>
+              {i18n.language === 'fr' ? 'Parcourir les projets' : 'Browse Projects'}
             </button>
 
             <button className="mobile-nav-accordion-btn" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('guide'); }}>
@@ -2006,6 +2034,16 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveChatUser={setActiveChatUser}
                     displayedPros={displayedPros}
                     initialSearch={searchVal}
+                  />
+                )}
+                {activeTab === 'Browse Projects' && (
+                  <BrowseProjects
+                    displayedPros={displayedPros}
+                    setActiveTab={setActiveTab}
+                    setSelectedProject={setSelectedProject}
+                    setSelectedProvider={setSelectedProvider}
+                    favoriteProjectIds={favoriteProjectIds}
+                    toggleFavoriteProject={toggleFavoriteProject}
                   />
                 )}
                 {activeTab === 'Transaction History' && <TransactionHistory />}

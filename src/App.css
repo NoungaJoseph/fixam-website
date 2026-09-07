@@ -5087,6 +5087,32 @@ p {
   color: #22C55E;
 }
 
+.task-detailed-card .task-status-pill.live {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-detailed-card .task-status-pill.rejected {
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+
+.task-detailed-card .task-status-pill.pending-approval {
+  background: #FEF3C7;
+  color: #D97706;
+  border: 1px solid #FDE68A;
+}
+
+.task-detailed-card .task-status-pill.cancelled {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
 .task-detailed-card .task-bids-count {
   font-size: 0.8rem;
   color: var(--muted);

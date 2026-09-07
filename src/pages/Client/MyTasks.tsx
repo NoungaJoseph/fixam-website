@@ -93,7 +93,26 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
               const tag = tk.category?.name || tk.categoryId || 'General';
               const price = tk.budget ? `${tk.budget} XAF` : '';
               const bids = tk.applications?.length || 0;
-              const status = tk.status || 'PENDING';
+              const rawStatus = tk.status || 'PENDING';
+              const isRejected = tk.approvalStatus === 'REJECTED' || rawStatus === 'REJECTED';
+              const isPendingApproval = tk.approvalStatus === 'PENDING_APPROVAL';
+              const isLive = (tk.approvalStatus === 'APPROVED' || !tk.approvalStatus) && (rawStatus === 'PENDING' || rawStatus === 'OPEN');
+              const isAssigned = rawStatus === 'ASSIGNED' || rawStatus === 'IN_PROGRESS';
+              const isCompleted = rawStatus === 'COMPLETED';
+              const isCancelled = rawStatus === 'CANCELLED';
+
+              let statusLabel = rawStatus;
+              let statusClass = rawStatus.toLowerCase().replace(' ', '-');
+              if (isRejected) {
+                statusLabel = 'REJECTED';
+                statusClass = 'rejected';
+              } else if (isLive) {
+                statusLabel = 'LIVE';
+                statusClass = 'live';
+              } else if (isPendingApproval) {
+                statusLabel = 'PENDING APPROVAL';
+                statusClass = 'pending-approval';
+              }
 
               return (
               <div 
@@ -115,8 +134,9 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                 </div>
                 <h3>{tk.title}</h3>
                 <div className="task-card-footer">
-                  <span className={`task-status-pill ${status.toLowerCase().replace(' ', '-')}`}>
-                    {status}
+                  <span className={`task-status-pill ${statusClass}`}>
+                    {statusClass === 'live' && <span style={{ display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', marginRight: '4px' }}></span>}
+                    {statusLabel}
                   </span>
                   <span className="task-bids-count">
                     <Icon name="user" /> {bids} offers received
@@ -131,7 +151,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                       View Offers ({bids})
                     </button>
                   )}
-                  {status === 'COMPLETED' && (
+                  {isCompleted && (
                     <button className="btn-view-offers" style={{ backgroundColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
                       e.stopPropagation();
                       const assignedPro = tk.assignments?.[0]?.provider?.user || tk.assignedTo || {};
@@ -146,18 +166,42 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                       ⭐ Review
                     </button>
                   )}
-                  {status !== 'COMPLETED' && status !== 'CANCELLED' && (
-                  <button className="btn-delete-task" onClick={async (e) => {
-                    e.stopPropagation();
-                    if (confirm("Are you sure you want to remove this task?")) {
-                      try {
-                        await api.patch(`/jobs/${tkId}/status`, { status: 'CANCELLED' });
-                        setClientTasks(clientTasks.map(t => (t.id || t._id) === tkId ? {...t, status: 'CANCELLED'} : t));
-                      } catch (err) {
-                        alert("Failed to cancel task");
+                  {isRejected && (
+                    <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-md" title={tk.rejectionReason || 'Task was rejected by administrator'}>
+                      ❌ {tk.rejectionReason ? `Rejected: ${tk.rejectionReason}` : 'Rejected by Admin'}
+                    </span>
+                  )}
+                  {isLive && (
+                    <button 
+                      className="btn-delete-task" 
+                      style={{ backgroundColor: '#FFF1F2', color: '#E11D48', borderColor: '#FFE4E6' }}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (confirm("Are you sure you want to end this live task? It will stop showing on the provider dashboard.")) {
+                          try {
+                            await api.patch(`/jobs/${tkId}/status`, { status: 'CANCELLED' });
+                            setClientTasks(clientTasks.map(t => (t.id || t._id) === tkId ? {...t, status: 'CANCELLED'} : t));
+                          } catch (err) {
+                            alert("Failed to end task");
+                          }
+                        }
+                      }}
+                    >
+                      End Task
+                    </button>
+                  )}
+                  {isPendingApproval && (
+                    <button className="btn-delete-task" onClick={async (e) => {
+                      e.stopPropagation();
+                      if (confirm("Are you sure you want to cancel this pending task?")) {
+                        try {
+                          await api.patch(`/jobs/${tkId}/status`, { status: 'CANCELLED' });
+                          setClientTasks(clientTasks.map(t => (t.id || t._id) === tkId ? {...t, status: 'CANCELLED'} : t));
+                        } catch (err) {
+                          alert("Failed to cancel task");
+                        }
                       }
-                    }
-                  }}>Cancel Task</button>
+                    }}>Cancel Task</button>
                   )}
                 </div>
               </div>

@@ -80,14 +80,24 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
     }
   };
 
-  const getStatusBadge = (st: string) => {
-    if (st === 'COMPLETED') return { bg: '#DCFCE7', text: '#166534', label: isFr ? 'Terminé' : 'Completed' };
-    if (st === 'IN_PROGRESS' || st === 'ASSIGNED') return { bg: '#DBEAFE', text: '#1E40AF', label: isFr ? 'En cours' : 'In Progress' };
-    if (st === 'CANCELLED' || st === 'REJECTED') return { bg: '#FEE2E2', text: '#991B1B', label: isFr ? 'Annulé' : 'Cancelled' };
+  const isRejected = taskData.approvalStatus === 'REJECTED' || status === 'REJECTED';
+  const isPendingApproval = taskData.approvalStatus === 'PENDING_APPROVAL';
+  const isLive = (taskData.approvalStatus === 'APPROVED' || !taskData.approvalStatus) && (status === 'PENDING' || status === 'OPEN');
+  const isAssigned = status === 'ASSIGNED' || status === 'IN_PROGRESS';
+  const isCompleted = status === 'COMPLETED';
+  const isCancelled = status === 'CANCELLED';
+
+  const getStatusBadge = () => {
+    if (isRejected) return { bg: '#FEE2E2', text: '#991B1B', label: isFr ? 'Rejetée' : 'Rejected' };
+    if (isLive) return { bg: '#DCFCE7', text: '#166534', label: isFr ? 'En ligne (Live)' : 'Live' };
+    if (isPendingApproval) return { bg: '#FEF3C7', text: '#D97706', label: isFr ? 'En attente d\'approbation' : 'Pending Approval' };
+    if (isCompleted) return { bg: '#DCFCE7', text: '#166534', label: isFr ? 'Terminé' : 'Completed' };
+    if (isAssigned) return { bg: '#DBEAFE', text: '#1E40AF', label: isFr ? 'En cours' : 'In Progress' };
+    if (isCancelled) return { bg: '#F1F5F9', text: '#64748B', label: isFr ? 'Annulé' : 'Cancelled' };
     return { bg: '#FEF9C3', text: '#854D0E', label: isFr ? 'En attente d\'offres' : 'Pending Proposals' };
   };
 
-  const statusBadge = getStatusBadge(status);
+  const statusBadge = getStatusBadge();
   const scheduledStr = formatScheduledDate();
   const durationStr = getDurationLabel();
   const rawBudget = taskData.budget || taskData.budgetMax || taskData.budgetMin || 0;
@@ -111,6 +121,18 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
       alert(err.response?.data?.message || (isFr ? 'Échec de l\'attribution.' : 'Failed to hire provider.'));
     } finally {
       setHiringAssignmentId(null);
+    }
+  };
+
+  const handleEndTask = async () => {
+    if (!confirm(isFr ? 'Voulez-vous clôturer cette mission ? Elle ne sera plus visible sur le tableau des prestataires.' : 'Are you sure you want to end this live task? It will stop showing on the provider dashboard.')) return;
+    try {
+      await api.patch(`/jobs/${taskId}/status`, { status: 'CANCELLED' });
+      alert(isFr ? 'Mission terminée et retirée du tableau des prestataires.' : 'Task ended and removed from provider dashboard.');
+      if (setSelectedTask) setSelectedTask(null);
+      setActiveTab('My Tasks');
+    } catch (err: any) {
+      alert(err.response?.data?.message || (isFr ? 'Échec de la clôture.' : 'Failed to end task.'));
     }
   };
 
@@ -176,6 +198,15 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
               <span className="dot">•</span>
               <span>📍 {taskData.location || (taskData.isRemote ? (isFr ? 'En ligne' : 'Remote') : 'On-Site / Cameroon')}</span>
             </div>
+
+            {isRejected && (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5 my-3 text-xs text-rose-800">
+                <strong className="block text-sm text-rose-900 font-bold mb-1">
+                  ❌ {isFr ? 'Mission rejetée par l\'administration' : 'Task Rejected by Administrator'}
+                </strong>
+                <p>{taskData.rejectionReason || (isFr ? 'Cette tâche a été rejetée. Veuillez vérifier les informations ou contacter le support.' : 'This task was rejected by the platform administrators.')}</p>
+              </div>
+            )}
 
             <div className="upwork-divider my-4 border-t border-slate-100" />
 
@@ -445,7 +476,25 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                 </button>
               )}
 
-              {status !== 'COMPLETED' && status !== 'CANCELLED' && (
+              {isLive && (
+                <button 
+                  className="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
+                  onClick={handleEndTask}
+                >
+                  ✕ {isFr ? 'Terminer la mission' : 'End Task'}
+                </button>
+              )}
+
+              {isPendingApproval && (
+                <button 
+                  className="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
+                  onClick={handleCancelTask}
+                >
+                  ✕ {isFr ? 'Annuler la mission' : 'Cancel Task'}
+                </button>
+              )}
+
+              {isAssigned && (
                 <button 
                   className="w-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
                   onClick={handleCancelTask}

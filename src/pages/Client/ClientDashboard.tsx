@@ -305,7 +305,7 @@ export default function ClientDashboard({
         <div className="mb-10 relative group">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-800">Projects</h2>
-            <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Find Services')}>
+            <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Browse Projects')}>
               See All
             </button>
           </div>

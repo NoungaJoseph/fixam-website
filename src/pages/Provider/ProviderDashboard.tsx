@@ -67,6 +67,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
   const [dislikedJobIds, setDislikedJobIds] = useState<string[]>([]);
+  const [expandedJobIds, setExpandedJobIds] = useState<Record<string, boolean>>({});
 
   // Proposal modal states
   const [proposalModalJob, setProposalModalJob] = useState<JobLead | null>(null);
@@ -787,10 +788,52 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                         <span>Only providers located in {job.country || job.location || 'Cameroon'} may apply.</span>
                       </div>
 
-                      {/* Job Description Excerpt */}
+                      {/* Job Description Excerpt (Truncated to half with view more) */}
                       <p className="upwork-card-description">
-                        {job.description || 'We are seeking a qualified provider for this task...'}
-                        <span className="more-link" onClick={() => setSelectedJob(job)}> more</span>
+                        {(() => {
+                          const fullDesc = job.description || 'We are seeking a qualified provider for this task...';
+                          const isExpanded = !!expandedJobIds[job.id];
+                          const cutoff = Math.min(130, Math.max(60, Math.floor(fullDesc.length / 2)));
+                          const isLong = fullDesc.length > cutoff;
+
+                          if (isExpanded) {
+                            return (
+                              <>
+                                {fullDesc}
+                                <button
+                                  type="button"
+                                  className="more-link"
+                                  style={{ background: 'none', border: 'none', padding: 0, marginLeft: '6px', color: '#14B8A6', cursor: 'pointer', fontWeight: 700 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedJobIds(prev => ({ ...prev, [job.id]: false }));
+                                  }}
+                                >
+                                  {i18n.language === 'fr' ? ' Moins' : ' less'}
+                                </button>
+                              </>
+                            );
+                          }
+
+                          return (
+                            <>
+                              {isLong ? `${fullDesc.slice(0, cutoff)}...` : fullDesc}
+                              {isLong && (
+                                <button
+                                  type="button"
+                                  className="more-link"
+                                  style={{ background: 'none', border: 'none', padding: 0, marginLeft: '6px', color: '#14B8A6', cursor: 'pointer', fontWeight: 700 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedJobIds(prev => ({ ...prev, [job.id]: true }));
+                                  }}
+                                >
+                                  {i18n.language === 'fr' ? ' Voir plus' : ' more'}
+                                </button>
+                              )}
+                            </>
+                          );
+                        })()}
                       </p>
 
                       {/* Skill Pills */}

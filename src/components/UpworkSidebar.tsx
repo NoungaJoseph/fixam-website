@@ -292,10 +292,13 @@ export default function UpworkSidebar({
                   <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('Dashboard')}>
                     {i18n.language === 'fr' ? 'Poster une mission' : 'Post a Task'}
                   </button>
-                  <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('Find Services')}>
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'Find Services' ? 'active' : ''}`} onClick={() => handleItemClick('Find Services')}>
                     {i18n.language === 'fr' ? 'Trouver un prestataire' : 'Find Providers'}
                   </button>
-                  <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('Saved Providers')}>
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'Browse Projects' ? 'active' : ''}`} onClick={() => handleItemClick('Browse Projects')}>
+                    {i18n.language === 'fr' ? 'Parcourir les projets' : 'Browse Projects'}
+                  </button>
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'Saved Providers' ? 'active' : ''}`} onClick={() => handleItemClick('Saved Providers')}>
                     {i18n.language === 'fr' ? 'Prestataires favoris' : 'Saved Providers'}
                   </button>
                 </>
