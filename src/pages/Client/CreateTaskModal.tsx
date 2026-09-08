@@ -29,21 +29,16 @@ const PRIORITY_OPTIONS = [
 ];
 
 const PROVIDER_TIERS = [
-  { value: '1', label: '1 Provider (1 Coin)', fr: '1 Prestataire (1 Pièce)', coins: 1, desc: 'Needs 1 provider', defaultCount: 1 },
-  { value: '2', label: '2 Providers (2 Coins)', fr: '2 Prestataires (2 Pièces)', coins: 2, desc: 'Needs 2 providers', defaultCount: 2 },
-  { value: '3', label: '3+ Providers (3 Coins)', fr: '3+ Prestataires (3 Pièces)', coins: 3, desc: 'This job needs at least 3 to 6 providers (e.g. 5–6 people)', defaultCount: 5 },
-  { value: '7', label: '7+ Providers (4 Coins)', fr: '7+ Prestataires (4 Pièces)', coins: 4, desc: 'This job needs 7 to 9 providers', defaultCount: 7 },
-  { value: '10', label: '10+ Providers (5 Coins)', fr: '10+ Prestataires (5 Pièces)', coins: 5, desc: 'This job needs more than 10 people', defaultCount: 10 },
-  { value: 'custom', label: 'Custom Number of Providers...', fr: 'Nombre personnalisé de prestataires...', coins: 0, desc: 'Enter the exact number of people needed', defaultCount: 5 },
+  { value: '1', label: '1 Provider', fr: '1 Prestataire', desc: 'Needs 1 provider', defaultCount: 1 },
+  { value: '2', label: '2 Providers', fr: '2 Prestataires', desc: 'Needs 2 providers', defaultCount: 2 },
+  { value: '3', label: '3 to 6 Providers', fr: '3 à 6 Prestataires', desc: 'This job needs at least 3 to 6 providers (e.g. 5–6 people)', defaultCount: 5 },
+  { value: '7', label: '7 to 9 Providers', fr: '7 à 9 Prestataires', desc: 'This job needs 7 to 9 providers', defaultCount: 7 },
+  { value: '10', label: '10+ Providers', fr: '10+ Prestataires', desc: 'This job needs more than 10 people', defaultCount: 10 },
+  { value: 'custom', label: 'Custom Number of Providers...', fr: 'Nombre personnalisé de prestataires...', desc: 'Enter the exact number of people needed', defaultCount: 5 },
 ];
 
-const calculateJobCoinCost = (count: number) => {
-  const c = parseInt(String(count), 10) || 1;
-  if (c <= 1) return 1;
-  if (c === 2) return 2;
-  if (c >= 3 && c <= 6) return 3;
-  if (c >= 7 && c <= 9) return 4;
-  return 5; // 10 and above
+const calculateJobCoinCost = (_count: number) => {
+  return 0; // Job creation is currently free
 };
 
 const SCOPE_OPTIONS = [
@@ -558,7 +553,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                       <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>{t.providersNeeded}</label>
                       <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#0D9488', backgroundColor: '#E6F7F5', padding: '2px 8px', borderRadius: '6px' }}>
-                        {calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded))} {calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded)) === 1 ? (isFr ? 'Pièce' : 'Coin') : (isFr ? 'Pièces' : 'Coins')}
+                        {isFr ? 'Gratuit' : 'Free'}
                       </span>
                     </div>
 
@@ -732,7 +727,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                     <ReviewRow label={t.budgetMin} value={`XAF ${Number(form.budgetMin).toLocaleString()} - ${Number(form.budgetMax).toLocaleString()}`} />
                     <ReviewRow 
                       label={t.providersNeeded} 
-                      value={`${form.exactProviders || form.providersNeeded} ${Number(form.exactProviders || form.providersNeeded) > 1 ? (isFr ? 'prestataires' : 'providers') : (isFr ? 'prestataire' : 'provider')} (${calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded))} ${calculateJobCoinCost(Number(form.exactProviders || form.providersNeeded)) === 1 ? (isFr ? 'pièce' : 'coin') : (isFr ? 'pièces' : 'coins')})`} 
+                      value={`${form.exactProviders || form.providersNeeded} ${Number(form.exactProviders || form.providersNeeded) > 1 ? (isFr ? 'prestataires' : 'providers') : (isFr ? 'prestataire' : 'provider')}`} 
                     />
                     <ReviewRow label={t.priority} value={PRIORITY_OPTIONS.find(o => o.value === form.priority)?.[isFr ? 'fr' : 'label'] || form.priority} />
                     <ReviewRow label={t.taskScope} value={SCOPE_OPTIONS.find(o => o.value === form.taskScope)?.[isFr ? 'fr' : 'label'] || form.taskScope} />

@@ -907,14 +907,14 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
                         <button 
                           className="upwork-submit-proposal-btn"
-                          style={(job.hasApplied || appliedJobIds.includes(job.id)) ? { background: '#0D9488' } : undefined}
+                          style={(job.hasApplied || appliedJobIds.includes(job.id)) ? { background: '#F1F5F9', color: '#0F766E', border: '1px solid #99F6E4', fontWeight: 700 } : undefined}
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedJob(job);
                           }}
                         >
                           {(job.hasApplied || appliedJobIds.includes(job.id))
-                            ? (i18n.language === 'fr' ? '🚀 Booster ma proposition' : '🚀 Boost Proposal')
+                            ? (i18n.language === 'fr' ? '✓ Postulé' : '✓ Applied')
                             : (i18n.language === 'fr' ? 'Voir & Postuler' : 'View & Submit Proposal')}
                         </button>
                       </div>
@@ -1431,33 +1431,30 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
               {/* RIGHT SIDEBAR COLUMN */}
               <div className="upwork-right-column">
-                {(selectedJob.hasApplied || appliedJobIds.includes(selectedJob.id)) && (
-                  <div style={{ background: '#F0FDFA', border: '1px solid #99F6E4', borderRadius: '12px', padding: '12px 14px', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, color: '#0F766E', fontSize: '0.88rem', marginBottom: '4px' }}>
-                      <span>🚀</span>
-                      <span>{i18n.language === 'fr' ? 'Vous avez déjà postulé à cette mission' : 'You have already applied for this job'}</span>
+                {(selectedJob.hasApplied || appliedJobIds.includes(selectedJob.id)) ? (
+                  <button
+                    className="btn-upwork-primary"
+                    disabled
+                    style={{ background: '#F0FDF4', color: '#166534', border: '1px solid #BBF7D0', cursor: 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontWeight: 800 }}
+                  >
+                    <span>✓</span>
+                    <span>{i18n.language === 'fr' ? 'Candidature envoyée (Postulé)' : 'Applied'}</span>
+                  </button>
+                ) : (
+                  <>
+                    <div className="upwork-notice-box">
+                      <span className="notice-icon">⚡</span>
+                      <p>Submitting a proposal for this task uses <strong>1 Fixam Coin</strong> from your wallet.</p>
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.78rem', color: '#115E59', lineHeight: 1.4 }}>
-                      {i18n.language === 'fr'
-                        ? 'Vous pouvez booster votre proposition pour passer en tête de liste et attirer l\'attention du client !'
-                        : 'You can boost your proposal with coins to rank at the top of the client\'s list and get hired faster!'}
-                    </p>
-                  </div>
+
+                    <button
+                      className="btn-upwork-primary"
+                      onClick={() => openProposalModal(selectedJob)}
+                    >
+                      {i18n.language === 'fr' ? 'Soumettre une proposition' : 'Submit Proposal'}
+                    </button>
+                  </>
                 )}
-
-                <div className="upwork-notice-box">
-                  <span className="notice-icon">⚡</span>
-                  <p>Submitting a proposal for this task uses <strong>1 Fixam Coin</strong> from your wallet.</p>
-                </div>
-
-                <button
-                  className="btn-upwork-primary"
-                  onClick={() => openProposalModal(selectedJob)}
-                >
-                  {(selectedJob.hasApplied || appliedJobIds.includes(selectedJob.id))
-                    ? (i18n.language === 'fr' ? '🚀 Booster ma proposition' : '🚀 Boost Proposal')
-                    : (i18n.language === 'fr' ? 'Soumettre une proposition' : 'Submit Proposal')}
-                </button>
 
                 <button
                   className="btn-upwork-secondary"

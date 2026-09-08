@@ -30,12 +30,12 @@ const PRIORITY_OPTIONS = [
 ];
 
 const PROVIDER_TIERS = [
-  { value: '1', label: '1 Provider (1 Coin)', fr: '1 Prestataire (1 Pièce)', coins: 1, desc: 'Needs 1 provider', defaultCount: 1 },
-  { value: '2', label: '2 Providers (2 Coins)', fr: '2 Prestataires (2 Pièces)', coins: 2, desc: 'Needs 2 providers', defaultCount: 2 },
-  { value: '3', label: '3+ Providers (3 Coins)', fr: '3+ Prestataires (3 Pièces)', coins: 3, desc: 'This job needs 3 to 6 providers', defaultCount: 5 },
-  { value: '7', label: '7+ Providers (4 Coins)', fr: '7+ Prestataires (4 Pièces)', coins: 4, desc: 'This job needs 7 to 9 providers', defaultCount: 7 },
-  { value: '10', label: '10+ Providers (5 Coins)', fr: '10+ Prestataires (5 Pièces)', coins: 5, desc: 'This job needs more than 10 providers', defaultCount: 10 },
-  { value: 'custom', label: 'Custom Number of Providers...', fr: 'Nombre personnalisé de prestataires...', coins: 0, desc: 'Enter the exact number of people needed', defaultCount: 5 },
+  { value: '1', label: '1 Provider', fr: '1 Prestataire', desc: 'Needs 1 provider', defaultCount: 1 },
+  { value: '2', label: '2 Providers', fr: '2 Prestataires', desc: 'Needs 2 providers', defaultCount: 2 },
+  { value: '3', label: '3 to 6 Providers', fr: '3 à 6 Prestataires', desc: 'This job needs 3 to 6 providers', defaultCount: 5 },
+  { value: '7', label: '7 to 9 Providers', fr: '7 à 9 Prestataires', desc: 'This job needs 7 to 9 providers', defaultCount: 7 },
+  { value: '10', label: '10+ Providers', fr: '10+ Prestataires', desc: 'This job needs more than 10 providers', defaultCount: 10 },
+  { value: 'custom', label: 'Custom Number of Providers...', fr: 'Nombre personnalisé de prestataires...', desc: 'Enter the exact number of people needed', defaultCount: 5 },
 ];
 
 const deriveCategoryFromTitle = (title: string) => {
