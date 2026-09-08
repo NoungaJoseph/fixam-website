@@ -207,16 +207,26 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
       return;
     }
 
-    // Send images if attached
+    // Send attached files (images, videos, documents)
     if (selectedImages.length > 0) {
-      const imagesToSend = [...selectedImages];
+      const filesToSend = [...selectedImages];
       setSelectedImages([]);
-      for (const imgUrl of imagesToSend) {
+      for (const fileUrl of filesToSend) {
+        // Detect file type from data URL mime type
+        let fileType = 'IMAGE';
+        let fileLabel = 'Sent an image';
+        if (fileUrl.startsWith('data:video/')) {
+          fileType = 'VIDEO';
+          fileLabel = 'Sent a video';
+        } else if (fileUrl.startsWith('data:application/pdf') || fileUrl.startsWith('data:application/msword') || fileUrl.startsWith('data:application/vnd.openxmlformats') || fileUrl.startsWith('data:text/')) {
+          fileType = 'FILE';
+          fileLabel = 'Sent a document';
+        }
         const tempMsg = {
           id: Date.now().toString() + Math.random(),
-          content: 'Sent an image',
-          mediaUrl: imgUrl,
-          type: 'IMAGE',
+          content: fileLabel,
+          mediaUrl: fileUrl,
+          type: fileType,
           senderId: user?.id,
           createdAt: new Date().toISOString()
         };
@@ -225,13 +235,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
           await api.post('/chat/send', {
             conversationId: currentConvId,
             receiverId,
-            content: 'Sent an image',
-            mediaUrl: imgUrl,
-            type: 'IMAGE'
+            content: fileLabel,
+            mediaUrl: fileUrl,
+            type: fileType
           });
         } catch (err: any) {
-          console.error('Failed to send image', err);
-          alert(err.response?.data?.message || 'Failed to send image');
+          console.error('Failed to send file', err);
+          alert(err.response?.data?.message || 'Failed to send file');
         }
       }
     }
@@ -843,7 +853,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                       type="file" 
                       ref={fileInputRef} 
                       multiple 
-                      accept="image/*" 
+                      accept="image/*,video/*,application/pdf,.doc,.docx,.txt" 
                       style={{ display: 'none' }} 
                       onChange={handleImagePick} 
                     />

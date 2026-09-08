@@ -183,6 +183,15 @@
 .feed-tab-links {
   display: flex;
   gap: 1.5rem;
+  align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.feed-tab-links::-webkit-scrollbar {
+  display: none;
 }
 
 .feed-tab-btn {
@@ -195,6 +204,8 @@
   cursor: pointer;
   position: relative;
   transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .feed-tab-btn.active {
@@ -1417,6 +1428,7 @@
     padding: 0.4rem 0.75rem !important;
     font-size: 0.8rem !important;
     flex-shrink: 0 !important;
+    white-space: nowrap !important;
     border-radius: 8px !important;
   }
 

@@ -914,7 +914,7 @@ const handleGlobalLanguageChange = (langCode: string) => {
 
 function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page; onNavigate: (page: Page) => void; onSearch: (query: string) => void; setSelectedPathway: (pathway: string) => void }) {
   const { t, i18n } = useTranslation();
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<'services' | 'guide' | 'pathways' | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('Home Services');
@@ -1014,7 +1014,11 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             >
               <Icon name="menu" />
             </button>
-            <button className="brand brand-button" onClick={() => handleNavigate('home')} aria-label="Go to homepage">
+            <button
+              className="brand brand-button"
+              onClick={() => handleNavigate(isLoggedIn ? 'dashboard' : 'home')}
+              aria-label={isLoggedIn ? "Go to dashboard" : "Go to homepage"}
+            >
               <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '32px', transform: 'scale(5)', transformOrigin: 'center center' }} />
             </button>
           </div>
@@ -1111,7 +1115,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
         <div className="header-lower-row" style={{ justifyContent: 'center', position: 'relative' }}>
           <nav className="desktop-nav">
-            <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate('home')}>{t('nav.home') || 'HOME'}</button>
+            <button className={`nav-link-new ${page === 'home' ? 'active' : ''}`} onClick={() => handleNavigate(isLoggedIn ? 'dashboard' : 'home')}>{t('nav.home') || 'HOME'}</button>
             <span className="nav-divider">|</span>
 
             {/* Explore Services Dropdown */}
@@ -1271,7 +1275,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
         <nav className={`main-nav-mobile ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
 
           <div className="mobile-menu-header">
-            <button className="brand brand-button" onClick={() => { setIsMobileMenuOpen(false); handleNavigate('home'); }} aria-label="Go to homepage">
+            <button className="brand brand-button" onClick={() => { setIsMobileMenuOpen(false); handleNavigate(isLoggedIn ? 'dashboard' : 'home'); }} aria-label={isLoggedIn ? "Go to dashboard" : "Go to homepage"}>
               <img src={asset('fixam-white-bg.png')} alt="Fixam Logo" style={{ height: '28px', transform: 'scale(5)', transformOrigin: 'left center' }} />
             </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -1796,7 +1800,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
             await logout();
             onNavigate('home');
           }}
-          onNavigateHome={() => onNavigate('home')}
+          onNavigateHome={() => setActiveTab('Dashboard')}
         />
 
         {/* Main Dashboard Area */}
@@ -2163,7 +2167,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
           await logout();
           onNavigate('home');
         }}
-        onNavigateHome={() => onNavigate('home')}
+        onNavigateHome={() => setActiveTab('Dashboard')}
       />
 
       {/* Main Dashboard Area */}
