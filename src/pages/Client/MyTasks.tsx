@@ -74,9 +74,9 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
           <span className="metric-card-desc">Total Bookings</span>
         </div>
 
-        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Tasks')} style={{ cursor: 'pointer' }}>
+        <div className="metric-card-premium m-active" onClick={() => setActiveTab('My Jobs')} style={{ cursor: 'pointer' }}>
           <div className="metric-card-header">
-            <span>Active Tasks</span>
+            <span>Active Jobs</span>
             <div className="metric-icon-box"><Icon name="briefcase" /></div>
           </div>
           <strong className="metric-big-num">{activeTasksCount}</strong>
@@ -117,7 +117,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
         <div className="bg-transparent border-0 p-0 w-full task-list-panel">
           <div className="dash-panel-header-new">
-            <h2>My Posted Tasks</h2>
+            <h2>My Posted Jobs</h2>
           </div>
           <div className="posted-tasks-list max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             {clientTasks.map((tk) => {
@@ -246,10 +246,10 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
             <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 mb-4">
               <Icon name="briefcase" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Post a New Task</h3>
-            <p className="text-gray-500 mb-6 max-w-sm">Need help with something? Create a new task to start receiving offers from verified professionals in your area.</p>
-            <button className="bg-[#14B8A6] text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-[#0F9788] transition-colors" onClick={() => setIsPostTaskOpen(true)}>
-              + Create Task
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Post a New Job</h3>
+            <p className="text-gray-500 mb-6 max-w-sm">Need help with something? Post a new job to start receiving offers from verified professionals in your area.</p>
+            <button className="bg-[#14B8A6] text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-[#0F9788] transition-colors cursor-pointer" onClick={() => setActiveTab ? setActiveTab('Post a Job') : setIsPostTaskOpen(true)}>
+              + Post a Job
             </button>
           </div>
         </div>

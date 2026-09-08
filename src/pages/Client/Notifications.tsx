@@ -6,9 +6,10 @@ import { api } from '../../services/api';
 interface NotificationsProps {
   setActiveTab?: (tab: string) => void;
   setSelectedBooking?: (booking: any) => void;
+  setSelectedTask?: (task: any) => void;
 }
 
-export default function Notifications({ setActiveTab, setSelectedBooking }: NotificationsProps) {
+export default function Notifications({ setActiveTab, setSelectedBooking, setSelectedTask }: NotificationsProps) {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
@@ -116,12 +117,25 @@ export default function Notifications({ setActiveTab, setSelectedBooking }: Noti
     }
 
     // Job-related notifications
-    if (type.includes('JOB') || type.includes('APPLICATION') || type.includes('OFFER') || data.jobId) {
+    if (type.includes('JOB') || type.includes('APPLICATION') || type.includes('OFFER') || data.jobId || data.taskId) {
       return {
-        label: 'View Jobs',
-        action: () => {
-          if (!notif.isRead) handleSingleRead(notif.id);
-          if (setActiveTab) setActiveTab('My Jobs');
+        label: 'View Job',
+        action: async () => {
+          if (!notif.isRead) await handleSingleRead(notif.id);
+          const jId = data.jobId || data.taskId || notif.jobId || notif.taskId;
+          if (jId && setSelectedTask && setActiveTab) {
+            try {
+              const res = await api.get(`/jobs/${jId}`);
+              if (res.data?.data) {
+                setSelectedTask(res.data.data);
+                setActiveTab('Task Details');
+                return;
+              }
+            } catch (err) {
+              console.error('Failed to load job details', err);
+            }
+          }
+          if (setActiveTab) setActiveTab('My Tasks');
         }
       };
     }

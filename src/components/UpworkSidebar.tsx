@@ -289,8 +289,8 @@ export default function UpworkSidebar({
                 </>
               ) : (
                 <>
-                  <button className="upwork-sidebar-subitem" onClick={() => handleItemClick('Dashboard')}>
-                    {i18n.language === 'fr' ? 'Poster une mission' : 'Post a Task'}
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'Post a Job' ? 'active' : ''}`} onClick={() => handleItemClick('Post a Job')}>
+                    {i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job'}
                   </button>
                   <button className={`upwork-sidebar-subitem ${activeTab === 'Find Services' ? 'active' : ''}`} onClick={() => handleItemClick('Find Services')}>
                     {i18n.language === 'fr' ? 'Trouver un prestataire' : 'Find Providers'}
@@ -331,8 +331,8 @@ export default function UpworkSidebar({
                   <button className={`upwork-sidebar-subitem ${activeTab === 'My Bookings' ? 'active' : ''}`} onClick={() => handleItemClick('My Bookings')}>
                     {i18n.language === 'fr' ? 'Mes réservations' : 'My Bookings'}
                   </button>
-                  <button className={`upwork-sidebar-subitem ${activeTab === 'My Tasks' ? 'active' : ''}`} onClick={() => handleItemClick('My Tasks')}>
-                    {i18n.language === 'fr' ? 'Mes tâches publiées' : 'My Posted Tasks'}
+                  <button className={`upwork-sidebar-subitem ${activeTab === 'My Jobs' || activeTab === 'My Tasks' ? 'active' : ''}`} onClick={() => handleItemClick('My Jobs')}>
+                    {i18n.language === 'fr' ? 'Mes missions publiées' : 'My Posted Jobs'}
                   </button>
                   <button className={`upwork-sidebar-subitem ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => handleItemClick('Reviews')}>
                     {i18n.language === 'fr' ? 'Avis et retours' : 'Reviews & Feedback'}
@@ -351,7 +351,7 @@ export default function UpworkSidebar({
             <span className="upwork-sidebar-label">{i18n.language === 'fr' ? 'Finances' : 'Finances'}</span>
             {walletBalance > 0 && (
               <span className="upwork-sidebar-badge-wallet mr-2">
-                {walletBalance.toLocaleString()} XAF
+                {walletBalance.toLocaleString()} {i18n.language === 'fr' ? 'Pièces' : 'Coins'}
               </span>
             )}
             <ChevronDownIcon open={financesOpen} />

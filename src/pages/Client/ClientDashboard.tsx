@@ -187,16 +187,16 @@ export default function ClientDashboard({
         </button>
       </div>
 
-      {/* Post Task Hero Section */}
+      {/* Post Job Hero Section */}
       <div className="grid md:grid-cols-2 gap-5 mb-8">
         <div className="bg-orange-50/50 border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
           <div>
-            <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Publier une tâche' : 'Post a Task'}</p>
+            <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job'}</p>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-md bg-orange-100 flex items-center justify-center">
                 <span className="text-orange-600"><Icon name="briefcase" /></span>
               </div>
-              <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Nouvelle tâche' : 'New Job'}</span>
+              <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Nouvelle mission' : 'New Job'}</span>
             </div>
             <h3 className="text-base font-semibold text-gray-700 mb-4">
               {i18n.language === 'fr' ? 'Avec quoi avez-vous besoin d\'aide ?' : 'What do you need help with?'}
@@ -204,10 +204,10 @@ export default function ClientDashboard({
           </div>
           <div className="border-t border-gray-200 pt-3 flex justify-end">
             <button 
-              className="bg-[#14B8A6] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:bg-[#0F9788] transition-colors shadow-sm"
-              onClick={() => setShowTaskModal(true)}
+              className="bg-[#14B8A6] text-white text-sm font-bold px-6 py-2.5 rounded-lg hover:bg-[#0F9788] transition-colors shadow-sm cursor-pointer"
+              onClick={() => setActiveTab('Post a Job')}
             >
-              {i18n.language === 'fr' ? 'Créer une tâche' : 'Create a Task'}
+              {i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job'}
             </button>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function ClientDashboard({
               </div>
               <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Pièces Fixam' : 'Fixam Coins'}</span>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">{walletBalance.toLocaleString()} XAF</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">{walletBalance.toLocaleString()} {i18n.language === 'fr' ? 'Pièces' : 'Coins'}</h3>
           </div>
           
           <div className="border-t border-gray-200 pt-4 flex flex-col items-center justify-center">

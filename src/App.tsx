@@ -29,6 +29,7 @@ import ProjectDetail from './pages/Client/ProjectDetail'
 import BookingDetail from './pages/Client/BookingDetail'
 import TaskDetails from './pages/Client/TaskDetails'
 import BrowseProjects from './pages/Client/BrowseProjects'
+import PostJob from './pages/Client/PostJob'
 
 // Provider Subpages
 import MyJobs from './pages/Provider/MyJobs'
@@ -243,6 +244,8 @@ const TAB_SLUG_MAP: Record<string, string> = {
   'browse-projects': 'Browse Projects',
   'my-bookings': 'My Bookings',
   'my-tasks': 'My Tasks',
+  'post-a-job': 'Post a Job',
+  'create-task': 'Post a Job',
   'saved-providers': 'Saved Providers',
   'stats': 'Stats',
   'wallet-and-coins': 'Wallet & Coins',
@@ -1747,11 +1750,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   if (userRole === 'client') {
     const clientNavItems = [
       { name: 'Dashboard', label: i18n.language === 'fr' ? 'Tableau de bord' : 'Dashboard', icon: 'home' as IconName },
+      { name: 'Post a Job', label: i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job', icon: 'wrench' as IconName },
+      { name: 'My Jobs', label: i18n.language === 'fr' ? 'Mes missions' : 'My Jobs', icon: 'briefcase' as IconName },
       { name: 'Find Services', label: i18n.language === 'fr' ? 'Trouver un service' : 'Find Services', icon: 'search' as IconName },
       { name: 'My Bookings', label: i18n.language === 'fr' ? 'Mes réservations' : 'My Bookings', icon: 'calendar' as IconName },
       { name: 'Saved Providers', label: i18n.language === 'fr' ? 'Prestataires enregistrés' : 'Saved Providers', icon: 'heart' as IconName },
       { name: 'Messages', label: i18n.language === 'fr' ? 'Messages' : 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
-      { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+      { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} ${i18n.language === 'fr' ? 'Pièces' : 'Coins'}` },
       { name: 'Refer & Earn', label: i18n.language === 'fr' ? 'Parrainer & Gagner' : 'Refer & Earn', icon: 'star' as IconName },
       { name: 'Settings', label: i18n.language === 'fr' ? 'Paramètres' : 'Settings', icon: 'settings' as IconName },
       { name: 'Support', label: i18n.language === 'fr' ? 'Support' : 'Support', icon: 'message' as IconName }
@@ -1937,7 +1942,14 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setSelectedBooking={handleSetSelectedBooking}
                   />
                 )}
-                {activeTab === 'My Tasks' && (
+                {(activeTab === 'Post a Job' || activeTab === 'Create Task') && (
+                  <PostJob
+                    setActiveTab={setActiveTab}
+                    setClientTasks={setClientTasks}
+                    clientTasks={clientTasks}
+                  />
+                )}
+                {(activeTab === 'My Tasks' || activeTab === 'My Jobs') && (
                   <MyTasks
                     clientTasks={clientTasks}
                     setClientTasks={setClientTasks}
@@ -1951,7 +1963,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   />
                 )}
                 {/* Prevent blank screen if user reloads on detail tabs */}
-                {activeTab === 'Task Details' && (
+                {(activeTab === 'Task Details' || activeTab === 'Job Details') && (
                   <MyTasks
                     clientTasks={clientTasks}
                     setClientTasks={setClientTasks}
@@ -1997,7 +2009,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientTasks={clientTasks}
                   />
                 )}
-                {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
+                {activeTab === 'Notifications' && (
+                  <Notifications
+                    setActiveTab={setActiveTab}
+                    setSelectedBooking={handleSetSelectedBooking}
+                    setSelectedTask={handleSetSelectedTask}
+                  />
+                )}
                 {activeTab === 'Messages' && (
                   <ErrorBoundary fallbackMessage="Unable to load chat messages">
                     <Messages
@@ -2091,7 +2109,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
     { name: 'Messages', label: i18n.language === 'fr' ? 'Messages' : 'Messages', icon: 'chat' as IconName, badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined },
     { name: 'Notifications', label: i18n.language === 'fr' ? 'Notifications' : 'Notifications', icon: 'bell' as IconName, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
     { name: 'My Stats', label: i18n.language === 'fr' ? 'Mes statistiques' : 'My Stats', icon: 'chart' as IconName },
-    { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} XAF` },
+    { name: 'Wallet', label: i18n.language === 'fr' ? 'Portefeuille' : 'Wallet', icon: 'wallet' as IconName, walletBadge: `${walletBalance.toLocaleString()} ${i18n.language === 'fr' ? 'Pièces' : 'Coins'}` },
     { name: 'Reviews', label: i18n.language === 'fr' ? 'Avis clients' : 'Reviews', icon: 'star' as IconName },
     { name: 'My Profile', label: i18n.language === 'fr' ? 'Mon profil' : 'My Profile', icon: 'user' as IconName },
     { name: 'Settings', label: i18n.language === 'fr' ? 'Paramètres' : 'Settings', icon: 'wrench' as IconName },
@@ -2274,7 +2292,13 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                   setActiveChatUser={setActiveChatUser}
                 />
               )}
-              {activeTab === 'Notifications' && <Notifications setActiveTab={setActiveTab} setSelectedBooking={handleSetSelectedBooking} />}
+              {activeTab === 'Notifications' && (
+                <Notifications
+                  setActiveTab={setActiveTab}
+                  setSelectedBooking={handleSetSelectedBooking}
+                  setSelectedTask={handleSetSelectedTask}
+                />
+              )}
               {activeTab === 'Boost Profile' && <BoostProfile />}
               {activeTab === 'Messages' && (
                 <ErrorBoundary fallbackMessage="Unable to load chat messages">

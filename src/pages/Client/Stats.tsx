@@ -254,8 +254,8 @@ export default function Stats() {
             <div class="val" style="color: #16A34A;">${statsData.doneBookings}</div>
           </div>
           <div class="summary-card">
-            <div class="lbl">Total Budget / Coins</div>
-            <div class="val" style="color: #0D9488;">${statsData.coinsUsed.toLocaleString()} XAF</div>
+            <div class="lbl">Total Coins Used</div>
+            <div class="val" style="color: #0D9488;">${statsData.coinsUsed.toLocaleString()} Coins</div>
           </div>
         </div>
 
