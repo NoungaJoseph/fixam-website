@@ -1897,6 +1897,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 setActiveTab={setActiveTab}
                 setSelectedTask={handleSetSelectedTask}
                 setActiveChatUser={setActiveChatUser}
+                setSelectedProvider={setSelectedProvider}
               />
             ) : selectedBooking ? (
               <BookingDetail
@@ -1945,6 +1946,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientBookings={clientBookings}
                     setSelectedBooking={handleSetSelectedBooking}
                     setSelectedTask={handleSetSelectedTask}
+                    setSelectedProvider={setSelectedProvider}
+                    setActiveChatUser={setActiveChatUser}
                   />
                 )}
                 {/* Prevent blank screen if user reloads on detail tabs */}
@@ -1957,6 +1960,8 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     clientBookings={clientBookings}
                     setSelectedBooking={handleSetSelectedBooking}
                     setSelectedTask={handleSetSelectedTask}
+                    setSelectedProvider={setSelectedProvider}
+                    setActiveChatUser={setActiveChatUser}
                   />
                 )}
                 {activeTab === 'Booking Details' && (

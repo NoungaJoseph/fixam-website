@@ -9,9 +9,10 @@ interface TaskDetailsProps {
   setActiveTab: (tab: string) => void;
   setSelectedTask?: (task: any) => void;
   setActiveChatUser?: (user: any) => void;
+  setSelectedProvider?: (pro: any) => void;
 }
 
-export default function TaskDetails({ task, setActiveTab, setSelectedTask, setActiveChatUser }: TaskDetailsProps) {
+export default function TaskDetails({ task, setActiveTab, setSelectedTask, setActiveChatUser, setSelectedProvider }: TaskDetailsProps) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
 
@@ -310,7 +311,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
             <div className="upwork-section">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-base font-bold text-slate-900">
-                  {isFr ? 'Propositions reçues' : 'Proposals & Offers'} ({proposals.length})
+                  {isFr ? 'Propositions reçues' : 'Proposals & Offers'} ({proposals.length || taskData.applicationCount || 0})
                 </h3>
               </div>
 
@@ -336,22 +337,53 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                     const propPrice = prop.proposedBudget || prop.budget || prop.bidAmount;
                     const isAccepted = prop.status === 'ACCEPTED' || prop.status === 'HIRED';
 
+                    const openProviderProfile = () => {
+                      if (!setSelectedProvider) return;
+                      const pro = prop.provider || {};
+                      const proUser = pro.user || prop.user || {};
+                      const providerData = {
+                        id: pro.id || prop.providerId,
+                        userId: proUser.id || pro.userId || prop.providerId,
+                        name: pName,
+                        avatar: pAvatar,
+                        image: pAvatar,
+                        role: pro.skills?.[0] || pro.role || 'Service Provider',
+                        skills: pro.skills || [],
+                        bio: pro.bio,
+                        rate: pro.rate || propPrice,
+                        rating: pro.rating || '5.0',
+                        isVerified: pro.verification === 'VERIFIED',
+                        originalData: {
+                          ...pro,
+                          user: proUser,
+                          id: pro.id || prop.providerId,
+                          userId: proUser.id || pro.userId
+                        }
+                      };
+                      setSelectedProvider(providerData);
+                      setActiveTab('Provider Profile');
+                    };
+
                     return (
                       <div 
                         key={propId} 
                         className={`p-4 rounded-xl border transition ${isAccepted ? 'bg-emerald-50/50 border-emerald-300' : 'bg-white border-slate-200 hover:border-teal-300 shadow-sm'}`}
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="flex items-center gap-3">
+                          <div 
+                            className={`flex items-center gap-3 ${setSelectedProvider ? 'cursor-pointer group' : ''}`}
+                            onClick={openProviderProfile}
+                            title={setSelectedProvider ? (isFr ? 'Voir le profil' : 'View Profile') : undefined}
+                          >
                             <img 
                               src={pAvatar} 
                               alt={pName} 
-                              className="w-12 h-12 rounded-full object-cover border border-teal-100"
+                              className="w-12 h-12 rounded-full object-cover border border-teal-100 group-hover:ring-2 ring-teal-400 transition"
                               onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_AVATAR; }} 
                             />
                             <div>
                               <div className="flex items-center gap-2">
-                                <h4 className="font-bold text-slate-900 text-sm">{pName}</h4>
+                                <h4 className="font-bold text-slate-900 text-sm group-hover:text-teal-600 transition">{pName}</h4>
                                 {isAccepted && (
                                   <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">
                                     {isFr ? 'Engagé' : 'Hired'}
@@ -366,7 +398,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-3 sm:self-center">
+                          <div className="flex items-center gap-3 sm:self-center flex-wrap">
                             {propPrice && (
                               <div className="text-right">
                                 <span className="block text-sm font-extrabold text-teal-600">
@@ -378,7 +410,18 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                               </div>
                             )}
 
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 items-center flex-wrap">
+                              {setSelectedProvider && (
+                                <button
+                                  type="button"
+                                  className="px-3 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                                  onClick={openProviderProfile}
+                                >
+                                  <Icon name="user" />
+                                  <span>{isFr ? 'Voir le profil' : 'View Profile'}</span>
+                                </button>
+                              )}
+
                               {setActiveChatUser && (
                                 <button
                                   type="button"

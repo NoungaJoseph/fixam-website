@@ -14,9 +14,11 @@ interface MyTasksProps {
   savedProsState?: any[];
   setSelectedTask?: (task: any) => void;
   setSelectedBooking?: (bk: any) => void;
+  setSelectedProvider?: (pro: any) => void;
+  setActiveChatUser?: (user: any) => void;
 }
 
-export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask, setSelectedBooking }: MyTasksProps) {
+export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, walletBalance = 0, clientBookings = [], savedProsState = [], setSelectedTask, setSelectedBooking, setSelectedProvider, setActiveChatUser }: MyTasksProps) {
   const [isPostTaskOpen, setIsPostTaskOpen] = useState(false);
   const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
   const [viewOffersTask, setViewOffersTask] = useState<any | null>(null);
@@ -24,6 +26,36 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
 
   const handleJobCreated = (newJob: any) => {
     setClientTasks([newJob, ...clientTasks]);
+  };
+
+  const openOffersProviderProfile = (assignment: any) => {
+    if (!setSelectedProvider) return;
+    const pro = assignment.provider || {};
+    const proUser = pro.user || {};
+    const pName = proUser.fullName || `${proUser.firstName || ''} ${proUser.lastName || ''}`.trim() || 'Service Specialist';
+    const pAvatar = proUser.avatar ? getMediaUrl(proUser.avatar) : '';
+    const providerData = {
+      id: pro.id || assignment.providerId,
+      userId: proUser.id || pro.userId || assignment.providerId,
+      name: pName,
+      avatar: pAvatar,
+      image: pAvatar,
+      role: pro.skills?.[0] || pro.role || 'Service Provider',
+      skills: pro.skills || [],
+      bio: pro.bio,
+      rate: pro.rate || assignment.proposedBudget,
+      rating: pro.rating || '5.0',
+      isVerified: pro.verification === 'VERIFIED',
+      originalData: {
+        ...pro,
+        user: proUser,
+        id: pro.id || assignment.providerId,
+        userId: proUser.id || pro.userId
+      }
+    };
+    setViewOffersTask(null);
+    setSelectedProvider(providerData);
+    setActiveTab('Provider Profile');
   };
 
   const activeTasksCount = clientTasks.filter((t: any) => t.status === 'PENDING' || t.status === 'IN_PROGRESS').length;
@@ -92,7 +124,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
               const tkId = tk.id || tk._id;
               const tag = tk.category?.name || tk.categoryId || 'General';
               const price = tk.budget ? `${tk.budget} XAF` : '';
-              const bids = tk.applications?.length || 0;
+              const bids = tk.applicationCount ?? tk.assignments?.length ?? tk.applications?.length ?? tk._count?.assignments ?? 0;
               const rawStatus = tk.status || 'PENDING';
               const isRejected = tk.approvalStatus === 'REJECTED' || rawStatus === 'REJECTED';
               const isPendingApproval = tk.approvalStatus === 'PENDING_APPROVAL';
@@ -259,14 +291,18 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                   return (
                     <div key={assignment.id} className="p-4 rounded-xl border border-gray-200 bg-gray-50/50 space-y-3">
                       <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
+                        <div 
+                          className={`flex items-center gap-3 ${setSelectedProvider ? 'cursor-pointer group' : ''}`}
+                          onClick={() => openOffersProviderProfile(assignment)}
+                          title={setSelectedProvider ? "View Profile" : undefined}
+                        >
                           <img
                             src={getMediaUrl(proUser.avatar) || 'https://via.placeholder.com/48'}
                             alt={proName}
-                            className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                            className="w-12 h-12 rounded-full object-cover border border-gray-200 group-hover:ring-2 ring-teal-400 transition"
                           />
                           <div>
-                            <h4 className="font-bold text-gray-900 text-sm">{proName}</h4>
+                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-teal-600 transition">{proName}</h4>
                             <p className="text-xs text-gray-500">{assignment.provider?.serviceCategory || 'Service Professional'}</p>
                           </div>
                         </div>
@@ -313,9 +349,33 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                         </div>
                       )}
 
-                      <div className="pt-2 flex justify-end">
+                      <div className="pt-2 flex items-center justify-end gap-2 flex-wrap">
+                        {setSelectedProvider && (
+                          <button
+                            type="button"
+                            className="px-3 py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+                            onClick={() => openOffersProviderProfile(assignment)}
+                          >
+                            <Icon name="user" />
+                            <span>View Profile</span>
+                          </button>
+                        )}
+                        {setActiveChatUser && (
+                          <button
+                            type="button"
+                            className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+                            onClick={() => {
+                              setViewOffersTask(null);
+                              setActiveChatUser({ id: proUser.id, name: proName, avatar: getMediaUrl(proUser.avatar) });
+                              setActiveTab('Messages');
+                            }}
+                          >
+                            <Icon name="chat" />
+                            <span>Message</span>
+                          </button>
+                        )}
                         <button
-                          className="px-4 py-2 bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold text-xs rounded-lg transition shadow-sm"
+                          className="px-4 py-2 bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold text-xs rounded-lg transition shadow-sm cursor-pointer disabled:opacity-50"
                           disabled={hiringId === assignment.id}
                           onClick={async () => {
                             if (confirm(`Hire ${proName} for this task?`)) {
