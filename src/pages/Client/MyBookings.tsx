@@ -15,6 +15,7 @@ interface MyBookingsProps {
   walletBalance?: number;
   savedProsState?: any[];
   setSelectedBooking?: (bk: any) => void;
+  isLoading?: boolean;
 }
 
 export default function MyBookings({ 
@@ -26,7 +27,8 @@ export default function MyBookings({
   setActiveChatUser,
   walletBalance = 0,
   savedProsState = [],
-  setSelectedBooking
+  setSelectedBooking,
+  isLoading
 }: MyBookingsProps) {
   const { user } = useAuth();
   const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
@@ -37,7 +39,21 @@ export default function MyBookings({
         <div className="dash-panel-header-new">
           <h2>My Bookings</h2>
         </div>
-        {(!clientBookings || clientBookings.length === 0) ? (
+        {isLoading && (!clientBookings || clientBookings.length === 0) ? (
+          <div className="space-y-4 mt-4 animate-pulse">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="p-5 bg-white border border-gray-200 rounded-xl flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-slate-200 flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-slate-200 rounded w-1/4" />
+                  <div className="h-3 bg-slate-100 rounded w-1/2" />
+                  <div className="h-3 bg-slate-100 rounded w-1/3" />
+                </div>
+                <div className="h-8 w-24 bg-slate-200 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        ) : (!clientBookings || clientBookings.length === 0) ? (
           <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', marginTop: '1rem' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📅</div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>No Bookings Yet</h3>

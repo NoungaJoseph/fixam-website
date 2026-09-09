@@ -165,6 +165,50 @@ export default function ProviderProfileDetail({
     selectedProvider?.userId === user.id
   );
 
+  const handleBookingSubmit = async (newBk: any) => {
+    if (!newBk) return;
+    try {
+      const targetProviderId = original?.userId || selectedProvider?.userId || original?.user?.id || original?.id || selectedProvider?.id;
+      if (!targetProviderId) {
+        alert(i18n.language === 'fr' ? 'Prestataire introuvable.' : 'Provider ID not found.');
+        return;
+      }
+
+      const bookingDate = newBk.date ? new Date(newBk.date).toISOString() : new Date().toISOString();
+      const budgetVal = Number(newBk.budget || original.rate || selectedProvider.rate || 3500);
+
+      const payload = {
+        providerId: targetProviderId,
+        bookingDate,
+        bookingTime: newBk.time || '09:00',
+        bookingDuration: newBk.duration || '1-2 Hours',
+        budget: budgetVal,
+        location: newBk.location || 'Douala, Cameroon',
+        notes: newBk.notes || '',
+        urgencyLevel: newBk.urgency || 'NORMAL',
+        materialsList: Array.isArray(newBk.materialsList) ? newBk.materialsList : [],
+        requiresDiagnosis: Boolean(newBk.requiresDiagnosis)
+      };
+
+      const res = await api.post('/bookings', payload);
+      const createdBooking = res.data?.data || newBk;
+
+      if (setClientBookings) {
+        setClientBookings([createdBooking, ...(clientBookings || [])]);
+      }
+      setIsBookingModalOpen(false);
+
+      // Dispatch event so dashboards and badges re-sync immediately
+      window.dispatchEvent(new CustomEvent('fixam_booking_created', { detail: createdBooking }));
+
+      alert(i18n.language === 'fr' ? 'Demande de réservation envoyée avec succès !' : 'Booking request submitted successfully!');
+    } catch (err: any) {
+      console.error('Failed to create booking:', err);
+      const msg = err.response?.data?.message || err.message || (i18n.language === 'fr' ? 'Échec de l\'envoi de la réservation' : 'Failed to submit booking request');
+      alert(msg);
+    }
+  };
+
   const reviews = original.reviews || selectedProvider.reviews || [];
 
   return (
@@ -172,13 +216,27 @@ export default function ProviderProfileDetail({
       {/* Top action row */}
       <div className="flex items-center justify-between mb-2">
         <button
-          className="upwork-btn-small-neutral flex items-center gap-1.5"
+          className="upwork-btn-small-neutral flex items-center gap-1.5 cursor-pointer"
           onClick={() => { setSelectedProvider(null); setActiveTab('Dashboard'); }}
         >
           <span>&larr;</span> {i18n.language === 'fr' ? 'Retour aux prestataires' : 'Back to Providers'}
         </button>
 
         <div className="flex items-center gap-2">
+          <button
+            id="btn-provider-book-top"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2 px-5 rounded-xl text-sm transition flex items-center gap-2 shadow-sm cursor-pointer"
+            onClick={() => {
+              if (isOwnProfile) {
+                alert(i18n.language === 'fr' ? "Vous ne pouvez pas réserver votre propre profil." : "You cannot book your own profile.");
+                return;
+              }
+              setIsBookingModalOpen(true);
+            }}
+          >
+            <span>📅</span>
+            <span>{i18n.language === 'fr' ? 'Réserver maintenant' : 'Book Now'}</span>
+          </button>
           <button className="upwork-share-icon-btn" onClick={handleShare} title="Share Profile">
             <ShareIcon />
           </button>
@@ -232,6 +290,39 @@ export default function ProviderProfileDetail({
                   {i18n.language === 'fr' ? 'Disponible maintenant' : 'Available now'}
                 </span>
               </div>
+
+              {/* Prominent Hero Booking Button */}
+              <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                <button
+                  id="btn-provider-book-hero"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 px-6 rounded-xl text-sm transition flex items-center gap-2 shadow-sm cursor-pointer"
+                  onClick={() => {
+                    if (isOwnProfile) {
+                      alert(i18n.language === 'fr' ? "Vous ne pouvez pas réserver votre propre profil." : "You cannot book your own profile.");
+                      return;
+                    }
+                    setIsBookingModalOpen(true);
+                  }}
+                >
+                  <span>📅</span>
+                  <span>{i18n.language === 'fr' ? 'Réserver ce prestataire' : 'Book This Specialist'}</span>
+                </button>
+                {setActiveChatUser && (
+                  <button
+                    className="border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition flex items-center gap-2 cursor-pointer"
+                    onClick={() => {
+                      const targetId = original?.userId || selectedProvider?.userId || original?.user?.id || original?.id || selectedProvider?.id;
+                      if (!targetId) return;
+                      setActiveChatUser(targetId);
+                      setSelectedProvider(null);
+                      setActiveTab('Messages');
+                    }}
+                  >
+                    <span>💬</span>
+                    <span>{i18n.language === 'fr' ? 'Contacter' : 'Send Message'}</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </section>
@@ -244,12 +335,26 @@ export default function ProviderProfileDetail({
             </h2>
           </div>
 
-          <div className="upwork-rate-row">
+          <div className="upwork-rate-row flex items-center justify-between">
             <span className="upwork-rate-amount">
               {original.rate || selectedProvider.rate
                 ? `${Number(original.rate || selectedProvider.rate).toLocaleString()} XAF/hr`
                 : '3,500 XAF/hr'}
             </span>
+            <button
+              id="btn-provider-book-rate"
+              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black py-2.5 px-6 rounded-xl transition shadow-sm cursor-pointer"
+              onClick={() => {
+                if (isOwnProfile) {
+                  alert(i18n.language === 'fr' ? "Vous ne pouvez pas réserver votre propre profil." : "You cannot book your own profile.");
+                  return;
+                }
+                setIsBookingModalOpen(true);
+              }}
+            >
+              <span>📅</span>
+              <span>{i18n.language === 'fr' ? 'Réserver maintenant' : 'Book Now'}</span>
+            </button>
           </div>
 
           <div className="upwork-overview-body mt-2">
@@ -422,7 +527,7 @@ export default function ProviderProfileDetail({
       </div>
 
       {/* ── FIXED BOTTOM BAR ON MOBILE FOR ONE-TAP BOOKING ── */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg flex items-center justify-between z-40 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-xl flex items-center justify-between z-50 md:hidden">
         <div>
           <span className="text-xs text-slate-400 font-semibold block">{i18n.language === 'fr' ? 'Tarif estimatif' : 'Estimated Rate'}</span>
           <strong className="text-sm text-slate-800">
@@ -430,10 +535,11 @@ export default function ProviderProfileDetail({
           </strong>
         </div>
         <button
-          className="upwork-btn-sheet-save py-2 px-6 text-sm font-bold shadow-md"
+          id="btn-provider-book-bottom"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-6 rounded-xl text-sm font-black shadow-md transition cursor-pointer"
           onClick={() => {
             if (isOwnProfile) {
-              alert("You cannot book your own profile.");
+              alert(i18n.language === 'fr' ? "Vous ne pouvez pas réserver votre propre profil." : "You cannot book your own profile.");
               return;
             }
             setIsBookingModalOpen(true);
@@ -451,12 +557,7 @@ export default function ProviderProfileDetail({
         providerService={selectedProvider.role || original.title || 'Service'}
         providerImage={displayImage}
         basePrice={original.rate ? `${original.rate} XAF` : undefined}
-        onSubmit={(newBk: any) => {
-          if (newBk) {
-            setClientBookings([newBk, ...clientBookings]);
-            alert(i18n.language === 'fr' ? 'Demande de réservation envoyée avec succès !' : 'Booking request submitted successfully!');
-          }
-        }}
+        onSubmit={handleBookingSubmit}
       />
 
       {/* ── PROJECT PREVIEW MODAL ── */}

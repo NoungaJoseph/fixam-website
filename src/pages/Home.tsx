@@ -549,11 +549,13 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-  // Only show strictly verified providers, ordered by highest rating & completed jobs, max 6
+  // Show top providers — verified providers first, then sorted by rating & completed jobs, max 6
   const verifiedPros = useMemo(() => {
     const list = Array.isArray(livePros) ? livePros : [];
-    return list
-      .filter((pro: any) => pro.verification === 'VERIFIED' || pro.isVerified === true)
+    // Prioritize strictly verified providers
+    const verified = list.filter((p: any) => p.verification === 'VERIFIED' || p.isVerified === true);
+    const candidates = verified.length > 0 ? verified : list;
+    return candidates
       .sort((a: any, b: any) => {
         const ratingA = parseFloat(a.rating) || 0;
         const ratingB = parseFloat(b.rating) || 0;
@@ -869,9 +871,31 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
       <section className="section" style={{ backgroundColor: '#F8FAFC', padding: '4.5rem 0' }}>
         <SectionTitle title={t('pros.title')} caption={t('pros.subtitle')} className="pros-title" />
         <div className="pro-grid" ref={proGridRef}>
-          {verifiedPros.map((pro: any) => (
-            <ProCard key={pro.id || pro.userId || pro.name} pro={pro} onNavigate={onNavigate} />
-          ))}
+          {verifiedPros.length > 0 ? (
+            verifiedPros.map((pro: any) => (
+              <ProCard key={pro.id || pro.userId || pro.name} pro={pro} onNavigate={onNavigate} />
+            ))
+          ) : (
+            // Skeleton placeholders while data loads or if no providers yet
+            Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="top-rated-card" style={{ opacity: 0.6 }}>
+                <div className="top-rated-cover" style={{ background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)' }} />
+                <div className="top-rated-content">
+                  <div className="top-rated-avatar" style={{ background: '#e2e8f0' }} />
+                  <div className="top-rated-header">
+                    <div style={{ height: 16, width: '70%', background: '#e2e8f0', borderRadius: 6, marginBottom: 6 }} />
+                    <div style={{ height: 12, width: '50%', background: '#e2e8f0', borderRadius: 6 }} />
+                  </div>
+                  <div style={{ height: 12, width: '80%', background: '#e2e8f0', borderRadius: 6, margin: '8px 0' }} />
+                  <div className="top-rated-stats">
+                    <div style={{ height: 28, width: '45%', background: '#e2e8f0', borderRadius: 20 }} />
+                    <div style={{ height: 28, width: '45%', background: '#e2e8f0', borderRadius: 20 }} />
+                  </div>
+                  <div style={{ height: 38, background: '#14b8a6', opacity: 0.2, borderRadius: 50, marginTop: 12 }} />
+                </div>
+              </div>
+            ))
+          )}
         </div>
         <div className="center-actions" style={{ marginTop: '2.5rem' }}>
           <button className="tsi-btn-primary" onClick={() => onNavigate('services')}>

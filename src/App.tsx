@@ -79,7 +79,7 @@ import './marketplace.css'
 import './components/Megamenu.css'
 import './mobile-upgrades.css'
 
-export type Page = 'home' | 'services' | 'about' | 'why_fixam' | 'solutions' | 'insights' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support'
+export type Page = 'home' | 'services' | 'about' | 'why_fixam' | 'solutions' | 'insights' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support' | 'browse_projects'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -91,10 +91,10 @@ export type IconName =
 export const asset = (fileName: string) => `/assets/${fileName}`
 
 export const getApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     return 'http://localhost:5000/api';
   }
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   return 'https://api.usefixam.com/api';
 };
 
@@ -524,7 +524,18 @@ function App() {
     const fetchPros = async () => {
       try {
         const API_URL = getApiUrl();
-        const res = await fetch(`${API_URL}/providers`);
+        let res: Response;
+        try {
+          res = await fetch(`${API_URL}/providers`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        } catch (fetchErr) {
+          if (API_URL !== 'https://api.usefixam.com/api') {
+            console.warn('Primary API fetch failed, falling back to production API:', fetchErr);
+            res = await fetch('https://api.usefixam.com/api/providers');
+          } else {
+            throw fetchErr;
+          }
+        }
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           const formatted = data.data.map((item: any) => {
@@ -538,6 +549,13 @@ function App() {
               image = getMediaUrl(item.user.avatar);
             }
 
+            let coverImage = '';
+            if (Array.isArray(item.portfolio) && item.portfolio.length > 0 && item.portfolio[0]?.imageUrl) {
+              coverImage = getMediaUrl(item.portfolio[0].imageUrl);
+            } else if (Array.isArray(item.portfolio) && item.portfolio.length > 0 && item.portfolio[0]?.images?.[0]) {
+              coverImage = getMediaUrl(item.portfolio[0].images[0]);
+            }
+
             const completedJobs = item.jobsCompleted || item.completedJobs || 0;
             const reviewCount = item.reviewCount || 0;
 
@@ -549,6 +567,7 @@ function App() {
               rating,
               distance,
               image,
+              coverImage,
               completedJobs,
               reviewCount,
               verification: item.verification
@@ -602,6 +621,40 @@ function App() {
             {page === 'why_fixam' && <WhyFixam onNavigate={setPage} />}
             {page === 'solutions' && <Solutions onNavigate={setPage} />}
             {page === 'insights' && <Insights onNavigate={setPage} />}
+            {page === 'browse_projects' && (
+              <div className="landing-page" style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', paddingTop: '1.5rem' }}>
+                <BrowseProjects
+                  displayedPros={livePros}
+                  setActiveTab={() => {
+                    if (!isLoggedIn) {
+                      setPage('login');
+                    } else {
+                      window.location.hash = 'tab-browse-projects';
+                      setPage('dashboard');
+                    }
+                  }}
+                  setSelectedProject={() => {
+                    if (!isLoggedIn) {
+                      setPage('login');
+                    } else {
+                      window.location.hash = 'tab-browse-projects';
+                      setPage('dashboard');
+                    }
+                  }}
+                  setSelectedProvider={() => {
+                    if (!isLoggedIn) {
+                      setPage('login');
+                    } else {
+                      window.location.hash = 'tab-find-services';
+                      setPage('dashboard');
+                    }
+                  }}
+                  favoriteProjectIds={[]}
+                  toggleFavoriteProject={() => {}}
+                />
+                <Footer onNavigate={setPage} />
+              </div>
+            )}
             {page === 'terms' && <TermsOfService onNavigate={setPage} />}
             {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
             {page === 'support' && <SupportPage onNavigate={setPage} />}
@@ -1252,13 +1305,13 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             </button>
             <span className="nav-divider">|</span>
             <button 
-              className={`nav-link-new`} 
+              className={`nav-link-new ${page === 'browse_projects' ? 'active' : ''}`} 
               onClick={() => {
                 if (isLoggedIn) {
-                  handleNavigate('dashboard');
                   window.location.hash = 'tab-browse-projects';
+                  handleNavigate('dashboard');
                 } else {
-                  handleNavigate('services');
+                  handleNavigate('browse_projects');
                 }
               }}
             >
@@ -1360,10 +1413,10 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
             <button className="mobile-nav-accordion-btn" onClick={() => {
               setIsMobileMenuOpen(false);
               if (isLoggedIn) {
-                handleNavigate('dashboard');
                 window.location.hash = 'tab-browse-projects';
+                handleNavigate('dashboard');
               } else {
-                handleNavigate('services');
+                handleNavigate('browse_projects');
               }
             }}>
               {i18n.language === 'fr' ? 'Parcourir les projets' : 'Browse Projects'}
@@ -1508,6 +1561,22 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, [activeTab, userRole]);
 
   useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+      if (hash.startsWith('tab-')) {
+        const slug = hash.substring(4);
+        if (TAB_SLUG_MAP[slug]) {
+          setActiveTab(TAB_SLUG_MAP[slug]);
+        }
+      } else if (TAB_SLUG_MAP[hash]) {
+        setActiveTab(TAB_SLUG_MAP[hash]);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  useEffect(() => {
     if (prevRoleRef.current !== userRole) {
       prevRoleRef.current = userRole;
       const savedTab = localStorage.getItem(`fixam_active_tab_${userRole}`) || 'Dashboard';
@@ -1594,8 +1663,30 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, [localLivePros, livePros, user]);
 
   // Client-specific interactive state hooks
-  const [clientTasks, setClientTasks] = useState<any[]>([]);
-  const [clientBookings, setClientBookings] = useState<any[]>([]);
+  const [clientTasks, setClientTasks] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem('fixam_cache_client_tasks');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [clientBookings, setClientBookings] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem('fixam_cache_client_bookings');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isClientBookingsLoading, setIsClientBookingsLoading] = useState<boolean>(() => {
+    try {
+      const cached = localStorage.getItem('fixam_cache_client_bookings');
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
   const [walletBalance, setWalletBalance] = useState(() => (user as any)?.wallet?.balance || (user as any)?.walletBalance || 0);
   const [walletTransactions, setWalletTransactions] = useState<any[]>([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
@@ -1668,8 +1759,15 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 : ((notifsRes.data.notifications || notifsRes.data.data || []).filter((n: any) => !n.isRead && !n.read).length);
               setUnreadNotificationsCount(unreadNotifs);
             }
-            if (bookingsRes?.data?.data) setClientBookings(bookingsRes.data.data);
-            if (jobsRes?.data?.data) setClientTasks(jobsRes.data.data);
+            if (bookingsRes?.data?.data) {
+              setClientBookings(bookingsRes.data.data);
+              localStorage.setItem('fixam_cache_client_bookings', JSON.stringify(bookingsRes.data.data));
+            }
+            setIsClientBookingsLoading(false);
+            if (jobsRes?.data?.data) {
+              setClientTasks(jobsRes.data.data);
+              localStorage.setItem('fixam_cache_client_tasks', JSON.stringify(jobsRes.data.data));
+            }
             if (walletRes?.data?.data) {
               setWalletBalance(walletRes.data.data.balance || 0);
               if (walletRes.data.data.transactions) setWalletTransactions(walletRes.data.data.transactions);
@@ -1743,6 +1841,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
         }
       };
       fetchData();
+
+      const handleSync = () => fetchData();
+      window.addEventListener('fixam_booking_created', handleSync);
+      window.addEventListener('focus', handleSync);
+      const interval = setInterval(fetchData, 20000);
+
+      return () => {
+        window.removeEventListener('fixam_booking_created', handleSync);
+        window.removeEventListener('focus', handleSync);
+        clearInterval(interval);
+      };
     }
   }, [isLoggedIn, userRole]);
 
@@ -1944,6 +2053,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                     setActiveTab={setActiveTab}
                     setActiveChatUser={setActiveChatUser}
                     setSelectedBooking={handleSetSelectedBooking}
+                    isLoading={isClientBookingsLoading}
                   />
                 )}
                 {(activeTab === 'Post a Job' || activeTab === 'Create Task') && (
@@ -2304,6 +2414,17 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 />
               )}
               {activeTab === 'Boost Profile' && <BoostProfile />}
+              {activeTab === 'Refer & Earn' && <Referrals />}
+              {activeTab === 'Browse Projects' && (
+                <BrowseProjects
+                  displayedPros={displayedPros}
+                  setActiveTab={setActiveTab}
+                  setSelectedProject={setSelectedProject}
+                  setSelectedProvider={setSelectedProvider}
+                  favoriteProjectIds={favoriteProjectIds}
+                  toggleFavoriteProject={toggleFavoriteProject}
+                />
+              )}
               {activeTab === 'Messages' && (
                 <ErrorBoundary fallbackMessage="Unable to load chat messages">
                   <Messages
@@ -2495,14 +2616,16 @@ function ServiceCard(service: (typeof services)[number]) {
 
 export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: boolean; onNavigate?: (page: Page) => void }) {
   const { t } = useTranslation();
-  const displayImage = pro.image ? getMediaUrl(pro.image) : '';
+  const displayCover = pro.coverImage ? getMediaUrl(pro.coverImage) : (pro.image && !pro.image.startsWith('data:image/svg') ? getMediaUrl(pro.image) : '');
+  const avatarImage = pro.image ? getMediaUrl(pro.image) : '';
+  const isVerified = pro.verification === 'VERIFIED' || pro.isVerified === true;
 
   return (
     <article className={mini ? 'top-rated-card mini' : 'top-rated-card'}>
       <div className="top-rated-cover">
-        {displayImage ? (
+        {displayCover ? (
           <img
-            src={displayImage}
+            src={displayCover}
             alt={pro.name}
             className="top-rated-img"
             onError={(e) => {
@@ -2513,13 +2636,13 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
         ) : (
           <div className="top-rated-img fallback-cover" style={{ backgroundColor: '#14b8a6', width: '100%', height: '100%' }}></div>
         )}
-        <div className="top-rated-verified"><Icon name="shield" /> Verified</div>
+        {isVerified && <div className="top-rated-verified"><Icon name="shield" /> Verified</div>}
       </div>
       <div className="top-rated-content">
         <div className="top-rated-avatar" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {displayImage ? (
+          {avatarImage && !avatarImage.startsWith('data:image/svg') ? (
             <img
-              src={displayImage}
+              src={avatarImage}
               alt={pro.name}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={(e) => {
@@ -2533,7 +2656,7 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
         </div>
         <div className="top-rated-header">
           <h3>{pro.name}</h3>
-          <span className="pro-rating-row"><Icon name="star" /> {pro.rating} <span className="pro-reviews">({pro.reviewCount && pro.reviewCount > 0 ? `${pro.reviewCount} ${pro.reviewCount === 1 ? 'review' : 'reviews'}` : 'Verified'})</span></span>
+          <span className="pro-rating-row"><Icon name="star" /> {pro.rating} <span className="pro-reviews">({pro.reviewCount && pro.reviewCount > 0 ? `${pro.reviewCount} ${pro.reviewCount === 1 ? 'review' : 'reviews'}` : (isVerified ? 'Verified' : 'Provider')})</span></span>
         </div>
         <p className="top-rated-role">{pro.role}</p>
         <div className="top-rated-tags">
@@ -2541,7 +2664,7 @@ export function ProCard({ pro, mini = false, onNavigate }: { pro: any; mini?: bo
           <span className="tag-pill">Reliable</span>
         </div>
         <div className="top-rated-stats">
-          <div className="stat-pill"><Icon name="check" /> {pro.completedJobs && pro.completedJobs > 0 ? `${pro.completedJobs} ${pro.completedJobs === 1 ? 'Job' : 'Jobs'}` : 'Verified Pro'}</div>
+          <div className="stat-pill"><Icon name="check" /> {pro.completedJobs && pro.completedJobs > 0 ? `${pro.completedJobs} ${pro.completedJobs === 1 ? 'Job' : 'Jobs'}` : (isVerified ? 'Verified Pro' : 'Active Pro')}</div>
           <div className="stat-pill"><Icon name="location" /> {pro.distance}</div>
         </div>
         {!mini && <button className="btn-primary-pill full-width" onClick={() => onNavigate && onNavigate('login')}>Hire {pro.name.split(' ')[0]}</button>}

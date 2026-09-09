@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
 import { getMediaUrl } from '../../App';
+import { useAuth } from '../../context/AuthContext';
 import ReviewModal from '../../components/ReviewModal';
 
 interface MyJobsProps {
@@ -11,49 +12,118 @@ interface MyJobsProps {
 }
 
 export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBooking }: MyJobsProps) {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [activeSection, setActiveSection] = useState<'jobs' | 'bookings'>('jobs');
+  const { user } = useAuth();
+  const cacheKeyJobs = `fixam_cache_provider_jobs_${user?.id || 'default'}`;
+  const cacheKeyBookings = `fixam_cache_provider_bookings_${user?.id || 'default'}`;
+
+  const [jobs, setJobs] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_provider_jobs_${user?.id || 'default'}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [bookings, setBookings] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_provider_bookings_${user?.id || 'default'}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [isLoadingJobs, setIsLoadingJobs] = useState<boolean>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_provider_jobs_${user?.id || 'default'}`);
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
+
+  const [isLoadingBookings, setIsLoadingBookings] = useState<boolean>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_provider_bookings_${user?.id || 'default'}`);
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
+
+  const [btnLoadingId, setBtnLoadingId] = useState<string | null>(null);
+
+  const [activeSection, setActiveSection] = useState<'jobs' | 'bookings'>(() => {
+    const saved = sessionStorage.getItem('fixam_provider_jobs_tab');
+    return saved === 'bookings' ? 'bookings' : 'jobs';
+  });
+
+  const handleSectionChange = (section: 'jobs' | 'bookings') => {
+    setActiveSection(section);
+    sessionStorage.setItem('fixam_provider_jobs_tab', section);
+  };
+
   const { i18n } = useTranslation();
 
   useEffect(() => {
     const fetchMyJobs = async () => {
       try {
         const res = await api.get('/jobs/my-jobs');
-        setJobs(res.data.data || []);
+        const data = res.data.data || [];
+        setJobs(data);
+        localStorage.setItem(cacheKeyJobs, JSON.stringify(data));
       } catch (err) {
         console.error("Failed to fetch my jobs", err);
+      } finally {
+        setIsLoadingJobs(false);
       }
     };
     const fetchMyBookings = async () => {
       try {
         const res = await api.get('/bookings/mine');
-        setBookings(res.data.data || []);
+        const data = res.data.data || [];
+        setBookings(data);
+        localStorage.setItem(cacheKeyBookings, JSON.stringify(data));
       } catch (err) {
         console.error("Failed to fetch my bookings", err);
+      } finally {
+        setIsLoadingBookings(false);
       }
     };
     fetchMyJobs();
     fetchMyBookings();
-  }, []);
+  }, [cacheKeyJobs, cacheKeyBookings]);
 
   const handleUpdateStatus = async (id: string, status: string) => {
+    if (btnLoadingId) return;
+    setBtnLoadingId(`${id}_${status}`);
     try {
       await api.patch(`/jobs/${id}/status`, { status });
-      setJobs(jobs.map(j => j.id === id ? { ...j, status } : j));
+      const updated = jobs.map(j => j.id === id ? { ...j, status } : j);
+      setJobs(updated);
+      localStorage.setItem(cacheKeyJobs, JSON.stringify(updated));
       alert(`Job marked as ${status} successfully!`);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update job status');
+    } finally {
+      setBtnLoadingId(null);
     }
   };
 
   const handleBookingAction = async (bookingId: string, action: string) => {
+    if (btnLoadingId) return;
+    setBtnLoadingId(`${bookingId}_${action}`);
     try {
       await api.patch(`/bookings/${bookingId}/status`, { status: action });
-      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: action } : b));
+      const updated = bookings.map(b => b.id === bookingId ? { ...b, status: action } : b);
+      setBookings(updated);
+      localStorage.setItem(cacheKeyBookings, JSON.stringify(updated));
       alert(`Booking ${action.toLowerCase().replace('_', ' ')} successfully!`);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update booking');
+    } finally {
+      setBtnLoadingId(null);
     }
   };
 
@@ -92,8 +162,8 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
       {/* Section Toggle Tabs */}
       <div className="flex items-center gap-3 mb-6 border-b border-gray-200 pb-0">
         <button
-          onClick={() => setActiveSection('jobs')}
-          className={`pb-3 px-1 text-sm font-bold border-b-2 transition-all ${
+          onClick={() => handleSectionChange('jobs')}
+          className={`pb-3 px-1 text-sm font-bold border-b-2 transition-all cursor-pointer ${
             activeSection === 'jobs'
               ? 'text-[#14B8A6] border-[#14B8A6]'
               : 'text-gray-400 border-transparent hover:text-gray-600'
@@ -107,8 +177,8 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
           )}
         </button>
         <button
-          onClick={() => setActiveSection('bookings')}
-          className={`pb-3 px-1 text-sm font-bold border-b-2 transition-all ${
+          onClick={() => handleSectionChange('bookings')}
+          className={`pb-3 px-1 text-sm font-bold border-b-2 transition-all cursor-pointer ${
             activeSection === 'bookings'
               ? 'text-[#14B8A6] border-[#14B8A6]'
               : 'text-gray-400 border-transparent hover:text-gray-600'
@@ -126,7 +196,21 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
       {/* Jobs Section */}
       {activeSection === 'jobs' && (
         <div className="space-y-4">
-          {jobs.length === 0 ? (
+          {isLoadingJobs && jobs.length === 0 ? (
+            <div className="space-y-4 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="p-5 bg-white border border-gray-200 rounded-xl flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-200 flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-slate-200 rounded w-1/4" />
+                    <div className="h-4 bg-slate-200 rounded w-1/2" />
+                    <div className="h-3 bg-slate-100 rounded w-1/3" />
+                  </div>
+                  <div className="h-8 w-24 bg-slate-200 rounded-lg" />
+                </div>
+              ))}
+            </div>
+          ) : jobs.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
               <p className="text-gray-500 font-medium">
                 {i18n.language === 'fr' ? 'Aucune mission ni contrat trouvé.' : 'No jobs or contracts found.'}
@@ -180,30 +264,46 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                       </button>
                       {isInProgress && (
                         <button
+                          disabled={Boolean(btnLoadingId)}
                           onClick={() => handleUpdateStatus(job.id, 'COMPLETED')}
-                          className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm"
+                          className={`bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 ${btnLoadingId ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
-                          ✓ Complete
+                          {btnLoadingId === `${job.id}_COMPLETED` ? (
+                            <>
+                              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>{i18n.language === 'fr' ? 'Finalisation...' : 'Completing...'}</span>
+                            </>
+                          ) : (
+                            <span>{i18n.language === 'fr' ? '✓ Terminer' : '✓ Complete'}</span>
+                          )}
                         </button>
                       )}
                       {isCompleted && clientUserId && (
                         <button
                           onClick={() => setReviewTarget({ jobId: job.id, targetUserId: clientUserId, targetName: clientName })}
-                          className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm"
+                          className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm cursor-pointer"
                         >
                           ⭐ Review
                         </button>
                       )}
                       {!isCompleted && job.status !== 'CANCELLED' && (
                         <button
+                          disabled={Boolean(btnLoadingId)}
                           onClick={() => {
                             if (confirm('Are you sure you want to cancel this job?')) {
                               handleUpdateStatus(job.id, 'CANCELLED');
                             }
                           }}
-                          className="text-red-500 border border-red-200 hover:bg-red-50 hover:border-red-300 text-xs font-semibold px-4 py-2 rounded-lg transition"
+                          className={`text-red-500 border border-red-200 hover:bg-red-50 hover:border-red-300 text-xs font-semibold px-4 py-2 rounded-lg transition flex items-center gap-1.5 ${btnLoadingId ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
-                          Cancel
+                          {btnLoadingId === `${job.id}_CANCELLED` ? (
+                            <>
+                              <div className="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                              <span>{i18n.language === 'fr' ? 'Annulation...' : 'Cancelling...'}</span>
+                            </>
+                          ) : (
+                            <span>Cancel</span>
+                          )}
                         </button>
                       )}
                     </div>
@@ -218,7 +318,21 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
       {/* Bookings Section */}
       {activeSection === 'bookings' && (
         <div className="space-y-4">
-          {bookings.length === 0 ? (
+          {isLoadingBookings && bookings.length === 0 ? (
+            <div className="space-y-4 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="p-5 bg-white border border-gray-200 rounded-xl flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-slate-200 flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-slate-200 rounded w-1/4" />
+                    <div className="h-4 bg-slate-200 rounded w-1/2" />
+                    <div className="h-3 bg-slate-100 rounded w-1/3" />
+                  </div>
+                  <div className="h-8 w-24 bg-slate-200 rounded-lg" />
+                </div>
+              ))}
+            </div>
+          ) : bookings.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
               <div className="text-4xl mb-3">📋</div>
               <p className="text-gray-500 font-medium">
@@ -245,6 +359,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                   className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 bg-white border border-gray-200 rounded-xl transition-all duration-200 hover:border-[#14B8A6] hover:shadow-md hover:shadow-teal-50/20 cursor-pointer"
                   key={booking.id}
                   onClick={() => {
+                    sessionStorage.setItem('fixam_provider_jobs_tab', 'bookings');
                     if (setSelectedBooking) {
                       setSelectedBooking(booking);
                       setActiveTab('Booking Details');
@@ -306,20 +421,36 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                     {isPending && (
                       <>
                         <button
+                          disabled={Boolean(btnLoadingId)}
                           onClick={() => {
                             if (confirm('Accepting this booking will deduct 1 coin from your wallet. Do you want to proceed?')) {
                               handleBookingAction(booking.id, 'ACCEPTED');
                             }
                           }}
-                          className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm"
+                          className={`bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm flex items-center gap-1.5 ${btnLoadingId ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
-                          ✓ Accept (1 Coin)
+                          {btnLoadingId === `${booking.id}_ACCEPTED` ? (
+                            <>
+                              <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>{i18n.language === 'fr' ? 'Acceptation...' : 'Accepting...'}</span>
+                            </>
+                          ) : (
+                            <span>✓ Accept (1 Coin)</span>
+                          )}
                         </button>
                         <button
+                          disabled={Boolean(btnLoadingId)}
                           onClick={() => handleBookingAction(booking.id, 'REJECTED')}
-                          className="text-red-500 border border-red-200 hover:bg-red-50 hover:border-red-300 text-xs font-semibold px-4 py-2 rounded-lg transition"
+                          className={`text-red-500 border border-red-200 hover:bg-red-50 hover:border-red-300 text-xs font-semibold px-4 py-2 rounded-lg transition flex items-center gap-1.5 ${btnLoadingId ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                         >
-                          Reject
+                          {btnLoadingId === `${booking.id}_REJECTED` ? (
+                            <>
+                              <div className="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                              <span>{i18n.language === 'fr' ? 'Refus...' : 'Rejecting...'}</span>
+                            </>
+                          ) : (
+                            <span>Reject</span>
+                          )}
                         </button>
                       </>
                     )}
@@ -331,12 +462,13 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                     {!isPending && !isCountered && (
                       <button
                         onClick={() => {
+                          sessionStorage.setItem('fixam_provider_jobs_tab', 'bookings');
                           if (setSelectedBooking) {
                             setSelectedBooking(booking);
                             setActiveTab('Booking Details');
                           }
                         }}
-                        className="px-4 py-2 border border-gray-200 hover:border-teal-300 hover:bg-teal-50 text-gray-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5"
+                        className="px-4 py-2 border border-gray-200 hover:border-teal-300 hover:bg-teal-50 text-gray-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5 cursor-pointer"
                       >
                         View Details →
                       </button>

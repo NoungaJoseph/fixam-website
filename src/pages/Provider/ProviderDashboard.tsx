@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import SubmitProposalPage from './SubmitProposalPage';
 import './ProviderDashboard.css';
 
 interface ProviderDashboardProps {
@@ -73,7 +74,8 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [dislikedJobIds, setDislikedJobIds] = useState<string[]>([]);
   const [expandedJobIds, setExpandedJobIds] = useState<Record<string, boolean>>({});
 
-  // Proposal modal states
+  // Proposal submission states
+  const [submittingProposalJob, setSubmittingProposalJob] = useState<JobLead | null>(null);
   const [proposalModalJob, setProposalModalJob] = useState<JobLead | null>(null);
   const [boostCoins, setBoostCoins] = useState<number>(0);
   const [coverLetter, setCoverLetter] = useState<string>('');
@@ -81,6 +83,18 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [proposalAttachments, setProposalAttachments] = useState<any[]>([]);
   const [isUploadingProposalFile, setIsUploadingProposalFile] = useState<boolean>(false);
   const [isSubmittingProposal, setIsSubmittingProposal] = useState<boolean>(false);
+
+  const refreshWallet = async () => {
+    try {
+      const res = await api.get('/wallet/balance');
+      if (res.data?.balance !== undefined) {
+        setWalletBalance(res.data.balance);
+      }
+    } catch {}
+    try {
+      await refreshUser();
+    } catch {}
+  };
 
   const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs' | 'direct_bookings' | 'applied_jobs'>('best_matches');
   const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => {
@@ -135,7 +149,15 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [pendingVerifiedOnly, setPendingVerifiedOnly] = useState(false);
 
   // Direct Client Bookings Received by Provider & Unread Read-State Tracking
-  const [providerBookings, setProviderBookings] = useState<any[]>([]);
+  const [providerBookings, setProviderBookings] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_provider_bookings_${user?.id || 'default'}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [bookingLoadingId, setBookingLoadingId] = useState<string | null>(null);
   const [readBookingIds, setReadBookingIds] = useState<string[]>(() => {
     try {
       const storageKey = `fixam_read_bookings_${user?.id || (user as any)?._id || 'default'}`;
@@ -205,22 +227,39 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         const res = await api.get('/bookings/mine?role=PROVIDER');
         if (res.data?.data) {
           setProviderBookings(res.data.data);
+          localStorage.setItem(`fixam_cache_provider_bookings_${user?.id || 'default'}`, JSON.stringify(res.data.data));
         }
       } catch (err) {
         console.error('Error fetching provider bookings:', err);
       }
     };
     fetchProviderBookings();
-  }, []);
+
+    const handleSync = () => fetchProviderBookings();
+    window.addEventListener('fixam_booking_created', handleSync);
+    window.addEventListener('focus', handleSync);
+    const interval = setInterval(fetchProviderBookings, 15000);
+    return () => {
+      window.removeEventListener('fixam_booking_created', handleSync);
+      window.removeEventListener('focus', handleSync);
+      clearInterval(interval);
+    };
+  }, [user?.id]);
 
   const handleBookingStatus = async (bookingId: string, status: 'ACCEPTED' | 'REJECTED' | 'COMPLETED') => {
+    if (bookingLoadingId) return;
+    setBookingLoadingId(`${bookingId}_${status}`);
     markBookingAsRead(bookingId);
     try {
       await api.patch(`/bookings/${bookingId}/status`, { status });
-      setProviderBookings(prev => prev.map(b => (b.id === bookingId || b._id === bookingId) ? { ...b, status } : b));
+      const updated = providerBookings.map(b => (b.id === bookingId || b._id === bookingId) ? { ...b, status } : b);
+      setProviderBookings(updated);
+      localStorage.setItem(`fixam_cache_provider_bookings_${user?.id || 'default'}`, JSON.stringify(updated));
       alert(`Booking request ${status.toLowerCase()} successfully!`);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update booking status.');
+    } finally {
+      setBookingLoadingId(null);
     }
   };
 
@@ -315,13 +354,8 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const hasEnoughCoins = boostCoins === 0 || currentWalletBalance >= boostCoins;
 
   const openProposalModal = (job: JobLead) => {
-    const isAlreadyApplied = job.hasApplied || appliedJobIds.includes(job.id);
     setSelectedJob(null);
-    setProposalModalJob(job);
-    setBoostCoins(isAlreadyApplied ? Math.max(1, (job.myBoostCoins || 0) + 1) : 0);
-    setCoverLetter('');
-    setProposedBudget(String(job.budget || ''));
-    setProposalAttachments([]);
+    setSubmittingProposalJob(job);
   };
 
   const handleProposalFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -462,6 +496,44 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
     const start = (currentPage - 1) * itemsPerPage;
     return displayedJobs.slice(start, start + itemsPerPage);
   }, [displayedJobs, currentPage, itemsPerPage]);
+
+  if (submittingProposalJob) {
+    return (
+      <SubmitProposalPage
+        job={submittingProposalJob}
+        onBack={() => {
+          setSelectedJob(submittingProposalJob);
+          setSubmittingProposalJob(null);
+        }}
+        onSuccess={(updatedJob) => {
+          setJobs((current) =>
+            current.map((item) =>
+              item.id === updatedJob.id ? { ...item, hasApplied: true, myBoostCoins: updatedJob.myBoostCoins } : item
+            )
+          );
+          setAppliedJobIds((prev) => {
+            const next = Array.from(new Set([...prev, updatedJob.id]));
+            try { localStorage.setItem(`fixam_applied_jobs_${user?.id}`, JSON.stringify(next)); } catch {}
+            return next;
+          });
+          setSelectedJob({
+            ...updatedJob,
+            hasApplied: true,
+            assignments: [
+              ...(updatedJob.assignments || []),
+              { id: 'my-new-app', boostCoins: updatedJob.myBoostCoins || 0, status: 'PENDING' }
+            ]
+          });
+          setSubmittingProposalJob(null);
+        }}
+        walletBalance={walletBalance}
+        refreshWallet={refreshWallet}
+        isVerified={isVerified}
+        isAvailable={isAvailable}
+        setActiveTab={setActiveTab}
+      />
+    );
+  }
 
   return (
     <div className="upwork-dashboard-container animate-fade-in">
@@ -610,6 +682,59 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
             {/* FEED JOB CARDS LIST */}
             <div className="upwork-feed-cards-list">
+              {/* PENDING DIRECT BOOKING ALERT BANNER */}
+              {unreadDirectBookingsCount > 0 && activeFeedTab !== 'direct_bookings' && (
+                <div 
+                  onClick={() => {
+                    setActiveFeedTab('direct_bookings');
+                    markAllBookingsAsRead();
+                  }}
+                  style={{
+                    backgroundColor: '#ECFDF5',
+                    border: '1.5px solid #10B981',
+                    borderRadius: '12px',
+                    padding: '0.85rem 1.25rem',
+                    marginBottom: '1.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.12)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>📅</span>
+                    <div>
+                      <strong style={{ color: '#065F46', fontSize: '0.95rem', display: 'block' }}>
+                        {i18n.language === 'fr' 
+                          ? `Vous avez ${unreadDirectBookingsCount} nouvelle(s) demande(s) de réservation directe !` 
+                          : `You have ${unreadDirectBookingsCount} new direct booking request(s)!`}
+                      </strong>
+                      <span style={{ color: '#047857', fontSize: '0.82rem' }}>
+                        {i18n.language === 'fr' 
+                          ? 'Cliquez ici pour consulter et répondre à vos demandes de réservation.' 
+                          : 'Click here to review and accept/decline client booking requests.'}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    style={{
+                      backgroundColor: '#10B981',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '0.45rem 1rem',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {i18n.language === 'fr' ? 'Voir les réservations' : 'View Bookings'} &rarr;
+                  </button>
+                </div>
+              )}
+
               {activeFeedTab === 'direct_bookings' ? (
                 providerBookings.length === 0 ? (
                   <div className="feed-empty-state">
@@ -673,31 +798,56 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                           {status === 'PENDING' && (
                             <>
                               <button
-                                style={{ backgroundColor: '#10B981', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                                disabled={Boolean(bookingLoadingId)}
+                                style={{ backgroundColor: '#10B981', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: bookingLoadingId ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', opacity: bookingLoadingId ? 0.7 : 1 }}
                                 onClick={() => handleBookingStatus(bkId, 'ACCEPTED')}
                               >
-                                ✓ Accept Booking
+                                {bookingLoadingId === `${bkId}_ACCEPTED` ? (
+                                  <>
+                                    <div style={{ width: '12px', height: '12px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                    <span>{i18n.language === 'fr' ? 'Acceptation...' : 'Accepting...'}</span>
+                                  </>
+                                ) : (
+                                  <span>✓ {i18n.language === 'fr' ? 'Accepter' : 'Accept Booking'}</span>
+                                )}
                               </button>
                               <button
-                                style={{ backgroundColor: '#FEF2F2', color: '#EF4444', border: '1px solid #FCA5A5', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                                disabled={Boolean(bookingLoadingId)}
+                                style={{ backgroundColor: '#FEF2F2', color: '#EF4444', border: '1px solid #FCA5A5', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: bookingLoadingId ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', opacity: bookingLoadingId ? 0.7 : 1 }}
                                 onClick={() => handleBookingStatus(bkId, 'REJECTED')}
                               >
-                                ✕ Reject
+                                {bookingLoadingId === `${bkId}_REJECTED` ? (
+                                  <>
+                                    <div style={{ width: '12px', height: '12px', border: '2px solid #EF4444', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                    <span>{i18n.language === 'fr' ? 'Refus...' : 'Rejecting...'}</span>
+                                  </>
+                                ) : (
+                                  <span>✕ {i18n.language === 'fr' ? 'Refuser' : 'Reject'}</span>
+                                )}
                               </button>
                             </>
                           )}
                           {status === 'ACCEPTED' && (
                             <button
-                              style={{ backgroundColor: '#2563EB', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
+                              disabled={Boolean(bookingLoadingId)}
+                              style={{ backgroundColor: '#2563EB', color: '#FFFFFF', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: bookingLoadingId ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', opacity: bookingLoadingId ? 0.7 : 1 }}
                               onClick={() => handleBookingStatus(bkId, 'COMPLETED')}
                             >
-                              ✓ Mark Completed
+                              {bookingLoadingId === `${bkId}_COMPLETED` ? (
+                                <>
+                                  <div style={{ width: '12px', height: '12px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                                  <span>{i18n.language === 'fr' ? 'Finalisation...' : 'Completing...'}</span>
+                                </>
+                              ) : (
+                                <span>✓ {i18n.language === 'fr' ? 'Terminer' : 'Mark Completed'}</span>
+                              )}
                             </button>
                           )}
                           <button
                             style={{ backgroundColor: '#F0FDFA', color: '#0D9488', border: '1px solid #99F6E4', padding: '0.5rem 1rem', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 800, cursor: 'pointer' }}
                             onClick={() => {
                               markBookingAsRead(bkId);
+                              sessionStorage.setItem('fixam_provider_jobs_tab', 'bookings');
                               if (setSelectedBooking) {
                                 setSelectedBooking(bk);
                               }
@@ -1420,10 +1570,28 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
                 {/* Activity on this job */}
                 <div className="upwork-section">
-                  <h3>Activity on this job</h3>
+                  <h3>{i18n.language === 'fr' ? 'Activité sur cette mission' : 'Activity on this job'}</h3>
                   <div className="upwork-activity-list">
-                    <div>Proposals received: <span className="green-text font-bold">{selectedJob.applications?.length || 0}</span></div>
-                    <div>Assigned / Interviewing: <span className="font-bold">{selectedJob.assignments?.length || 0}</span></div>
+                    <div>
+                      {i18n.language === 'fr' ? 'Candidatures reçues :' : 'Proposals received:'}{' '}
+                      <span className="green-text font-bold">
+                        {selectedJob.assignments?.length || (selectedJob as any).proposalsCount || 0}
+                      </span>
+                    </div>
+                    <div>
+                      {i18n.language === 'fr' ? 'En entretien :' : 'Interviewing:'}{' '}
+                      <span className="font-bold">
+                        {(selectedJob as any).interviewingCount ||
+                          selectedJob.assignments?.filter((a: any) => a.status === 'INTERVIEWING' || a.proposalMedia?.isInterviewing)?.length || 0}
+                      </span>
+                    </div>
+                    <div>
+                      {i18n.language === 'fr' ? 'Assigné / Recruté :' : 'Assigned / Hired:'}{' '}
+                      <span className="font-bold">
+                        {(selectedJob as any).hiredCount ||
+                          selectedJob.assignments?.filter((a: any) => a.status === 'ACCEPTED' || a.status === 'ASSIGNED' || a.status === 'COMPLETED')?.length || 0}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -1442,9 +1610,14 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   </button>
                 ) : (
                   <>
-                    <div className="upwork-notice-box">
-                      <span className="notice-icon">⚡</span>
-                      <p>Submitting a proposal for this task uses <strong>1 Fixam Coin</strong> from your wallet.</p>
+                    <div className="upwork-notice-box" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                      <span className="notice-icon">✨</span>
+                      <p>
+                        {i18n.language === 'fr'
+                          ? 'La soumission de proposition pour cette mission est '
+                          : 'Submitting a proposal for this task is '}
+                        <strong style={{ color: '#0D9488' }}>100% {i18n.language === 'fr' ? 'GRATUITE' : 'FREE'}</strong>.
+                      </p>
                     </div>
 
                     <button
@@ -1488,8 +1661,8 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 </button>
 
                 <div className="upwork-connects-info">
-                  <p>Proposal cost: <strong>1 Fixam Coin</strong></p>
-                  <p>Available Balance: <strong>{walletBalance !== null ? walletBalance : 0} {i18n.language === 'fr' ? 'Pièces' : 'Coins'}</strong></p>
+                  <p>{i18n.language === 'fr' ? 'Coût de soumission :' : 'Proposal cost:'} <strong style={{ color: '#0D9488' }}>{i18n.language === 'fr' ? 'GRATUIT' : 'FREE'}</strong></p>
+                  <p>{i18n.language === 'fr' ? 'Solde disponible :' : 'Available Balance:'} <strong>{walletBalance !== null ? walletBalance : 0} {i18n.language === 'fr' ? 'Pièces' : 'Coins'}</strong></p>
                 </div>
 
                 <div className="upwork-divider" />

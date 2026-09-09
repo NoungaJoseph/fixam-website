@@ -2,71 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { useSEO } from '../hooks/useSEO';
+import { articlesData } from '../data/ArticlesData';
 import './Home.css';
-
-interface ArticleItem {
-  id: string;
-  categoryEn: string;
-  categoryFr: string;
-  titleEn: string;
-  titleFr: string;
-  descEn: string;
-  descFr: string;
-  readTime: string;
-  date: string;
-  tag: string;
-}
-
-const articlesData: ArticleItem[] = [
-  {
-    id: '1',
-    categoryEn: 'Industry Reports',
-    categoryFr: 'Rapports Sectoriels',
-    titleEn: '2026 State of Trade Services and Informal Economy in Cameroon',
-    titleFr: 'État des Lieux des Métiers de l\'Artisanat et du BTP au Cameroun en 2026',
-    descEn: 'A deep analysis into urbanization trends, pricing indexes in Douala and Yaoundé, and how digital platforms are formalizing skilled trades.',
-    descFr: 'Une analyse approfondie de l\'urbanisation, des indices de prix à Douala et Yaoundé, et de la formalisation des artisans grâce au digital.',
-    readTime: '6 min read',
-    date: 'August 2026',
-    tag: 'Report'
-  },
-  {
-    id: '2',
-    categoryEn: 'Hiring Guides',
-    categoryFr: 'Guides Pratiques',
-    titleEn: 'How to Prevent Electrical Hazards and Choose the Right Electrician',
-    titleFr: 'Comment Prévenir les Risques Électriques et Choisir le Bon Électricien',
-    descEn: 'Key safety checkpoints, wire gauge standards, and questions to ask before hiring a technician for home installations.',
-    descFr: 'Points de contrôle de sécurité indispensables, normes de câblage et questions à poser avant d\'engager un technicien chez soi.',
-    readTime: '4 min read',
-    date: 'August 2026',
-    tag: 'Safety'
-  },
-  {
-    id: '3',
-    categoryEn: 'Artisan Success',
-    categoryFr: 'Histoires d\'Artisans',
-    titleEn: 'From Daily Street Hustle to 20 Regular Monthly Contracts: Eric\'s Story',
-    titleFr: 'De l\'Artisanat Informel à 20 Contrats Mensuels Réguliers : L\'Histoire d\'Éric',
-    descEn: 'How a certified plumber in Douala leveraged Fixam verification to build trust with corporate property owners and earn 3x more.',
-    descFr: 'Comment un plombier certifié à Douala a utilisé la vérification Fixam pour bâtir la confiance avec des entreprises et tripler ses revenus.',
-    readTime: '5 min read',
-    date: 'July 2026',
-    tag: 'Case Study'
-  },
-  {
-    id: '4',
-    categoryEn: 'Platform Updates',
-    categoryFr: 'Mises à Jour',
-    titleEn: 'Zero Commission Policy: Why We Made All Client Bookings 100% Free',
-    titleFr: 'Politique Zéro Commission : Pourquoi les Réservations sont Désormais 100% Gratuites',
-    descEn: 'Our strategic shift to empower local trade professionals, eliminate friction for households, and drive transparent peer-to-peer payments.',
-    descFr: 'Notre virage stratégique pour soutenir les artisans locaux, éliminer toute barrière pour les ménages et encourager les paiements directs.',
-    readTime: '3 min read',
-    date: 'July 2026',
-    tag: 'News'
-  }
-];
 
 export default function Insights({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
@@ -98,13 +35,18 @@ export default function Insights({ onNavigate }: { onNavigate: (page: Page) => v
     return true;
   });
 
+  const handleReadArticle = (articleId: string) => {
+    window.location.hash = `article-${articleId}`;
+    onNavigate('blog');
+  };
+
   return (
-    <div className="landing-page tsi-styled-page">
+    <div className="landing-page tsi-styled-page" style={{ backgroundColor: '#F8FAFC' }}>
       {/* 1. Hero Section */}
       <section className="tsi-hero-section" style={{ padding: '4rem 0 3rem' }}>
         <div className="tsi-hero-container" style={{ gridTemplateColumns: '1fr', textAlign: 'center', maxWidth: '840px', margin: '0 auto' }}>
           <div className="tsi-hero-left" style={{ alignItems: 'center', textAlign: 'center' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0D9488', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
               {isFr ? 'RECHERCHE & PERSPECTIVES' : 'INSIGHTS & RESEARCH'}
             </span>
             <h1 className="tsi-hero-headline" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.65rem)' }}>
@@ -128,12 +70,12 @@ export default function Insights({ onNavigate }: { onNavigate: (page: Page) => v
               key={cat.key}
               onClick={() => setActiveFilter(cat.key)}
               style={{
-                background: activeFilter === cat.key ? '#071936' : '#F1F5F9',
+                background: activeFilter === cat.key ? '#071936' : '#FFFFFF',
                 color: activeFilter === cat.key ? '#FFFFFF' : '#334155',
+                border: '1.5px solid ' + (activeFilter === cat.key ? '#071936' : '#E2E8F0'),
                 padding: '0.55rem 1.25rem',
                 borderRadius: '999px',
-                border: 'none',
-                fontWeight: 600,
+                fontWeight: 700,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
                 transition: 'all 0.15s'
@@ -145,45 +87,68 @@ export default function Insights({ onNavigate }: { onNavigate: (page: Page) => v
         </div>
 
         {/* 3. Articles Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', marginTop: '2.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '2rem', marginTop: '2.5rem' }}>
           {filteredArticles.map((art) => (
             <div
               key={art.id}
+              onClick={() => handleReadArticle(art.id)}
               style={{
                 background: '#FFFFFF',
                 border: '1.5px solid #E2E8F0',
-                borderRadius: '10px',
-                padding: '2rem',
+                borderRadius: '16px',
+                overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
+                cursor: 'pointer',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.07)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'none';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)';
+              }}
             >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <span style={{ background: '#EFF6FF', color: '#2563EB', fontSize: '0.75rem', fontWeight: 700, padding: '0.25rem 0.65rem', borderRadius: '4px' }}>
-                    {isFr ? art.categoryFr : art.categoryEn}
-                  </span>
-                  <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>{art.readTime}</span>
-                </div>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#071936', lineHeight: 1.35, marginBottom: '0.75rem' }}>
-                  {isFr ? art.titleFr : art.titleEn}
-                </h3>
-                <p style={{ color: '#64748B', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  {isFr ? art.descFr : art.descEn}
-                </p>
+              <div style={{ width: '100%', height: '200px', overflow: 'hidden', backgroundColor: '#E2E8F0' }}>
+                <img 
+                  src={art.heroImage} 
+                  alt={isFr ? art.titleFr : art.titleEn} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '1rem' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748B' }}>{art.date}</span>
-                <button
-                  onClick={() => onNavigate('blog')}
-                  style={{ background: 'transparent', border: 'none', color: '#2563EB', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}
-                >
-                  {isFr ? 'Lire l\'article →' : 'Read Full Article →'}
-                </button>
+              <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                    <span style={{ background: '#F0FDFA', color: '#0D9488', fontSize: '0.75rem', fontWeight: 800, padding: '0.25rem 0.65rem', borderRadius: '4px' }}>
+                      {isFr ? art.categoryFr : art.categoryEn}
+                    </span>
+                    <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 600 }}>{art.readTime}</span>
+                  </div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#071936', lineHeight: 1.35, marginBottom: '0.75rem' }}>
+                    {isFr ? art.titleFr : art.titleEn}
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+                    {isFr ? art.descFr : art.descEn}
+                  </p>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #F1F5F9', paddingTop: '1rem' }}>
+                  <span style={{ fontSize: '0.85rem', color: '#94A3B8', fontWeight: 600 }}>{art.date}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReadArticle(art.id);
+                    }}
+                    style={{ background: 'transparent', border: 'none', color: '#0D9488', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
+                  >
+                    {isFr ? 'Lire l\'article →' : 'Read Full Article →'}
+                  </button>
+                </div>
               </div>
             </div>
           ))}

@@ -49,7 +49,26 @@ interface MessagesProps {
 
 export default function Messages({ activeChatUser, setActiveChatUser }: MessagesProps) {
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<any[]>([]);
+  const cacheKeyConvs = `fixam_cache_conversations_${user?.id || 'default'}`;
+
+  const [conversations, setConversations] = useState<any[]>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_conversations_${user?.id || 'default'}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [isLoadingConvs, setIsLoadingConvs] = useState<boolean>(() => {
+    try {
+      const cached = localStorage.getItem(`fixam_cache_conversations_${user?.id || 'default'}`);
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
+
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [newMsgText, setNewMsgText] = useState('');
@@ -83,9 +102,13 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     const loadConvs = async () => {
       try {
         const res = await api.get('/chat/conversations');
-        setConversations(res.data.data || []);
+        const data = res.data.data || [];
+        setConversations(data);
+        localStorage.setItem(cacheKeyConvs, JSON.stringify(data));
       } catch (err) {
         console.error("Failed to load conversations", err);
+      } finally {
+        setIsLoadingConvs(false);
       }
     };
     loadConvs();
@@ -93,7 +116,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     // Poll for new messages every 5s if active
     const interval = setInterval(loadConvs, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [cacheKeyConvs]);
 
   const getParticipantDetails = (c: any) => {
     if (!c) return { name: 'Support', avatar: DEFAULT_AVATAR, other: null };
@@ -462,7 +485,19 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
           <h2>Inbox Chats</h2>
         </div>
         <div className="chats-users-list">
-          {conversations.length === 0 ? (
+          {isLoadingConvs && conversations.length === 0 ? (
+            <div className="p-3 space-y-3 animate-pulse">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-3.5 bg-slate-200 rounded w-1/3" />
+                    <div className="h-3 bg-slate-100 rounded w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : conversations.length === 0 ? (
             <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem' }}>
               No active conversations yet.
             </div>
@@ -931,9 +966,14 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               </div>
             )}
           </>
+        ) : isLoadingConvs && conversations.length === 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--gray-500)', background: '#f8fafc', gap: '12px' }}>
+            <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+            <p style={{ fontSize: '0.9rem', color: '#64748b' }}>{isFr ? 'Chargement des messages...' : 'Loading messages...'}</p>
+          </div>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--gray-500)', background: '#f8fafc' }}>
-            <p>Select a conversation to start chatting.</p>
+            <p>{conversations.length === 0 ? (isFr ? 'Aucune conversation pour le moment' : 'No active conversations yet.') : (isFr ? 'Sélectionnez une conversation pour commencer à discuter.' : 'Select a conversation to start chatting.')}</p>
           </div>
         )}
       </div>

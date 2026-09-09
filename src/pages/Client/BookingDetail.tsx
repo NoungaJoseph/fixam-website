@@ -40,21 +40,53 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
   const displayDate = bookingData.bookingDate || bookingData.date || bookingData.createdAt || 'TBD';
   const status = (bookingData.status || 'PENDING').toUpperCase();
 
+  const [loadingStatus, setLoadingStatus] = useState<string | null>(null);
+
+  const isJobItem = Boolean(
+    (bookingData.clientId && !bookingData.providerId && bookingData.title) ||
+    bookingData.jobType ||
+    bookingData.proposals ||
+    bookingData.isJob
+  );
+
+  const handleBack = () => {
+    setSelectedBooking(null);
+    if (user?.role === 'PROVIDER') {
+      if (isJobItem) {
+        sessionStorage.setItem('fixam_provider_jobs_tab', 'jobs');
+        setActiveTab('My Jobs');
+      } else {
+        sessionStorage.setItem('fixam_provider_jobs_tab', 'bookings');
+        setActiveTab('My Jobs');
+      }
+    } else {
+      if (isJobItem) {
+        setActiveTab('My Tasks');
+      } else {
+        setActiveTab('My Bookings');
+      }
+    }
+  };
+
   const handleStatusChange = async (newStatus: string) => {
+    if (loadingStatus) return;
+    setLoadingStatus(newStatus);
     try {
       const isJob = Boolean(bookingData.clientId && !bookingData.providerId && bookingData.title);
       const endpoint = isJob ? `/jobs/${bkId}/status` : `/bookings/${bkId}/status`;
       await api.patch(endpoint, { status: newStatus });
       if (newStatus === 'CANCELLED') {
         alert('Booking cancelled and removed successfully.');
-        setSelectedBooking(null);
-        setActiveTab('My Bookings');
+        handleBack();
       } else {
         setBookingData({ ...bookingData, status: newStatus });
         alert(`Status updated to ${newStatus} successfully!`);
       }
+      window.dispatchEvent(new CustomEvent('fixam_booking_updated', { detail: { id: bkId, status: newStatus } }));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update status.');
+    } finally {
+      setLoadingStatus(null);
     }
   };
   
@@ -79,13 +111,32 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
   const targetUserIdForReview = provider?.id || provider?.userId || client?.id || client?.userId || '';
   const targetNameForReview = pName !== 'Service Specialist' ? pName : cName;
 
+  const currentUserId = user?.id || (user as any)?._id;
+  const currentProviderProfileId = (user as any)?.providerProfile?.id || (user as any)?.providerProfile?._id;
+  
+  const isCurrentUserProvider = Boolean(
+    user?.role === 'PROVIDER' ||
+    (currentUserId && (
+      currentUserId === bookingData.providerId ||
+      currentUserId === bookingData.provider?.userId ||
+      currentUserId === bookingData.provider?.id ||
+      currentUserId === provider?.userId ||
+      currentUserId === provider?.id
+    )) ||
+    (currentProviderProfileId && (
+      currentProviderProfileId === bookingData.providerId ||
+      currentProviderProfileId === bookingData.provider?.id ||
+      currentProviderProfileId === provider?.id
+    ))
+  );
+
   return (
-    <div className="upwork-modal-overlay animate-fade-in" onClick={() => setSelectedBooking(null)}>
+    <div className="upwork-modal-overlay animate-fade-in" onClick={handleBack}>
       <div className="upwork-modal-drawer animate-slide-left" onClick={(e) => e.stopPropagation()}>
         
         {/* Top Drawer Navigation */}
         <div className="upwork-drawer-topbar">
-          <button className="btn-back-arrow-text" onClick={() => setSelectedBooking(null)}>
+          <button className="btn-back-arrow-text cursor-pointer" onClick={handleBack}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
             </svg>
@@ -297,35 +348,144 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
 
             {/* Dynamic Actions Grid */}
             <div className="space-y-3 mt-4">
+              {status === 'PENDING' && (
+                isCurrentUserProvider ? (
+                  <>
+                    <button 
+                      id="btn-accept-booking-request"
+                      disabled={Boolean(loadingStatus)}
+                      className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                      onClick={() => handleStatusChange('ACCEPTED')}
+                    >
+                      {loadingStatus === 'ACCEPTED' ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Accepting Booking...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-lg leading-none">✓</span>
+                          <span>Accept Booking Request</span>
+                        </>
+                      )}
+                    </button>
+                    <button 
+                      id="btn-decline-booking-request"
+                      disabled={Boolean(loadingStatus)}
+                      className={`w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                      onClick={() => {
+                        if (confirm('Are you sure you want to decline this booking request?')) {
+                          handleStatusChange('REJECTED');
+                        }
+                      }}
+                    >
+                      {loadingStatus === 'REJECTED' ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Declining Request...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-base leading-none">✕</span>
+                          <span>Decline Booking Request</span>
+                        </>
+                      )}
+                    </button>
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3 text-xs flex items-center gap-2">
+                      <span className="text-base">⏳</span>
+                      <span>Waiting for the service specialist to accept your booking request.</span>
+                    </div>
+                    <button 
+                      id="btn-cancel-booking-request"
+                      disabled={Boolean(loadingStatus)}
+                      className={`w-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                      onClick={() => {
+                        if (confirm('Are you sure you want to cancel this booking request?')) {
+                          handleStatusChange('CANCELLED');
+                        }
+                      }}
+                    >
+                      {loadingStatus === 'CANCELLED' ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-rose-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span>Cancelling Request...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>✕</span>
+                          <span>Cancel Request</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )
+              )}
+
               {status === 'COUNTER_PROPOSED' && (
                 <>
                   <button 
-                    className="w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+                    disabled={Boolean(loadingStatus)}
+                    className={`w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                     onClick={() => handleStatusChange('ACCEPTED')}
                   >
-                    ✓ Accept Counter Offer
+                    {loadingStatus === 'ACCEPTED' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Accepting Counter Offer...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✓</span>
+                        <span>Accept Counter Offer</span>
+                      </>
+                    )}
                   </button>
                   <button 
-                    className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+                    disabled={Boolean(loadingStatus)}
+                    className={`w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                     onClick={() => handleStatusChange('REJECTED')}
                   >
-                    ✕ Decline Counter Offer
+                    {loadingStatus === 'REJECTED' ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Declining Counter Offer...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✕</span>
+                        <span>Decline Counter Offer</span>
+                      </>
+                    )}
                   </button>
                 </>
               )}
 
-              {(status === 'ACCEPTED' || status === 'IN_PROGRESS') && (
+              {(status === 'ACCEPTED' || status === 'CONFIRMED' || status === 'IN_PROGRESS') && (
                 <button 
-                  className="w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm"
+                  disabled={Boolean(loadingStatus)}
+                  className={`w-full bg-[#14B8A6] hover:bg-[#0F9788] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm ${loadingStatus ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                   onClick={() => handleStatusChange('COMPLETED')}
                 >
-                  ✓ Mark Contract Completed
+                  {loadingStatus === 'COMPLETED' ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Completing Contract...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>✓</span>
+                      <span>Mark Contract Completed</span>
+                    </>
+                  )}
                 </button>
               )}
 
               {status === 'COMPLETED' && (
                 <button 
-                  className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm"
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => setIsReviewModalOpen(true)}
                 >
                   ⭐ Write a Review
@@ -336,15 +496,6 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 <button 
                   className="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => {
-                    const currentUserId = user?.id || (user as any)?._id;
-                    const isCurrentUserProvider = Boolean(
-                      user?.role === 'PROVIDER' ||
-                      (currentUserId && (
-                        currentUserId === bookingData.providerId ||
-                        currentUserId === provider?.userId ||
-                        currentUserId === provider?.id
-                      ))
-                    );
                     const targetId = isCurrentUserProvider
                       ? (client?.userId || client?.id || (client as any)?._id || bookingData.clientId || bookingData.userId)
                       : (provider?.userId || provider?.id || (provider as any)?._id || bookingData.providerId);
@@ -362,13 +513,13 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                   }}
                 >
                   <Icon name="chat" />
-                  <span>{user?.role === 'PROVIDER' || (user && (user.id === bookingData.providerId || user.id === provider?.userId || user.id === provider?.id)) ? 'Message Client' : 'Message Specialist'}</span>
+                  <span>{isCurrentUserProvider ? 'Message Client' : 'Message Specialist'}</span>
                 </button>
               )}
 
               <button 
-                className="w-full border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold py-2.5 px-4 rounded-xl text-sm transition"
-                onClick={() => setSelectedBooking(null)}
+                className="w-full border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold py-2.5 px-4 rounded-xl text-sm transition cursor-pointer"
+                onClick={handleBack}
               >
                 Close Drawer
               </button>
