@@ -1,9 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../../App';
+import { useSEO } from '../../hooks/useSEO';
 import '../Resources/Subpages.css';
 
 export default function Research({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Institut de Recherche & Études Économiques | Fixam' : 'Research Institute & Economic Insights | Fixam',
+    description: isFr
+      ? 'Insights, analyses et rapports économiques sur le travail informel et les services de proximité au Cameroun.'
+      : 'Insights, market data, and research reports on informal labor, skilled trades, and on-demand local services in Cameroon.',
+    canonical: 'https://usefixam.com/research',
+    isFr
+  });
   
   return (
     <div className="subpage-premium">

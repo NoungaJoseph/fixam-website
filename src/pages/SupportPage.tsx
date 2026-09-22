@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { api } from '../services/api';
+import { useSEO } from '../hooks/useSEO';
 import './SupportPage.css';
 
 interface SupportPageProps {
@@ -79,6 +80,15 @@ const FAQ_DATA: FaqItem[] = [
 export default function SupportPage({ onNavigate }: SupportPageProps) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Centre d\'Assistance & Support Client | Fixam' : 'Help & Customer Support Center | Fixam',
+    description: isFr
+      ? 'Centre d\'assistance Fixam. Obtenez de l\'aide pour vos réservations, vérifications de profil, paiements et litiges au Cameroun.'
+      : 'Fixam Help & Support Center. Get assistance with bookings, identity verification, payments, escrow protection, and disputes in Cameroon.',
+    canonical: 'https://usefixam.com/support',
+    isFr
+  });
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');

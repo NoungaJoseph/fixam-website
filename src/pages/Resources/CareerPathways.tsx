@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './CareerPathways.css';
 import { Footer } from '../../App';
+import { useSEO } from '../../hooks/useSEO';
 
 interface Course {
   id: string;
@@ -263,6 +264,15 @@ export default function CareerPathways({
 }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Parcours Professionnels & Formations | Fixam' : 'Career Pathways & Vocational Training | Fixam',
+    description: isFr
+      ? 'Explorez les parcours de compétences professionnelles, formations techniques et certifications pratiques sur Fixam Cameroun.'
+      : 'Explore vocational skill training pathways, technical trades certification, and career growth opportunities on Fixam Cameroon.',
+    canonical: 'https://usefixam.com/career-pathways',
+    isFr
+  });
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   
   // Track enrollment state per course

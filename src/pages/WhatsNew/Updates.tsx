@@ -1,10 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../../App';
+import { useSEO } from '../../hooks/useSEO';
 import '../Resources/Subpages.css';
 
 export default function Updates({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Mises à Jour & Nouveautés | Fixam' : 'Platform Updates & Announcements | Fixam',
+    description: isFr
+      ? 'Découvrez les dernières fonctionnalités, améliorations de sécurité et nouveautés sur la plateforme Fixam au Cameroun.'
+      : 'Explore the latest feature releases, performance improvements, and security enhancements on the Fixam platform.',
+    canonical: 'https://usefixam.com/updates',
+    isFr
+  });
   
   const updatesList = [
     {

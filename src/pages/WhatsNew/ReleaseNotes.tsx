@@ -1,9 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../../App';
+import { useSEO } from '../../hooks/useSEO';
 import '../Resources/Subpages.css';
 
 export default function ReleaseNotes({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Notes de Mise à Jour & Versions | Fixam' : 'Release Notes & Platform Versions | Fixam',
+    description: isFr
+      ? 'Consultez les versions, correctifs et journaux des modifications de la plateforme Fixam.'
+      : 'Review release notes, bug fixes, and version changelogs for the Fixam on-demand service platform.',
+    canonical: 'https://usefixam.com/release-notes',
+    isFr
+  });
   
   return (
     <div className="subpage-premium">

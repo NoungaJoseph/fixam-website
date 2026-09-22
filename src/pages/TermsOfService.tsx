@@ -1,11 +1,21 @@
 import { useTranslation } from 'react-i18next';
 import { Page } from '../App';
 import LegalLayout from './LegalLayout';
+import { useSEO } from '../hooks/useSEO';
 import './LegalPages.css';
 
 export default function TermsOfService({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Conditions d\'Utilisation | Fixam' : 'Terms of Service | Fixam',
+    description: isFr
+      ? 'Consultez les conditions d\'utilisation de la plateforme Fixam au Cameroun. Règles, droits et responsabilités pour clients et prestataires.'
+      : 'Read Fixam\'s terms of service. Understand our platform guidelines, user agreements, and rules for clients and verified service providers in Cameroon.',
+    canonical: 'https://usefixam.com/terms-of-service',
+    isFr
+  });
 
   const sections = [
     {

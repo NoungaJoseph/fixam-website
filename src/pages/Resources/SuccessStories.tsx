@@ -1,9 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../../App';
+import { useSEO } from '../../hooks/useSEO';
 import './Subpages.css';
 
 export default function SuccessStories({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Histoires de Succès | Fixam' : 'Success Stories | Fixam',
+    description: isFr
+      ? 'Découvrez comment les artisans, techniciens et clients réussissent et se développent avec Fixam au Cameroun.'
+      : 'Discover how verified trade artisans, technicians, and clients in Cameroon succeed and grow with Fixam.',
+    canonical: 'https://usefixam.com/success-stories',
+    isFr
+  });
   
   return (
     <div className="subpage-premium">

@@ -1,0 +1,34 @@
+# Fixam Digital Marketplace (Cameroon & Central Africa)
+
+> Fixam (`https://usefixam.com`) is the leading tech-enabled on-demand service marketplace in Cameroon. It connects households, property managers, and businesses with verified local trade professionals (plumbers, electricians, carpenters, AC technicians, beauticians, cleaners, and builders) across Douala, Yaoundé, Bafoussam, Bamenda, Buea, Limbe, and Kribi.
+
+## Core Value Propositions & Business Model
+- **100% Free Booking & 0% Commission:** Free for clients to post tasks and book verified service providers.
+- **Identity & Skill Verification:** Every provider undergoes background identity checks (Cameroonian National ID / CNI) and skill verification before receiving a verified badge.
+- **Bilingual Platform:** Fully supporting English (`en-CM`) and French (`fr-CM`).
+- **Local Currency:** Transactions are priced in Central African CFA Francs (XAF / FCFA).
+
+## Primary Services Directory
+- **Plumbing & Drainage:** Emergency leak repair, pipe installation, water tank setup, drain unclogging in Douala & Yaoundé.
+- **Electrical & Solar Systems:** Residential wiring, circuit breaker fixes, generator maintenance, solar panel installation.
+- **Air Conditioning & Refrigeration:** AC installation, gas refilling, fridge repair, preventive maintenance for offices and homes.
+- **Carpentry & Furniture:** Custom woodwork, door/window fitting, roof timbering, furniture repair.
+- **Painting & Decorating:** Exterior building paint, interior wall finishings, damp proofing.
+- **Appliance Repair:** Washing machine repair, microwave fix, TV mounting & electronics servicing.
+- **Residential & Commercial Cleaning:** Post-construction cleanup, office sanitization, sofa & carpet washing.
+- **Masonry & Small Civil Works:** Tile fitting, bricklaying, wall plastering, foundation repairs.
+
+## Service Coverage Areas in Cameroon
+- **Douala (Littoral):** Akwa, Bonanjo, Bonapriso, Makepe, Logbessou, Deido, Yassa, Kotto.
+- **Yaoundé (Centre):** Bastos, Omnisports, Tsinga, Odza, Nsimeyong, Mendong, Mvan.
+- **South West & West Regions:** Buea, Limbe, Bafoussam, Kribi, Bamenda.
+
+## Key URLs & Documentation
+- **Homepage:** [https://usefixam.com/](https://usefixam.com/)
+- **Services Directory:** [https://usefixam.com/services](https://usefixam.com/services)
+- **Why Choose Fixam:** [https://usefixam.com/why-fixam](https://usefixam.com/why-fixam)
+- **Solutions & Portals:** [https://usefixam.com/solutions](https://usefixam.com/solutions)
+- **Career Pathways Hub:** [https://careerpath.usefixam.com/](https://careerpath.usefixam.com/)
+- **Insights & Research:** [https://usefixam.com/insights](https://usefixam.com/insights)
+- **Reviews & Testimonials:** [https://usefixam.com/reviews](https://usefixam.com/reviews)
+- **Full LLM Knowledgebase:** [https://usefixam.com/llms-full.txt](https://usefixam.com/llms-full.txt)

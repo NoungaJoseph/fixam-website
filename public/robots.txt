@@ -42,9 +42,12 @@ Allow: /
 # Default rule for all other crawlers
 User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /client-dashboard
 Disallow: /provider-dashboard
 Disallow: /api/
+Disallow: /account
+Disallow: /checkout
 
 # Canonical Sitemap Reference
 Sitemap: https://usefixam.com/sitemap.xml

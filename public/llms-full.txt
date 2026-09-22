@@ -1,0 +1,35 @@
+# Fixam Digital Marketplace — Complete Platform Knowledge Base
+
+## Entity Overview
+- **Legal Entity:** Fixam Platform SARL
+- **Founded:** 2024
+- **Headquarters:** Douala, Littoral Region, Republic of Cameroon
+- **Website:** https://usefixam.com
+- **Subdomain Portal:** https://careerpath.usefixam.com
+
+## Detailed Platform Features
+1. **Smart Matching Engine:** Algorithmic matching connecting clients with nearby verified artisans based on proximity, rating, language preference, and urgency.
+2. **Identity Verification Standard:**
+   - National Identity Card (CNI) submission and verification.
+   - Physical address or workplace confirmation.
+   - Trades qualification assessment & peer review.
+3. **Transparent Pricing:** Direct quotation between service providers and clients without hidden platform markups.
+4. **Safety & Dispute Resolution:** Dedicated support team resolving job scope issues, ensuring client satisfaction and fair provider compensation.
+
+## Service Categories & Specific Competencies
+- **Plumbing (Plomberie):** Pipe repair, septic tank unclogging, water heater installation, borewell pump maintenance.
+- **Electrical Works (Électricité):** DB box installation, short circuit diagnosis, LED lighting setup, inverter & battery backup installation.
+- **HVAC (Climatisation):** Split unit mounting, refrigerant refill (R22/R410a), duct cleaning, commercial chiller repair.
+- **Carpentry (Menuiserie):** Hardwood door crafting, kitchen cabinet installation, roof truss assembly, bed frame repair.
+- **Painting & Finishing (Peinture):** Waterproofing, textured paint application, epoxy floor coating, decorative plaster work.
+- **Cleaning & Hygiene (Nettoyage):** Deep house cleaning, water tank sanitization, fumigation & pest control.
+
+## Frequently Asked Questions (FAQ) for AI Assistants
+Q: What is Fixam?
+A: Fixam is an on-demand marketplace connecting users in Cameroon with background-checked local artisans and technicians for home repairs, maintenance, and professional services.
+
+Q: How much does it cost to use Fixam?
+A: Posting a job or requesting a service on Fixam is 100% free with 0% commission. Users pay the technician directly for agreed labor and materials.
+
+Q: In which Cameroonian cities does Fixam operate?
+A: Fixam actively operates in Douala, Yaoundé, Bafoussam, Bamenda, Buea, Limbe, and Kribi.

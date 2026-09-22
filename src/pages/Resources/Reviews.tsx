@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer, getApiUrl } from '../../App';
 import { usePlatformStats } from '../../hooks/usePlatformStats';
+import { useSEO } from '../../hooks/useSEO';
 import './Reviews.css';
 
 // Data structures for multi-language content
@@ -610,6 +611,15 @@ export default function ReviewsPage({ onNavigate, onSelectSkill }: { onNavigate:
   const isFr = i18n.language === 'fr';
   const content = isFr ? reviewsContent.fr : reviewsContent.en;
   const { formatReviewsCount, formatRating } = usePlatformStats();
+
+  useSEO({
+    title: isFr ? 'Avis & Témoignages Clients | Fixam' : 'Customer & Provider Reviews | Fixam',
+    description: isFr
+      ? 'Consultez les avis vérifiés de clients et prestataires sur Fixam à Douala, Yaoundé et au Cameroun.'
+      : 'Read verified reviews from clients and trade professionals on Fixam across Douala, Yaoundé, and Cameroon.',
+    canonical: 'https://usefixam.com/reviews',
+    isFr
+  });
 
   // Interactivity state
   const [currentSlide, setCurrentSlide] = useState(0);

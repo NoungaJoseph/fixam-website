@@ -1,11 +1,21 @@
 import { useTranslation } from 'react-i18next';
 import { Page } from '../App';
 import LegalLayout from './LegalLayout';
+import { useSEO } from '../hooks/useSEO';
 import './LegalPages.css';
 
 export default function PrivacyPolicy({ onNavigate }: { onNavigate: (page: Page) => void }) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+
+  useSEO({
+    title: isFr ? 'Politique de Confidentialité | Fixam' : 'Privacy Policy | Fixam',
+    description: isFr
+      ? 'Consultez la politique de confidentialité de Fixam. Découvrez comment nous protégeons et gérons vos données personnelles et vérifications au Cameroun.'
+      : 'Review Fixam\'s privacy policy. Learn how we collect, protect, and handle your personal data and identity verification in Cameroon.',
+    canonical: 'https://usefixam.com/privacy-policy',
+    isFr
+  });
 
   const sections = [
     {

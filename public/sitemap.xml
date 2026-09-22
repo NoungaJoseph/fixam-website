@@ -104,12 +104,23 @@
   <!-- 10. Privacy Policy -->
   <url>
     <loc>https://usefixam.com/privacy-policy</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-22</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/privacy-policy?lng=en" />
     <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/privacy-policy?lng=fr" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/privacy-policy" />
+  </url>
+
+  <!-- 11. Support & Help Center -->
+  <url>
+    <loc>https://usefixam.com/support</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://usefixam.com/support?lng=en" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://usefixam.com/support?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://usefixam.com/support" />
   </url>
 
 </urlset>

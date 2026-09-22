@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../../App';
 import { articlesData, ArticleItem } from '../../data/ArticlesData';
+import { useSEO } from '../../hooks/useSEO';
 import '../Resources/Subpages.css';
 
 interface BlogProps {
@@ -16,6 +17,21 @@ export default function Blog({ onNavigate, selectedArticleId }: BlogProps) {
   const [activeArticle, setActiveArticle] = useState<ArticleItem | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  useSEO({
+    title: activeArticle
+      ? (isFr ? activeArticle.titleFr : activeArticle.titleEn)
+      : (isFr ? 'Blog & Conseils Pratiques | Fixam' : 'Blog & Home Repair Guides | Fixam'),
+    description: activeArticle
+      ? (isFr ? activeArticle.descFr : activeArticle.descEn)
+      : (isFr
+        ? 'Découvrez des articles d\'experts, guides d\'embauche et conseils de maintenance sur le blog officiel Fixam au Cameroun.'
+        : 'Read expert advice, home maintenance guides, and hiring tips on the official Fixam Cameroon blog.'),
+    canonical: activeArticle
+      ? `https://usefixam.com/blog#article-${activeArticle.slug || activeArticle.id}`
+      : 'https://usefixam.com/blog',
+    isFr
+  });
 
   useEffect(() => {
     if (selectedArticleId) {
