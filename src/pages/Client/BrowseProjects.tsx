@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
+import { api } from '../../services/api';
 
 interface BrowseProjectsProps {
   displayedPros?: any[];
@@ -25,47 +26,108 @@ export default function BrowseProjects({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState<'featured' | 'price_low' | 'price_high' | 'rating'>('featured');
+  const [internalPros, setInternalPros] = useState<any[]>([]);
+
+  // If displayedPros is empty or not passed, fetch published providers directly from API
+  useEffect(() => {
+    if (displayedPros && displayedPros.length > 0) {
+      setInternalPros(displayedPros);
+      return;
+    }
+
+    let isMounted = true;
+    api.get('/providers')
+      .then((res: any) => {
+        if (!isMounted) return;
+        const list = res.data?.data || res.data || [];
+        if (Array.isArray(list)) {
+          setInternalPros(list);
+        }
+      })
+      .catch((err: any) => {
+        console.warn('BrowseProjects: could not fetch fallback providers', err);
+      });
+
+    return () => { isMounted = false; };
+  }, [displayedPros]);
+
+  const activeProsList = (displayedPros && displayedPros.length > 0) ? displayedPros : internalPros;
 
   // Extract all portfolio projects from providers
   const allProjects = useMemo(() => {
     const projects: any[] = [];
-    displayedPros.forEach((pro) => {
+    activeProsList.forEach((pro) => {
       const raw = pro.originalData || pro;
-      if (!raw || !Array.isArray(raw.portfolio)) return;
+      if (!raw) return;
 
-      raw.portfolio.forEach((item: any) => {
+      // Handle portfolio whether it's an array, stringified JSON, or nested in user.providerProfile
+      let rawPortfolio = raw.portfolio || raw.user?.providerProfile?.portfolio || pro.portfolio;
+      if (typeof rawPortfolio === 'string') {
+        try {
+          rawPortfolio = JSON.parse(rawPortfolio);
+        } catch (_) {}
+      }
+      if (!Array.isArray(rawPortfolio) || rawPortfolio.length === 0) return;
+
+      rawPortfolio.forEach((item: any, itemIdx: number) => {
         if (!item) return;
 
-        let parsedPackages = item.packages;
-        if (typeof parsedPackages === 'string') {
-          try {
-            parsedPackages = JSON.parse(parsedPackages);
-          } catch (_) {}
+        let itemTitle = '';
+        let itemDesc = '';
+        let rawImages: string[] = [];
+        let rawVideos: string[] = [];
+        let priceVal = 0;
+        let parsedPackages = null;
+        let itemCategory = raw.skills?.[0] || 'General';
+
+        if (typeof item === 'string') {
+          rawImages = [item];
+          itemTitle = `${raw.user?.fullName || pro.name || 'Verified Specialist'} - Showcase #${itemIdx + 1}`;
+        } else {
+          itemTitle = item.title || item.name || `${raw.skills?.[0] || 'Specialist'} Project`;
+          itemDesc = item.description || item.desc || '';
+          if (item.category) itemCategory = item.category;
+
+          parsedPackages = item.packages;
+          if (typeof parsedPackages === 'string') {
+            try { parsedPackages = JSON.parse(parsedPackages); } catch (_) {}
+          }
+
+          if (Array.isArray(item.images) && item.images.length > 0) {
+            rawImages = item.images;
+          } else if (item.imageUrl) {
+            rawImages = [item.imageUrl];
+          } else if (item.url) {
+            rawImages = [item.url];
+          } else if (item.image) {
+            rawImages = [item.image];
+          }
+
+          if (Array.isArray(item.videos) && item.videos.length > 0) {
+            rawVideos = item.videos;
+          } else if (item.video) {
+            rawVideos = Array.isArray(item.video) ? item.video : [item.video];
+          } else if (item.videoUrl) {
+            rawVideos = [item.videoUrl];
+          }
+
+          priceVal = item.price || parsedPackages?.basic?.price || parsedPackages?.standard?.price || 0;
         }
 
-        const rawImages = Array.isArray(item.images) && item.images.length > 0
-          ? item.images
-          : (item.imageUrl ? [item.imageUrl] : (item.url ? [item.url] : (item.image ? [item.image] : [])));
         const itemImages = rawImages.map((u: string) => getMediaUrl(u, 'image')).filter(Boolean);
-
-        const rawVideos = Array.isArray(item.videos) && item.videos.length > 0
-          ? item.videos
-          : (item.video ? (Array.isArray(item.video) ? item.video : [item.video]) : (item.videoUrl ? [item.videoUrl] : []));
         const itemVideos = rawVideos.map((u: string) => getMediaUrl(u, 'video')).filter(Boolean);
 
-        const priceVal = item.price || parsedPackages?.basic?.price || parsedPackages?.standard?.price || 0;
-
         projects.push({
-          id: item.id || `${raw.id}_${item.title || 'proj'}`,
-          title: item.title || 'Specialist Showcase Project',
-          description: item.description || '',
-          imageUrl: itemImages[0] || getMediaUrl(item.imageUrl || item.url || item.image, 'image') || '',
+          id: (typeof item === 'object' && item?.id) ? item.id : `${raw.id}_${itemIdx}_${encodeURIComponent(itemTitle.slice(0, 15))}`,
+          title: itemTitle,
+          description: itemDesc,
+          imageUrl: itemImages[0] || (typeof item === 'object' ? getMediaUrl(item.imageUrl || item.url || item.image, 'image') : '') || '',
           images: itemImages,
           videos: itemVideos,
           video: itemVideos[0] || null,
           packages: parsedPackages || null,
           price: priceVal,
-          category: item.category || raw.skills?.[0] || 'General',
+          category: itemCategory,
           provider: {
             id: raw.id,
             userId: raw.user?.id || raw.userId || '',
@@ -81,7 +143,7 @@ export default function BrowseProjects({
       });
     });
     return projects;
-  }, [displayedPros]);
+  }, [activeProsList]);
 
   // Categories list
   const categories = useMemo(() => {
@@ -94,15 +156,20 @@ export default function BrowseProjects({
 
   // Filter and sort
   const filteredProjects = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return allProjects
       .filter((proj) => {
         const matchesCategory = selectedCategory === 'All' || proj.category.toLowerCase() === selectedCategory.toLowerCase();
-        const matchesSearch = !searchQuery.trim() || 
-          proj.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          proj.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          proj.provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          proj.category.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
+        if (!matchesCategory) return false;
+        if (!q) return true;
+
+        return (
+          proj.title.toLowerCase().includes(q) ||
+          proj.description.toLowerCase().includes(q) ||
+          proj.provider.name.toLowerCase().includes(q) ||
+          proj.provider.serviceArea.toLowerCase().includes(q) ||
+          proj.category.toLowerCase().includes(q)
+        );
       })
       .sort((a, b) => {
         if (sortBy === 'price_low') return (Number(a.price) || 0) - (Number(b.price) || 0);
@@ -210,8 +277,8 @@ export default function BrowseProjects({
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center my-6">
-          <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center text-teal-600 text-2xl mx-auto mb-4">
-            📁
+          <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center text-teal-600 mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
           </div>
           <h3 className="text-lg font-bold text-gray-800 mb-1">
             {isFr ? 'Aucun projet trouvé' : 'No projects found'}
@@ -276,10 +343,13 @@ export default function BrowseProjects({
                         e.stopPropagation();
                         toggleFavoriteProject(project.id);
                       }}
+                      aria-label="Toggle favorite"
                     >
-                      <span className={isFav ? 'text-rose-500' : 'text-gray-400'}>
-                        {isFav ? '❤️' : '🤍'}
-                      </span>
+                      {isFav ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#F43F5E" stroke="#F43F5E" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      )}
                     </button>
                   )}
                 </div>

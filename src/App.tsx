@@ -334,10 +334,22 @@ function getInitialPageFromUrl(): Page {
   }
 
   const path = window.location.pathname;
+  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
+
+  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support', 'browse_projects', 'why_fixam', 'solutions', 'insights'];
+
+  // Check explicit non-support hash first so hash takes precedence over lingering pathname
+  if (hash && hash !== 'support' && hash !== 'help') {
+    if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
+      return 'dashboard';
+    }
+    if (validPages.includes(hash as Page)) {
+      return hash as Page;
+    }
+  }
+
   if (path === '/download' || path === '/download/') return 'download';
   if (path === '/support' || path === '/support/') return 'support';
-
-  const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
   if (hash === 'support' || hash === 'help') {
     return 'support';
   }
@@ -345,7 +357,6 @@ function getInitialPageFromUrl(): Page {
     return 'dashboard';
   }
 
-  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support'];
   if (validPages.includes(hash as Page)) {
     return hash as Page;
   }
@@ -507,6 +518,28 @@ function App() {
       const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
       const path = window.location.pathname;
 
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support', 'browse_projects', 'why_fixam', 'solutions', 'insights'];
+      const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
+
+      // If user navigated to a specific hash (e.g. #insights, #services, #browse_projects), hash takes precedence!
+      if (hash && hash !== 'support' && hash !== 'help') {
+        if (hash.startsWith('tab-') || TAB_SLUG_MAP[hash]) {
+          if (path === '/support' || path === '/support/') {
+            window.history.replaceState('', document.title, '/');
+          }
+          setPage('dashboard');
+          return;
+        }
+
+        if (validPages.includes(hash as Page)) {
+          if (path === '/support' || path === '/support/') {
+            window.history.replaceState('', document.title, '/');
+          }
+          setPage(hash as Page);
+          return;
+        }
+      }
+
       if (path === '/download' || path === '/download/') {
         setPage('download');
         return;
@@ -526,9 +559,6 @@ function App() {
         setPage('dashboard');
         return;
       }
-
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support'];
-      const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
 
       if (validPages.includes(hash as Page)) {
         setPage(hash as Page);
@@ -560,6 +590,11 @@ function App() {
       return;
     }
 
+    // Clear /support path when navigating away from support
+    if (page !== 'support' && (path === '/support' || path === '/support/')) {
+      window.history.replaceState('', document.title, '/');
+    }
+
     if (page === 'support') {
       if (path !== '/support' && path !== '/support/') {
         window.history.pushState('', document.title, '/support');
@@ -569,7 +604,7 @@ function App() {
 
     if (page === 'home') {
       if (currentHash && currentHash !== 'home' && !currentHash.startsWith('tab-')) {
-        window.history.pushState('', document.title, window.location.pathname + window.location.search);
+        window.history.pushState('', document.title, '/');
       }
     } else if (page !== 'dashboard') {
       if (currentHash !== page && !path.includes(page)) {
@@ -630,7 +665,8 @@ function App() {
               coverImage,
               completedJobs,
               reviewCount,
-              verification: item.verification
+              verification: item.verification,
+              originalData: item
             };
           });
           setLivePros(formatted);
@@ -650,25 +686,32 @@ function App() {
     return <MaintenanceScreen message={maintenanceMsg} />;
   }
 
+  const handleNavigate = (newPage: Page) => {
+    if (newPage !== 'support' && (window.location.pathname === '/support' || window.location.pathname === '/support/')) {
+      window.history.replaceState('', document.title, '/');
+    }
+    setPage(newPage);
+  };
+
   return (
     <div className={page === 'dashboard' ? 'app dashboard-shell' : 'app'}>
       {page === 'dashboard' ? (
-        <Dashboard onNavigate={setPage} livePros={livePros} userRole={userRole} onRoleChange={handleRoleSwitch} />
+        <Dashboard onNavigate={handleNavigate} livePros={livePros} userRole={userRole} onRoleChange={handleRoleSwitch} />
       ) : page === 'login' ? (
-        <Login onNavigate={setPage} onLogin={(role) => setUserRole(role)} />
+        <Login onNavigate={handleNavigate} onLogin={(role) => setUserRole(role)} />
       ) : page === 'register' ? (
-        <Register onNavigate={setPage} onRegister={(role) => setUserRole(role)} />
+        <Register onNavigate={handleNavigate} onRegister={(role) => setUserRole(role)} />
       ) : page === 'forgot_password' ? (
-        <ForgotPassword onNavigate={setPage} />
+        <ForgotPassword onNavigate={handleNavigate} />
       ) : page === 'otp' ? (
-        <OTPVerification onNavigate={setPage} />
+        <OTPVerification onNavigate={handleNavigate} />
       ) : (
         <>
-          <Header page={page} onNavigate={setPage} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
+          <Header page={page} onNavigate={handleNavigate} onSearch={setServiceSearchQuery} setSelectedPathway={setSelectedPathway} />
           <main>
             {page === 'services' && (
               <Services
-                onNavigate={setPage}
+                onNavigate={handleNavigate}
                 searchQuery={serviceSearchQuery}
                 setSearchQuery={setServiceSearchQuery}
                 serviceCategories={serviceCategories}
@@ -676,72 +719,72 @@ function App() {
                 translateCat={(cat) => translateCatHelper(cat, i18n.language)}
               />
             )}
-            {page === 'guide' && <Guide onNavigate={setPage} />}
-            {page === 'about' && <About onNavigate={setPage} />}
-            {page === 'why_fixam' && <WhyFixam onNavigate={setPage} />}
-            {page === 'solutions' && <Solutions onNavigate={setPage} />}
-            {page === 'insights' && <Insights onNavigate={setPage} />}
+            {page === 'guide' && <Guide onNavigate={handleNavigate} />}
+            {page === 'about' && <About onNavigate={handleNavigate} />}
+            {page === 'why_fixam' && <WhyFixam onNavigate={handleNavigate} />}
+            {page === 'solutions' && <Solutions onNavigate={handleNavigate} />}
+            {page === 'insights' && <Insights onNavigate={handleNavigate} />}
             {page === 'browse_projects' && (
               <div className="landing-page" style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', paddingTop: '1.5rem' }}>
                 <BrowseProjects
                   displayedPros={livePros}
                   setActiveTab={() => {
                     if (!isLoggedIn) {
-                      setPage('login');
+                      handleNavigate('login');
                     } else {
                       window.location.hash = 'tab-browse-projects';
-                      setPage('dashboard');
+                      handleNavigate('dashboard');
                     }
                   }}
                   setSelectedProject={() => {
                     if (!isLoggedIn) {
-                      setPage('login');
+                      handleNavigate('login');
                     } else {
                       window.location.hash = 'tab-browse-projects';
-                      setPage('dashboard');
+                      handleNavigate('dashboard');
                     }
                   }}
                   setSelectedProvider={() => {
                     if (!isLoggedIn) {
-                      setPage('login');
+                      handleNavigate('login');
                     } else {
                       window.location.hash = 'tab-find-services';
-                      setPage('dashboard');
+                      handleNavigate('dashboard');
                     }
                   }}
                   favoriteProjectIds={[]}
                   toggleFavoriteProject={() => {}}
                 />
-                <Footer onNavigate={setPage} />
+                <Footer onNavigate={handleNavigate} />
               </div>
             )}
-            {page === 'terms' && <TermsOfService onNavigate={setPage} />}
-            {page === 'privacy' && <PrivacyPolicy onNavigate={setPage} />}
-            {page === 'support' && <SupportPage onNavigate={setPage} />}
-            {page === 'success_stories' && <SuccessStories onNavigate={setPage} />}
-            {page === 'reviews' && <ReviewsPage onNavigate={setPage} onSelectSkill={setSelectedSkill} />}
-            {page === 'skill_detail' && <SkillDetail onNavigate={setPage} skillName={selectedSkill} onSelectSkill={setSelectedSkill} livePros={livePros} />}
-            {page === 'updates' && <Updates onNavigate={setPage} />}
-            {page === 'research' && <Research onNavigate={setPage} />}
-            {page === 'blog' && <Blog onNavigate={setPage} />}
-            {page === 'release_notes' && <ReleaseNotes onNavigate={setPage} />}
-            {page === 'career_pathways' && <CareerPathwaysBrowsePage onNavigate={setPage} />}
-            {page === 'career_pathway_detail' && <CareerPathwayDetailPage skillId={selectedPathway || 'electrical'} onNavigate={setPage} setSelectedPathway={setSelectedPathway} />}
-            {page === 'career_simulation' && <CareerPathways onNavigate={setPage} selectedPathway={selectedPathway || ''} setSelectedPathway={setSelectedPathway} />}
+            {page === 'terms' && <TermsOfService onNavigate={handleNavigate} />}
+            {page === 'privacy' && <PrivacyPolicy onNavigate={handleNavigate} />}
+            {page === 'support' && <SupportPage onNavigate={handleNavigate} />}
+            {page === 'success_stories' && <SuccessStories onNavigate={handleNavigate} />}
+            {page === 'reviews' && <ReviewsPage onNavigate={handleNavigate} onSelectSkill={setSelectedSkill} />}
+            {page === 'skill_detail' && <SkillDetail onNavigate={handleNavigate} skillName={selectedSkill} onSelectSkill={setSelectedSkill} livePros={livePros} />}
+            {page === 'updates' && <Updates onNavigate={handleNavigate} />}
+            {page === 'research' && <Research onNavigate={handleNavigate} />}
+            {page === 'blog' && <Blog onNavigate={handleNavigate} />}
+            {page === 'release_notes' && <ReleaseNotes onNavigate={handleNavigate} />}
+            {page === 'career_pathways' && <CareerPathwaysBrowsePage onNavigate={handleNavigate} />}
+            {page === 'career_pathway_detail' && <CareerPathwayDetailPage skillId={selectedPathway || 'electrical'} onNavigate={handleNavigate} setSelectedPathway={setSelectedPathway} />}
+            {page === 'career_simulation' && <CareerPathways onNavigate={handleNavigate} selectedPathway={selectedPathway || ''} setSelectedPathway={setSelectedPathway} />}
             {page === 'download' && <DownloadPage />}
             {page === 'profile_view' && <ProfileViewPage profileId={profileId} />}
             {page === 'job_view' && <JobViewPage jobId={jobId} />}
-            {page === 'referral_view' && <ReferralViewPage referralCode={referralCode} setPage={setPage} />}
+            {page === 'referral_view' && <ReferralViewPage referralCode={referralCode} setPage={handleNavigate} />}
             {page === 'home' && (
               <Home
-                onNavigate={setPage}
+                onNavigate={handleNavigate}
                 livePros={livePros}
                 onSelectSkill={setSelectedSkill}
                 setSearchQuery={setServiceSearchQuery}
               />
             )}
           </main>
-          <MobileStickyAuthBar onNavigate={setPage} />
+          <MobileStickyAuthBar onNavigate={handleNavigate} />
         </>
       )}
 

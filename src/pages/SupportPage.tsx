@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, Footer } from '../App';
 import { api } from '../services/api';
@@ -109,19 +109,29 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Filtered FAQs
+  // Filtered FAQs with multi-keyword search
   const filteredFaqs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
     return FAQ_DATA.filter((faq) => {
       const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-      const question = isFr ? faq.questionFr : faq.questionEn;
-      const answer = isFr ? faq.answerFr : faq.answerEn;
-      const matchesSearch = !searchQuery.trim() || 
-        question.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        answer.toLowerCase().includes(searchQuery.toLowerCase());
+      if (!matchesCategory) return false;
+      if (!q) return true;
 
-      return matchesCategory && matchesSearch;
+      return (
+        faq.questionEn.toLowerCase().includes(q) ||
+        faq.questionFr.toLowerCase().includes(q) ||
+        faq.answerEn.toLowerCase().includes(q) ||
+        faq.answerFr.toLowerCase().includes(q)
+      );
     });
-  }, [searchQuery, selectedCategory, isFr]);
+  }, [searchQuery, selectedCategory]);
+
+  // When search query is entered, auto-open the first matching result
+  useEffect(() => {
+    if (searchQuery.trim() && filteredFaqs.length > 0) {
+      setOpenFaqId(filteredFaqs[0].id);
+    }
+  }, [searchQuery, filteredFaqs]);
 
   const toggleFaq = (id: string) => {
     setOpenFaqId(prev => prev === id ? null : id);
@@ -167,32 +177,37 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
       {/* Hero Section */}
       <section className="support-hero-section">
         <div className="support-hero-badge">
-          <span>🛠️</span>
           <span>{isFr ? 'Fixam Centre d\'Assistance' : 'Fixam Help Center'}</span>
         </div>
         <h1 className="support-hero-title">
           {isFr ? 'Comment pouvons-nous vous aider aujourd\'hui ?' : 'How can we help you today?'}
         </h1>
         <p className="support-hero-subtitle">
-          {isFr 
-            ? 'Trouvez des réponses rapides, découvrez nos guides de dépannage ou contactez directement l\'équipe d\'assistance Fixam.' 
+          {isFr
+            ? 'Trouvez des réponses rapides, découvrez nos guides de dépannage ou contactez directement l\'équipe d\'assistance Fixam.'
             : 'Search our knowledge base, resolve issues with bookings and payments, or get in touch with our dedicated support team.'}
         </p>
 
         {/* Live Search */}
         <div className="support-search-wrapper">
           <div className="support-search-input-box">
-            <span className="support-search-icon">🔍</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="support-search-icon"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
             <input
               type="text"
               className="support-search-input"
               placeholder={isFr ? "Rechercher une réponse (ex: paiement, litige, devenir pro)..." : "Search for answers (e.g., escrow, payout, refund, verification)..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const el = document.getElementById('support-faqs');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
             />
             {searchQuery && (
-              <button 
-                className="support-search-clear" 
+              <button
+                className="support-search-clear"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear search"
               >
@@ -203,51 +218,47 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
         </div>
       </section>
 
-      {/* Quick Direct Support Channels */}
+      {/* Quick Direct Support Channels - Icon Free */}
       <section className="support-channels-section">
         <div className="support-channels-grid">
-          
+
           {/* Email Support */}
           <a href="mailto:support@usefixam.com" className="support-channel-card">
-            <div className="support-channel-icon-wrap email">✉️</div>
             <h3>{isFr ? 'Assistance par Email' : 'Email Support'}</h3>
-            <p>{isFr ? 'Envoyez-nous un email à support@usefixam.com avec réponse sous 2 heures.' : 'Write to support@usefixam.com. We reply to all inquiries within 2 hours.'}</p>
-            <span className="support-channel-action">support@usefixam.com →</span>
+            <p>{isFr ? 'Envoyez-nous un email à fixam8899@gmail.com avec réponse sous 2 heures.' : 'Write to support@usefixam.com. We reply to all inquiries within 2 hours.'}</p>
+            <span className="support-channel-action">fixam8899@gmail.com →</span>
           </a>
 
           {/* In-App Live Chat */}
-          <div 
-            onClick={() => onNavigate('login')} 
+          <div
+            onClick={() => onNavigate('login')}
             className="support-channel-card"
           >
-            <div className="support-channel-icon-wrap chat">💬</div>
             <h3>{isFr ? 'Messagerie dans l\'App' : 'In-App Support Chat'}</h3>
             <p>{isFr ? 'Discutez en temps réel avec un conseiller d\'assistance ou votre prestataire.' : 'Open a live chat session directly inside your Fixam mobile or web app.'}</p>
             <span className="support-channel-action">{isFr ? 'Ouvrir le Chat →' : 'Start Live Chat →'}</span>
           </div>
 
           {/* Phone / WhatsApp Helpline */}
-          <a 
-            href="https://wa.me/237670000000?text=Hello%20Fixam%20Support" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://wa.me/237682803006?text=Hello%20Fixam%20Support"
+            target="_blank"
+            rel="noopener noreferrer"
             className="support-channel-card"
           >
-            <div className="support-channel-icon-wrap phone">📱</div>
             <h3>{isFr ? 'WhatsApp & Téléphone' : 'WhatsApp & Hotline'}</h3>
             <p>{isFr ? 'Assistance prioritaire pour les urgences sur chantiers et dépannages 24/7.' : 'Direct line for emergency task requests and active job assistance.'}</p>
             <span className="support-channel-action">{isFr ? 'Contacter sur WhatsApp →' : 'Chat on WhatsApp →'}</span>
           </a>
 
           {/* Safety & Disputes */}
-          <div 
+          <div
             onClick={() => {
               const el = document.getElementById('contact-form-section');
               el?.scrollIntoView({ behavior: 'smooth' });
-            }} 
+            }}
             className="support-channel-card"
           >
-            <div className="support-channel-icon-wrap dispute">🛡️</div>
             <h3>{isFr ? 'Médiation & Litiges' : 'Disputes & Guarantees'}</h3>
             <p>{isFr ? 'Protection des fonds par séquestre et médiation impartiale en cas de problème.' : 'Resolve task disputes, request reworks, or claim your money-back guarantee.'}</p>
             <span className="support-channel-action">{isFr ? 'Ouvrir un Dossier →' : 'File a Dispute →'}</span>
@@ -258,8 +269,8 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
 
       {/* Main Support Content */}
       <div className="support-main-content">
-        
-        {/* Support Categories */}
+
+        {/* Support Categories - Icon Free */}
         <div className="support-section-header">
           <h2 className="support-section-title">
             {isFr ? 'Explorez les rubriques d\'aide' : 'Browse Support Topics'}
@@ -273,7 +284,6 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           {/* Card 1: Getting Started */}
           <div className="support-cat-card">
             <div className="support-cat-header">
-              <span className="support-cat-icon">👤</span>
               <h3 className="support-cat-title">{isFr ? 'Comptes & Inscription' : 'Account & Verification'}</h3>
             </div>
             <ul className="support-cat-links">
@@ -295,7 +305,6 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           {/* Card 2: Hiring & Booking */}
           <div className="support-cat-card">
             <div className="support-cat-header">
-              <span className="support-cat-icon">🔧</span>
               <h3 className="support-cat-title">{isFr ? 'Missions & Réservations' : 'Booking & Tasks'}</h3>
             </div>
             <ul className="support-cat-links">
@@ -317,7 +326,6 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           {/* Card 3: Payments & Escrow */}
           <div className="support-cat-card">
             <div className="support-cat-header">
-              <span className="support-cat-icon">💳</span>
               <h3 className="support-cat-title">{isFr ? 'Paiements & Séquestre' : 'Payments & Escrow'}</h3>
             </div>
             <ul className="support-cat-links">
@@ -339,7 +347,6 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           {/* Card 4: For Providers */}
           <div className="support-cat-card">
             <div className="support-cat-header">
-              <span className="support-cat-icon">👷</span>
               <h3 className="support-cat-title">{isFr ? 'Espace Prestataires' : 'Provider Hub'}</h3>
             </div>
             <ul className="support-cat-links">
@@ -360,7 +367,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
         </div>
 
         {/* Interactive FAQ Section */}
-        <div className="support-faq-container">
+        <div id="support-faqs" className="support-faq-container">
           <div className="support-section-header">
             <h2 className="support-section-title">
               {isFr ? 'Foire Aux Questions (FAQ)' : 'Frequently Asked Questions'}
@@ -370,246 +377,252 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
             </p>
           </div>
 
+          {searchQuery.trim() && (
+            <div style={{ textAlign: 'center', marginBottom: '1.25rem', color: '#0D9488', fontSize: '0.95rem', fontWeight: 700 }}>
+              {isFr
+                ? `${filteredFaqs.length} réponse(s) trouvée(s) pour "${searchQuery}"`
+                : `Found ${filteredFaqs.length} answer(s) for "${searchQuery}"`}
+            </div>
+          )}
+
           {/* FAQ Category Filter Tabs */}
-          <div className="support-faq-tabs">
-            {[
-              { id: 'all', labelEn: 'All Questions', labelFr: 'Toutes les questions' },
-              { id: 'clients', labelEn: 'For Clients', labelFr: 'Pour les Clients' },
-              { id: 'providers', labelEn: 'For Providers', labelFr: 'Pour les Prestataires' },
-              { id: 'payments', labelEn: 'Payments & Escrow', labelFr: 'Paiements & Séquestre' },
-              { id: 'safety', labelEn: 'Trust & Safety', labelFr: 'Sécurité & Litiges' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                className={`support-faq-tab-btn ${selectedCategory === tab.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(tab.id as any)}
-              >
-                {isFr ? tab.labelFr : tab.labelEn}
-              </button>
-            ))}
-          </div>
+      <div className="support-faq-tabs">
+        {[
+          { id: 'all', labelEn: 'All Questions', labelFr: 'Toutes les questions' },
+          { id: 'clients', labelEn: 'For Clients', labelFr: 'Pour les Clients' },
+          { id: 'providers', labelEn: 'For Providers', labelFr: 'Pour les Prestataires' },
+          { id: 'payments', labelEn: 'Payments & Escrow', labelFr: 'Paiements & Séquestre' },
+          { id: 'safety', labelEn: 'Trust & Safety', labelFr: 'Sécurité & Litiges' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            className={`support-faq-tab-btn ${selectedCategory === tab.id ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(tab.id as any)}
+          >
+            {isFr ? tab.labelFr : tab.labelEn}
+          </button>
+        ))}
+      </div>
 
-          {/* FAQ Accordion List */}
-          <div className="support-faq-list">
-            {filteredFaqs.length > 0 ? (
-              filteredFaqs.map((faq) => {
-                const isOpen = openFaqId === faq.id;
-                return (
-                  <div key={faq.id} className={`support-faq-item ${isOpen ? 'open' : ''}`}>
-                    <button 
-                      className="support-faq-question"
-                      onClick={() => toggleFaq(faq.id)}
-                      aria-expanded={isOpen}
-                    >
-                      <span>{isFr ? faq.questionFr : faq.questionEn}</span>
-                      <span className="support-faq-toggle-icon">{isOpen ? '−' : '+'}</span>
-                    </button>
-                    {isOpen && (
-                      <div className="support-faq-answer">
-                        {isFr ? faq.answerFr : faq.answerEn}
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            ) : (
-              <div style={{ textAlign: 'center', padding: '3rem', color: '#64748B' }}>
-                <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-                  {isFr ? 'Aucun résultat trouvé pour votre recherche.' : 'No results found matching your search.'}
-                </p>
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  style={{ marginTop: '1rem', background: '#0D9488', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer' }}
+      {/* FAQ Accordion List */}
+      <div className="support-faq-list">
+        {filteredFaqs.length > 0 ? (
+          filteredFaqs.map((faq) => {
+            const isOpen = openFaqId === faq.id;
+            return (
+              <div key={faq.id} className={`support-faq-item ${isOpen ? 'open' : ''}`}>
+                <button
+                  className="support-faq-question"
+                  onClick={() => toggleFaq(faq.id)}
+                  aria-expanded={isOpen}
                 >
-                  {isFr ? 'Réinitialiser la recherche' : 'Reset search'}
+                  <span>{isFr ? faq.questionFr : faq.questionEn}</span>
+                  <span className="support-faq-toggle-icon">{isOpen ? '−' : '+'}</span>
                 </button>
+                {isOpen && (
+                  <div className="support-faq-answer">
+                    {isFr ? faq.answerFr : faq.answerEn}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Contact Ticket Form Section */}
-        <div id="contact-form-section" className="support-form-card">
-          <div className="support-section-header" style={{ marginBottom: '2rem' }}>
-            <h2 className="support-section-title">
-              {isFr ? 'Envoyez-nous un Message' : 'Send Us a Message'}
-            </h2>
-            <p className="support-section-subtitle">
-              {isFr ? 'Notre équipe d\'assistance vous répondra dans les plus brefs délais.' : 'Have a specific question or issue? Fill out the form below and our team will get right back to you.'}
+            );
+          })
+        ) : (
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#64748B' }}>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+              {isFr ? 'Aucun résultat trouvé pour votre recherche.' : 'No results found matching your search.'}
             </p>
+            <button
+              onClick={() => setSearchQuery('')}
+              style={{ marginTop: '1rem', background: '#0D9488', color: 'white', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              {isFr ? 'Réinitialiser la recherche' : 'Reset search'}
+            </button>
           </div>
+        )}
+      </div>
+    </div>
+
+        {/* Contact Ticket Form Section */ }
+  <div id="contact-form-section" className="support-form-card">
+    <div className="support-section-header" style={{ marginBottom: '2rem' }}>
+      <h2 className="support-section-title">
+        {isFr ? 'Envoyez-nous un Message' : 'Send Us a Message'}
+      </h2>
+      <p className="support-section-subtitle">
+        {isFr ? 'Notre équipe d\'assistance vous répondra dans les plus brefs délais.' : 'Have a specific question or issue? Fill out the form below and our team will get right back to you.'}
+      </p>
+    </div>
 
           {submitSuccess ? (
             <div className="support-success-alert">
-              <span style={{ fontSize: '1.5rem' }}>✅</span>
               <div>
                 <h4 style={{ margin: '0 0 0.25rem', fontWeight: 700 }}>
                   {isFr ? 'Message envoyé avec succès !' : 'Your request has been received!'}
                 </h4>
-                <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                  {isFr 
-                    ? 'Merci de nous avoir contactés. Un membre de notre équipe d\'assistance Fixam vous répondra par email dans les 2 prochaines heures.' 
-                    : 'Thank you for reaching out. A Fixam support representative will reply to your email within 2 hours.'}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmitContact}>
-              {errorMessage && (
-                <div style={{ background: '#FEE2E2', border: '1px solid #FCA5A5', color: '#991B1B', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.9rem' }}>
-                  {errorMessage}
-                </div>
-              )}
-
-              <div className="support-form-grid">
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Votre Nom complet *' : 'Your Full Name *'}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    className="support-form-input"
-                    placeholder={isFr ? "Ex: Jean Dupont" : "e.g. John Doe"}
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Adresse Email *' : 'Email Address *'}
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    className="support-form-input"
-                    placeholder={isFr ? "nom@exemple.com" : "you@example.com"}
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  />
-                </div>
-
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Numéro de Téléphone (Optionnel)' : 'Phone Number (Optional)'}
-                  </label>
-                  <input
-                    type="tel"
-                    className="support-form-input"
-                    placeholder="+237 6XX XXX XXX"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Je suis un(e)' : 'I am a'}
-                  </label>
-                  <select
-                    className="support-form-select"
-                    value={formData.role}
-                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  >
-                    <option value="client">{isFr ? 'Client / Particulier' : 'Client / Customer'}</option>
-                    <option value="provider">{isFr ? 'Artisan / Prestataire' : 'Service Provider / Artisan'}</option>
-                    <option value="partner">{isFr ? 'Partenaire / Entreprise' : 'Business / Partner'}</option>
-                  </select>
-                </div>
-
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Catégorie de la demande' : 'Inquiry Topic'}
-                  </label>
-                  <select
-                    className="support-form-select"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  >
-                    <option value="general">{isFr ? 'Renseignement général' : 'General Inquiry'}</option>
-                    <option value="booking">{isFr ? 'Problème avec une réservation' : 'Booking / Task Issue'}</option>
-                    <option value="payment">{isFr ? 'Paiement, Retrait ou Remboursement' : 'Payment, Payout or Refund'}</option>
-                    <option value="verification">{isFr ? 'Vérification de profil ou KYC' : 'Profile Verification & KYC'}</option>
-                    <option value="technical">{isFr ? 'Bug technique ou problème d\'application' : 'Technical Bug or App Issue'}</option>
-                    <option value="dispute">{isFr ? 'Signalement de litige' : 'Dispute / Safety Report'}</option>
-                  </select>
-                </div>
-
-                <div className="support-form-group">
-                  <label className="support-form-label">
-                    {isFr ? 'Sujet' : 'Subject'}
-                  </label>
-                  <input
-                    type="text"
-                    className="support-form-input"
-                    placeholder={isFr ? "Bref résumé du problème" : "Brief summary"}
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  />
-                </div>
-
-                <div className="support-form-group full-width">
-                  <label className="support-form-label">
-                    {isFr ? 'Votre Message *' : 'Your Message *'}
-                  </label>
-                  <textarea
-                    required
-                    className="support-form-textarea"
-                    placeholder={isFr ? "Expliquez en détail votre situation..." : "Describe your request or issue in detail..."}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="support-form-submit-btn"
-                >
-                  {isSubmitting 
-                    ? (isFr ? 'Envoi en cours...' : 'Submitting...') 
-                    : (isFr ? 'Envoyer ma demande ✉️' : 'Send Message ✉️')}
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-
-        {/* App Download Banner */}
-        <div className="support-app-banner">
-          <h2>{isFr ? 'Fixam Pro est également disponible sur Mobile' : 'Fixam Pro is Available on Mobile'}</h2>
-          <p>
-            {isFr 
-              ? 'Gérez vos réservations, recevez des notifications instantanées et contactez notre assistance directement depuis votre smartphone.' 
-              : 'Manage bookings, get real-time status updates, and access 24/7 in-app customer support right on your phone.'}
+          <p style={{ margin: 0, fontSize: '0.9rem' }}>
+            {isFr
+              ? 'Merci de nous avoir contactés. Un membre de notre équipe d\'assistance Fixam vous répondra par email dans les 2 prochaines heures.'
+              : 'Thank you for reaching out. A Fixam support representative will reply to your email within 2 hours.'}
           </p>
-          <div className="support-app-buttons">
-            <a 
-              href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="support-app-btn primary"
+        </div>
+      </div>
+    ) : (
+      <form onSubmit={handleSubmitContact}>
+        {errorMessage && (
+          <div style={{ background: '#FEE2E2', border: '1px solid #FCA5A5', color: '#991B1B', padding: '0.75rem 1rem', borderRadius: '8px', marginBottom: '1.25rem', fontSize: '0.9rem' }}>
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="support-form-grid">
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Votre Nom complet *' : 'Your Full Name *'}
+            </label>
+            <input
+              type="text"
+              required
+              className="support-form-input"
+              placeholder={isFr ? "Ex: Jean Dupont" : "e.g. John Doe"}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Adresse Email *' : 'Email Address *'}
+            </label>
+            <input
+              type="email"
+              required
+              className="support-form-input"
+              placeholder={isFr ? "nom@exemple.com" : "you@example.com"}
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            />
+          </div>
+
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Numéro de Téléphone (Optionnel)' : 'Phone Number (Optional)'}
+            </label>
+            <input
+              type="tel"
+              className="support-form-input"
+              placeholder="+237 6XX XXX XXX"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+          </div>
+
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Je suis un(e)' : 'I am a'}
+            </label>
+            <select
+              className="support-form-select"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 384 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.6 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg> Apple App Store (iOS)
-            </a>
-            <a 
-              href="https://play.google.com/store/apps/details?id=com.fixam.app.android" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="support-app-btn"
+              <option value="client">{isFr ? 'Client / Particulier' : 'Client / Customer'}</option>
+              <option value="provider">{isFr ? 'Artisan / Prestataire' : 'Service Provider / Artisan'}</option>
+              <option value="partner">{isFr ? 'Partenaire / Entreprise' : 'Business / Partner'}</option>
+            </select>
+          </div>
+
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Catégorie de la demande' : 'Inquiry Topic'}
+            </label>
+            <select
+              className="support-form-select"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg> Google Play Store (Android)
-            </a>
+              <option value="general">{isFr ? 'Renseignement général' : 'General Inquiry'}</option>
+              <option value="booking">{isFr ? 'Problème avec une réservation' : 'Booking / Task Issue'}</option>
+              <option value="payment">{isFr ? 'Paiement, Retrait ou Remboursement' : 'Payment, Payout or Refund'}</option>
+              <option value="verification">{isFr ? 'Vérification de profil ou KYC' : 'Profile Verification & KYC'}</option>
+              <option value="technical">{isFr ? 'Bug technique ou problème d\'application' : 'Technical Bug or App Issue'}</option>
+              <option value="dispute">{isFr ? 'Signalement de litige' : 'Dispute / Safety Report'}</option>
+            </select>
+          </div>
+
+          <div className="support-form-group">
+            <label className="support-form-label">
+              {isFr ? 'Sujet' : 'Subject'}
+            </label>
+            <input
+              type="text"
+              className="support-form-input"
+              placeholder={isFr ? "Bref résumé du problème" : "Brief summary"}
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+            />
+          </div>
+
+          <div className="support-form-group full-width">
+            <label className="support-form-label">
+              {isFr ? 'Votre Message *' : 'Your Message *'}
+            </label>
+            <textarea
+              required
+              className="support-form-textarea"
+              placeholder={isFr ? "Expliquez en détail votre situation..." : "Describe your request or issue in detail..."}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            />
           </div>
         </div>
 
-      </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="support-form-submit-btn"
+          >
+            {isSubmitting
+              ? (isFr ? 'Envoi en cours...' : 'Submitting...')
+              : (isFr ? 'Envoyer ma demande' : 'Send Message')}
+          </button>
+        </div>
+      </form>
+    )}
+  </div>
 
-      {/* Website Global Footer */}
-      <Footer onNavigate={onNavigate} />
+  {/* App Download Banner */ }
+  <div className="support-app-banner">
+    <h2>{isFr ? 'Fixam Pro est également disponible sur Mobile' : 'Fixam Pro is Available on Mobile'}</h2>
+    <p>
+      {isFr
+        ? 'Gérez vos réservations, recevez des notifications instantanées et contactez notre assistance directement depuis votre smartphone.'
+        : 'Manage bookings, get real-time status updates, and access 24/7 in-app customer support right on your phone.'}
+    </p>
+    <div className="support-app-buttons">
+      <a
+        href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="support-app-btn primary"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 384 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.6 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" /></svg> Apple App Store (iOS)
+      </a>
+      <a
+        href="https://play.google.com/store/apps/details?id=com.fixam.app.android"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="support-app-btn"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" /></svg> Google Play Store (Android)
+      </a>
+        </div>
+      </div>
     </div>
+
+    {/* Website Global Footer */}
+    <Footer onNavigate={onNavigate} />
+  </div>
   );
 }
