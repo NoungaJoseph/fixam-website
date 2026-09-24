@@ -201,26 +201,34 @@ export default function ProjectDetail({
       return;
     }
 
+    const targetProviderId = provider?.id || provider?.userId || project?.providerId || project?.userId || providerUserId;
+    if (!targetProviderId) {
+      alert(isFr ? 'Impossible d\'identifier le prestataire pour ce projet.' : 'Unable to identify provider for this project.');
+      return;
+    }
+
     setIsSubmittingProposal(true);
     try {
+      const locationText = `Project: ${project.title || 'Service Order'} (${activeTier.name || 'Standard'}) - Cameroon`;
+
       // 1. Post proposal booking
       await api.post('/bookings', {
-        providerId: providerUserId,
+        providerId: targetProviderId,
         isProposal: true,
         budget: Number(offeredBudget || finalPrice),
         bookingDate: new Date().toISOString(),
         bookingTime: '09:00',
         bookingDuration: `${expectedDays || 3} DAYS`,
         notes: `PROJECT PROPOSAL: ${project.title || 'Custom Service'}\nRequirements: ${proposalDescription.trim()}`,
-        location: `Project: ${project.title || 'Custom Service'} (${activeTier.name})`,
-        materialsList,
-        requiresDiagnosis,
+        location: locationText.length < 5 ? `${locationText} (Douala, CM)` : locationText,
+        materialsList: Array.isArray(materialsList) ? materialsList : [],
+        requiresDiagnosis: Boolean(requiresDiagnosis),
       });
 
       // 2. Create or fetch chat conversation
       let convId;
       try {
-        const convRes = await api.post('/chat/conversations', { participantId: providerUserId });
+        const convRes = await api.post('/chat/conversations', { participantId: targetProviderId });
         convId = convRes.data?.data?.id || convRes.data?.id;
       } catch (_) { }
 
@@ -235,7 +243,14 @@ export default function ProjectDetail({
       setSelectedProject(null);
       setActiveTab('Messages');
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || 'Error submitting proposal');
+      console.error('Submit proposal error:', err);
+      if (err.response?.status === 401) {
+        alert(isFr ? 'Veuillez vous connecter pour soumettre votre commande.' : 'Please log in to submit your order.');
+        setIsOrderModalOpen(false);
+        setActiveTab('Login');
+      } else {
+        alert(err.response?.data?.message || err.message || (isFr ? 'Erreur lors de l\'envoi de la commande' : 'Error submitting proposal'));
+      }
     } finally {
       setIsSubmittingProposal(false);
     }

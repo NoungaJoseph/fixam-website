@@ -1069,7 +1069,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
                 : "Download the Fixam mobile app today to publish your profile, add your skills, certifications, and start finding work."}
             </p>
             <div className="store-download-row">
-              <a href="https://apps.apple.com/app/com.fixam.app.iosapp" target="_blank" rel="noopener noreferrer" className="store-badge-premium apple">
+              <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" className="store-badge-premium apple">
                 Apple App Store
               </a>
               <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" className="store-badge-premium google">

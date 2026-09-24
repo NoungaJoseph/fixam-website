@@ -79,7 +79,7 @@ import './marketplace.css'
 import './components/Megamenu.css'
 import './mobile-upgrades.css'
 
-export type Page = 'home' | 'services' | 'about' | 'why_fixam' | 'solutions' | 'insights' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'support' | 'browse_projects'
+export type Page = 'home' | 'services' | 'about' | 'why_fixam' | 'solutions' | 'insights' | 'login' | 'register' | 'forgot_password' | 'otp' | 'dashboard' | 'guide' | 'terms' | 'privacy' | 'success_stories' | 'reviews' | 'updates' | 'research' | 'blog' | 'release_notes' | 'skill_detail' | 'career_pathways' | 'career_pathway_detail' | 'career_simulation' | 'download' | 'profile_view' | 'job_view' | 'referral_view' | 'support' | 'browse_projects'
 
 export type IconName =
   | 'appliance' | 'bell' | 'briefcase' | 'calendar' | 'chat' | 'check' | 'cleaning'
@@ -269,11 +269,71 @@ const TAB_SLUG_MAP: Record<string, string> = {
   'task-details': 'Task Details',
 };
 
+function parseDeepLink(): { page: Page; profileId?: string; jobId?: string; referralCode?: string } | null {
+  if (typeof window === 'undefined') return null;
+  const path = window.location.pathname;
+  const search = new URLSearchParams(window.location.search);
+  const rawHash = window.location.hash.replace(/^#\/?/, '');
+
+  // 1. Query Parameters Check
+  const qProvider = search.get('providerId') || search.get('proId') || search.get('provider') || search.get('pro');
+  if (qProvider) return { page: 'profile_view', profileId: qProvider };
+
+  const qJob = search.get('jobId') || search.get('taskId') || search.get('job') || search.get('task');
+  if (qJob) return { page: 'job_view', jobId: qJob };
+
+  const qRef = search.get('ref') || search.get('referral') || search.get('refCode') || search.get('referralCode');
+  if (qRef) return { page: 'referral_view', referralCode: qRef };
+
+  // 2. Path Check
+  const lowerPath = path.toLowerCase();
+  if (lowerPath.startsWith('/profile/') || lowerPath.startsWith('/provider/') || lowerPath.startsWith('/pro/')) {
+    const parts = path.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'profile_view', profileId: parts[1] };
+  }
+
+  if (lowerPath.startsWith('/job/') || lowerPath.startsWith('/jobs/') || lowerPath.startsWith('/task/') || lowerPath.startsWith('/tasks/')) {
+    const parts = path.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'job_view', jobId: parts[1] };
+  }
+
+  if (lowerPath.startsWith('/ref/') || lowerPath.startsWith('/referral/')) {
+    const parts = path.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'referral_view', referralCode: parts[1] };
+  }
+
+  // 3. Hash Deep Links Check (e.g. #/provider/123 or #provider/123 or #ref/CODE)
+  const lowerHash = rawHash.toLowerCase();
+  if (lowerHash.startsWith('profile/') || lowerHash.startsWith('provider/') || lowerHash.startsWith('pro/')) {
+    const parts = rawHash.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'profile_view', profileId: parts[1] };
+  }
+
+  if (lowerHash.startsWith('job/') || lowerHash.startsWith('jobs/') || lowerHash.startsWith('task/') || lowerHash.startsWith('tasks/')) {
+    const parts = rawHash.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'job_view', jobId: parts[1] };
+  }
+
+  if (lowerHash.startsWith('ref/') || lowerHash.startsWith('referral/')) {
+    const parts = rawHash.split('/').filter(Boolean);
+    if (parts[1]) return { page: 'referral_view', referralCode: parts[1] };
+  }
+
+  return null;
+}
+
 function getInitialPageFromUrl(): Page {
   if (typeof window === 'undefined') return 'home';
+
+  const deep = parseDeepLink();
+  if (deep) {
+    if (deep.referralCode) {
+      try { localStorage.setItem('fixam_referral_code', deep.referralCode); } catch (_) {}
+    }
+    return deep.page;
+  }
+
   const path = window.location.pathname;
-  if (path.startsWith('/profile/')) return 'profile_view';
-  if (path.startsWith('/job/')) return 'job_view';
   if (path === '/download' || path === '/download/') return 'download';
   if (path === '/support' || path === '/support/') return 'support';
 
@@ -285,7 +345,7 @@ function getInitialPageFromUrl(): Page {
     return 'dashboard';
   }
 
-  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'support'];
+  const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support'];
   if (validPages.includes(hash as Page)) {
     return hash as Page;
   }
@@ -321,13 +381,15 @@ function getInitialDashboardTab(role: 'client' | 'pro'): string {
 }
 
 function App() {
+  const initialDeep = parseDeepLink();
   const [page, setPage] = useState<Page>(getInitialPageFromUrl);
   const [serviceSearchQuery, setServiceSearchQuery] = useState('');
   const { i18n } = useTranslation();
   const [selectedSkill, setSelectedSkill] = useState('')
   const [selectedPathway, setSelectedPathway] = useState('')
-  const [profileId, setProfileId] = useState('');
-  const [jobId, setJobId] = useState('');
+  const [profileId, setProfileId] = useState(initialDeep?.profileId || '');
+  const [jobId, setJobId] = useState(initialDeep?.jobId || '');
+  const [referralCode, setReferralCode] = useState(initialDeep?.referralCode || '');
   const { appReady, maintenance, maintenanceMsg } = useMaintenanceCheck();
   const [livePros, setLivePros] = useState<any[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -430,22 +492,20 @@ function App() {
   // Synchronize initial hash on load and on hash change
   useEffect(() => {
     const handleHashChange = () => {
+      const deep = parseDeepLink();
+      if (deep) {
+        if (deep.profileId) setProfileId(deep.profileId);
+        if (deep.jobId) setJobId(deep.jobId);
+        if (deep.referralCode) {
+          setReferralCode(deep.referralCode);
+          try { localStorage.setItem('fixam_referral_code', deep.referralCode); } catch (_) {}
+        }
+        setPage(deep.page);
+        return;
+      }
+
       const hash = window.location.hash.replace(/^#\/?/, '').toLowerCase();
       const path = window.location.pathname;
-
-      if (path.startsWith('/profile/')) {
-        const id = path.substring('/profile/'.length).replace(/\/$/, '');
-        setProfileId(id);
-        setPage('profile_view');
-        return;
-      }
-
-      if (path.startsWith('/job/')) {
-        const id = path.substring('/job/'.length).replace(/\/$/, '');
-        setJobId(id);
-        setPage('job_view');
-        return;
-      }
 
       if (path === '/download' || path === '/download/') {
         setPage('download');
@@ -467,7 +527,7 @@ function App() {
         return;
       }
 
-      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'support'];
+      const validPages: Page[] = ['home', 'services', 'about', 'login', 'register', 'forgot_password', 'otp', 'dashboard', 'guide', 'terms', 'privacy', 'success_stories', 'reviews', 'updates', 'research', 'blog', 'release_notes', 'skill_detail', 'career_pathways', 'career_pathway_detail', 'career_simulation', 'download', 'profile_view', 'job_view', 'referral_view', 'support'];
       const pathPage = path.replace(/^\/+/, '').replace(/\/$/, '').replace(/-/g, '_').toLowerCase();
 
       if (validPages.includes(hash as Page)) {
@@ -671,6 +731,7 @@ function App() {
             {page === 'download' && <DownloadPage />}
             {page === 'profile_view' && <ProfileViewPage profileId={profileId} />}
             {page === 'job_view' && <JobViewPage jobId={jobId} />}
+            {page === 'referral_view' && <ReferralViewPage referralCode={referralCode} setPage={setPage} />}
             {page === 'home' && (
               <Home
                 onNavigate={setPage}
@@ -2739,7 +2800,7 @@ export function DownloadPage() {
     if (/android/i.test(userAgent)) {
       window.location.href = "https://play.google.com/store/apps/details?id=com.fixam.app.android";
     } else if (/iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream) {
-      window.location.href = "https://apps.apple.com/app/com.fixam.app.iosapp";
+      window.location.href = "https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB";
     }
   }, []);
 
@@ -2756,11 +2817,11 @@ export function DownloadPage() {
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', justifyContent: 'center' }}>
-          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '220px', padding: '1rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: '1px solid #0F172A', transition: 'all 0.2s' }}>
-            🤖 Google Play Store (Android)
-          </a>
-          <a href="https://apps.apple.com/app/com.fixam.app.iosapp" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '220px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: '1px solid #14B8A6', transition: 'all 0.2s' }}>
+          <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: '1px solid #14B8A6', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)' }}>
             🍎 Apple App Store (iOS)
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '1rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: '1px solid #0F172A', transition: 'all 0.2s' }}>
+            🤖 Google Play Store (Android)
           </a>
         </div>
 
@@ -2779,7 +2840,9 @@ export function ProfileViewPage({ profileId }: { profileId: string }) {
   const isFr = i18n.language === 'fr';
 
   useEffect(() => {
-    window.location.href = `fixam://profile/${profileId}`;
+    if (profileId) {
+      window.location.href = `fixam://profile/${profileId}`;
+    }
   }, [profileId]);
 
   return (
@@ -2801,8 +2864,11 @@ export function ProfileViewPage({ profileId }: { profileId: string }) {
           <a href={`fixam://profile/${profileId}`} style={{ display: 'inline-block', width: '250px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: 'none', boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)' }}>
             ⚡ {isFr ? 'Ouvrir dans l\'application' : 'Open in Fixam App'}
           </a>
-          <a href="/download" style={{ color: '#64748B', textDecoration: 'underline', fontSize: '0.95rem' }}>
-            {isFr ? 'Télécharger l\'application' : 'Get the app instead'}
+          <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
+            🍎 Download on App Store (iOS)
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0284C7', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
+            🤖 Download on Google Play
           </a>
         </div>
       </div>
@@ -2815,7 +2881,9 @@ export function JobViewPage({ jobId }: { jobId: string }) {
   const isFr = i18n.language === 'fr';
 
   useEffect(() => {
-    window.location.href = `fixam://job/${jobId}`;
+    if (jobId) {
+      window.location.href = `fixam://job/${jobId}`;
+    }
   }, [jobId]);
 
   return (
@@ -2837,9 +2905,68 @@ export function JobViewPage({ jobId }: { jobId: string }) {
           <a href={`fixam://job/${jobId}`} style={{ display: 'inline-block', width: '250px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: 'none', boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)' }}>
             ⚡ {isFr ? 'Ouvrir dans l\'application' : 'Open in Fixam App'}
           </a>
-          <a href="/download" style={{ color: '#64748B', textDecoration: 'underline', fontSize: '0.95rem' }}>
-            {isFr ? 'Télécharger l\'application' : 'Get the app instead'}
+          <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
+            🍎 Download on App Store (iOS)
           </a>
+          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0284C7', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
+            🤖 Download on Google Play
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ReferralViewPage({ referralCode, setPage }: { referralCode: string; setPage: (p: Page) => void }) {
+  const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
+
+  useEffect(() => {
+    if (referralCode) {
+      try { localStorage.setItem('fixam_referral_code', referralCode); } catch (_) {}
+      window.location.href = `fixam://ref/${referralCode}`;
+    }
+  }, [referralCode]);
+
+  return (
+    <div style={{ padding: '6rem 2rem', textAlign: 'center', backgroundColor: '#F8FAFC', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ maxWidth: '600px', width: '100%', background: 'white', padding: '3rem', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
+        <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#E6FAFA', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
+          <span style={{ fontSize: '2.2rem' }}>🎉</span>
+        </div>
+        <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem' }}>
+          {isFr ? 'Vous avez été invité sur Fixam !' : 'You were invited to Fixam!'}
+        </h1>
+        <p style={{ fontSize: '1.05rem', color: '#64748B', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+          {isFr
+            ? `Rejoignez Fixam et profitez de services de dépannage et travaux à domicile au Cameroun.`
+            : `Join Fixam to connect with verified local trade professionals across Cameroon.`}
+        </p>
+
+        {referralCode && (
+          <div style={{ backgroundColor: '#F0FDFA', border: '1.5px dashed #0D9488', borderRadius: '12px', padding: '1rem', marginBottom: '2rem' }}>
+            <span style={{ fontSize: '0.85rem', color: '#0D9488', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {isFr ? 'Votre Code de Parrainage :' : 'Your Referral Code:'}
+            </span>
+            <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0F172A', letterSpacing: '0.1em', marginTop: '0.25rem' }}>
+              {referralCode}
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', width: '100%' }}>
+          <a href={`fixam://ref/${referralCode}`} style={{ display: 'inline-block', width: '100%', maxWidth: '280px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '10px', textDecoration: 'none', border: 'none', boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)' }}>
+            ⚡ {isFr ? 'Ouvrir l\'application Fixam' : 'Open in Fixam App'}
+          </a>
+          <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '100%', maxWidth: '280px', padding: '1rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '10px', textDecoration: 'none' }}>
+            🍎 Apple App Store (iOS)
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '100%', maxWidth: '280px', padding: '1rem', backgroundColor: '#0284C7', color: 'white', fontWeight: 700, borderRadius: '10px', textDecoration: 'none' }}>
+            🤖 Google Play Store (Android)
+          </a>
+          <button onClick={() => setPage('register')} style={{ marginTop: '0.5rem', color: '#0D9488', background: 'none', border: 'none', textDecoration: 'underline', fontSize: '0.95rem', cursor: 'pointer', fontWeight: 600 }}>
+            {isFr ? 'S\'inscrire directement sur le site web' : 'Register directly on website'}
+          </button>
         </div>
       </div>
     </div>

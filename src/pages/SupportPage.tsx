@@ -588,7 +588,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           </p>
           <div className="support-app-buttons">
             <a 
-              href="https://apps.apple.com/app/com.fixam.app.iosapp" 
+              href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="support-app-btn primary"
