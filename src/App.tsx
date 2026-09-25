@@ -2640,7 +2640,7 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <p>Find real jobs, both on-site and remote, and manage tasks directly from your phone.</p>
         <div className="footer-app-badges">
           <a
-            href="https://apps.apple.com/app/com.fixam.app.iosapp"
+            href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB"
             target="_blank"
             rel="noopener noreferrer"
             className="app-badge-btn"
