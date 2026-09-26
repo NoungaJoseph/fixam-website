@@ -49,18 +49,6 @@ export default function PublicProfileView({ profileId }: PublicProfileViewProps)
     };
   }, [profileId]);
 
-  // Attempt automatic deep link launch on mobile browsers
-  useEffect(() => {
-    if (profileId && typeof window !== 'undefined') {
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (isMobile) {
-        const timeout = setTimeout(() => {
-          window.location.href = `fixam://profile/${profileId}`;
-        }, 800);
-        return () => clearTimeout(timeout);
-      }
-    }
-  }, [profileId]);
 
   const handleCopyLink = () => {
     if (typeof window !== 'undefined') {
