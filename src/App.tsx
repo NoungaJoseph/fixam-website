@@ -73,6 +73,7 @@ import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
 import { usePageAnalytics } from './hooks/usePageAnalytics'
+import PublicProfileView from './pages/PublicProfileView'
 
 import './App.css'
 import './marketplace.css'
@@ -2879,44 +2880,7 @@ export function DownloadPage() {
 }
 
 export function ProfileViewPage({ profileId }: { profileId: string }) {
-  const { i18n } = useTranslation();
-  const isFr = i18n.language === 'fr';
-
-  useEffect(() => {
-    if (profileId) {
-      window.location.href = `fixam://profile/${profileId}`;
-    }
-  }, [profileId]);
-
-  return (
-    <div style={{ padding: '6rem 2rem', textAlign: 'center', backgroundColor: '#F8FAFC', minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ maxWidth: '600px', width: '100%', background: 'white', padding: '3rem', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-        <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#E6FAFA', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A', marginBottom: '1rem' }}>
-          {isFr ? 'Profil du Prestataire' : 'Provider Profile'}
-        </h1>
-        <p style={{ fontSize: '1rem', color: '#64748B', marginBottom: '2.5rem', lineHeight: 1.6 }}>
-          {isFr
-            ? 'Vous consultez le profil d\'un prestataire vérifié sur Fixam. Pour voir ses avis complets et le réserver, ouvrez son profil directement dans l\'application.'
-            : 'You are viewing a verified provider profile on Fixam. To see reviews and book them, open their profile in the app.'}
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
-          <a href={`fixam://profile/${profileId}`} style={{ display: 'inline-block', width: '250px', padding: '1rem', backgroundColor: '#14B8A6', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none', border: 'none', boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M5 3l14 9-14 9V3z"/></svg> {isFr ? 'Ouvrir dans l\'application' : 'Open in Fixam App'}
-          </a>
-          <a href="https://apps.apple.com/cm/app/fixam-pro/id6791191286?l=en-GB" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0F172A', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 384 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-62.6 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg> Download on App Store (iOS)
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=com.fixam.app.android" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', width: '250px', padding: '0.85rem', backgroundColor: '#0284C7', color: 'white', fontWeight: 700, borderRadius: '8px', textDecoration: 'none' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 512 512" fill="currentColor" style={{ marginRight: '8px', verticalAlign: 'middle' }}><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg> Download on Google Play
-          </a>
-        </div>
-      </div>
-    </div>
-  );
+  return <PublicProfileView profileId={profileId} />;
 }
 
 export function JobViewPage({ jobId }: { jobId: string }) {
