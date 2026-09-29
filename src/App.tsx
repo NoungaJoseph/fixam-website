@@ -143,7 +143,7 @@ export const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
 export const images = {
   landingHero: asset('landing-hero-composite.png'),
   heroProfessional: asset('hero-professional.png'),
-  appHomeScreen: asset('app-home-screen.png'),
+  appHomeScreen: asset('app-remote-jobs-screen.png'),
   servicePlumber: asset('plumbing.jpg'),
   serviceCleaner: asset('cleaning.jpg'),
   serviceElectrician: asset('electrical.jpg'),
