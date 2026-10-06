@@ -109,6 +109,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
     priority: 'NORMAL',
     taskScope: 'SMALL',
     scheduledTime: '',
+    expiryDate: '',
     materialsList: [] as MaterialItem[],
     requiresDiagnosis: false,
   });
@@ -144,6 +145,8 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
     providersNeeded: isFr ? 'Nombre de prestataires requis' : 'Number of Providers Needed',
     priority: isFr ? 'Niveau d\'urgence' : 'Urgency Level',
     scheduledTime: isFr ? 'Date d\'intervention souhaitée' : 'Preferred Start Date',
+    expiryDate: isFr ? 'Date d\'expiration de l\'annonce' : 'Listing Expiry Date',
+    expiryDateDesc: isFr ? 'L\'annonce sera automatiquement masquée des flux après cette date.' : 'The job will automatically be removed from public feeds after this date.',
     unsavedTitle: isFr ? 'Abandonner la création ?' : 'Discard Job Creation?',
     unsavedText: isFr ? 'Vous avez saisi des informations. Voulez-vous quitter sans publier ?' : 'You have entered job details. Are you sure you want to leave without publishing?',
     discard: isFr ? 'Abandonner' : 'Discard',
@@ -227,6 +230,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
         priority: form.priority || 'NORMAL',
         taskScope: form.taskScope || 'SMALL',
         scheduledTime: form.scheduledTime ? new Date(form.scheduledTime).toISOString() : undefined,
+        expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
         materialsList: cleanedMaterialsList.length > 0 ? cleanedMaterialsList : undefined,
         requiresDiagnosis: Boolean(form.requiresDiagnosis),
       };
@@ -534,6 +538,43 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
                     </div>
                   );
                 })}
+              </div>
+            </div>
+
+            {/* Expiry Date (Auto-removal from feed) */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                <label className="block text-sm font-extrabold text-gray-800">{t.expiryDate}</label>
+                <span className="text-xs text-slate-500">{t.expiryDateDesc}</span>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <input
+                  type="date"
+                  value={form.expiryDate}
+                  min={new Date().toISOString().split('T')[0]}
+                  onChange={e => update('expiryDate', e.target.value)}
+                  className="border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:border-teal-500 outline-none bg-white"
+                />
+                <div className="flex items-center gap-2">
+                  {[7, 14, 30].map(days => {
+                    const targetDate = new Date();
+                    targetDate.setDate(targetDate.getDate() + days);
+                    const dateStr = targetDate.toISOString().split('T')[0];
+                    const isSelected = form.expiryDate === dateStr;
+                    return (
+                      <button
+                        key={days}
+                        type="button"
+                        onClick={() => update('expiryDate', dateStr)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition ${
+                          isSelected ? 'bg-teal-600 border-teal-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        +{days} {isFr ? 'Jours' : 'Days'}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 

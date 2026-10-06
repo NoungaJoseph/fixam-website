@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
-import { Icon } from '../../App';
+import ExternalJobApplyModal, { ExternalJobData } from '../../components/ExternalJobApplyModal';
 
 export default function JobLeads() {
   const [filterTag, setFilterTag] = useState('All');
   const [leads, setLeads] = useState<any[]>([]);
+  const [externalJobToApply, setExternalJobToApply] = useState<ExternalJobData | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await api.get('/jobs/available');
-        setLeads(res.data.jobs || []);
+        const [res, extRes] = await Promise.allSettled([
+          api.get('/jobs/available'),
+          api.get('/external-jobs')
+        ]);
+        const direct = res.status === 'fulfilled' ? (res.value.data?.jobs || res.value.data?.data || []) : [];
+        const external = extRes.status === 'fulfilled' ? (extRes.value.data?.data || []) : [];
+        setLeads([...direct, ...external]);
       } catch (err) {
         console.error("Failed to fetch available jobs", err);
       }
@@ -29,14 +35,14 @@ export default function JobLeads() {
     }
   };
 
-  const filtered = filterTag === 'All' ? leads : leads.filter(l => l.serviceCategory === filterTag || l.tag === filterTag);
+  const filtered = filterTag === 'All' ? leads : leads.filter(l => (l.serviceCategory === filterTag || l.category === filterTag || l.tag === filterTag));
 
   return (
     <div className="max-w-7xl mx-auto w-full pt-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Job Leads Near You</h2>
-          <p className="text-sm text-gray-500 mt-1">Browse available client tasks in your area and send proposals.</p>
+          <h2 className="text-2xl font-bold text-gray-800">Job Leads & Opportunities Near You</h2>
+          <p className="text-sm text-gray-500 mt-1">Browse client tasks and verified external openings. Apply in 1-tap with your Fixam CV.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {['All', 'Plumbing', 'Electrical', 'Cleaning', 'Repairs'].map(tag => (
@@ -67,37 +73,72 @@ export default function JobLeads() {
               key={lead.id}
             >
               <div className="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 flex items-center justify-center text-xl">
-                {lead.serviceCategory === 'Plumbing' ? '🪠' : lead.serviceCategory === 'Electrical' ? '⚡' : lead.serviceCategory === 'Cleaning' ? '🧹' : '💼'}
+                {lead.isExternal ? '🌐' : (lead.serviceCategory === 'Plumbing' || lead.category === 'Plumbing') ? '🪠' : (lead.serviceCategory === 'Electrical' || lead.category === 'Electrical') ? '⚡' : '💼'}
               </div>
               
               <div className="flex-1 min-w-0 w-full">
-                <span className="text-[10px] font-extrabold text-[#14B8A6] uppercase bg-teal-50/60 border border-teal-100 px-2 py-0.5 rounded-md tracking-wider">
-                  {lead.serviceCategory || lead.tag}
-                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {lead.isExternal ? (
+                    <span className="text-[10px] font-extrabold text-blue-700 uppercase bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md tracking-wider">
+                      🌐 External Opportunity • {lead.companyName}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-extrabold text-[#14B8A6] uppercase bg-teal-50/60 border border-teal-100 px-2 py-0.5 rounded-md tracking-wider">
+                      ⚡ Fixam Job • {lead.serviceCategory || lead.category || lead.tag || 'Service'}
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-base font-bold text-gray-800 mt-2">{lead.title}</h3>
                 <div className="flex items-center gap-3 text-xs text-gray-400 mt-1.5 font-medium">
                   <span>📍 {lead.location || 'Cameroon'}</span>
                   <span>•</span>
                   <span>📅 {new Date(lead.createdAt).toLocaleDateString()}</span>
+                  {lead.isRemote && (
+                    <>
+                      <span>•</span>
+                      <span className="text-blue-600 font-bold">Remote</span>
+                    </>
+                  )}
                 </div>
               </div>
               
               <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-4 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
                 <div className="text-left sm:text-right">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase block tracking-wider mb-0.5">Est. Budget</span>
-                  <strong className="text-lg font-black text-gray-800">{lead.budget ? `${lead.budget.toLocaleString()} XAF` : lead.price}</strong>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase block tracking-wider mb-0.5">Est. Budget / Salary</span>
+                  <strong className="text-lg font-black text-gray-800">{lead.budget ? (typeof lead.budget === 'number' ? `${lead.budget.toLocaleString()} XAF` : lead.budget) : (lead.price || 'Market Rate')}</strong>
                 </div>
-                <button
-                  className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm"
-                  onClick={() => handleSendProposal(lead.id, lead.title)}
-                >
-                  Send Proposal
-                </button>
+                {lead.isExternal ? (
+                  <button
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5"
+                    onClick={() => setExternalJobToApply(lead)}
+                  >
+                    <span>⚡</span>
+                    <span>Apply via Fixam</span>
+                  </button>
+                ) : (
+                  <button
+                    className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm"
+                    onClick={() => handleSendProposal(lead.id, lead.title)}
+                  >
+                    Send Proposal
+                  </button>
+                )}
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* ONE-TAP APPLY MODAL */}
+      <ExternalJobApplyModal
+        isOpen={Boolean(externalJobToApply)}
+        onClose={() => setExternalJobToApply(null)}
+        job={externalJobToApply}
+        onSuccess={(id) => {
+          setLeads(prev => prev.filter(l => l.id !== id));
+        }}
+      />
     </div>
   );
 }
+

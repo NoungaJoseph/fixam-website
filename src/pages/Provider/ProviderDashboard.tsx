@@ -4,6 +4,7 @@ import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import SubmitProposalPage from './SubmitProposalPage';
+import ExternalJobApplyModal, { ExternalJobData } from '../../components/ExternalJobApplyModal';
 import './ProviderDashboard.css';
 
 interface ProviderDashboardProps {
@@ -41,6 +42,9 @@ type JobLead = {
   hasBoosted?: boolean;
   myBoostCoins?: number;
   myAssignment?: any;
+  isExternal?: boolean;
+  companyName?: string;
+  destinationEmail?: string;
 };
 
 const formatBudget = (job: JobLead) => {
@@ -83,6 +87,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [proposalAttachments, setProposalAttachments] = useState<any[]>([]);
   const [isUploadingProposalFile, setIsUploadingProposalFile] = useState<boolean>(false);
   const [isSubmittingProposal, setIsSubmittingProposal] = useState<boolean>(false);
+  const [externalJobToApply, setExternalJobToApply] = useState<ExternalJobData | null>(null);
 
   const refreshWallet = async () => {
     try {
@@ -305,14 +310,26 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         if (appliedBudgetMin) params.budgetMin = appliedBudgetMin;
         if (appliedBudgetMax) params.budgetMax = appliedBudgetMax;
 
-        const response = await api.get('/jobs/available', { params });
-        let payload = response.data?.data || response.data?.jobs || [];
-        if (Array.isArray(payload)) {
+        const [response, extResponse] = await Promise.allSettled([
+          api.get('/jobs/available', { params }),
+          api.get('/external-jobs', {
+            params: {
+              search: params.search,
+              isRemote: params.jobType === 'remote' ? 'true' : undefined
+            }
+          })
+        ]);
+
+        let payload = response.status === 'fulfilled' ? (response.value.data?.data || response.value.data?.jobs || []) : [];
+        let extPayload = extResponse.status === 'fulfilled' ? (extResponse.value.data?.data || []) : [];
+
+        if (Array.isArray(payload) || Array.isArray(extPayload)) {
+          let merged = [...(Array.isArray(payload) ? payload : []), ...(Array.isArray(extPayload) ? extPayload : [])];
           if (appliedVerifiedOnly) {
-            payload = payload.filter((j: JobLead) => j.clientVerified);
+            merged = merged.filter((j: JobLead) => j.clientVerified || j.isExternal);
           }
-          cachedJobs = payload;
-          setJobs(payload);
+          cachedJobs = merged;
+          setJobs(merged);
         } else {
           setJobs([]);
         }
@@ -909,8 +926,17 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                       {/* Topbar badge & quick action icons */}
                       <div className="upwork-card-topbar">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          {job.isExternal ? (
+                            <span className="upwork-meta-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', fontWeight: 800 }}>
+                              🌐 {i18n.language === 'fr' ? 'Opportunité Externe' : 'External Opportunity'} • {job.companyName}
+                            </span>
+                          ) : (
+                            <span className="upwork-meta-pill" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', fontWeight: 800 }}>
+                              ⚡ {i18n.language === 'fr' ? 'Mission Fixam' : 'Fixam Direct Job'}
+                            </span>
+                          )}
                           <span className="upwork-meta-pill">
-                            Posted {formatTimeAgo(job.createdAt)} • Proposals: {getProposalRange(job)}
+                            Posted {formatTimeAgo(job.createdAt)} {!job.isExternal ? `• Proposals: ${getProposalRange(job)}` : ''}
                           </span>
                           {(job.hasApplied || appliedJobIds.includes(job.id)) && (
                             <span className="upwork-meta-pill" style={{ background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', fontWeight: 800 }}>
@@ -1620,12 +1646,23 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                       </p>
                     </div>
 
-                    <button
-                      className="btn-upwork-primary"
-                      onClick={() => openProposalModal(selectedJob)}
-                    >
-                      {i18n.language === 'fr' ? 'Soumettre une proposition' : 'Submit Proposal'}
-                    </button>
+                    {selectedJob.isExternal ? (
+                      <button
+                        className="btn-upwork-primary"
+                        style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                        onClick={() => setExternalJobToApply(selectedJob as any)}
+                      >
+                        <span>⚡</span>
+                        <span>{i18n.language === 'fr' ? 'Postuler en 1 Clic via Fixam' : 'One-Tap Apply via Fixam'}</span>
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-upwork-primary"
+                        onClick={() => openProposalModal(selectedJob)}
+                      >
+                        {i18n.language === 'fr' ? 'Soumettre une proposition' : 'Submit Proposal'}
+                      </button>
+                    )}
                   </>
                 )}
 
@@ -1921,6 +1958,17 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
           </div>
         </div>
       )}
+
+      {/* ONE-TAP EXTERNAL JOB APPLY MODAL */}
+      <ExternalJobApplyModal
+        isOpen={Boolean(externalJobToApply)}
+        onClose={() => setExternalJobToApply(null)}
+        job={externalJobToApply}
+        onSuccess={(id) => {
+          setAppliedJobIds(prev => [...prev, id]);
+          setSelectedJob(null);
+        }}
+      />
 
     </div>
   );

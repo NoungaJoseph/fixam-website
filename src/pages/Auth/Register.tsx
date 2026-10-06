@@ -108,10 +108,9 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   const [successBanner, setSuccessBanner] = useState('');
 
   // Password Requirements (live checks)
-  const hasLength = password.length >= 8;
-  const hasNumber = /\d/.test(password);
+  const hasLength = password.length >= 6;
   const hasUpper = /[A-Z]/.test(password);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  const hasNumber = /\d/.test(password);
 
   // Network Detection
   const [networkType, setNetworkType] = useState<'MTN' | 'Orange' | ''>('');
@@ -150,15 +149,14 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
   ];
 
   const getStrengthScore = () => {
-    return [hasLength, hasNumber, hasUpper, hasSpecial].filter(Boolean).length;
+    return [hasLength, hasUpper, hasNumber].filter(Boolean).length;
   };
 
   const getStrengthFeedback = () => {
     const score = getStrengthScore();
     if (password.length === 0) return { label: '', color: '', pct: '0%' };
-    if (score <= 1) return { label: isFr ? 'Faible' : 'Weak', color: '#EF4444', pct: '25%' };
-    if (score === 2) return { label: isFr ? 'Moyen' : 'Fair', color: '#F97316', pct: '50%' };
-    if (score === 3) return { label: isFr ? 'Bon' : 'Good', color: '#EAB308', pct: '75%' };
+    if (score === 1) return { label: isFr ? 'Faible' : 'Weak', color: '#EF4444', pct: '33%' };
+    if (score === 2) return { label: isFr ? 'Bon' : 'Good', color: '#EAB308', pct: '66%' };
     return { label: isFr ? 'Fort' : 'Strong', color: '#22C55E', pct: '100%' };
   };
 
@@ -232,8 +230,14 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     setConfirmPasswordError('');
     setTermsError('');
 
-    if (password.length < 8) {
-      setPasswordError(isFr ? 'Le mot de passe doit comporter au moins 8 caractères' : 'Password must be at least 8 characters');
+    if (password.length < 6) {
+      setPasswordError(isFr ? 'Le mot de passe doit comporter au moins 6 caractères' : 'Password must be at least 6 characters long');
+      isValid = false;
+    } else if (!hasUpper) {
+      setPasswordError(isFr ? 'Veuillez ajouter au moins une lettre majuscule (A-Z)' : 'Please add at least one uppercase capital letter (A-Z)');
+      isValid = false;
+    } else if (!hasNumber) {
+      setPasswordError(isFr ? 'Veuillez ajouter au moins un chiffre (0-9)' : 'Please add at least one number (0-9)');
       isValid = false;
     }
 
@@ -344,13 +348,13 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     cityChooseRegion: isFr ? 'Choisissez d\'abord une région' : 'Select a region first',
     
     passwordLabel: isFr ? 'Mot de Passe' : 'Password',
-    passwordPlaceholder: isFr ? 'Créez un mot de passe (min 8 caractères)' : 'Create a password (min 8 characters)',
+    passwordPlaceholder: isFr ? 'Créez un mot de passe (min 6 caractères)' : 'Create a password (min 6 characters)',
     
     confirmPasswordLabel: isFr ? 'Confirmer le Mot de Passe' : 'Confirm Password',
     confirmPasswordPlaceholder: isFr ? 'Répétez votre mot de passe' : 'Repeat your password',
     
-    referralLabel: isFr ? 'Code de Parrainage (optionnel)' : 'Referral Code (optional)',
-    referralPlaceholder: isFr ? 'Entrez le code de parrainage' : 'Enter referral code if you have one',
+    referralLabel: isFr ? 'Code de Parrainage' : 'Referral Code',
+    referralPlaceholder: isFr ? 'Entrez le code de parrainage' : 'Enter referral code',
     referralHint: isFr ? '🎁 Utiliser un code vous donne 1 pièce bonus' : '🎁 Using a referral code gives you 1 bonus coin',
 
     categoryLabel: isFr ? 'Votre Catégorie de Service' : 'Your Service Category',
@@ -365,10 +369,9 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
     createAccountBtn: isFr ? 'Créer un Compte' : 'Create Account',
     creatingAccount: isFr ? 'Création du compte...' : 'Creating account...',
     
-    reqLength: isFr ? 'Au moins 8 caractères' : '8+ characters',
-    reqNumber: isFr ? 'Contient un chiffre' : 'Number',
-    reqUpper: isFr ? 'Lettre majuscule' : 'Uppercase',
-    reqSpecial: isFr ? 'Caractère spécial' : 'Special character',
+    reqLength: isFr ? 'Au moins 6 caractères' : '6+ characters',
+    reqUpper: isFr ? 'Lettre majuscule (A-Z)' : 'Uppercase letter (A-Z)',
+    reqNumber: isFr ? 'Chiffre (0-9)' : 'Number (0-9)',
   };
 
   // Dropdown Options
@@ -472,7 +475,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* FIRST NAME */}
                 <div>
                   <div className="field-group">
-                    <label>{t.firstNameLabel}</label>
+                    <label>{t.firstNameLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${firstNameError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -495,7 +498,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* LAST NAME */}
                 <div>
                   <div className="field-group">
-                    <label>{t.lastNameLabel}</label>
+                    <label>{t.lastNameLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${lastNameError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -518,7 +521,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* EMAIL */}
                 <div>
                   <div className="field-group">
-                    <label>{t.emailLabel}</label>
+                    <label>{t.emailLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${emailError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -540,7 +543,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* PHONE NUMBER */}
                 <div>
                   <div className="field-group">
-                    <label>{t.phoneLabel}</label>
+                    <label>{t.phoneLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`phone-row-container ${phoneError ? 'error-state' : ''}`}>
                       <div className="input-container" style={{ width: 'auto' }}>
                         <select
@@ -590,7 +593,9 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* REFERRAL CODE */}
                 <div>
                   <div className="field-group">
-                    <label>{t.referralLabel}</label>
+                    <label>
+                      {t.referralLabel} <span style={{ fontWeight: 400, color: '#64748B', fontSize: '0.82rem', marginLeft: '6px' }}>({isFr ? 'Optionnel' : 'Optional'})</span>
+                    </label>
                     <div className="input-container has-left-icon">
                       <svg className="input-left-icon" style={{ color: '#14B8A6' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 0h4a2 2 0 012 2v2a2 2 0 01-2 2H2m10 0h-4a2 2 0 00-2 2v2a2 2 0 002 2h10" />
@@ -614,7 +619,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* REGION (LOCATION PART 1) */}
                 <div>
                   <div className="field-group">
-                    <label>{t.regionLabel}</label>
+                    <label>{t.regionLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${regionError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -643,7 +648,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* CITY / QUARTER (LOCATION PART 2) */}
                 <div>
                   <div className="field-group">
-                    <label>{t.cityLabel}</label>
+                    <label>{t.cityLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${cityError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -676,7 +681,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                     {/* Category */}
                     <div>
                       <div className="field-group">
-                        <label>{t.categoryLabel}</label>
+                        <label>{t.categoryLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                         <div className={`input-container has-left-icon ${categoryError ? 'error-state' : ''}`}>
                           <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -703,7 +708,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                     {/* Experience */}
                     <div>
                       <div className="field-group">
-                        <label>{t.expLabel}</label>
+                        <label>{t.expLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                         <div className={`input-container has-left-icon ${experienceError ? 'error-state' : ''}`}>
                           <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.969 0 1.371 1.24.588 1.81l-3.97 2.883a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.971-2.883a1 1 0 00-1.18 0l-3.97 2.883c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118l-3.97-2.883c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -737,7 +742,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* PASSWORD */}
                 <div>
                   <div className="field-group">
-                    <label>{t.passwordLabel}</label>
+                    <label>{t.passwordLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${passwordError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -790,17 +795,13 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                             <div className="strength-req-dot"></div>
                             <span>{t.reqLength}</span>
                           </li>
-                          <li className={`strength-req-item ${hasNumber ? 'met' : ''}`}>
-                            <div className="strength-req-dot"></div>
-                            <span>{t.reqNumber}</span>
-                          </li>
                           <li className={`strength-req-item ${hasUpper ? 'met' : ''}`}>
                             <div className="strength-req-dot"></div>
                             <span>{t.reqUpper}</span>
                           </li>
-                          <li className={`strength-req-item ${hasSpecial ? 'met' : ''}`}>
+                          <li className={`strength-req-item ${hasNumber ? 'met' : ''}`}>
                             <div className="strength-req-dot"></div>
-                            <span>{t.reqSpecial}</span>
+                            <span>{t.reqNumber}</span>
                           </li>
                         </ul>
                       </div>
@@ -811,7 +812,7 @@ export default function Register({ onNavigate, onRegister }: { onNavigate: (page
                 {/* CONFIRM PASSWORD */}
                 <div>
                   <div className="field-group">
-                    <label>{t.confirmPasswordLabel}</label>
+                    <label>{t.confirmPasswordLabel} <span style={{ color: '#EF4444' }}>*</span></label>
                     <div className={`input-container has-left-icon ${confirmPasswordError ? 'error-state' : ''}`}>
                       <svg className="input-left-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

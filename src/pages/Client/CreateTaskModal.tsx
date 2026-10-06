@@ -128,6 +128,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
     priority: 'NORMAL',
     taskScope: 'SMALL',
     scheduledTime: '',
+    expiryDate: '',
     materialsList: [] as MaterialItem[],
     requiresDiagnosis: false,
   });
@@ -158,6 +159,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         scheduledTime: '',
         materialsList: [],
         requiresDiagnosis: false,
+        expiryDate: '',
       });
     }
   }, [isOpen]);
@@ -294,6 +296,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         priority: form.priority || 'NORMAL',
         taskScope: form.taskScope || 'SMALL',
         scheduledTime: form.scheduledTime ? new Date(form.scheduledTime).toISOString() : undefined,
+        expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
         materialsList: cleanedMaterialsList.length > 0 ? cleanedMaterialsList : undefined,
         requiresDiagnosis: Boolean(form.requiresDiagnosis),
       };
@@ -703,6 +706,48 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                         padding: '0.7rem 1rem', fontSize: '0.875rem', outline: 'none'
                       }}
                     />
+                    <div style={{ marginTop: '0.75rem' }}>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.4rem' }}>
+                        {isFr ? 'Date d\'expiration de l\'annonce' : 'Listing Expiry Date'}
+                      </label>
+                      <p style={{ margin: '0 0 0.5rem 0', fontSize: '0.75rem', color: '#64748B' }}>
+                        {isFr ? 'L\'annonce sera automatiquement masquée des flux après cette date.' : 'The job will automatically be removed from public feeds after this date.'}
+                      </p>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                        <input
+                          type="date"
+                          value={form.expiryDate}
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={e => update('expiryDate', e.target.value)}
+                          style={{
+                            border: '1px solid #E2E8F0', borderRadius: '10px',
+                            padding: '0.6rem 0.85rem', fontSize: '0.85rem', outline: 'none'
+                          }}
+                        />
+                        {[7, 14, 30].map(days => {
+                          const target = new Date();
+                          target.setDate(target.getDate() + days);
+                          const dateStr = target.toISOString().split('T')[0];
+                          const isSel = form.expiryDate === dateStr;
+                          return (
+                            <button
+                              key={days}
+                              type="button"
+                              onClick={() => update('expiryDate', dateStr)}
+                              style={{
+                                padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700,
+                                border: isSel ? '1px solid #0D9488' : '1px solid #E2E8F0',
+                                background: isSel ? '#0D9488' : '#FFFFFF',
+                                color: isSel ? '#FFFFFF' : '#475569',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              +{days} {isFr ? 'Jours' : 'Days'}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
