@@ -112,7 +112,6 @@ export default function JobLeads() {
                     className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5"
                     onClick={() => setExternalJobToApply(lead)}
                   >
-                    <span>⚡</span>
                     <span>Apply via Fixam</span>
                   </button>
                 ) : (

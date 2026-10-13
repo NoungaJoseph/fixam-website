@@ -44,10 +44,18 @@ type JobLead = {
   myAssignment?: any;
   isExternal?: boolean;
   companyName?: string;
-  destinationEmail?: string;
+  salary?: string;
 };
 
 const formatBudget = (job: JobLead) => {
+  if (job.isExternal) {
+    if (job.salary && job.salary.trim()) {
+      return job.salary;
+    }
+    const max = Number(job.budget || 0);
+    if (max > 0) return `${max.toLocaleString()} XAF`;
+    return 'Salary Undisclosed / Negotiable';
+  }
   const min = Number(job.budgetMin || 0);
   const max = Number(job.budgetMax || job.budget || 0);
   if (min && max && min !== max) return `${min.toLocaleString()} - ${max.toLocaleString()} XAF`;
@@ -1652,8 +1660,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                         style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         onClick={() => setExternalJobToApply(selectedJob as any)}
                       >
-                        <span>⚡</span>
-                        <span>{i18n.language === 'fr' ? 'Postuler en 1 Clic via Fixam' : 'One-Tap Apply via Fixam'}</span>
+                        <span>{i18n.language === 'fr' ? 'Postuler via Fixam' : 'Apply via Fixam'}</span>
                       </button>
                     ) : (
                       <button
@@ -1730,7 +1737,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
 
       {/* SEND PROPOSAL MODAL */}
       {proposalModalJob && (
-        <div className="upwork-modal-overlay animate-fade-in" onClick={() => setProposalModalJob(null)} style={{ zIndex: 1100 }}>
+        <div className="upwork-modal-overlay animate-fade-in" onClick={() => setProposalModalJob(null)} style={{ zIndex: 1000010 }}>
           <div className="upwork-filter-modal-card animate-scale-in" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px', width: '92%' }}>
             
             <div className="modal-header">

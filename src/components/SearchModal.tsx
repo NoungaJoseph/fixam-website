@@ -117,9 +117,14 @@ export default function SearchModal({
       const q = searchQuery.trim().toLowerCase();
       try {
         if (searchType === 'jobs') {
-          const res = await api.get(`/jobs/available?q=${encodeURIComponent(searchQuery.trim())}`);
-          const jobs = res.data?.jobs || res.data?.data || [];
-          setLiveResults(Array.isArray(jobs) ? jobs.slice(0, 6) : []);
+          const [res, extRes] = await Promise.allSettled([
+            api.get(`/jobs/available?q=${encodeURIComponent(searchQuery.trim())}`),
+            api.get(`/external-jobs?search=${encodeURIComponent(searchQuery.trim())}`)
+          ]);
+          const jobs = res.status === 'fulfilled' ? (res.value.data?.jobs || res.value.data?.data || []) : [];
+          const extJobs = extRes.status === 'fulfilled' ? (extRes.value.data?.data || []) : [];
+          const merged = [...extJobs, ...jobs];
+          setLiveResults(Array.isArray(merged) ? merged.slice(0, 6) : []);
         } else if (searchType === 'talent') {
           // Fast matching from displayedPros if available
           if (Array.isArray(displayedPros) && displayedPros.length > 0) {

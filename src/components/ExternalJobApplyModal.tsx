@@ -64,7 +64,7 @@ export default function ExternalJobApplyModal({
     setApplicantName(name);
     setApplicantEmail(email);
     setApplicantPhone(phone);
-    setCvName(existingCvName || (existingCvUrl ? 'My_Profile_Resume' : ''));
+    setCvName(existingCvName || (existingCvUrl ? 'Attached_Resume' : ''));
     if (existingCvUrl && (existingCvUrl.includes('google.com') || existingCvUrl.includes('sheet') || !existingCvUrl.match(/\.(pdf|png|jpg|jpeg)$/i))) {
       setCvLink(existingCvUrl);
       setCvMode('link');
@@ -89,6 +89,11 @@ export default function ExternalJobApplyModal({
       setCvFile(file);
       setCvName(file.name);
     }
+  };
+
+  const handleClearFile = () => {
+    setCvFile(null);
+    setCvName('');
   };
 
   const handleSendApplication = async (e: React.FormEvent) => {
@@ -133,9 +138,9 @@ export default function ExternalJobApplyModal({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 9999,
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(4px)',
+        zIndex: 1000020,
+        backgroundColor: 'rgba(15, 23, 42, 0.7)',
+        backdropFilter: 'blur(5px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -147,32 +152,36 @@ export default function ExternalJobApplyModal({
       <div
         style={{
           backgroundColor: '#FFFFFF',
-          borderRadius: '1.25rem',
-          maxWidth: '640px',
+          borderRadius: '1rem',
+          maxWidth: '620px',
           width: '100%',
           overflow: 'hidden',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
           border: '1px solid #E2E8F0',
-          position: 'relative'
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '92vh'
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#F8FAFC' }}>
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', backgroundColor: '#F8FAFC' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '3px 10px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
-              🌐 {isFr ? 'Opportunité Externe' : 'External Opportunity'}
+            <div style={{ display: 'inline-block', backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '2px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+              {isFr ? 'Offre Externe' : 'External Listing'}
             </div>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.3 }}>
               {job.title}
             </h3>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.85rem', color: '#64748B', fontWeight: 600 }}>
-              {job.companyName} {job.location ? `• 📍 ${job.location}` : ''}
+            <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748B', fontWeight: 500 }}>
+              {job.companyName} {job.location ? `• ${job.location}` : ''}
             </p>
           </div>
 
           <button
             onClick={onClose}
+            aria-label="Close"
             style={{
               background: '#F1F5F9',
               border: 'none',
@@ -184,99 +193,113 @@ export default function ExternalJobApplyModal({
               justifyContent: 'center',
               cursor: 'pointer',
               color: '#64748B',
-              fontSize: '1rem',
-              fontWeight: 700
+              transition: 'background 0.15s ease'
             }}
           >
-            ✕
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
 
         {/* Content */}
         {isSuccess ? (
           /* Confirmation Success Screen */
-          <div style={{ padding: '2.5rem 1.5rem', textAlign: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', margin: '0 auto 1.25rem auto' }}>
-              ✓
+          <div style={{ padding: '2.5rem 1.75rem', textAlign: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#ECFDF5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
             </div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.5rem 0' }}>
-              {isFr ? `Candidature envoyée à ${job.companyName} !` : `Application Sent to ${job.companyName}!`}
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.5rem 0' }}>
+              {isFr ? 'Candidature transmise avec succès' : 'Application Sent Successfully'}
             </h2>
-            <p style={{ fontSize: '0.9rem', color: '#475569', lineHeight: 1.6, maxWidth: '460px', margin: '0 auto 1.5rem auto' }}>
+            <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.6, maxWidth: '460px', margin: '0 auto 1.5rem auto' }}>
               {isFr
-                ? `Votre candidature et votre CV ont été directement transmis au recruteur. Lorsque l'entreprise répondra, son message arrivera directement dans votre boîte e-mail à `
-                : `Your CV and application have been delivered directly to the company's recruitment team. When the recruiter replies, their response will go straight to your email at `}
+                ? `Votre candidature a été directement délivrée au recruteur de ${job.companyName}. Les réponses éventuelles vous seront adressées à `
+                : `Your application has been delivered directly to the recruitment team at ${job.companyName}. Recruiter replies will be delivered to `}
               <strong style={{ color: '#0F172A' }}>{applicantEmail}</strong>.
             </p>
-            <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: '0.75rem', border: '1px solid #E2E8F0', display: 'inline-block', textAlign: 'left', fontSize: '0.8rem', color: '#64748B', maxWidth: '460px', margin: '0 auto 1.75rem auto' }}>
-              <div>🏢 <strong>{isFr ? 'Entreprise :' : 'Company:'}</strong> {job.companyName}</div>
-              <div>💼 <strong>{isFr ? 'Poste :' : 'Role:'}</strong> {job.title}</div>
-              <div>📎 <strong>{isFr ? 'Pièce jointe :' : 'Attachment:'}</strong> {cvName || (isFr ? 'Profil candidat' : 'Candidate Profile')}</div>
+
+            <div style={{ backgroundColor: '#F8FAFC', padding: '1rem 1.25rem', borderRadius: '0.75rem', border: '1px solid #E2E8F0', display: 'block', textAlign: 'left', fontSize: '0.82rem', color: '#475569', maxWidth: '440px', margin: '0 auto 1.75rem auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #EDF2F7' }}>
+                <span style={{ color: '#64748B' }}>{isFr ? 'Entreprise' : 'Company'}</span>
+                <span style={{ fontWeight: 700, color: '#0F172A' }}>{job.companyName}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #EDF2F7' }}>
+                <span style={{ color: '#64748B' }}>{isFr ? 'Poste' : 'Role'}</span>
+                <span style={{ fontWeight: 700, color: '#0F172A' }}>{job.title}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+                <span style={{ color: '#64748B' }}>{isFr ? 'Document' : 'Document'}</span>
+                <span style={{ fontWeight: 700, color: '#0F172A' }}>{cvName || (isFr ? 'Profil candidat' : 'Candidate Profile')}</span>
+              </div>
             </div>
+
             <div>
               <button
                 onClick={onClose}
                 style={{
-                  backgroundColor: '#10B981',
+                  backgroundColor: '#0F172A',
                   color: '#FFFFFF',
                   border: 'none',
                   padding: '0.75rem 2rem',
-                  borderRadius: '0.75rem',
-                  fontSize: '0.9rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                  borderRadius: '0.6rem',
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
                 }}
               >
-                {isFr ? 'Terminer & Voir d\'autres offres' : 'Done & Browse More Jobs'}
+                {isFr ? 'Fermer' : 'Close'}
               </button>
             </div>
           </div>
         ) : (
           /* Application Form */
-          <form onSubmit={handleSendApplication} style={{ padding: '1.25rem 1.5rem', maxHeight: '72vh', overflowY: 'auto' }}>
-            <div style={{ backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', padding: '0.75rem 1rem', borderRadius: '0.75rem', marginBottom: '1.25rem', fontSize: '0.8rem', color: '#166534', lineHeight: 1.5 }}>
-              ⚡ <strong>{isFr ? 'Candidature en 1 Clic via Fixam' : 'One-Tap Apply via Fixam'}</strong>: {isFr
-                ? 'Nous transmettons directement votre CV et votre lettre de motivation au recruteur en utilisant notre domaine d\'envoi certifié. L\'adresse de réponse (Reply-To) est configurée sur votre e-mail.'
-                : 'We deliver your CV and cover letter directly to the recruiter using our verified sending infrastructure. The Reply-To address is set to your personal email.'}
+          <form onSubmit={handleSendApplication} style={{ padding: '1.25rem 1.5rem', overflowY: 'auto', flex: 1 }}>
+            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.75rem 1rem', borderRadius: '0.6rem', marginBottom: '1.25rem', fontSize: '0.8rem', color: '#475569', lineHeight: 1.5 }}>
+              <strong style={{ color: '#0F172A' }}>{isFr ? 'Transmission directe' : 'Direct Employer Delivery'}</strong>: {isFr
+                ? 'Votre candidature et CV sont expédiés directement sur la boîte mail du recruteur. L\'adresse de réponse est définie sur votre e-mail personnel.'
+                : 'Your CV and application are delivered straight to the employer\'s hiring inbox. Replies are sent directly to your personal email.'}
             </div>
 
             {error && (
-              <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', padding: '0.75rem 1rem', borderRadius: '0.75rem', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
-                ⚠️ {error}
+              <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', padding: '0.75rem 1rem', borderRadius: '0.6rem', marginBottom: '1rem', fontSize: '0.82rem', fontWeight: 600 }}>
+                {error}
               </div>
             )}
 
-            {/* Profile review fields */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
+            {/* Profile fields */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', marginBottom: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
-                  {isFr ? 'Votre Nom Complet' : 'Full Name'}
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#334155', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  {isFr ? 'Nom complet' : 'Full Name'}
                 </label>
                 <input
                   type="text"
                   required
                   value={applicantName}
                   onChange={(e) => setApplicantName(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
-                  {isFr ? 'Votre Adresse E-mail (Réponses directes)' : 'Your Email (Recruiter Replies)'}
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#334155', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  {isFr ? 'Adresse e-mail' : 'Email Address'}
                 </label>
                 <input
                   type="email"
                   required
                   value={applicantEmail}
                   onChange={(e) => setApplicantEmail(e.target.value)}
-                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
 
               <div style={{ gridColumn: '1 / -1' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '4px' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#334155', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                   {isFr ? 'Numéro de téléphone' : 'Phone Number'}
                 </label>
                 <input
@@ -284,67 +307,92 @@ export default function ExternalJobApplyModal({
                   value={applicantPhone}
                   onChange={(e) => setApplicantPhone(e.target.value)}
                   placeholder="+237 6..."
-                  style={{ width: '100%', padding: '0.6rem 0.8rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none' }}
+                  style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1', fontSize: '0.85rem', color: '#0F172A', outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
 
-            {/* CV Attachment & Link Box */}
-            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.85rem 1rem', borderRadius: '0.75rem', marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0F172A' }}>
-                  {isFr ? 'CV / Document de candidature' : 'CV / Resume or Portfolio'}
+            {/* CV Attachment Box */}
+            <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '0.85rem 1rem', borderRadius: '0.6rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  {isFr ? 'Curriculum Vitae (CV)' : 'Resume / CV Document'}
                 </span>
-                <div style={{ display: 'flex', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: '4px', backgroundColor: '#E2E8F0', padding: '2px', borderRadius: '6px' }}>
                   <button
                     type="button"
                     onClick={() => setCvMode('file')}
                     style={{
-                      padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700,
-                      border: cvMode === 'file' ? '1px solid #0D9488' : '1px solid #CBD5E1',
-                      background: cvMode === 'file' ? '#0D9488' : '#FFFFFF',
-                      color: cvMode === 'file' ? '#FFFFFF' : '#475569',
+                      padding: '3px 9px',
+                      borderRadius: '4px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      border: 'none',
+                      background: cvMode === 'file' ? '#FFFFFF' : 'transparent',
+                      color: cvMode === 'file' ? '#0F172A' : '#64748B',
+                      boxShadow: cvMode === 'file' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                       cursor: 'pointer'
                     }}
                   >
-                    {isFr ? 'Fichier (PDF / Photo)' : 'File (PDF / Photo)'}
+                    {isFr ? 'Fichier' : 'File'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setCvMode('link')}
                     style={{
-                      padding: '3px 8px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700,
-                      border: cvMode === 'link' ? '1px solid #0D9488' : '1px solid #CBD5E1',
-                      background: cvMode === 'link' ? '#0D9488' : '#FFFFFF',
-                      color: cvMode === 'link' ? '#FFFFFF' : '#475569',
+                      padding: '3px 9px',
+                      borderRadius: '4px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      border: 'none',
+                      background: cvMode === 'link' ? '#FFFFFF' : 'transparent',
+                      color: cvMode === 'link' ? '#0F172A' : '#64748B',
+                      boxShadow: cvMode === 'link' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
                       cursor: 'pointer'
                     }}
                   >
-                    Google Sheets / Drive
+                    {isFr ? 'Lien Drive' : 'Drive Link'}
                   </button>
                 </div>
               </div>
 
               {cvMode === 'file' ? (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.25rem' }}>📎</span>
-                    <div>
-                      <span style={{ fontSize: '0.75rem', color: cvName ? '#059669' : '#64748B', fontWeight: 600 }}>
-                        {cvName ? `✓ ${cvName}` : (isFr ? 'Aucun fichier joint (PDF, PNG, JPG)' : 'Attach file (PDF, PNG, JPG)')}
-                      </span>
-                    </div>
+                  <div>
+                    <span style={{ fontSize: '0.8rem', color: cvName ? '#0F172A' : '#64748B', fontWeight: cvName ? 700 : 500 }}>
+                      {cvName ? cvName : (isFr ? 'Aucun document sélectionné (PDF, DOCX, PNG)' : 'No file attached (PDF, DOCX, PNG)')}
+                    </span>
                   </div>
 
-                  <label style={{ backgroundColor: '#FFFFFF', border: '1px solid #CBD5E1', padding: '5px 12px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 700, color: '#334155', cursor: 'pointer' }}>
-                    {cvName ? (isFr ? 'Changer de fichier' : 'Change File') : (isFr ? 'Parcourir...' : 'Browse File...')}
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
-                      onChange={handleFileChange}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {cvName && (
+                      <button
+                        type="button"
+                        onClick={handleClearFile}
+                        style={{
+                          backgroundColor: '#FFFFFF',
+                          border: '1px solid #CBD5E1',
+                          padding: '5px 10px',
+                          borderRadius: '5px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          color: '#64748B',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {isFr ? 'Supprimer' : 'Clear'}
+                      </button>
+                    )}
+                    <label style={{ backgroundColor: '#0F172A', border: 'none', padding: '5px 12px', borderRadius: '5px', fontSize: '0.75rem', fontWeight: 700, color: '#FFFFFF', cursor: 'pointer' }}>
+                      {cvName ? (isFr ? 'Changer' : 'Change') : (isFr ? 'Sélectionner' : 'Browse File')}
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
                 </div>
               ) : (
                 <div>
@@ -352,33 +400,34 @@ export default function ExternalJobApplyModal({
                     type="url"
                     value={cvLink}
                     onChange={(e) => setCvLink(e.target.value)}
-                    placeholder="https://docs.google.com/spreadsheets/d/... or Google Drive link"
+                    placeholder="https://drive.google.com/... or Google Sheets link"
                     style={{
                       width: '100%',
-                      padding: '0.55rem 0.8rem',
+                      padding: '0.6rem 0.8rem',
                       borderRadius: '0.5rem',
                       border: '1px solid #CBD5E1',
-                      fontSize: '0.8rem',
+                      fontSize: '0.82rem',
                       color: '#0F172A',
                       outline: 'none',
-                      backgroundColor: '#FFFFFF'
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box'
                     }}
                   />
                   <span style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '4px', display: 'block' }}>
-                    {isFr ? 'Assurez-vous que le lien est partagé en accès public ou avec les recruteurs.' : 'Ensure the Google Sheets/Drive link is set to "Anyone with the link can view".'}
+                    {isFr ? 'Vérifiez que le lien est accessible aux personnes disposant de l\'URL.' : 'Make sure link sharing is set to anyone with the link can view.'}
                   </span>
                 </div>
               )}
             </div>
 
             {/* Cover Letter */}
-            <div style={{ marginBottom: '1.25rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>
-                  {isFr ? 'Lettre de motivation (personnalisable)' : 'Cover Letter (Editable Draft)'}
+                <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                  {isFr ? 'Message au recruteur' : 'Message to Recruiter'}
                 </label>
                 <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
-                  {isFr ? 'Rédigée à la première personne' : 'Written in first person'}
+                  {isFr ? 'Modifiable' : 'Editable draft'}
                 </span>
               </div>
               <textarea
@@ -395,24 +444,25 @@ export default function ExternalJobApplyModal({
                   lineHeight: 1.5,
                   color: '#0F172A',
                   outline: 'none',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  boxSizing: 'border-box'
                 }}
               />
             </div>
 
             {/* Footer Buttons */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9' }}>
               <button
                 type="button"
                 onClick={onClose}
                 style={{
-                  padding: '0.6rem 1.25rem',
-                  borderRadius: '0.6rem',
-                  border: '1px solid #E2E8F0',
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #CBD5E1',
                   backgroundColor: '#FFFFFF',
                   color: '#475569',
                   fontSize: '0.82rem',
-                  fontWeight: 700,
+                  fontWeight: 600,
                   cursor: 'pointer'
                 }}
               >
@@ -424,14 +474,13 @@ export default function ExternalJobApplyModal({
                 disabled={isSubmitting}
                 style={{
                   padding: '0.6rem 1.5rem',
-                  borderRadius: '0.6rem',
+                  borderRadius: '0.5rem',
                   border: 'none',
-                  backgroundColor: '#2563EB',
+                  backgroundColor: '#0D9488',
                   color: '#FFFFFF',
                   fontSize: '0.82rem',
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 10px rgba(37, 99, 235, 0.25)',
                   opacity: isSubmitting ? 0.7 : 1,
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -440,14 +489,11 @@ export default function ExternalJobApplyModal({
               >
                 {isSubmitting ? (
                   <>
-                    <div style={{ width: '12px', height: '12px', border: '2px solid #fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                    <span>{isFr ? 'Envoi en cours...' : 'Sending Application...'}</span>
+                    <div style={{ width: '12px', height: '12px', border: '2px solid #FFFFFF', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                    <span>{isFr ? 'Envoi en cours...' : 'Submitting...'}</span>
                   </>
                 ) : (
-                  <>
-                    <span>📤</span>
-                    <span>{isFr ? 'Envoyer ma candidature' : 'Send Application'}</span>
-                  </>
+                  <span>{isFr ? 'Envoyer la candidature' : 'Send Application'}</span>
                 )}
               </button>
             </div>
