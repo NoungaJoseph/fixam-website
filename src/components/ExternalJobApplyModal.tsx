@@ -43,6 +43,7 @@ export default function ExternalJobApplyModal({
   const [cvName, setCvName] = useState<string>('');
   const [cvLink, setCvLink] = useState<string>('');
   const [cvMode, setCvMode] = useState<'file' | 'link'>('file');
+  const [isPriority, setIsPriority] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -54,6 +55,7 @@ export default function ExternalJobApplyModal({
     setIsSuccess(false);
     setError(null);
     setCvFile(null);
+    setIsPriority(false);
 
     const name = (user as any)?.fullName || (user as any)?.name || '';
     const email = (user as any)?.email || '';
@@ -114,6 +116,7 @@ export default function ExternalJobApplyModal({
       if (coverLetter) formData.append('coverLetter', coverLetter.trim());
       if (cvFile) formData.append('cv', cvFile);
       if (cvLink) formData.append('cvLink', cvLink.trim());
+      if (isPriority) formData.append('isPriority', 'true');
 
       const response = await api.post(`/external-jobs/${job.id}/apply`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -448,6 +451,70 @@ export default function ExternalJobApplyModal({
                   boxSizing: 'border-box'
                 }}
               />
+            </div>
+
+            {/* Priority Application Boost Option */}
+            <div
+              onClick={() => setIsPriority(!isPriority)}
+              style={{
+                marginBottom: '1rem',
+                padding: '0.85rem 1rem',
+                borderRadius: '0.75rem',
+                border: isPriority ? '1.5px solid #EAB308' : '1px solid #E2E8F0',
+                backgroundColor: isPriority ? '#FEFCE8' : '#F8FAFC',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '4px',
+                    border: isPriority ? '2px solid #CA8A04' : '2px solid #94A3B8',
+                    backgroundColor: isPriority ? '#EAB308' : '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FFFFFF',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    flexShrink: 0
+                  }}
+                >
+                  {isPriority ? '✓' : ''}
+                </div>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 750, color: '#1E293B' }}>
+                      {isFr ? 'Candidature Prioritaire' : 'Priority Application'}
+                    </span>
+                    <span style={{ backgroundColor: '#FEF08A', color: '#854D0E', fontSize: '0.68rem', fontWeight: 800, padding: '2px 7px', borderRadius: '4px' }}>
+                      2 {isFr ? 'Pièces' : 'Coins'}
+                    </span>
+                  </div>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.73rem', color: '#64748B', lineHeight: 1.4 }}>
+                    {isFr
+                      ? "Mention prioritaire et mise en avant de votre dossier dans la boîte e-mail du recruteur."
+                      : "Priority header and featured placement in the recruiter's inbox."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Live CV Tracking Info */}
+            <div style={{ marginBottom: '1rem', padding: '9px 14px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: '8px', fontSize: '0.74rem', color: '#1E40AF', lineHeight: 1.45 }}>
+              <span style={{ fontWeight: 700 }}>{isFr ? 'Suivi en direct : ' : 'Live tracking: '}</span>
+              <span>
+                {isFr
+                  ? "Vous recevrez une notification push et un e-mail dès que le recruteur ouvrira votre CV."
+                  : "You will receive a push notification & email the instant the recruiter opens your CV."}
+              </span>
             </div>
 
             {/* Footer Buttons */}

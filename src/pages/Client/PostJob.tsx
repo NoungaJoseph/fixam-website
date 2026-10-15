@@ -112,6 +112,9 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
     expiryDate: '',
     materialsList: [] as MaterialItem[],
     requiresDiagnosis: false,
+    isPinned: false,
+    forwardToEmail: false,
+    hiringEmail: (user as any)?.email || '',
   });
 
   const t = {
@@ -233,6 +236,9 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
         expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
         materialsList: cleanedMaterialsList.length > 0 ? cleanedMaterialsList : undefined,
         requiresDiagnosis: Boolean(form.requiresDiagnosis),
+        isPinned: Boolean(form.isPinned),
+        forwardToEmail: Boolean(form.forwardToEmail),
+        hiringEmail: form.forwardToEmail && form.hiringEmail ? form.hiringEmail.trim() : undefined,
       };
       if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone.trim();
       if (form.importantDetails) payload.importantDetails = form.importantDetails.trim();
@@ -619,6 +625,104 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
               </div>
             </div>
 
+            {/* Premium Monetization & Delivery Options */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-extrabold text-gray-900">
+                    {isFr ? 'Options de mise en avant et réception' : 'Boost and Delivery Options'}
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {isFr ? 'Options facultatives pour maximiser la visibilité de votre offre' : 'Optional upgrades to accelerate your hiring'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Option 1: Pin at top (5 coins) */}
+              <div
+                onClick={() => update('isPinned', !form.isPinned)}
+                className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3.5 ${
+                  form.isPinned ? 'border-amber-400 bg-amber-50/60' : 'border-gray-200 bg-gray-50/50 hover:bg-gray-50'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-md border mt-0.5 flex items-center justify-center font-black text-xs shrink-0 ${
+                  form.isPinned ? 'border-amber-500 bg-amber-500 text-white' : 'border-gray-300 bg-white'
+                }`}>
+                  {form.isPinned ? '✓' : ''}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-gray-900">
+                      {isFr ? 'Épingler en haut des offres (7 jours)' : 'Pin Job at Top of Feed (7 Days)'}
+                    </span>
+                    <span className="bg-amber-100 text-amber-800 text-xs font-black px-2.5 py-0.5 rounded-full">
+                      5 {isFr ? 'Pièces' : 'Coins'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                    {isFr
+                      ? "Votre annonce restera épinglée en haut de page avec la mention 'EN VEDETTE' pour attirer les meilleurs prestataires en premier."
+                      : "Your listing stays pinned at the very top of provider job discovery with a 'FEATURED' badge for 7 days."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Option 2: Forward applicants to email (3 coins) */}
+              <div
+                onClick={() => update('forwardToEmail', !form.forwardToEmail)}
+                className={`p-4 rounded-xl border transition cursor-pointer flex flex-col gap-3 ${
+                  form.forwardToEmail ? 'border-teal-400 bg-teal-50/50' : 'border-gray-200 bg-gray-50/50 hover:bg-gray-50'
+                }`}
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className={`w-5 h-5 rounded-md border mt-0.5 flex items-center justify-center font-black text-xs shrink-0 ${
+                    form.forwardToEmail ? 'border-teal-600 bg-teal-600 text-white' : 'border-gray-300 bg-white'
+                  }`}>
+                    {form.forwardToEmail ? '✓' : ''}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-gray-900">
+                        {isFr ? 'Transférer les candidatures par e-mail' : 'Direct Candidate Email Forwarding'}
+                      </span>
+                      <span className="bg-teal-100 text-teal-800 text-xs font-black px-2.5 py-0.5 rounded-full">
+                        3 {isFr ? 'Pièces' : 'Coins'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                      {isFr
+                        ? "Recevez instantanément chaque CV et dossier de candidat directement dans votre boîte de messagerie professionnelle."
+                        : "Instantly receive candidate resumes and full profiles directly in your recruitment inbox."}
+                    </p>
+                  </div>
+                </div>
+
+                {form.forwardToEmail && (
+                  <div className="pl-8 pt-1" onClick={(e) => e.stopPropagation()}>
+                    <label className="text-xs font-bold text-gray-700 block mb-1">
+                      {isFr ? 'Adresse e-mail de réception :' : 'Recruiter / Hiring Email:'}
+                    </label>
+                    <input
+                      type="email"
+                      value={form.hiringEmail}
+                      onChange={(e) => update('hiringEmail', e.target.value)}
+                      placeholder="recruitment@yourcompany.com"
+                      className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg outline-none focus:border-teal-500 bg-white"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {(form.isPinned || form.forwardToEmail) && (
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-xs">
+                  <span className="text-gray-600 font-medium">{isFr ? 'Frais d\'options supplémentaires :' : 'Extra Options Fee:'}</span>
+                  <span className="font-black text-teal-800 text-sm">
+                    {(form.isPinned ? 5 : 0) + (form.forwardToEmail ? 3 : 0)} Fixam Coins
+                  </span>
+                </div>
+              )}
+            </div>
+
             <div className="p-4 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-800 flex items-start gap-2">
               <span className="text-base">🛡️</span>
               <p className="leading-relaxed">
@@ -672,7 +776,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
               {isSubmitting ? (
                 <span>{t.submitting}</span>
               ) : (
-                <span>🚀 {t.submit}</span>
+                <span>{t.submit}</span>
               )}
             </button>
           )}

@@ -42,6 +42,7 @@ type JobLead = {
   hasBoosted?: boolean;
   myBoostCoins?: number;
   myAssignment?: any;
+  isPinned?: boolean;
   isExternal?: boolean;
   companyName?: string;
   salary?: string;
@@ -934,6 +935,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                       {/* Topbar badge & quick action icons */}
                       <div className="upwork-card-topbar">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          {job.isPinned && (
+                            <span className="upwork-meta-pill" style={{ background: '#FEFCE8', color: '#854D0E', border: '1px solid #FDE047', fontWeight: 800 }}>
+                              {i18n.language === 'fr' ? 'EN VEDETTE' : 'FEATURED'}
+                            </span>
+                          )}
                           {job.isExternal ? (
                             <span className="upwork-meta-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', fontWeight: 800 }}>
                               🌐 {i18n.language === 'fr' ? 'Opportunité Externe' : 'External Opportunity'} • {job.companyName}

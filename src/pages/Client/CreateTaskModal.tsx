@@ -131,6 +131,9 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
     expiryDate: '',
     materialsList: [] as MaterialItem[],
     requiresDiagnosis: false,
+    isPinned: false,
+    forwardToEmail: false,
+    hiringEmail: (user as any)?.email || '',
   });
 
   useEffect(() => {
@@ -160,9 +163,12 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         materialsList: [],
         requiresDiagnosis: false,
         expiryDate: '',
+        isPinned: false,
+        forwardToEmail: false,
+        hiringEmail: (user as any)?.email || '',
       });
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   if (!isOpen) return null;
 
@@ -299,6 +305,9 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
         expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
         materialsList: cleanedMaterialsList.length > 0 ? cleanedMaterialsList : undefined,
         requiresDiagnosis: Boolean(form.requiresDiagnosis),
+        isPinned: Boolean(form.isPinned),
+        forwardToEmail: Boolean(form.forwardToEmail),
+        hiringEmail: form.forwardToEmail && form.hiringEmail ? form.hiringEmail.trim() : undefined,
       };
       if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone.trim();
       if (form.importantDetails) payload.importantDetails = form.importantDetails.trim();
@@ -777,6 +786,154 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                     <ReviewRow label={t.priority} value={PRIORITY_OPTIONS.find(o => o.value === form.priority)?.[isFr ? 'fr' : 'label'] || form.priority} />
                     <ReviewRow label={t.taskScope} value={SCOPE_OPTIONS.find(o => o.value === form.taskScope)?.[isFr ? 'fr' : 'label'] || form.taskScope} />
                     {form.scheduledTime && <ReviewRow label={t.scheduledTime} value={new Date(form.scheduledTime).toLocaleString()} />}
+                  </div>
+
+                  {/* Boost & Delivery Options */}
+                  <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#0F172A' }}>
+                        {isFr ? 'Options de mise en avant et réception' : 'Boost and Delivery Options'}
+                      </h4>
+                      <p style={{ margin: '2px 0 0 0', fontSize: '0.75rem', color: '#64748B' }}>
+                        {isFr ? 'Options facultatives pour maximiser la visibilité de votre offre' : 'Optional upgrades to accelerate your hiring'}
+                      </p>
+                    </div>
+
+                    {/* Pin Job */}
+                    <div
+                      onClick={() => update('isPinned', !form.isPinned)}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        border: form.isPinned ? '1.5px solid #F59E0B' : '1px solid #E2E8F0',
+                        background: form.isPinned ? '#FEFCE8' : '#F8FAFC',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '12px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          borderRadius: '4px',
+                          border: form.isPinned ? '2px solid #D97706' : '2px solid #CBD5E1',
+                          background: form.isPinned ? '#F59E0B' : '#FFFFFF',
+                          color: '#FFFFFF',
+                          fontSize: '11px',
+                          fontWeight: 800,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginTop: '2px',
+                          flexShrink: 0
+                        }}
+                      >
+                        {form.isPinned ? '✓' : ''}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A' }}>
+                            {isFr ? 'Épingler en haut des offres (7 jours)' : 'Pin Job at Top of Feed (7 Days)'}
+                          </span>
+                          <span style={{ background: '#FEF08A', color: '#854D0E', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '999px' }}>
+                            5 {isFr ? 'Pièces' : 'Coins'}
+                          </span>
+                        </div>
+                        <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: '#64748B', lineHeight: 1.4 }}>
+                          {isFr
+                            ? "Votre offre restera en tête de liste avec la mention 'EN VEDETTE' pour tous les prestataires."
+                            : "Your listing stays pinned at the very top of provider feeds with a 'FEATURED' badge for 7 days."}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Email Forwarding */}
+                    <div
+                      onClick={() => update('forwardToEmail', !form.forwardToEmail)}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        border: form.forwardToEmail ? '1.5px solid #0D9488' : '1px solid #E2E8F0',
+                        background: form.forwardToEmail ? '#F0FDFA' : '#F8FAFC',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                        <div
+                          style={{
+                            width: '18px',
+                            height: '18px',
+                            borderRadius: '4px',
+                            border: form.forwardToEmail ? '2px solid #0F766E' : '2px solid #CBD5E1',
+                            background: form.forwardToEmail ? '#0D9488' : '#FFFFFF',
+                            color: '#FFFFFF',
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: '2px',
+                            flexShrink: 0
+                          }}
+                        >
+                          {form.forwardToEmail ? '✓' : ''}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A' }}>
+                              {isFr ? 'Transférer les candidatures par e-mail' : 'Forward Applicants to Email'}
+                            </span>
+                            <span style={{ background: '#CCFBF1', color: '#115E59', fontSize: '0.7rem', fontWeight: 800, padding: '2px 8px', borderRadius: '999px' }}>
+                              3 {isFr ? 'Pièces' : 'Coins'}
+                            </span>
+                          </div>
+                          <p style={{ margin: '3px 0 0 0', fontSize: '0.75rem', color: '#64748B', lineHeight: 1.4 }}>
+                            {isFr
+                              ? "Recevez chaque profil et CV de candidat instantanément dans votre boîte mail."
+                              : "Instantly receive candidate resumes and details directly into your email inbox."}
+                          </p>
+                        </div>
+                      </div>
+
+                      {form.forwardToEmail && (
+                        <div style={{ paddingLeft: '30px', paddingTop: '4px' }} onClick={(e) => e.stopPropagation()}>
+                          <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#334155', marginBottom: '3px' }}>
+                            {isFr ? 'Adresse e-mail de réception :' : 'Recruiter / Hiring Email:'}
+                          </label>
+                          <input
+                            type="email"
+                            value={form.hiringEmail}
+                            onChange={(e) => update('hiringEmail', e.target.value)}
+                            placeholder="recruitment@yourcompany.com"
+                            style={{
+                              width: '100%',
+                              padding: '6px 10px',
+                              borderRadius: '8px',
+                              border: '1px solid #CBD5E1',
+                              fontSize: '0.8rem',
+                              outline: 'none',
+                              boxSizing: 'border-box'
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {(form.isPinned || form.forwardToEmail) && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '6px', borderTop: '1px solid #F1F5F9', fontSize: '0.8rem' }}>
+                        <span style={{ color: '#64748B' }}>{isFr ? 'Frais d\'options :' : 'Extra Options Fee:'}</span>
+                        <span style={{ fontWeight: 800, color: '#0D9488' }}>
+                          {(form.isPinned ? 5 : 0) + (form.forwardToEmail ? 3 : 0)} Fixam Coins
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', gap: '8px', padding: '10px 14px', border: '1px solid #FDE68A', borderRadius: '10px', backgroundColor: '#FFFBEB', color: '#B45309', fontSize: '0.75rem' }}>
