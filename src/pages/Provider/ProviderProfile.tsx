@@ -1,7 +1,7 @@
 import './ProviderProfile.css';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getMediaUrl, DEFAULT_AVATAR } from '../../App';
+import { Icon, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import {
@@ -126,6 +126,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
   const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
   // Availability toggle
   const [isProfileAvailable, setIsProfileAvailable] = useState(() =>
@@ -135,6 +136,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
   // Edit profile form state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isUploadingCv, setIsUploadingCv] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isBioExpanded, setIsBioExpanded] = useState(false);
 
@@ -346,6 +348,24 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
       alert('Failed to upload photo');
     } finally {
       setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleCvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingCv(true);
+    try {
+      const formData = new FormData();
+      formData.append('cv', file);
+      await api.post('/external-jobs/user/cv', formData);
+      await refreshUser();
+      alert(i18n.language === 'fr' ? 'CV enregistrÃ© dans votre profil.' : 'CV saved to your profile.');
+    } catch (err: any) {
+      alert(err.response?.data?.message || (i18n.language === 'fr' ? 'Impossible d\'importer le CV.' : 'Unable to upload your CV.'));
+    } finally {
+      setIsUploadingCv(false);
+      e.target.value = '';
     }
   };
 
@@ -870,6 +890,31 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
         </section>
 
         {/* ── 4. PORTFOLIO SECTION ── */}
+        <section className="upwork-panel-section">
+          <div className="upwork-section-header-row">
+            <div>
+              <h3 className="upwork-section-heading">{i18n.language === 'fr' ? 'CV professionnel' : 'Professional CV'}</h3>
+              <p className="upwork-section-caption" style={{ margin: '4px 0 0' }}>
+                {(user as any)?.cvName
+                  ? (i18n.language === 'fr' ? `${(user as any).cvName} enregistrÃ©. Vous choisissez quand le joindre.` : `${(user as any).cvName} saved. You choose when to attach it.`)
+                  : (i18n.language === 'fr' ? 'Ajoutez un CV Ã  votre profil. Il ne sera jamais joint automatiquement.' : 'Keep a CV in your profile. It is never attached automatically.')}
+              </p>
+            </div>
+            <button className="upwork-action-circle" onClick={() => cvInputRef.current?.click()} title={i18n.language === 'fr' ? 'Importer un CV' : 'Upload CV'}>
+              {isUploadingCv ? <span className="animate-spin">â³</span> : <PlusIcon />}
+            </button>
+          </div>
+          <input ref={cvInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.rtf,image/*" style={{ display: 'none' }} onChange={handleCvUpload} />
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '12px' }}>
+            <button className="upwork-btn-outline" onClick={() => cvInputRef.current?.click()} disabled={isUploadingCv}>
+              {isUploadingCv ? (i18n.language === 'fr' ? 'Importation...' : 'Uploading...') : ((user as any)?.cvName ? (i18n.language === 'fr' ? 'Remplacer le CV' : 'Replace CV') : (i18n.language === 'fr' ? 'Importer un CV' : 'Upload CV'))}
+            </button>
+            <button className="upwork-btn-text" disabled title={i18n.language === 'fr' ? 'BientÃ´t disponible' : 'Coming soon'}>
+              {i18n.language === 'fr' ? 'CrÃ©er un CV â€” bientÃ´t disponible' : 'Create a CV — coming soon'}
+            </button>
+          </div>
+        </section>
+
         <section className="upwork-panel-section">
           <div className="upwork-section-header-row">
             <h3 className="upwork-section-heading">{i18n.language === 'fr' ? 'Portfolio' : 'Portfolio'}</h3>
@@ -1836,7 +1881,7 @@ export default function ProviderProfile({ setActiveTab, setSelectedProject }: Pr
                   rel="noopener noreferrer"
                   className="text-xs text-teal-600 font-bold block"
                 >
-                  🔗 View External Link →
+                  <Icon name="briefcase" /> View External Link →
                 </a>
               )}
             </div>

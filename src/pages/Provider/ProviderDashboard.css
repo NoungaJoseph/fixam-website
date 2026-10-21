@@ -28,6 +28,28 @@
 }
 
 /* DARK HERO BANNER */
+.provider-billboard {
+  position: relative;
+  min-height: 360px;
+  overflow: hidden;
+  border-radius: 22px;
+  background-color: #06213e;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 14px 30px rgba(6, 33, 62, .14);
+  transition: background-image .45s ease;
+}
+.provider-billboard-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,20,47,.9) 0%, rgba(3,20,47,.42) 55%, rgba(3,20,47,.15) 100%); }
+.provider-billboard-copy { position: relative; z-index: 1; max-width: 570px; padding: 52px 48px; color: #fff; }
+.provider-billboard-tag { display: inline-block; margin-bottom: 14px; color: #99f6e4; font-size: .7rem; line-height: 1; letter-spacing: .14em; font-weight: 900; }
+.provider-billboard h2 { max-width: 540px; margin: 0; color: #fff; font-size: clamp(2rem, 3.3vw, 3.1rem); line-height: 1.04; letter-spacing: -.045em; font-weight: 900; }
+.provider-billboard p { max-width: 440px; margin: 16px 0 0; color: #dce7f2; font-size: 1rem; line-height: 1.55; }
+.provider-billboard-action { display: inline-flex; align-items: center; gap: 9px; margin-top: 25px; padding: 12px 16px; border: 0; border-radius: 10px; background: #e6fffa; color: #06213e; font-weight: 850; cursor: pointer; transition: transform .2s ease, background .2s ease; }
+.provider-billboard-action:hover { transform: translateY(-2px); background: #fff; }
+.provider-billboard-action span { font-size: 1.2rem; line-height: .8; }
+.provider-billboard-dots { position: absolute; z-index: 2; display: flex; gap: 7px; right: 28px; bottom: 26px; }
+.provider-billboard-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 20px; background: rgba(255,255,255,.5); cursor: pointer; transition: width .2s ease, background .2s ease; }
+.provider-billboard-dots button.active { width: 25px; background: #99f6e4; }
 .upwork-hero-banner {
   background: #181818;
   border-radius: 16px;
@@ -130,6 +152,19 @@
 /* SEARCH ROW */
 .upwork-search-row {
   margin-top: 0.25rem;
+}
+
+.dashboard-inline-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: .32rem;
+}
+.dashboard-empty-icon { display: block; margin-bottom: .5rem; color: #0d9488; }
+.dashboard-empty-icon .icon { width: 2.5rem; height: 2.5rem; font-size: 2.5rem; }
+.dashboard-inline-icon .icon,
+.upwork-alert-banner .alert-icon .icon {
+  color: #0d9488;
+  flex: 0 0 auto;
 }
 
 .upwork-search-box {
@@ -365,6 +400,7 @@
   font-size: 0.9rem;
   line-height: 1.55;
   margin: 0;
+  white-space: pre-wrap;
 }
 
 .upwork-card-description .more-link {
@@ -882,6 +918,26 @@
   animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Booking details are a destination page, not a dialog. */
+.booking-detail-page.upwork-modal-overlay {
+  position: static;
+  min-height: 100%;
+  background: transparent;
+  backdrop-filter: none;
+  display: block;
+  animation: none;
+}
+
+.booking-detail-page .booking-detail-surface.upwork-modal-drawer {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 100%;
+  box-shadow: none;
+  overflow: visible;
+  animation: none;
+}
+
 @keyframes slideLeft {
   from {
     transform: translateX(100%);
@@ -999,6 +1055,7 @@
   font-size: 0.94rem;
   line-height: 1.65;
   margin: 0;
+  white-space: pre-wrap;
 }
 
 .upwork-text-block.highlight {
@@ -1347,6 +1404,18 @@
     display: none !important;
   }
 
+  .provider-billboard {
+    min-height: 310px;
+    border-radius: 18px;
+    background-position: center;
+  }
+  .provider-billboard-shade { background: linear-gradient(180deg, rgba(3,20,47,.32) 0%, rgba(3,20,47,.88) 72%, rgba(3,20,47,.94) 100%); }
+  .provider-billboard-copy { padding: 28px 22px; display: flex; min-height: 310px; flex-direction: column; justify-content: flex-end; }
+  .provider-billboard h2 { font-size: 2rem; max-width: 95%; }
+  .provider-billboard p { font-size: .9rem; margin-top: 10px; }
+  .provider-billboard-action { margin-top: 17px; }
+  .provider-billboard-dots { right: 20px; bottom: 20px; }
+
   .upwork-dashboard-grid {
     display: flex !important;
     flex-direction: column !important;
@@ -1550,6 +1619,3 @@
   border-color: #10B981;
   color: #10B981;
 }
-
-
-

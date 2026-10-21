@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/api';
-import { getMediaUrl } from '../../App';
+import { Icon, getMediaUrl } from '../../App';
 import { useAuth } from '../../context/AuthContext';
 import ReviewModal from '../../components/ReviewModal';
 
@@ -134,11 +134,11 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
 
   const statusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'bg-green-50 text-green-700 border-green-200';
-      case 'IN_PROGRESS': case 'ASSIGNED': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'COMPLETED': return 'bg-teal-50 text-teal-700 border-teal-200';
+      case 'IN_PROGRESS': case 'ASSIGNED': return 'bg-teal-50 text-teal-700 border-teal-200';
       case 'ACCEPTED': case 'CONFIRMED': return 'bg-teal-50 text-teal-700 border-teal-200';
-      case 'PENDING': return 'bg-yellow-50 text-yellow-800 border-yellow-200';
-      case 'COUNTER_PROPOSED': return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'PENDING': return 'bg-teal-50 text-teal-700 border-teal-200';
+      case 'COUNTER_PROPOSED': return 'bg-teal-50 text-teal-700 border-teal-200';
       case 'CANCELLED': case 'REJECTED': return 'bg-red-50 text-red-700 border-red-200';
       default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
@@ -250,7 +250,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                   {/* Mid info & Actions */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-4 pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
                     <div className="text-xs text-gray-400 font-medium">
-                      📅 {new Date(job.createdAt).toLocaleDateString()}
+                      <Icon name="calendar" /> {new Date(job.createdAt).toLocaleDateString()}
                     </div>
                     <div className="flex items-center gap-2">
                       <button 
@@ -260,7 +260,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                           setActiveChatUser(clientName);
                         }}
                       >
-                        💬 Chat
+                        <Icon name="chat" /> Chat
                       </button>
                       {isInProgress && (
                         <button
@@ -281,9 +281,9 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                       {isCompleted && clientUserId && (
                         <button
                           onClick={() => setReviewTarget({ jobId: job.id, targetUserId: clientUserId, targetName: clientName })}
-                          className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm cursor-pointer"
+                          className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow-sm cursor-pointer"
                         >
-                          ⭐ Review
+                          <Icon name="star" /> Review
                         </button>
                       )}
                       {!isCompleted && job.status !== 'CANCELLED' && (
@@ -334,7 +334,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
             </div>
           ) : bookings.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-              <div className="text-4xl mb-3">📋</div>
+              <Icon name="briefcase" />
               <p className="text-gray-500 font-medium">
                 {i18n.language === 'fr' ? 'Aucune réservation trouvée.' : 'No bookings yet.'}
               </p>
@@ -392,8 +392,8 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                         {booking.status.replace(/_/g, ' ')}
                       </span>
                       {booking.urgencyLevel && booking.urgencyLevel !== 'NORMAL' && (
-                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider border bg-amber-50 text-amber-700 border-amber-200">
-                          ⚡ High Priority
+                        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-md uppercase tracking-wider border bg-teal-50 text-teal-700 border-teal-200">
+                          <Icon name="bell" /> High Priority
                         </span>
                       )}
                     </div>
@@ -402,15 +402,15 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                     </h3>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
                       <p className="text-xs text-gray-400">
-                        📅 {booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'}
+                        <Icon name="calendar" /> {booking.bookingDate ? new Date(booking.bookingDate).toLocaleDateString() : 'N/A'}
                         {booking.bookingTime && ` at ${booking.bookingTime}`}
                       </p>
                       {booking.location && (
-                        <p className="text-xs text-gray-400">📍 {booking.location}</p>
+                        <p className="text-xs text-gray-400"><Icon name="location" /> {booking.location}</p>
                       )}
                       {(booking.budget > 0) && (
                         <p className="text-xs text-gray-400">
-                          💰 <span className="text-[#14B8A6] font-bold">{Number(booking.budget).toLocaleString()} XAF</span>
+                          <Icon name="wallet" /> <span className="text-[#14B8A6] font-bold">{Number(booking.budget).toLocaleString()} XAF</span>
                         </p>
                       )}
                     </div>
@@ -435,7 +435,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                               <span>{i18n.language === 'fr' ? 'Acceptation...' : 'Accepting...'}</span>
                             </>
                           ) : (
-                            <span>✓ Accept (1 Coin)</span>
+                            <><Icon name="check" /> <span>Accept (1 Coin)</span></>
                           )}
                         </button>
                         <button
@@ -455,7 +455,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                       </>
                     )}
                     {isCountered && (
-                      <span className="text-[11px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-lg">
+                      <span className="text-[11px] font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-lg">
                         Counter sent - awaiting response
                       </span>
                     )}

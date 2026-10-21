@@ -464,6 +464,9 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess, isFr = fal
                         padding: '0.7rem 1rem', fontSize: '0.875rem', outline: 'none', resize: 'vertical'
                       }}
                     />
+                    <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '0.35rem 0 0' }}>
+                      {isFr ? 'Utilisez Entrée pour un nouveau paragraphe et • ou - pour une liste.' : 'Press Enter for a new paragraph; use • or - for a list.'}
+                    </p>
                   </div>
 
                   <MaterialsListEditor
@@ -1000,7 +1003,7 @@ function ReviewRow({ label, value }: { label: string; value: string | number }) 
   return (
     <div style={{ display: 'flex', gap: '1rem' }}>
       <span style={{ width: '130px', color: '#94A3B8', fontWeight: 600, flexShrink: 0 }}>{label}</span>
-      <span style={{ color: '#334155', fontWeight: 600 }}>{String(value)}</span>
+      <span style={{ color: '#334155', fontWeight: 600, whiteSpace: 'pre-wrap' }}>{String(value)}</span>
     </div>
   );
 }

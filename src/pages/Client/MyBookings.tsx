@@ -55,7 +55,7 @@ export default function MyBookings({
           </div>
         ) : (!clientBookings || clientBookings.length === 0) ? (
           <div style={{ textAlign: 'center', padding: '3.5rem 1rem', background: '#FFFFFF', borderRadius: '14px', border: '1px solid #E2E8F0', marginTop: '1rem' }}>
-            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📅</div>
+            <div className="booking-empty-symbol"><Icon name="calendar" /></div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.4rem' }}>No Bookings Yet</h3>
             <p style={{ fontSize: '0.875rem', color: '#64748B', maxWidth: '380px', margin: '0 auto' }}>When you book a verified provider directly, your contracts and booking statuses will appear here.</p>
           </div>
@@ -124,7 +124,7 @@ export default function MyBookings({
                       if (setSelectedBooking) setSelectedBooking(bk);
                       setActiveTab('Booking Details');
                     }}>
-                      💡 Review Counter
+                      <Icon name="settings" /> Review revised quote
                     </button>
                   )}
                   {bk.status !== 'CANCELLED' && bkStatus !== 'CANCELLED' && (
@@ -143,7 +143,7 @@ export default function MyBookings({
                       const targetUserId = bk.provider?.id || bk.provider?.userId || bk.providerId;
                       setReviewTarget({ jobId: bk.id || bk._id, targetUserId, targetName: bkProvider });
                     }}>
-                      ⭐ Review
+                      <Icon name="star" /> Review
                     </button>
                   )}
                   {bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED' && (

@@ -367,7 +367,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
         <div className="projects-list-view">
           {myProjects.length === 0 ? (
             <div className="empty-state-card">
-              <span className="empty-icon">📁</span>
+              <span className="empty-icon"><Icon name="briefcase" /></span>
               <h3>No Projects Published Yet</h3>
               <p>Create project gig packages with price tiers to present your work and services in detail to potential clients.</p>
               <button className="btn-primary-pill" onClick={() => setViewMode('FORM')}>
@@ -382,7 +382,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
                     {project.imageUrl ? (
                       <img src={getMediaUrl(project.imageUrl)} alt={project.title} />
                     ) : (
-                      <div className="placeholder-preview">👨‍🔧 Fixam Portfolio</div>
+                      <div className="placeholder-preview"><Icon name="briefcase" /> Fixam Portfolio</div>
                     )}
                     <span className="gig-badge-category">{project.category}</span>
                   </div>
@@ -536,7 +536,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
                       {/* Existing Videos */}
                       {existingVideos.map((vid, idx) => (
                         <div className="preview-media-item video" key={`ext-vid-${idx}`}>
-                          <div className="video-thumb-sim">🎥 Video #{idx + 1}</div>
+                          <div className="video-thumb-sim"><span className="material-symbols-rounded">videocam</span> Video #{idx + 1}</div>
                           <button
                             type="button"
                             className="remove-preview-btn"
@@ -550,7 +550,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
                       {/* Local Videos */}
                       {localVideoFiles.map((file, idx) => (
                         <div className="preview-media-item video local" key={`loc-vid-${idx}`}>
-                          <div className="video-thumb-sim">🎥 {file.name.slice(0, 10)}...</div>
+                          <div className="video-thumb-sim"><span className="material-symbols-rounded">videocam</span> {file.name.slice(0, 10)}...</div>
                           <button
                             type="button"
                             className="remove-preview-btn"
@@ -736,7 +736,7 @@ export default function PostProject({ setActiveTab }: PostProjectProps) {
           {/* Submission Row */}
           {isUploading && (
             <div className="form-upload-status-indicator">
-              <span className="spinner">🌀</span>
+              <span className="spinner material-symbols-rounded">progress_activity</span>
               <span>{uploadProgress}</span>
             </div>
           )}

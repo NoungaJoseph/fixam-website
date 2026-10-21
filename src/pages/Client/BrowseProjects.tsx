@@ -214,7 +214,7 @@ export default function BrowseProjects({
       </div>
 
       {/* Search & Category Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-gray-200/80 shadow-sm mb-8 space-y-4">
+      <div className="border-y border-gray-200 py-4 mb-8 space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -226,14 +226,14 @@ export default function BrowseProjects({
               placeholder={isFr ? 'Rechercher par mot-clé, projet ou artisan...' : 'Search projects, skills, or specialist name...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:border-teal-500 focus:bg-white transition"
+              className="w-full pl-10 pr-4 py-2.5 bg-transparent border-0 border-b border-gray-300 rounded-none text-sm text-gray-800 focus:outline-none focus:border-teal-500 transition"
             />
             {searchQuery && (
               <button 
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600"
                 onClick={() => setSearchQuery('')}
               >
-                ✕
+                <Icon name="x" />
               </button>
             )}
           </div>
@@ -246,7 +246,7 @@ export default function BrowseProjects({
             <select
               value={sortBy}
               onChange={(e: any) => setSortBy(e.target.value)}
-              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-semibold text-gray-700 focus:outline-none focus:border-teal-500 cursor-pointer"
+              className="bg-transparent border-0 border-b border-gray-300 rounded-none px-3 py-2 text-xs font-semibold text-gray-700 focus:outline-none focus:border-teal-500 cursor-pointer"
             >
               <option value="featured">{isFr ? 'Recommandés' : 'Recommended'}</option>
               <option value="price_low">{isFr ? 'Prix : Moins cher' : 'Price: Low to High'}</option>
@@ -299,7 +299,7 @@ export default function BrowseProjects({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-7 gap-y-10">
           {filteredProjects.map((project, idx) => {
             const isFav = favoriteProjectIds.includes(project.id);
             const priceDisplay = project.price ? `XAF ${Number(project.price).toLocaleString()}` : (isFr ? 'Sur devis' : 'Custom quote');
@@ -309,11 +309,11 @@ export default function BrowseProjects({
             return (
               <div
                 key={project.id || idx}
-                className="bg-white rounded-2xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group cursor-pointer"
+                className="bg-transparent border-0 shadow-none transition-all duration-300 flex flex-col overflow-visible group cursor-pointer"
                 onClick={() => setSelectedProject(project)}
               >
                 {/* Project Image & Badges */}
-                <div className="relative w-full h-48 bg-gray-100 overflow-hidden">
+                <div className="relative w-full h-52 bg-gray-100 overflow-hidden rounded-xl">
                   <img
                     src={project.imageUrl || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&auto=format&fit=crop&q=80'}
                     alt={project.title}
@@ -331,7 +331,7 @@ export default function BrowseProjects({
                   {/* Video indicator badge */}
                   {project.video && (
                     <span className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
-                      ▶ Video Demo
+                      <Icon name="star" /> Video Demo
                     </span>
                   )}
 
@@ -355,7 +355,7 @@ export default function BrowseProjects({
                 </div>
 
                 {/* Project Card Content */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
+                <div className="pt-4 flex-1 flex flex-col justify-between">
                   <div>
                     <h3 className="font-bold text-gray-900 text-base group-hover:text-teal-600 transition-colors line-clamp-1 mb-1">
                       {project.title}

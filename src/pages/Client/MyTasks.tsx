@@ -184,7 +184,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                     </button>
                   )}
                   {isCompleted && (
-                    <button className="btn-view-offers" style={{ backgroundColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
+                    <button className="btn-view-offers" onClick={(e) => {
                       e.stopPropagation();
                       const assignedPro = tk.assignments?.[0]?.provider?.user || tk.assignedTo || {};
                       const targetUserId = assignedPro.id || assignedPro.userId || tk.assignedProviderId;
@@ -195,7 +195,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                       }
                       setReviewTarget({ jobId: tkId, targetUserId, targetName });
                     }}>
-                      ⭐ Review
+                      <Icon name="star" /> Review
                     </button>
                   )}
                   {isRejected && (

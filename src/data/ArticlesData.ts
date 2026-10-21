@@ -98,7 +98,7 @@ export const articlesData: ArticleItem[] = [
         checklistEn: [
           'Always demand an itemized breakdown of labor vs materials prior to job commencement.',
           'Verify that replacement parts include genuine manufacturer warranty tags.',
-          'Utilize digital escrow or milestone approvals before final payment release.'
+          'Agree the scope, price, and direct payment method with the provider before work begins.'
         ],
         checklistFr: [
           'Exigez systématiquement un devis distinguant clairement la main-d\'œuvre des fournitures.',

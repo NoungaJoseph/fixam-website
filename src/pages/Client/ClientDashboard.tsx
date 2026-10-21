@@ -175,7 +175,7 @@ export default function ClientDashboard({
       <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            {getGreeting()}, {user?.firstName || (i18n.language === 'fr' ? 'Utilisateur' : 'User')} ! 👋
+            {getGreeting()}, {user?.firstName || (i18n.language === 'fr' ? 'Utilisateur' : 'User')}
           </h1>
           <p className="text-sm text-gray-500">
             {i18n.language === 'fr' ? 'Voici ce qui se passe sur votre compte aujourd\'hui.' : 'Here\'s what\'s happening with your account today.'}
@@ -189,12 +189,12 @@ export default function ClientDashboard({
 
       {/* Post Job Hero Section */}
       <div className="grid md:grid-cols-2 gap-5 mb-8">
-        <div className="bg-orange-50/50 border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
+        <div className="bg-white border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
           <div>
             <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job'}</p>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-md bg-orange-100 flex items-center justify-center">
-                <span className="text-orange-600"><Icon name="briefcase" /></span>
+              <div className="w-8 h-8 rounded-md bg-teal-50 flex items-center justify-center">
+                <span className="text-[#0D9488]"><Icon name="briefcase" /></span>
               </div>
               <span className="text-sm font-bold text-gray-800">{i18n.language === 'fr' ? 'Nouvelle mission' : 'New Job'}</span>
             </div>
@@ -304,7 +304,10 @@ export default function ClientDashboard({
       {portfolioProjects.length > 0 && (
         <div className="mb-10 relative group">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Projects</h2>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[.14em] text-[#D95E57]">Real work from Fixam professionals</p>
+              <h2 className="mt-1 text-xl font-bold text-gray-800">See experts in action</h2>
+            </div>
             <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Browse Projects')}>
               See All
             </button>
@@ -427,7 +430,7 @@ export default function ClientDashboard({
       <div className="mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <span className="text-xl">🎯</span>
+            <Icon name="briefcase" />
             <h2 className="text-xl font-bold text-gray-800">
               {i18n.language === 'fr' ? 'Recommandé pour vous' : 'Recommended for You'}
             </h2>
@@ -441,7 +444,7 @@ export default function ClientDashboard({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {activePros.slice(0, 4).map((pro, idx) => {
             const roleArray = pro.role ? pro.role.split(',').map((s: string) => s.trim()) : [];
             const displayRole = roleArray.length > 0 ? roleArray[0] : (i18n.language === 'fr' ? 'Prestataire' : 'Service Provider');
@@ -456,16 +459,16 @@ export default function ClientDashboard({
 
             return (
               <div 
-                className="flex flex-col items-center text-center group cursor-pointer bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all p-4 relative" 
+                className="flex flex-col items-start gap-4 group cursor-pointer bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all relative" 
                 key={idx} 
                 onClick={() => { setSelectedProvider(pro); setActiveTab('Provider Profile'); }}
               >
-                <div className="relative mb-3">
+                <div className="relative flex items-center gap-3 w-full">
                   <UserAvatar 
                     uri={rawAvatar} 
                     name={pro.name || 'Provider'} 
-                    size={88} 
-                    className="shadow-inner group-hover:ring-4 ring-teal-50 transition-all" 
+                    size={58} 
+                    className="group-hover:ring-4 ring-teal-50 transition-all" 
                   />
                   <button 
                     type="button"
@@ -475,12 +478,13 @@ export default function ClientDashboard({
                     <Icon name="star" />
                   </button>
                 </div>
-                <h4 className="text-[14px] sm:text-[15px] font-bold text-gray-800 mb-0.5 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
-                <span className="block text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-gray-500 mb-2 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
-                <div className="flex items-center justify-center gap-1 text-xs bg-orange-50 px-2.5 py-1 rounded-full text-[#F59E0B] font-semibold mt-auto">
-                  <Icon name="star" />
-                  <span className="font-bold">{pro.rating || '5.0'}</span>
-                  <span className="text-orange-400 text-[10px] ml-0.5">({pro.originalData?.reviewsCount || 0})</span>
+                <div className="min-w-0 text-left">
+                  <h4 className="text-[14px] sm:text-[15px] font-bold text-gray-800 mb-0.5 group-hover:text-teal-600 transition-colors line-clamp-1 w-full">{pro.name || 'Provider'}</h4>
+                </div>
+                <span className="block text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-gray-500 -mt-2 line-clamp-1 w-full" title={displayRole}>{displayRole}</span>
+                <div className="w-full pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-1 text-[#0D9488] font-semibold"><Icon name="star" /><strong>{pro.rating || '5.0'}</strong><span className="text-teal-600">({pro.originalData?.reviewsCount || 0})</span></span>
+                  <span className="text-gray-500">View profile</span>
                 </div>
               </div>
             );
@@ -492,7 +496,7 @@ export default function ClientDashboard({
       <div className="mb-6 w-full pb-16">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xl">📅</span>
+            <Icon name="calendar" />
             <h2 className="text-xl font-bold text-gray-800">Your Bookings</h2>
           </div>
           <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('My Bookings')}>

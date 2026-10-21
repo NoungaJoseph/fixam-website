@@ -212,7 +212,7 @@ export default function SavedProviders({
           <p style={{ color: '#64748B' }}>Loading saved providers...</p>
         ) : savedProsState.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748B' }}>
-            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>⭐</span>
+            <Icon name="heart" />
             <p style={{ fontSize: '1rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>No saved providers yet</p>
             <p style={{ fontSize: '0.88rem', marginBottom: '1.5rem' }}>Explore service providers and click the heart or star icon to save them for quick access.</p>
             <button className="btn-card-primary" onClick={() => setActiveTab('Find Services')}>Explore Providers</button>
@@ -274,7 +274,7 @@ export default function SavedProviders({
       ) : (
         favoriteProjects.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748B' }}>
-            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>💼</span>
+            <Icon name="briefcase" />
             <p style={{ fontSize: '1rem', fontWeight: 600, color: '#334155', marginBottom: '0.5rem' }}>No saved projects yet</p>
             <p style={{ fontSize: '0.88rem', marginBottom: '1.5rem' }}>Explore projects and click the heart icon on any project to save it here.</p>
             <button className="btn-card-primary" onClick={() => setActiveTab('Dashboard')}>Explore Projects</button>

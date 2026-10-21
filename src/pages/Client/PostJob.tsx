@@ -76,6 +76,13 @@ const deriveCategoryFromTitle = (title: string) => {
   return { value: 'general', label: 'General Service', fr: 'Service général', icon: '🛠️' };
 };
 
+const categorySymbol = (category: string) => ({
+  plumbing: 'plumbing', electrical: 'bolt', cleaning: 'cleaning_services', painting: 'format_paint',
+  carpentry: 'carpenter', moving: 'local_shipping', gardening: 'yard', appliance: 'kitchen',
+  cctv: 'videocam', tiling: 'grid_view', ac: 'ac_unit', it_support: 'computer',
+  tutoring: 'school', photography: 'photo_camera', general: 'handyman', other: 'handyman',
+}[category] || 'handyman');
+
 interface PostJobProps {
   setActiveTab: (tab: string) => void;
   setClientTasks?: (tasks: any[]) => void;
@@ -91,6 +98,12 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [showConfirmClose, setShowConfirmClose] = useState(false);
+  const [selectedSections, setSelectedSections] = useState<Record<string, boolean>>({
+    responsibilities: false, requirements: false, skills: false, benefits: false, instructions: false,
+  });
+  const [sectionContent, setSectionContent] = useState<Record<string, string>>({
+    responsibilities: '', requirements: '', skills: '', benefits: '', instructions: '',
+  });
 
   const [form, setForm] = useState({
     category: '',
@@ -141,6 +154,13 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
     descriptionPlaceholder: isFr ? 'Décrivez précisément ce dont vous avez besoin...' : 'Describe specifically what needs to be done...',
     whatNeedsDone: isFr ? 'Ce qui doit être fait (optionnel)' : 'Key deliverables (Optional)',
     importantDetails: isFr ? 'Précisions & contraintes (optionnel)' : 'Special requirements & constraints (Optional)',
+    organize: isFr ? 'Organisez votre annonce' : 'Organize your job post',
+    organizeHint: isFr ? 'Cochez les sections utiles, puis ajoutez vos détails. Utilisez une ligne par point pour les listes.' : 'Select the sections that matter, then add your details. Use one line per point for lists.',
+    responsibilities: isFr ? 'Responsabilités / livrables' : 'Responsibilities / deliverables',
+    requirements: isFr ? 'Exigences' : 'Requirements',
+    skills: isFr ? 'Compétences recherchées' : 'Skills needed',
+    benefits: isFr ? 'Matériel ou avantages fournis' : 'Materials or benefits provided',
+    instructions: isFr ? 'Instructions supplémentaires' : 'Additional instructions',
     location: isFr ? 'Ville ou quartier' : 'Location / City',
     locationPlaceholder: isFr ? 'Ex: Douala, Akwa' : 'E.g. Douala, Akwa',
     budgetMin: isFr ? 'Budget minimum (XAF)' : 'Minimum Budget (XAF)',
@@ -242,6 +262,10 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
       };
       if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone.trim();
       if (form.importantDetails) payload.importantDetails = form.importantDetails.trim();
+      const details = Object.entries(selectedSections)
+        .filter(([key, enabled]) => enabled && sectionContent[key]?.trim())
+        .map(([key]) => ({ key, label: (t as any)[key], content: sectionContent[key].trim() }));
+      if (details.length) payload.details = details;
 
       const res = await api.post('/jobs', payload);
       if (res.data.success) {
@@ -333,7 +357,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
                     !form.isRemote ? 'border-teal-600 bg-teal-50/50' : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
                 >
-                  <div className="text-xl mb-1">📍</div>
+                  <span className="material-symbols-rounded text-teal-700 mb-1">location_on</span>
                   <div className={`text-sm font-bold ${!form.isRemote ? 'text-teal-900' : 'text-gray-700'}`}>{t.physicalLabel}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{t.physicalDesc}</div>
                 </button>
@@ -345,7 +369,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
                     form.isRemote ? 'border-teal-600 bg-teal-50/50' : 'border-gray-200 bg-white hover:border-gray-300'
                   }`}
                 >
-                  <div className="text-xl mb-1">💻</div>
+                  <span className="material-symbols-rounded text-teal-700 mb-1">language</span>
                   <div className={`text-sm font-bold ${form.isRemote ? 'text-teal-900' : 'text-gray-700'}`}>{t.remoteLabel}</div>
                   <div className="text-xs text-gray-500 mt-0.5">{t.remoteDesc}</div>
                 </button>
@@ -370,7 +394,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
             {form.title.trim().length >= 3 && (
               <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl flex items-center justify-between text-xs">
                 <span className="text-gray-600">
-                  {isFr ? 'Catégorie détectée :' : 'Detected Category:'} <strong className="text-teal-900 font-bold">{derivedCategoryObj.icon} {isFr ? derivedCategoryObj.fr : derivedCategoryObj.label}</strong>
+                  {isFr ? 'Catégorie détectée :' : 'Detected Category:'} <strong className="text-teal-900 font-bold inline-flex items-center gap-1"><span className="material-symbols-rounded text-base">{categorySymbol(derivedCategoryObj.value)}</span>{isFr ? derivedCategoryObj.fr : derivedCategoryObj.label}</strong>
                 </span>
                 <span className="text-teal-600 font-semibold">{isFr ? 'Automatique' : 'Auto-assigned'}</span>
               </div>
@@ -399,19 +423,58 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
                 rows={4}
                 className="w-full border border-gray-300 rounded-xl p-4 text-sm text-gray-800 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 outline-none transition"
               />
+              <p className="mt-1 text-xs text-gray-500">
+                {isFr ? 'Utilisez Entrée pour un nouveau paragraphe et commencez une ligne par • ou - pour une liste.' : 'Press Enter for a new paragraph. Start a line with • or - to make a list.'}
+              </p>
             </div>
 
-            {/* Deliverables / What Needs Done */}
+            {/* Legacy fields retained in source for existing-job compatibility; new posts use structured sections. */}
+            {false && <>
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">{t.whatNeedsDone}</label>
-              <input
-                type="text"
+              <textarea
                 value={form.whatNeedsDone}
                 onChange={e => update('whatNeedsDone', e.target.value)}
-                placeholder={isFr ? 'Ex: Remplacement du joint, test d\'étanchéité' : 'E.g. Faucet replacement, pipe leak test'}
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:border-teal-500 outline-none"
+                placeholder={isFr ? 'Ex: • Remplacer le joint\n• Tester l\'étanchéité' : 'E.g. • Replace the faucet\n• Test the pipe for leaks'}
+                rows={3}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:border-teal-500 outline-none resize-y"
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">{t.importantDetails}</label>
+              <textarea
+                value={form.importantDetails}
+                onChange={e => update('importantDetails', e.target.value)}
+                placeholder={isFr ? 'Ex: • Appelez avant d\'arriver\n• Apportez votre propre matériel' : 'E.g. • Call before arriving\n• Bring your own tools'}
+                rows={3}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:border-teal-500 outline-none resize-y"
+              />
+            </div>
+            </>}
+
+            <section className="border-y border-slate-200 py-5 space-y-4">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-900">{t.organize}</h3>
+                <p className="mt-1 text-xs leading-relaxed text-slate-500">{t.organizeHint}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(['responsibilities', 'requirements', 'skills', 'benefits', 'instructions'] as const).map(key => (
+                  <button key={key} type="button" onClick={() => setSelectedSections(current => ({ ...current, [key]: !current[key] }))}
+                    className={`rounded-full border px-3 py-2 text-xs font-bold transition ${selectedSections[key] ? 'border-teal-600 bg-teal-50 text-teal-800' : 'border-slate-200 bg-white text-slate-600 hover:border-teal-300'}`}>
+                    <span className="mr-1.5">{selectedSections[key] ? '✓' : '+'}</span>{(t as any)[key]}
+                  </button>
+                ))}
+              </div>
+              {(['responsibilities', 'requirements', 'skills', 'benefits', 'instructions'] as const).filter(key => selectedSections[key]).map(key => (
+                <div key={key}>
+                  <label className="mb-1 block text-sm font-bold text-slate-800">{(t as any)[key]}</label>
+                  <textarea value={sectionContent[key]} onChange={e => setSectionContent(current => ({ ...current, [key]: e.target.value }))}
+                    placeholder={isFr ? 'Ajoutez vos points ici, un par ligne si nécessaire.' : 'Add your points here, one per line when needed.'} rows={3}
+                    className="w-full resize-y border-0 border-b border-slate-300 bg-transparent px-0 py-3 text-sm text-slate-800 outline-none transition focus:border-teal-600" />
+                </div>
+              ))}
+            </section>
 
             {/* Materials List Editor */}
             <div className="pt-2">
@@ -599,7 +662,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
 
               <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                 <span className="text-xs font-bold text-gray-500 uppercase">{isFr ? 'Catégorie' : 'Category'}</span>
-                <span className="text-sm font-bold text-teal-700">{derivedCategoryObj.icon} {isFr ? derivedCategoryObj.fr : derivedCategoryObj.label}</span>
+                <span className="text-sm font-bold text-teal-700 inline-flex items-center gap-1"><span className="material-symbols-rounded text-base">{categorySymbol(derivedCategoryObj.value)}</span>{isFr ? derivedCategoryObj.fr : derivedCategoryObj.label}</span>
               </div>
 
               <div className="flex items-center justify-between border-b border-gray-200 pb-3">
@@ -621,8 +684,20 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
 
               <div className="pt-2">
                 <span className="text-xs font-bold text-gray-500 uppercase block mb-1">{isFr ? 'Description' : 'Description'}</span>
-                <p className="text-xs text-gray-700 leading-relaxed bg-white p-3 rounded-lg border border-gray-200">{form.description}</p>
+                <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap bg-white p-3 rounded-lg border border-gray-200">{form.description}</p>
               </div>
+              {form.whatNeedsDone && (
+                <div className="pt-2">
+                  <span className="text-xs font-bold text-gray-500 uppercase block mb-1">{t.whatNeedsDone}</span>
+                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap bg-white p-3 rounded-lg border border-gray-200">{form.whatNeedsDone}</p>
+                </div>
+              )}
+              {form.importantDetails && (
+                <div className="pt-2">
+                  <span className="text-xs font-bold text-gray-500 uppercase block mb-1">{t.importantDetails}</span>
+                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap bg-white p-3 rounded-lg border border-gray-200">{form.importantDetails}</p>
+                </div>
+              )}
             </div>
 
             {/* Premium Monetization & Delivery Options */}

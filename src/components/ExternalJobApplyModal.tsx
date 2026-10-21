@@ -60,19 +60,15 @@ export default function ExternalJobApplyModal({
     const name = (user as any)?.fullName || (user as any)?.name || '';
     const email = (user as any)?.email || '';
     const phone = (user as any)?.phone || '';
-    const existingCvUrl = (user as any)?.cvUrl || '';
-    const existingCvName = (user as any)?.cvName || '';
 
     setApplicantName(name);
     setApplicantEmail(email);
     setApplicantPhone(phone);
-    setCvName(existingCvName || (existingCvUrl ? 'Attached_Resume' : ''));
-    if (existingCvUrl && (existingCvUrl.includes('google.com') || existingCvUrl.includes('sheet') || !existingCvUrl.match(/\.(pdf|png|jpg|jpeg)$/i))) {
-      setCvLink(existingCvUrl);
-      setCvMode('link');
-    } else {
-      setCvLink(existingCvUrl);
-    }
+    // A profile CV is never automatically attached. The candidate chooses a
+    // file or a link for each individual application.
+    setCvName('');
+    setCvLink('');
+    setCvMode('file');
 
     // Auto-generate professional first-person draft
     const skills = (user as any)?.providerProfile?.skills?.join(', ') || (user as any)?.skills?.join(', ') || job.category || 'this field';

@@ -435,13 +435,13 @@ export default function FindServices({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             {findServicesSearch.trim() && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#F0FDFA', border: '1px solid #99F6E4', color: '#0D9488', padding: '4px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 600 }}>
-                🔍 "{findServicesSearch}"
+                <Icon name="search" /> "{findServicesSearch}"
                 <button type="button" onClick={() => setFindServicesSearch('')} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#0D9488', fontWeight: 800 }}>✕</button>
               </span>
             )}
             {findServicesCat !== 'All Categories' && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#F0FDFA', border: '1px solid #99F6E4', color: '#0D9488', padding: '4px 10px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 600 }}>
-                📁 {getCategoryLabel(findServicesCat)}
+                <Icon name="briefcase" /> {getCategoryLabel(findServicesCat)}
                 <button type="button" onClick={() => setFindServicesCat('All Categories')} style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: '#0D9488', fontWeight: 800 }}>✕</button>
               </span>
             )}
@@ -475,7 +475,7 @@ export default function FindServices({
 
           {sortedProviders.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 1.5rem', background: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', marginTop: '1.5rem' }}>
-              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔍</div>
+              <div className="fs-empty-symbol"><Icon name="search" /></div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
                 {i18n.language === 'fr' ? 'Aucun prestataire trouvé pour cette recherche' : 'No providers matched your search'}
               </h3>
@@ -502,7 +502,7 @@ export default function FindServices({
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-7 mt-4">
             {sortedProviders.map((p, idx) => {
               const fullName = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim() || 'Provider';
               const serviceRole = getCategoryLabel(p.services && p.services.length > 0 ? p.services[0] : (p.role || (i18n.language === 'fr' ? 'Prestataire de service' : 'Service Professional')));
@@ -521,25 +521,28 @@ export default function FindServices({
               const displayDesc = p.bio || p.desc || (i18n.language === 'fr' ? 'Prestataire professionnel prêt à vous aider pour vos besoins.' : 'Professional service provider ready to help you with your needs.');
 
               return (
-                <div key={idx} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full relative p-5">
-                  <div className="mb-4">
-                    <div className="mb-3">
-                      <UserAvatar uri={rawAvatar} name={fullName} size={64} radius={8} />
+                <div key={idx} className="bg-white border border-gray-200 rounded-2xl hover:border-[#14B8A6] hover:shadow-md transition-all flex flex-col h-full relative p-5">
+                  <div className="mb-4 flex gap-4">
+                    <div className="flex-shrink-0">
+                      <UserAvatar uri={rawAvatar} name={fullName} size={64} radius={999} />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-0.5 flex items-center gap-1">
-                      {fullName} {isVerified && <span className="text-[#14B8A6]"><Icon name="shield" /></span>}
-                    </h3>
-                    <p className="text-sm text-gray-500 mb-2">{serviceRole}</p>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 mb-0.5 flex items-center gap-1">
+                        {fullName} {isVerified && <span className="text-[#14B8A6]"><Icon name="shield" /></span>}
+                      </h3>
+                      <p className="text-sm text-gray-500 mb-2">{serviceRole}</p>
                     
                     <div className="flex items-center gap-2 text-xs text-gray-600 mb-3">
-                      <span className="flex items-center gap-1 text-[#F59E0B] font-medium"><Icon name="star" /> {displayRating}</span>
+                      <span className="flex items-center gap-1 text-[#14B8A6] font-medium"><Icon name="star" /> {displayRating}</span>
                       <span>({numReviews} {i18n.language === 'fr' ? 'avis' : 'reviews'})</span>
                       <span className="text-gray-300">•</span>
                       <span className="flex items-center gap-1"><Icon name="location" /> {displayLoc}</span>
                     </div>
 
-                    <p className="text-sm text-gray-700 line-clamp-2">{displayDesc}</p>
+                    </div>
                   </div>
+
+                  <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">{displayDesc}</p>
 
                   <div className="mt-auto border-t border-gray-100 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex flex-col">
@@ -552,13 +555,13 @@ export default function FindServices({
                     
                     <div className="flex items-center gap-2">
                       <button 
-                        className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold py-2 px-3 rounded transition-colors"
+                        className="bg-[#14B8A6] hover:bg-[#0F9788] text-white text-xs font-bold py-2 px-4 rounded-full transition-colors"
                         onClick={() => setSelectedProvider(p)}
                       >
                         {i18n.language === 'fr' ? 'Voir le profil' : 'View Profile'}
                       </button>
                       <button 
-                        className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 text-xs font-bold py-2 px-3 rounded transition-colors"
+                        className="bg-transparent hover:bg-teal-50 text-[#0F766E] border border-teal-200 text-xs font-bold py-2 px-4 rounded-full transition-colors"
                         onClick={() => setSelectedProvider(p)}
                       >
                         {i18n.language === 'fr' ? 'Réserver' : 'Book now'}

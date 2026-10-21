@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import { Icon } from '../../App';
 import './SubmitProposalPage.css';
 
 interface SubmitProposalPageProps {
@@ -175,7 +176,7 @@ export default function SubmitProposalPage({
       <div className="submit-proposal-container animate-fade-in">
         <div className="proposal-success-card">
           <div className="proposal-success-icon">✓</div>
-          <h2>{isFr ? '🎉 Proposition soumise avec succès !' : '🎉 Proposal Submitted Successfully!'}</h2>
+          <h2>{isFr ? 'Proposition soumise avec succès' : 'Proposal submitted successfully'}</h2>
           <p>
             {isFr
               ? `Votre proposition pour « ${job.title} » a été transmise au client. Vous recevrez une notification dès qu'il la consultera ou vous répondra.`
@@ -245,7 +246,7 @@ export default function SubmitProposalPage({
       {!localAvailable && (
         <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <strong style={{ color: '#9f1239', display: 'block', fontSize: '0.9rem' }}>🔴 {isFr ? 'Statut de disponibilité désactivé' : 'Availability Status is Off'}</strong>
+            <strong style={{ color: '#9f1239', display: 'block', fontSize: '0.9rem' }}><span className="material-symbols-rounded">error_outline</span> {isFr ? 'Statut de disponibilité désactivé' : 'Availability Status is Off'}</strong>
             <span style={{ color: '#be123c', fontSize: '0.82rem' }}>
               {isFr ? 'Activez votre badge de disponibilité pour que le client sache que vous êtes prêt à intervenir.' : 'Turn on your availability badge to show clients you are ready for work.'}
             </span>
@@ -272,9 +273,9 @@ export default function SubmitProposalPage({
           <div style={{ flex: 1, minWidth: '260px' }}>
             <h2 className="proposal-job-title">{job.title}</h2>
             <div className="proposal-job-badges">
-              <span className="proposal-badge proposal-badge-category">📂 {job.category || 'General'}</span>
-              <span className="proposal-badge proposal-badge-location">📍 {job.location || job.country || 'Cameroon'}</span>
-              {job.isRemote && <span className="proposal-badge" style={{ background: '#eff6ff', color: '#1d4ed8' }}>🌐 Remote</span>}
+              <span className="proposal-badge proposal-badge-category"><Icon name="briefcase" /> {job.category || 'General'}</span>
+              <span className="proposal-badge proposal-badge-location"><Icon name="location" /> {job.location || job.country || 'Cameroon'}</span>
+              {job.isRemote && <span className="proposal-badge" style={{ background: '#ecfdf5', color: '#0d9488' }}><span className="material-symbols-rounded">language</span> Remote</span>}
             </div>
           </div>
           <div className="proposal-job-budget-box">
@@ -348,7 +349,7 @@ export default function SubmitProposalPage({
               onChange={handleFileUpload}
               disabled={isUploadingFile}
             />
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📄</div>
+            <Icon name="briefcase" />
             <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>
               {isUploadingFile ? (isFr ? 'Téléversement en cours...' : 'Uploading attachment...') : (isFr ? 'Cliquez pour joindre un document ou une photo' : 'Click to attach PDF document or photo')}
             </strong>
@@ -361,7 +362,7 @@ export default function SubmitProposalPage({
             <div className="proposal-attachments-list">
               {proposalAttachments.map((att, idx) => (
                 <div key={idx} className="proposal-attachment-item">
-                  <span style={{ fontWeight: 600, color: '#334155' }}>📎 {att.name}</span>
+                  <span style={{ fontWeight: 600, color: '#334155' }}><span className="material-symbols-rounded">attach_file</span> {att.name}</span>
                   <button
                     type="button"
                     className="proposal-attachment-remove"
@@ -385,7 +386,7 @@ export default function SubmitProposalPage({
           {topBidder && (
             <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>🔥</span>
+                <span className="material-symbols-rounded">local_fire_department</span>
                 <span style={{ color: '#065f46' }}>
                   <strong>{isFr ? 'Meilleure enchère actuelle :' : 'Highest Boosted Bidder:'}</strong> {topBidder.name}
                 </span>
@@ -399,7 +400,7 @@ export default function SubmitProposalPage({
           <div className="proposal-boost-box">
             <div className="proposal-boost-info">
               <div className="proposal-boost-title">
-                <span>🚀</span>
+                <span className="material-symbols-rounded">rocket_launch</span>
                 <span>{isFr ? 'Enchère de visibilité' : 'Visibility Boost Coins'}</span>
               </div>
               <p className="proposal-boost-desc">

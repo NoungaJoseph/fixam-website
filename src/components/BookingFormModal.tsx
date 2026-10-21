@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './BookingFormModal.css';
 import { Icon } from '../App';
 import { MaterialsListEditor, MaterialItem } from './MaterialsListEditor';
+import { useTranslation } from 'react-i18next';
 
 interface BookingFormModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface BookingFormModalProps {
   providerService: string;
   providerImage?: string;
   basePrice?: string;
+  variant?: 'modal' | 'page';
 }
 
 export default function BookingFormModal({
@@ -20,13 +22,18 @@ export default function BookingFormModal({
   providerName,
   providerService,
   providerImage,
-  basePrice = '1 Coin'
+  basePrice = '1 Coin',
+  variant = 'modal'
 }: BookingFormModalProps) {
+  const { i18n } = useTranslation();
+  const isFr = i18n.language === 'fr';
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [location, setLocation] = useState('Nearby');
   const [duration, setDuration] = useState('1 Hour');
   const [budgetAmount, setBudgetAmount] = useState('');
+  const [budgetType, setBudgetType] = useState<'FIXED_BUDGET' | 'REQUEST_QUOTE'>('FIXED_BUDGET');
+  const [paymentPreference, setPaymentPreference] = useState<'CASH' | 'MOBILE_MONEY' | 'AGREE_WITH_PROVIDER'>('AGREE_WITH_PROVIDER');
   const [urgency, setUrgency] = useState<'NORMAL' | 'HIGH_PRIORITY'>('NORMAL');
   const [notes, setNotes] = useState('');
   const [materialsList, setMaterialsList] = useState<MaterialItem[]>([]);
@@ -49,7 +56,9 @@ export default function BookingFormModal({
         time,
         location,
         duration: duration || '1-2 Hours',
-        budget: budgetAmount ? Number(budgetAmount) : 0,
+        budget: budgetType === 'REQUEST_QUOTE' ? 0 : (budgetAmount ? Number(budgetAmount) : 0),
+        budgetType,
+        paymentPreference,
         urgency,
         notes,
         materialsList,
@@ -66,9 +75,11 @@ export default function BookingFormModal({
     }
   };
 
+  const isPage = variant === 'page';
+
   return (
-    <div className="modal-overlay">
-      <div className="booking-modal">
+    <div className={isPage ? 'booking-page-shell' : 'modal-overlay'}>
+      <div className={isPage ? 'booking-modal booking-page-surface' : 'booking-modal'}>
         <div className="booking-modal-header">
           <h3>Book {providerName}</h3>
           <button className="btn-close-modal" onClick={onClose}>
@@ -129,19 +140,39 @@ export default function BookingFormModal({
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Proposed Job Budget (FCFA / XAF)</label>
-            <input 
-              type="number" 
-              className="input-field" 
-              value={budgetAmount} 
-              onChange={(e) => setBudgetAmount(e.target.value)}
-              placeholder="e.g. 15000"
-              min="0"
-            />
-            <span style={{ fontSize: '0.75rem', color: '#64748B', marginTop: '4px', display: 'block' }}>
-              Specify your estimated pay for this job. You pay the provider directly upon job completion.
-            </span>
+          <div className="form-group booking-budget-section">
+            <label>{isFr ? 'Budget ou devis' : 'Budget or quote'}</label>
+            <div className="booking-choice-grid">
+              <button type="button" className={`booking-choice ${budgetType === 'FIXED_BUDGET' ? 'active' : ''}`} onClick={() => setBudgetType('FIXED_BUDGET')}>
+                <strong>{isFr ? 'Mon budget' : 'My budget'}</strong>
+                <span>{isFr ? 'Proposez un montant' : 'Set an amount'}</span>
+              </button>
+              <button type="button" className={`booking-choice ${budgetType === 'REQUEST_QUOTE' ? 'active' : ''}`} onClick={() => setBudgetType('REQUEST_QUOTE')}>
+                <strong>{isFr ? 'Demander un devis' : 'Request a quote'}</strong>
+                <span>{isFr ? 'Le prestataire vous répond' : 'The provider will respond'}</span>
+              </button>
+            </div>
+            {budgetType === 'FIXED_BUDGET' ? (
+              <input type="number" className="input-field" value={budgetAmount} onChange={(e) => setBudgetAmount(e.target.value)} placeholder={isFr ? 'Ex. 15 000' : 'e.g. 15000'} min="0" required />
+            ) : (
+              <p className="booking-field-note">{isFr ? 'Envoyez votre demande. Le prestataire pourra vous proposer un devis révisé à accepter ou refuser.' : 'Send your request. The provider can send a revised quote for you to accept or decline.'}</p>
+            )}
+          </div>
+
+          <div className="form-group booking-payment-section">
+            <label>{isFr ? 'Préférence de paiement' : 'Payment preference'}</label>
+            <div className="booking-choice-grid payment-grid">
+              {([
+                ['CASH', isFr ? 'Espèces' : 'Cash'],
+                ['MOBILE_MONEY', 'Mobile Money'],
+                ['AGREE_WITH_PROVIDER', isFr ? 'À convenir' : 'Agree with provider']
+              ] as const).map(([value, label]) => (
+                <button key={value} type="button" className={`booking-choice ${paymentPreference === value ? 'active' : ''}`} onClick={() => setPaymentPreference(value)}>
+                  <strong>{label}</strong>
+                </button>
+              ))}
+            </div>
+            <p className="booking-field-note">{isFr ? 'Fixam ne collecte ni ne conserve les paiements de service. Vous payez directement selon votre accord.' : 'Fixam does not collect or hold service payments. You pay the provider directly under your agreement.'}</p>
           </div>
 
           <div className="form-group">

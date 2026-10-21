@@ -150,7 +150,7 @@ export default function ProviderSupport({ setActiveTab, setActiveChatUser }: Pro
         {/* RIGHT: Ticket Submission Form */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">📧</span>
+            <Icon name="message" />
             <h3 className="text-lg font-bold text-gray-800">
               {i18n.language === 'fr' ? 'Soumettre un ticket d\'assistance' : 'Submit Support Ticket'}
             </h3>

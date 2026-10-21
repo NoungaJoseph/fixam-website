@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import SubmitProposalPage from './SubmitProposalPage';
 import ExternalJobApplyModal, { ExternalJobData } from '../../components/ExternalJobApplyModal';
+import ProviderJobDetailPage from './ProviderJobDetailPage';
 import './ProviderDashboard.css';
 
 interface ProviderDashboardProps {
@@ -46,6 +47,7 @@ type JobLead = {
   isExternal?: boolean;
   companyName?: string;
   salary?: string;
+  details?: Array<{ key: string; label: string; content: string }>;
 };
 
 const formatBudget = (job: JobLead) => {
@@ -67,6 +69,14 @@ const formatBudget = (job: JobLead) => {
 // Module-level persistent cache across tab navigation remounts
 let cachedJobs: JobLead[] = [];
 
+const PROVIDER_BILLBOARDS = [
+  { image: '/provider-billboard/show-work.jpg', tag: ['NEW OPPORTUNITIES', 'NOUVELLES OPPORTUNITÉS'], title: ['Find work that fits your skills', 'Trouvez des missions adaptées à vos compétences'], body: ['Explore verified jobs and grow your client base.', 'Explorez des missions vérifiées et développez votre clientèle.'], action: ['Explore jobs', 'Explorer les missions'], target: 'jobs' },
+  { image: '/provider-billboard/find-work.jpg', tag: ['YOUR PORTFOLIO', 'VOTRE PORTFOLIO'], title: ['Show your best work', 'Montrez votre meilleur travail'], body: ['Share completed jobs so clients can see your quality.', 'Partagez vos réalisations pour montrer votre savoir-faire.'], action: ['Post a project', 'Publier un projet'], target: 'Post a Project' },
+  { image: '/provider-billboard/profile.jpg', tag: ['BUILD TRUST', 'GAGNEZ EN CONFIANCE'], title: ['Complete your professional profile', 'Complétez votre profil professionnel'], body: ['A complete profile helps the right clients find you.', 'Un profil complet aide les bons clients à vous trouver.'], action: ['Complete profile', 'Compléter le profil'], target: 'My Profile' },
+  { image: '/provider-billboard/bookings.jpg', tag: ['STAY ORGANIZED', 'RESTEZ ORGANISÉ'], title: ['Keep your bookings on track', 'Gardez vos réservations sous contrôle'], body: ['Review upcoming work and respond to clients quickly.', 'Consultez vos missions et répondez rapidement aux clients.'], action: ['View bookings', 'Voir les réservations'], target: 'My Bookings' },
+  { image: '/provider-billboard/reputation.jpg', tag: ['YOUR REPUTATION', 'VOTRE RÉPUTATION'], title: ['Build trust with every job', 'Renforcez votre réputation à chaque mission'], body: ['Great service earns reviews that bring more opportunities.', 'Un excellent service apporte des avis et de nouvelles opportunités.'], action: ['View your stats', 'Voir mes statistiques'], target: 'My Stats' },
+];
+
 export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiveChatUser, setSelectedBooking, initialSearch }: ProviderDashboardProps) {
   const { user, refreshUser, updateUser } = useAuth();
   const { t, i18n } = useTranslation();
@@ -86,6 +96,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
   const [dislikedJobIds, setDislikedJobIds] = useState<string[]>([]);
   const [expandedJobIds, setExpandedJobIds] = useState<Record<string, boolean>>({});
+  const [billboardIndex, setBillboardIndex] = useState(0);
 
   // Proposal submission states
   const [submittingProposalJob, setSubmittingProposalJob] = useState<JobLead | null>(null);
@@ -97,6 +108,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [isUploadingProposalFile, setIsUploadingProposalFile] = useState<boolean>(false);
   const [isSubmittingProposal, setIsSubmittingProposal] = useState<boolean>(false);
   const [externalJobToApply, setExternalJobToApply] = useState<ExternalJobData | null>(null);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setBillboardIndex((current) => (current + 1) % PROVIDER_BILLBOARDS.length), 6000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const refreshWallet = async () => {
     try {
@@ -333,7 +349,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         let extPayload = extResponse.status === 'fulfilled' ? (extResponse.value.data?.data || []) : [];
 
         if (Array.isArray(payload) || Array.isArray(extPayload)) {
-          let merged = [...(Array.isArray(payload) ? payload : []), ...(Array.isArray(extPayload) ? extPayload : [])];
+          let merged = Array.from(new Map([...(Array.isArray(payload) ? payload : []), ...(Array.isArray(extPayload) ? extPayload : [])].map((job: JobLead) => [job.id, job])).values()) as JobLead[];
           if (appliedVerifiedOnly) {
             merged = merged.filter((j: JobLead) => j.clientVerified || j.isExternal);
           }
@@ -474,7 +490,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         return next;
       });
 
-      const successMsg = response.data?.message || (boostCoins > 0 ? `🚀 Boosted Proposal Sent Successfully! (${boostCoins} boost coins used)` : '🎉 Proposal Sent Successfully (FREE)!');
+      const successMsg = response.data?.message || (boostCoins > 0 ? `Boosted proposal sent successfully (${boostCoins} boost coins used).` : 'Proposal sent successfully.');
       alert(successMsg);
 
       setProposalModalJob(null);
@@ -561,6 +577,26 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
     );
   }
 
+  const detailPage = (() => {
+    const jobForDetail = selectedJob;
+    if (!jobForDetail) return null;
+    return (
+      <ProviderJobDetailPage
+        job={jobForDetail}
+        onBack={() => setSelectedJob(null)}
+        onApply={() => {
+          if (jobForDetail.isExternal) {
+            setExternalJobToApply(jobForDetail as ExternalJobData);
+            setSelectedJob(null);
+          } else {
+            openProposalModal(jobForDetail);
+          }
+        }}
+      />
+    );
+  })();
+  if (detailPage) return detailPage;
+
   return (
     <div className="upwork-dashboard-container animate-fade-in">
       {/* 2-COLUMN DASHBOARD GRID */}
@@ -570,7 +606,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         <div className="upwork-main-column">
 
           {/* DARK HERO BANNER */}
-          <div className="upwork-hero-banner">
+          {false && <div className="upwork-hero-banner">
             <div className="upwork-hero-content">
               <span className="upwork-hero-tag">{i18n.language === 'fr' ? 'Contrats directs' : 'Direct Contracts'}</span>
               <h2>
@@ -595,11 +631,32 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
             </div>
           </div>
 
+          }
+
+          <section className="provider-billboard" style={{ backgroundImage: `url(${PROVIDER_BILLBOARDS[billboardIndex].image})` }}>
+            <div className="provider-billboard-shade" />
+            <div className="provider-billboard-copy">
+              <span className="provider-billboard-tag">{PROVIDER_BILLBOARDS[billboardIndex].tag[i18n.language === 'fr' ? 1 : 0]}</span>
+              <h2>{PROVIDER_BILLBOARDS[billboardIndex].title[i18n.language === 'fr' ? 1 : 0]}</h2>
+              <p>{PROVIDER_BILLBOARDS[billboardIndex].body[i18n.language === 'fr' ? 1 : 0]}</p>
+              <button className="provider-billboard-action" onClick={() => {
+                const target = PROVIDER_BILLBOARDS[billboardIndex].target;
+                if (target === 'jobs') document.querySelector('.upwork-jobs-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                else setActiveTab(target);
+              }}>
+                {PROVIDER_BILLBOARDS[billboardIndex].action[i18n.language === 'fr' ? 1 : 0]} <span>→</span>
+              </button>
+            </div>
+            <div className="provider-billboard-dots" aria-label="Billboard slides">
+              {PROVIDER_BILLBOARDS.map((slide, index) => <button key={slide.image} className={index === billboardIndex ? 'active' : ''} onClick={() => setBillboardIndex(index)} aria-label={`Slide ${index + 1}`} />)}
+            </div>
+          </section>
+
           {/* LIGHT MINT ALERT BANNER */}
           {isAlertVisible && (
             <div className="upwork-alert-banner">
               <div className="alert-text-group">
-                <span className="alert-icon">🎓</span>
+                <span className="alert-icon"><Icon name="briefcase" /></span>
                 <p>
                   {i18n.language === 'fr'
                     ? 'Explorez les parcours professionnels et certifications sur Fixam Career Hub pour augmenter vos revenus et décrocher des contrats au Cameroun.'
@@ -729,7 +786,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>📅</span>
+                    <Icon name="calendar" />
                     <div>
                       <strong style={{ color: '#065F46', fontSize: '0.95rem', display: 'block' }}>
                         {i18n.language === 'fr' 
@@ -764,7 +821,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {activeFeedTab === 'direct_bookings' ? (
                 providerBookings.length === 0 ? (
                   <div className="feed-empty-state">
-                    <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>📅</span>
+                    <span className="dashboard-empty-icon"><Icon name="calendar" /></span>
                     <p style={{ fontWeight: 600, color: '#334155' }}>No direct booking requests yet</p>
                     <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '400px', margin: '0.5rem auto' }}>
                       When clients book your services directly from your profile, their booking requests will appear here for you to accept, manage, or complete.
@@ -788,7 +845,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                             <div>
                               <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#0F172A' }}>{clientName}</h4>
                               <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
-                                📅 {formattedDate} • ⏰ {formattedTime}
+                                {formattedDate} • {formattedTime}
                               </span>
                             </div>
                           </div>
@@ -880,7 +937,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                               setActiveTab('Booking Details');
                             }}
                           >
-                            {i18n.language === 'fr' ? '📋 Voir la réservation' : '📋 View Booking Details'}
+                            {i18n.language === 'fr' ? 'Voir la réservation' : 'View Booking Details'}
                           </button>
                         </div>
                       </article>
@@ -941,12 +998,12 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                             </span>
                           )}
                           {job.isExternal ? (
-                            <span className="upwork-meta-pill" style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE', fontWeight: 800 }}>
-                              🌐 {i18n.language === 'fr' ? 'Opportunité Externe' : 'External Opportunity'} • {job.companyName}
+                            <span className="upwork-meta-pill" style={{ background: '#ECFDF5', color: '#0D9488', border: '1px solid #A7F3D0', fontWeight: 800 }}>
+                              {job.companyName || (i18n.language === 'fr' ? 'Entreprise vérifiée' : 'Verified company')}
                             </span>
                           ) : (
                             <span className="upwork-meta-pill" style={{ background: '#ECFDF5', color: '#047857', border: '1px solid #A7F3D0', fontWeight: 800 }}>
-                              ⚡ {i18n.language === 'fr' ? 'Mission Fixam' : 'Fixam Direct Job'}
+                              {job.category || (i18n.language === 'fr' ? 'Mission' : 'Job')}
                             </span>
                           )}
                           <span className="upwork-meta-pill">
@@ -954,7 +1011,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                           </span>
                           {(job.hasApplied || appliedJobIds.includes(job.id)) && (
                             <span className="upwork-meta-pill" style={{ background: '#F0FDF4', color: '#15803D', border: '1px solid #BBF7D0', fontWeight: 800 }}>
-                              ✓ {i18n.language === 'fr' ? 'Postulé' : 'Applied'} {(job.myBoostCoins || 0) > 0 ? `(🚀 +${job.myBoostCoins} Coins)` : ''}
+                              ✓ {i18n.language === 'fr' ? 'Postulé' : 'Applied'} {(job.myBoostCoins || 0) > 0 ? `(+${job.myBoostCoins} Coins)` : ''}
                             </span>
                           )}
                         </div>
@@ -1257,7 +1314,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 </span>
                 <span className="val text-xs font-bold text-slate-400">
                   {user?.providerProfile?.boostExpiresAt && new Date(user.providerProfile.boostExpiresAt) > new Date()
-                    ? (i18n.language === 'fr' ? 'Actif 🚀' : 'Active 🚀')
+                    ? (i18n.language === 'fr' ? 'Actif' : 'Active')
                     : (i18n.language === 'fr' ? 'Désactivé' : 'Off')}
                 </span>
               </div>
@@ -1266,7 +1323,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 onClick={() => setActiveTab('Boost Profile')}
                 title="Boost your profile"
               >
-                {i18n.language === 'fr' ? 'Booster 🚀' : 'Boost 🚀'}
+                {i18n.language === 'fr' ? 'Booster le profil' : 'Boost profile'}
               </button>
             </div>
           </div>
@@ -1540,7 +1597,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 <div className="upwork-meta-line">
                   <span>Posted {selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleDateString() : 'recently'}</span>
                   <span className="dot">•</span>
-                  <span>📍 {selectedJob.location || (selectedJob.isRemote ? 'Worldwide (Remote)' : 'On-Site')}</span>
+                  <span className="dashboard-inline-icon"><Icon name="location" />{selectedJob.location || (selectedJob.isRemote ? 'Worldwide (Remote)' : 'On-Site')}</span>
                 </div>
 
                 <div className="upwork-divider" />
@@ -1551,13 +1608,20 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   <p className="upwork-text-block">{selectedJob.description || 'Service task requested by client on Fixam.'}</p>
                 </div>
 
+                {selectedJob.isExternal && Array.isArray(selectedJob.details) && selectedJob.details.filter((detail) => detail.key !== 'description' && detail.content).map((detail) => (
+                  <div className="upwork-section" key={detail.key}>
+                    <h3>{detail.label}</h3>
+                    <p className="upwork-text-block">{detail.content}</p>
+                  </div>
+                ))}
+
                 {/* Deliverables / Scope */}
                 {(selectedJob.whatNeedsDone || selectedJob.taskScope) && (
                   <div className="upwork-section">
                     <h3>Deliverables</h3>
                     <div className="upwork-deliverables-list">
-                      {selectedJob.whatNeedsDone && <p>{selectedJob.whatNeedsDone}</p>}
-                      {selectedJob.taskScope && <p>{selectedJob.taskScope}</p>}
+                      {selectedJob.whatNeedsDone && <p className="upwork-text-block">{selectedJob.whatNeedsDone}</p>}
+                      {selectedJob.taskScope && <p className="upwork-text-block">{selectedJob.taskScope}</p>}
                     </div>
                   </div>
                 )}
@@ -1570,12 +1634,19 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   </div>
                 )}
 
+                {Array.isArray(selectedJob.details) && selectedJob.details.filter((detail) => detail?.content).map((detail, index) => (
+                  <div className="upwork-section" key={`${detail.key || 'detail'}-${index}`}>
+                    <h3>{detail.label}</h3>
+                    <p className="upwork-text-block whitespace-pre-wrap">{detail.content}</p>
+                  </div>
+                ))}
+
                 <div className="upwork-divider" />
 
                 {/* Price & Level Metrics Grid */}
                 <div className="upwork-metrics-row">
                   <div className="upwork-metric-box">
-                    <span className="metric-icon">🏷️</span>
+                    <span className="metric-icon"><Icon name="wallet" /></span>
                     <div>
                       <strong>{formatBudget(selectedJob)}</strong>
                       <small>{selectedJob.budgetMin || selectedJob.budgetMax ? 'Fixed-price' : 'Budget'}</small>
@@ -1583,7 +1654,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   </div>
 
                   <div className="upwork-metric-box">
-                    <span className="metric-icon">⚙️</span>
+                    <span className="metric-icon"><Icon name="settings" /></span>
                     <div>
                       <strong>{selectedJob.priority ? `${selectedJob.priority.toUpperCase()} Level` : 'Standard level'}</strong>
                       <small>Client requested quality service execution</small>
@@ -1651,7 +1722,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                 ) : (
                   <>
                     <div className="upwork-notice-box" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
-                      <span className="notice-icon">✨</span>
+                      <span className="notice-icon"><Icon name="check" /></span>
                       <p>
                         {i18n.language === 'fr'
                           ? 'La soumission de proposition pour cette mission est '
@@ -1666,7 +1737,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                         style={{ backgroundColor: '#2563EB', borderColor: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                         onClick={() => setExternalJobToApply(selectedJob as any)}
                       >
-                        <span>{i18n.language === 'fr' ? 'Postuler via Fixam' : 'Apply via Fixam'}</span>
+                        <span>{i18n.language === 'fr' ? 'Postuler maintenant' : 'Apply now'}</span>
                       </button>
                     ) : (
                       <button
@@ -1690,7 +1761,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     }
                   }}
                 >
-                  🔗 {i18n.language === 'fr' ? 'Partager cette mission' : 'Share Job'}
+                  <Icon name="message" /> {i18n.language === 'fr' ? 'Partager cette mission' : 'Share Job'}
                 </button>
 
                 <button
@@ -1729,8 +1800,8 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                     <span>Phone number verified</span>
                   </div>
                   <div className="client-meta-text">
-                    <p>📍 {selectedJob.country || selectedJob.location || 'Cameroon'}</p>
-                    {selectedJob.client?.fullName && <p>👤 {selectedJob.client.fullName}</p>}
+                    <p className="dashboard-inline-icon"><Icon name="location" />{selectedJob.country || selectedJob.location || 'Cameroon'}</p>
+                    {selectedJob.client?.fullName && <p className="dashboard-inline-icon"><Icon name="user" />{selectedJob.client.fullName}</p>}
                   </div>
                 </div>
 
@@ -1760,7 +1831,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {!isVerified && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex flex-col gap-2">
                   <div className="flex items-center gap-1.5 font-bold">
-                    <span>⚠️</span>
+                    <Icon name="shield" />
                     <span>Identity Verification Required</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
@@ -1784,7 +1855,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {!isAvailable && (
                 <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex flex-col gap-2">
                   <div className="flex items-center gap-1.5 font-bold">
-                    <span>🔴</span>
+                    <Icon name="x" />
                     <span>Availability Status is Off</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
@@ -1810,7 +1881,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {!hasEnoughCoins && (
                 <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-800 flex flex-col gap-2">
                   <div className="flex items-center gap-1.5 font-bold">
-                    <span>🪙</span>
+                    <Icon name="wallet" />
                     <span>Insufficient Fixam Coins</span>
                   </div>
                   <p className="text-[11px] leading-relaxed">
@@ -1834,7 +1905,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
               {topBidder && (
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-base">🔥</span>
+                    <Icon name="chart" />
                     <div>
                       <strong className="block font-bold">Highest Boosted Bidder:</strong>
                       <span>{topBidder.name}</span>
@@ -1894,7 +1965,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   <div className="mt-2 space-y-1.5">
                     {proposalAttachments.map((att, idx) => (
                       <div key={idx} className="flex items-center justify-between p-2 bg-slate-100 rounded-lg text-xs">
-                        <span className="truncate max-w-[280px] font-medium text-slate-700">📎 {att.name}</span>
+                        <span className="truncate max-w-[280px] font-medium text-slate-700"><Icon name="briefcase" /> {att.name}</span>
                         <button
                           type="button"
                           className="text-red-500 hover:text-red-700 font-bold ml-2 cursor-pointer border-none bg-transparent"

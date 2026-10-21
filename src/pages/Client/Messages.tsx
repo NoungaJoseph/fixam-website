@@ -1,6 +1,6 @@
 import './Messages.css';
 import React, { useState, useEffect, useRef } from 'react';
-import { images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
+import { Icon, images, getMediaUrl, DEFAULT_AVATAR } from '../../App';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -378,7 +378,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          const locationText = `📍 My Physical Location: https://maps.google.com/?q=${latitude},${longitude}`;
+          const locationText = `My physical location: https://maps.google.com/?q=${latitude},${longitude}`;
           handleSendMsg(undefined, locationText, 'LOCATION');
         },
         () => {
@@ -422,7 +422,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
               headers: { 'Content-Type': 'multipart/form-data' }
             });
             const url = uploadRes.data.url;
-            await handleSendMsg(undefined, `🎤 Voice Note (${formatRecordTime(recordDuration)})`, 'AUDIO', url);
+            await handleSendMsg(undefined, `Voice note (${formatRecordTime(recordDuration)})`, 'AUDIO', url);
           } catch (err) {
             console.error("Failed to upload audio message", err);
             alert("Failed to send voice note.");
@@ -713,7 +713,7 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                         href={`tel:${activeDetails.other?.phone || ''}`} 
                         style={{ background: '#14B8A6', color: '#fff', padding: '8px 14px', borderRadius: '20px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}
                       >
-                        📞 {isFr ? 'Appeler' : 'Call'}
+                        <Icon name="phone" /> {isFr ? 'Appeler' : 'Call'}
                       </a>
                     </div>
 
@@ -733,19 +733,19 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
                     {/* Progress Timeline */}
                     <div style={{ marginTop: '1.2rem', display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 10px' }}>
                       <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✓</div>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="check" /></div>
                         <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>{isFr ? 'Accepté' : 'Accepted'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🚗</div>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#14B8A6', color: '#fff', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="briefcase" /></div>
                         <span style={{ fontSize: '0.72rem', color: '#0F172A', fontWeight: 600 }}>{isFr ? 'En route' : 'En Route'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>📍</div>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="location" /></div>
                         <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{isFr ? 'Sur place' : 'On Site'}</span>
                       </div>
                       <div style={{ textAlign: 'center', flex: 1 }}>
-                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🏁</div>
+                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#E2E8F0', color: '#64748B', margin: '0 auto 4px auto', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon name="check" /></div>
                         <span style={{ fontSize: '0.72rem', color: '#64748B' }}>{isFr ? 'Terminé' : 'Done'}</span>
                       </div>
                     </div>
@@ -980,4 +980,3 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
     </div>
   );
 }
-

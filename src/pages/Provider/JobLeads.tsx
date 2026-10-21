@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { Icon } from '../../App';
 import ExternalJobApplyModal, { ExternalJobData } from '../../components/ExternalJobApplyModal';
 
 export default function JobLeads() {
@@ -16,7 +17,7 @@ export default function JobLeads() {
         ]);
         const direct = res.status === 'fulfilled' ? (res.value.data?.jobs || res.value.data?.data || []) : [];
         const external = extRes.status === 'fulfilled' ? (extRes.value.data?.data || []) : [];
-        setLeads([...direct, ...external]);
+        setLeads(Array.from(new Map([...direct, ...external].map(job => [job.id, job])).values()));
       } catch (err) {
         console.error("Failed to fetch available jobs", err);
       }
@@ -73,30 +74,30 @@ export default function JobLeads() {
               key={lead.id}
             >
               <div className="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 flex items-center justify-center text-xl">
-                {lead.isExternal ? '🌐' : (lead.serviceCategory === 'Plumbing' || lead.category === 'Plumbing') ? '🪠' : (lead.serviceCategory === 'Electrical' || lead.category === 'Electrical') ? '⚡' : '💼'}
+                <Icon name={lead.isExternal ? 'facebook' : (lead.serviceCategory === 'Plumbing' || lead.category === 'Plumbing') ? 'plumbing' : (lead.serviceCategory === 'Electrical' || lead.category === 'Electrical') ? 'electrical' : 'briefcase'} />
               </div>
               
               <div className="flex-1 min-w-0 w-full">
                 <div className="flex items-center gap-2 flex-wrap">
                   {lead.isExternal ? (
-                    <span className="text-[10px] font-extrabold text-blue-700 uppercase bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md tracking-wider">
-                      🌐 External Opportunity • {lead.companyName}
+                    <span className="text-[10px] font-extrabold text-[#0D9488] uppercase bg-teal-50 border border-teal-100 px-2 py-0.5 rounded-md tracking-wider">
+                      {lead.companyName || 'Verified company'}
                     </span>
                   ) : (
                     <span className="text-[10px] font-extrabold text-[#14B8A6] uppercase bg-teal-50/60 border border-teal-100 px-2 py-0.5 rounded-md tracking-wider">
-                      ⚡ Fixam Job • {lead.serviceCategory || lead.category || lead.tag || 'Service'}
+                      {lead.serviceCategory || lead.category || lead.tag || 'Service'}
                     </span>
                   )}
                 </div>
                 <h3 className="text-base font-bold text-gray-800 mt-2">{lead.title}</h3>
                 <div className="flex items-center gap-3 text-xs text-gray-400 mt-1.5 font-medium">
-                  <span>📍 {lead.location || 'Cameroon'}</span>
+                  <span><Icon name="location" /> {lead.location || 'Cameroon'}</span>
                   <span>•</span>
-                  <span>📅 {new Date(lead.createdAt).toLocaleDateString()}</span>
+                  <span><Icon name="calendar" /> {new Date(lead.createdAt).toLocaleDateString()}</span>
                   {lead.isRemote && (
                     <>
                       <span>•</span>
-                      <span className="text-blue-600 font-bold">Remote</span>
+                      <span className="text-[#0D9488] font-bold">Remote</span>
                     </>
                   )}
                 </div>
@@ -109,10 +110,10 @@ export default function JobLeads() {
                 </div>
                 {lead.isExternal ? (
                   <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5"
+                    className="bg-[#0D9488] hover:bg-[#08766C] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5"
                     onClick={() => setExternalJobToApply(lead)}
                   >
-                    <span>Apply via Fixam</span>
+                    <span>Apply now</span>
                   </button>
                 ) : (
                   <button
@@ -140,4 +141,3 @@ export default function JobLeads() {
     </div>
   );
 }
-

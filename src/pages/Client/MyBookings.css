@@ -5,6 +5,15 @@
   margin-top: 1.5rem;
 }
 
+.booking-empty-symbol .icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--teal);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
 .booking-detailed-card {
   display: flex;
   align-items: center;
@@ -109,8 +118,8 @@
 }
 
 .booking-detailed-card .btn-chat-booking {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3B82F6;
+  background: rgba(13, 148, 136, 0.1);
+  color: var(--teal);
   border: none;
   display: flex;
   align-items: center;
@@ -118,7 +127,7 @@
 }
 
 .booking-detailed-card .btn-chat-booking:hover {
-  background: #3B82F6;
+  background: var(--teal);
   color: #fff;
 }
 

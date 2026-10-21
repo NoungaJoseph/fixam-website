@@ -185,7 +185,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
               </span>
               {taskData.isRemote && (
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
-                  🌐 {isFr ? 'À distance' : 'Online / Remote'}
+                  <Icon name="facebook" /> {isFr ? 'À distance' : 'Online / Remote'}
                 </span>
               )}
             </div>
@@ -195,9 +195,9 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
             </h1>
 
             <div className="upwork-meta-line flex flex-wrap items-center gap-3 text-xs text-slate-500 mb-4">
-              <span>📅 {isFr ? 'Publié le' : 'Posted'}: {new Date(taskData.createdAt || Date.now()).toLocaleDateString()}</span>
+              <span><Icon name="calendar" /> {isFr ? 'Publié le' : 'Posted'}: {new Date(taskData.createdAt || Date.now()).toLocaleDateString()}</span>
               <span className="dot">•</span>
-              <span>📍 {taskData.location || (taskData.isRemote ? (isFr ? 'En ligne' : 'Remote') : 'On-Site / Cameroon')}</span>
+              <span><Icon name="location" /> {taskData.location || (taskData.isRemote ? (isFr ? 'En ligne' : 'Remote') : 'On-Site / Cameroon')}</span>
             </div>
 
             {isRejected && (
@@ -214,7 +214,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
             {/* Price & Duration Metrics Grid */}
             <div className="upwork-metrics-row grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
               <div className="upwork-metric-box bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex items-center gap-3">
-                <span className="metric-icon text-2xl">🏷️</span>
+                <Icon name="briefcase" />
                 <div>
                   <strong className="block text-slate-800 text-sm font-extrabold">{budgetStr}</strong>
                   <small className="text-slate-500 text-xs">{isFr ? 'Budget estimé' : 'Estimated Budget'}</small>
@@ -230,7 +230,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
               </div>
 
               <div className="upwork-metric-box bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex items-center gap-3">
-                <span className="metric-icon text-2xl">👥</span>
+                <Icon name="user" />
                 <div>
                   <strong className="block text-slate-800 text-sm font-extrabold">
                     {taskData.providersNeeded || 1}
@@ -515,7 +515,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
                     setReviewTarget({ jobId: taskId, targetUserId, targetName });
                   }}
                 >
-                  ⭐ {isFr ? 'Laisser un avis' : 'Write a Review'}
+                  <Icon name="star" /> {isFr ? 'Laisser un avis' : 'Write a Review'}
                 </button>
               )}
 

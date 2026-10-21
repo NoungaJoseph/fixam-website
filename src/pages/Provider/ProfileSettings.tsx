@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import { Icon } from '../../App';
 import './ProfileSettings.css';
 
 type Certificate = {
@@ -225,7 +226,7 @@ export default function ProfileSettings() {
                   {user?.avatar ? (
                     <img src={user.avatar} alt="Provider avatar" />
                   ) : (
-                    <div className="avatar-placeholder">👨‍🔧</div>
+                    <div className="avatar-placeholder"><Icon name="user" /></div>
                   )}
                   {isUploadingPhoto && <div className="avatar-loading-overlay">⌛</div>}
                 </div>
@@ -401,7 +402,7 @@ export default function ProfileSettings() {
             
             {certificates.length === 0 ? (
               <div className="empty-certificates-state">
-                <span className="cert-empty-icon">📜</span>
+                <span className="cert-empty-icon"><span className="material-symbols-rounded">verified</span></span>
                 <p>No certifications added yet. Uploading credentials can boost client bookings by up to 40%.</p>
               </div>
             ) : (
@@ -413,7 +414,7 @@ export default function ProfileSettings() {
                       <p className="cert-meta">{cert.issuer} • Issued {cert.year}</p>
                       {cert.imageUrl && (
                         <a href={cert.imageUrl} target="_blank" rel="noopener noreferrer" className="cert-doc-link">
-                          👁️ View Attachment
+                          <span className="material-symbols-rounded">visibility</span> View Attachment
                         </a>
                       )}
                     </div>

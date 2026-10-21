@@ -63,7 +63,7 @@ export default function ProviderReviews() {
       <div className="grid lg:grid-cols-5 gap-8">
         
         {/* LEFT Column: Rating Overview (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-2 border-t border-gray-200 pt-6 flex flex-col justify-between">
           <div>
             <h3 className="text-lg font-bold text-gray-800 mb-6">
               {i18n.language === 'fr' ? 'Aperçu des notes' : 'Rating Overview'}
@@ -98,15 +98,15 @@ export default function ProviderReviews() {
         </div>
 
         {/* RIGHT Column: Feedback List (3 cols) */}
-        <div className="lg:col-span-3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="lg:col-span-3 border-t border-gray-200 pt-6">
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-lg">💬</span>
+            <Icon name="chat" />
             <h3 className="text-lg font-bold text-gray-800">
               {i18n.language === 'fr' ? 'Commentaires des clients reçus' : 'Received Client Feedback'}
             </h3>
           </div>
 
-          <div className="reviews-list-premium space-y-4">
+          <div className="reviews-list-premium">
             {reviews.length === 0 ? (
               <p className="text-center py-12 text-gray-400 font-medium bg-gray-50 border border-dashed border-gray-200 rounded-xl">
                 {i18n.language === 'fr'
@@ -121,7 +121,7 @@ export default function ProviderReviews() {
                 const jobTitle = r.job?.title || r.job?.category || 'Service Order';
                 
                 return (
-                  <div className="review-item-premium p-4 border border-gray-100 rounded-xl bg-gray-50/50" key={r.id || r._id}>
+                  <div className="review-item-premium py-5 border-b border-gray-200" key={r.id || r._id}>
                     <div className="review-header flex justify-between items-start mb-3">
                       <div className="flex items-center gap-3">
                         <img 
@@ -136,7 +136,7 @@ export default function ProviderReviews() {
                           </span>
                         </div>
                       </div>
-                      <div className="review-stars-premium flex items-center gap-0.5 text-amber-500">
+                      <div className="review-stars-premium flex items-center gap-0.5 text-[#14B8A6]">
                         {stars.map((_, i) => <Icon key={i} name="star" />)}
                         <strong className="text-slate-800 font-bold text-xs ml-1.5">{rating}.0</strong>
                       </div>
@@ -145,7 +145,7 @@ export default function ProviderReviews() {
                       "{r.comment || 'No comment provided.'}"
                     </p>
                     <span className="review-date text-[10px] font-semibold text-slate-400">
-                      📅 {new Date(r.createdAt).toLocaleDateString()}
+                      <Icon name="calendar" /> {new Date(r.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 );

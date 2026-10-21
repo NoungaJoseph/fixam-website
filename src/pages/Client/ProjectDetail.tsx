@@ -50,7 +50,9 @@ export default function ProjectDetail({
 
   const project = selectedProject || {};
   const provider = project.provider || {};
-  const providerUserId = provider.userId || provider.id;
+  // Prefer the account id: it is needed for the conversation created after
+  // the booking. Older portfolio data may expose only the profile id.
+  const providerUserId = provider.user?.id || provider.userId || provider.id;
 
   const handleMediaClick = () => {
     if (mediaList.length > 1) {
@@ -201,7 +203,7 @@ export default function ProjectDetail({
       return;
     }
 
-    const targetProviderId = provider?.id || provider?.userId || project?.providerId || project?.userId || providerUserId;
+    const targetProviderId = provider?.user?.id || provider?.userId || provider?.id || project?.providerId || project?.userId || providerUserId;
     if (!targetProviderId) {
       alert(isFr ? 'Impossible d\'identifier le prestataire pour ce projet.' : 'Unable to identify provider for this project.');
       return;

@@ -46,6 +46,8 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
     { code: '+20', name: 'Egypt', flag: 'https://flagcdn.com/w40/eg.png' },
   ];
 
+  const selectedCountry = countries.find((country) => country.code === countryCode)?.name || 'Cameroon';
+
   const handleCountrySelect = (code: string) => {
     setCountryCode(code);
     setIsDropdownOpen(false);
@@ -100,7 +102,12 @@ export default function Login({ onNavigate, onLogin }: { onNavigate: (page: Page
         const prefix = countryCode.replace('+', '');
         identifier = cleanPhone.startsWith(prefix) ? cleanPhone : prefix + cleanPhone;
       }
-      const response = await api.post('/auth/login', { phone: loginMethod === 'phone' ? identifier : undefined, email: loginMethod === 'email' ? identifier : undefined, password });
+      const response = await api.post('/auth/login', {
+        phone: loginMethod === 'phone' ? identifier : undefined,
+        email: loginMethod === 'email' ? identifier : undefined,
+        password,
+        ...(loginMethod === 'phone' ? { country: selectedCountry } : {}),
+      });
       
       setIsLoading(false);
       const role = response.data?.user?.role?.toLowerCase() === 'provider' ? 'pro' : 'client';

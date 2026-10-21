@@ -80,12 +80,32 @@ const FAQ_DATA: FaqItem[] = [
 export default function SupportPage({ onNavigate }: SupportPageProps) {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
+  const directPaymentFaqs = useMemo(() => FAQ_DATA.map((faq) => {
+    if (faq.id === 'faq-2') return {
+      ...faq,
+      questionEn: 'How do payments work for a Fixam service?',
+      questionFr: 'Comment fonctionne le paiement d’un service Fixam ?',
+      answerEn: 'Fixam does not hold or process service payments. Clients and providers agree on the price and payment method, then the client pays the provider directly in cash or Mobile Money once the work is completed to their satisfaction.',
+      answerFr: 'Fixam ne conserve ni ne traite les paiements de service. Le client et le prestataire conviennent du prix et du mode de paiement, puis le client paie directement le prestataire en espèces ou par Mobile Money une fois le travail terminé à sa satisfaction.'
+    };
+    if (faq.id === 'faq-5') return {
+      ...faq,
+      answerEn: 'For service work, clients and providers agree on direct payment by cash or Mobile Money. Fixam Coins are only for in-app promotional features; they are not payment for a service job.',
+      answerFr: 'Pour les services, le client et le prestataire conviennent d’un paiement direct en espèces ou par Mobile Money. Les pièces Fixam servent uniquement aux fonctionnalités promotionnelles de l’application ; elles ne paient pas une mission de service.'
+    };
+    if (faq.id === 'faq-6') return {
+      ...faq,
+      answerEn: 'Providers receive payment directly from the client after the agreed work is completed. Agree on the price and preferred cash or Mobile Money method before starting the job.',
+      answerFr: 'Les prestataires reçoivent le paiement directement du client après la réalisation du travail convenu. Convenez du prix et du mode de paiement préféré — espèces ou Mobile Money — avant de commencer la mission.'
+    };
+    return faq;
+  }), []);
 
   useSEO({
     title: isFr ? 'Centre d\'Assistance & Support Client | Fixam' : 'Help & Customer Support Center | Fixam',
     description: isFr
       ? 'Centre d\'assistance Fixam. Obtenez de l\'aide pour vos réservations, vérifications de profil, paiements et litiges au Cameroun.'
-      : 'Fixam Help & Support Center. Get assistance with bookings, identity verification, payments, escrow protection, and disputes in Cameroon.',
+      : 'Fixam Help & Support Center. Get assistance with bookings, identity verification, direct payments, and disputes in Cameroon.',
     canonical: 'https://usefixam.com/support',
     isFr
   });
@@ -112,7 +132,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
   // Filtered FAQs with multi-keyword search
   const filteredFaqs = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return FAQ_DATA.filter((faq) => {
+    return directPaymentFaqs.filter((faq) => {
       const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
       if (!matchesCategory) return false;
       if (!q) return true;
@@ -124,7 +144,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
         faq.answerFr.toLowerCase().includes(q)
       );
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, directPaymentFaqs]);
 
   // When search query is entered, auto-open the first matching result
   useEffect(() => {
@@ -316,6 +336,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
                 <span className="support-cat-link-bullet">▸</span>
                 <span>{isFr ? 'Comparer les devis et profils vérifiés' : 'Comparing quotes and provider credentials'}</span>
               </li>
+              
               <li className="support-cat-link-item" onClick={() => onNavigate('guide')}>
                 <span className="support-cat-link-bullet">▸</span>
                 <span>{isFr ? 'Suivi GPS en direct et messagerie instantanée' : 'Live location tracking and direct messaging'}</span>
@@ -326,12 +347,12 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           {/* Card 3: Payments & Escrow */}
           <div className="support-cat-card">
             <div className="support-cat-header">
-              <h3 className="support-cat-title">{isFr ? 'Paiements & Séquestre' : 'Payments & Escrow'}</h3>
+              <h3 className="support-cat-title">{isFr ? 'Paiements directs' : 'Direct payments'}</h3>
             </div>
             <ul className="support-cat-links">
               <li className="support-cat-link-item" onClick={() => { setSelectedCategory('payments'); setOpenFaqId('faq-2'); }}>
                 <span className="support-cat-link-bullet">▸</span>
-                <span>{isFr ? 'Fonctionnement du paiement sécurisé (Escrow)' : 'How Escrow protects client & pro payments'}</span>
+                <span>{isFr ? 'Comment fonctionne le paiement direct' : 'How direct payment works'}</span>
               </li>
               <li className="support-cat-link-item" onClick={() => { setSelectedCategory('payments'); setOpenFaqId('faq-5'); }}>
                 <span className="support-cat-link-bullet">▸</span>
@@ -391,7 +412,7 @@ export default function SupportPage({ onNavigate }: SupportPageProps) {
           { id: 'all', labelEn: 'All Questions', labelFr: 'Toutes les questions' },
           { id: 'clients', labelEn: 'For Clients', labelFr: 'Pour les Clients' },
           { id: 'providers', labelEn: 'For Providers', labelFr: 'Pour les Prestataires' },
-          { id: 'payments', labelEn: 'Payments & Escrow', labelFr: 'Paiements & Séquestre' },
+          { id: 'payments', labelEn: 'Direct payments', labelFr: 'Paiements directs' },
           { id: 'safety', labelEn: 'Trust & Safety', labelFr: 'Sécurité & Litiges' },
         ].map((tab) => (
           <button

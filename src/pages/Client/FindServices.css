@@ -14,8 +14,9 @@
 }
 
 .find-services-header h2 {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
   color: var(--ink);
   margin: 0;
 }
@@ -44,9 +45,10 @@
   gap: 0.6rem;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 0.65rem 1rem;
-  box-shadow: var(--shadow);
+  box-shadow: none;
+  border-width: 0 0 1px;
 }
 
 .input-wrapper-fs.query-input {
@@ -161,7 +163,15 @@
   align-items: center;
   gap: 0.35rem;
   transition: all 0.2s ease;
-  box-shadow: var(--shadow);
+  box-shadow: none;
+}
+
+.fs-empty-symbol .icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  color: var(--teal);
+  stroke: currentColor;
+  fill: none;
 }
 
 .fs-filter-pill-btn:hover {

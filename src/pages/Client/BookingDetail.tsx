@@ -16,6 +16,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
   const { user } = useAuth();
   const [bookingData, setBookingData] = useState<any>(selectedBooking);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [activeRevision, setActiveRevision] = useState<any>(null);
 
   useEffect(() => {
     if (selectedBooking && (selectedBooking.id || selectedBooking._id)) {
@@ -31,6 +32,9 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
         }
       };
       fetchDetails();
+      api.get(`/bookings/${selectedBooking.id || selectedBooking._id}/revisions`)
+        .then((response) => setActiveRevision(response.data?.data?.[0] || null))
+        .catch(() => setActiveRevision(null));
     }
   }, [selectedBooking]);
 
@@ -89,6 +93,21 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
       setLoadingStatus(null);
     }
   };
+
+  const handleRevisionResponse = async (action: 'accept' | 'decline') => {
+    if (loadingStatus) return;
+    setLoadingStatus(action);
+    try {
+      if (activeRevision?.id) await api.post(`/bookings/${bkId}/revisions/${activeRevision.id}/${action}`);
+      else await api.patch(`/bookings/${bkId}/status`, { status: action === 'accept' ? 'ACCEPTED' : 'REJECTED' });
+      const nextStatus = action === 'accept' ? 'ACCEPTED' : 'REJECTED';
+      setBookingData({ ...bookingData, status: nextStatus });
+      setActiveRevision(null);
+      window.dispatchEvent(new CustomEvent('fixam_booking_updated', { detail: { id: bkId, status: nextStatus } }));
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Unable to update the revised quote.');
+    } finally { setLoadingStatus(null); }
+  };
   
   const getStatusColor = (st: string) => {
     const s = st.toUpperCase();
@@ -131,8 +150,8 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
   );
 
   return (
-    <div className="upwork-modal-overlay animate-fade-in" onClick={handleBack}>
-      <div className="upwork-modal-drawer animate-slide-left" onClick={(e) => e.stopPropagation()}>
+    <div className="upwork-modal-overlay booking-detail-page">
+      <div className="upwork-modal-drawer booking-detail-surface">
         
         {/* Top Drawer Navigation */}
         <div className="upwork-drawer-topbar">
@@ -158,36 +177,36 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
             <div className="upwork-meta-line">
               <span>Date: {displayDate ? new Date(displayDate).toLocaleDateString() : 'recently'}</span>
               <span className="dot">•</span>
-              <span>📍 {bookingData.location || bookingData.address || 'On-Site / Cameroon'}</span>
+              <span><Icon name="location" /> {bookingData.location || bookingData.address || 'On-Site / Cameroon'}</span>
             </div>
 
             <div className="upwork-divider" />
 
             {/* Counter Proposal Card if status is COUNTER_PROPOSED */}
-            {status === 'COUNTER_PROPOSED' && (
-              <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 my-4 shadow-sm animate-fade-in">
-                <div className="flex items-center gap-2 mb-2 text-amber-900 font-bold text-base">
-                  <span>💡</span>
-                  <span>Provider Counter Offer Received</span>
+            {['COUNTER_PROPOSED', 'REVISED_QUOTE_PENDING'].includes(status) && (
+              <div className="border-y border-teal-200 py-5 my-4 animate-fade-in">
+                <div className="flex items-center gap-2 mb-2 text-slate-950 font-bold text-base">
+                  <Icon name="settings" />
+                  <span>Revised quote received</span>
                 </div>
-                <p className="text-xs text-amber-800 mb-3 leading-relaxed">
-                  The provider has proposed a counter offer for this booking request. Please review the updated price and terms below.
+                <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+                  The provider has revised the booking terms. Review the requested and revised details before confirming.
                 </p>
 
-                <div className="bg-white rounded-xl p-3.5 border border-amber-200 mb-3 space-y-2">
+                <div className="py-3 border-y border-slate-200 mb-3 space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-semibold text-gray-600">Original Budget:</span>
                     <span className="line-through text-gray-400 font-bold">{bookingData.budget ? `${Number(bookingData.budget).toLocaleString()} XAF` : 'N/A'}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm border-t border-gray-100 pt-2">
-                    <span className="font-bold text-amber-950">Counter Proposed Price:</span>
+                    <span className="font-bold text-slate-950">Revised price:</span>
                     <span className="font-extrabold text-teal-600 text-base">
-                      {bookingData.counterBudget ? `${Number(bookingData.counterBudget).toLocaleString()} XAF` : `${(bookingData.budget || 0).toLocaleString()} XAF`}
+                      {activeRevision?.budget != null ? `${Number(activeRevision.budget).toLocaleString()} XAF` : bookingData.counterBudget ? `${Number(bookingData.counterBudget).toLocaleString()} XAF` : `${(bookingData.budget || 0).toLocaleString()} XAF`}
                     </span>
                   </div>
-                  {bookingData.counterNotes && (
-                    <div className="text-xs text-gray-700 bg-amber-50/50 p-2 rounded-lg border border-amber-100 mt-2">
-                      <strong>Provider Notes:</strong> {bookingData.counterNotes}
+                  {(activeRevision?.message || bookingData.counterNotes) && (
+                    <div className="text-xs text-gray-700 pt-2 mt-2 border-t border-slate-100">
+                      <strong>Provider notes:</strong> {activeRevision?.message || bookingData.counterNotes}
                     </div>
                   )}
                 </div>
@@ -195,15 +214,15 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 <div className="flex flex-col sm:flex-row gap-2">
                   <button 
                     type="button"
-                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer"
-                    onClick={() => handleStatusChange('ACCEPTED')}
+                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
+                    onClick={() => handleRevisionResponse('accept')}
                   >
                     ✓ Accept Counter Offer
                   </button>
                   <button 
                     type="button"
-                    className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm cursor-pointer"
-                    onClick={() => handleStatusChange('REJECTED')}
+                    className="flex-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-900 font-bold py-2.5 px-4 rounded-xl text-xs transition cursor-pointer"
+                    onClick={() => handleRevisionResponse('decline')}
                   >
                     ✕ Decline Counter Offer
                   </button>
@@ -280,7 +299,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
             {/* Budget & Price Metrics Grid */}
             <div className="upwork-metrics-row">
               <div className="upwork-metric-box">
-                <span className="metric-icon">🏷️</span>
+                <span className="metric-icon"><Icon name="briefcase" /></span>
                 <div>
                   <strong>{bookingData.budget || bookingData.amount || bookingData.price ? `${Number(bookingData.budget || bookingData.amount || bookingData.price).toLocaleString()} XAF` : 'Agreed Rate'}</strong>
                   <small>{bookingData.hourlyRate ? 'Hourly Rate' : 'Agreed Budget'}</small>
@@ -488,7 +507,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                   className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => setIsReviewModalOpen(true)}
                 >
-                  ⭐ Write a Review
+                  <Icon name="star" /> Write a Review
                 </button>
               )}
 
@@ -539,7 +558,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
               </div>
               <div className="client-meta-text mt-3">
                 <p>⏰ Time: {bookingData.scheduledTime ? new Date(bookingData.scheduledTime).toLocaleString() : (bookingData.bookingTime || bookingData.time || 'Flexible Schedule')}</p>
-                <p>📍 Location: {bookingData.location || 'On-Site'}</p>
+                <p><Icon name="location" /> Location: {bookingData.location || 'On-Site'}</p>
               </div>
             </div>
 

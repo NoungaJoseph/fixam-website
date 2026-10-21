@@ -47,19 +47,19 @@ export default function Settings({ setActiveTab }: SettingsProps) {
       id: 'notifications' as const,
       title: i18n.language === 'fr' ? 'Paramètres de notification' : 'Notification Settings',
       desc: i18n.language === 'fr' ? 'Gérez les mises à jour, actualités, bulletins et alertes promotionnelles.' : 'Manage updates, news, newsletters, and promotional alerts.',
-      icon: '🔔'
+      icon: 'notifications'
     },
     {
       id: 'privacy' as const,
       title: i18n.language === 'fr' ? 'Confidentialité & Sécurité' : 'Privacy & Security Settings',
       desc: i18n.language === 'fr' ? 'Changer le mot de passe, gérer le 2FA et le partage des données.' : 'Change password, manage 2FA, data usage and analytics sharing.',
-      icon: '🔒'
+      icon: 'shield_lock'
     },
     {
       id: 'language' as const,
       title: i18n.language === 'fr' ? 'Préférences de langue' : 'Language Preferences',
       desc: i18n.language === 'fr' ? 'Changer votre langue préférée sur la plateforme Fixam.' : 'Switch your preferred platform language.',
-      icon: '🌐'
+      icon: 'language'
     }
   ];
 
@@ -287,7 +287,7 @@ export default function Settings({ setActiveTab }: SettingsProps) {
                 transition: 'all 0.2s'
               }}
             >
-              <span style={{ fontSize: '1.8rem' }}>{item.icon}</span>
+              <span className="settings-nav-symbol material-symbols-rounded">{item.icon}</span>
               <div style={{ flex: 1 }}>
                 <h3 style={{ margin: '0 0 0.2rem 0', fontSize: '1.05rem', fontWeight: 700, color: 'var(--ink)' }}>{item.title}</h3>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--muted)', lineHeight: '1.3' }}>{item.desc}</p>
@@ -395,7 +395,7 @@ export default function Settings({ setActiveTab }: SettingsProps) {
                 marginBottom: '0.5rem'
               }}
             >
-              <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+              <span className="settings-nav-symbol settings-nav-symbol-small material-symbols-rounded">{item.icon}</span>
               {item.title}
             </button>
           ))}

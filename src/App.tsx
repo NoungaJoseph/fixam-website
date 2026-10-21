@@ -818,7 +818,7 @@ function App() {
                   <p className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto font-normal">
                     {i18n.language.startsWith('fr')
                       ? 'Trouvez et réservez instantanément des spécialistes qualifiés (plomberie, électricité, menuiserie, ménage) pour tous vos travaux et urgences.'
-                      : 'Instantly find and book verified specialists for plumbing, electrical, carpentry, and home maintenance with full escrow security.'}
+                      : 'Instantly find and book verified specialists for plumbing, electrical, carpentry, and home maintenance with clear direct-payment agreements.'}
                   </p>
                 </div>
               )}
@@ -1182,7 +1182,7 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
           </div>
 
           <div className="header-news-ticker-slider desktop-only">
-            <div className="ticker-slider-icon">📢</div>
+            <div className="ticker-slider-icon"><Icon name="bell" /></div>
             <div className="ticker-slider-content">
               <span className="ticker-slider-text" key={tickerIndex}>
                 {tickerMessages[tickerIndex]}
@@ -1693,11 +1693,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   }, [userRole]);
 
   const [tickerItems, setTickerItems] = useState<Array<{ isNews: boolean; badgeText: string; text: string }>>([
-    { isNews: false, badgeText: 'SPORTS', text: '⚽ Match Result: 2 - 0 (LIVE)' },
-    { isNews: false, badgeText: 'SPORTS', text: '📅 Upcoming: Nigeria vs Ghana (19:00)' },
-    { isNews: true, badgeText: 'NEWS', text: '📰 50+ New Verified Plumbers joined Fixam this week!' },
-    { isNews: false, badgeText: 'SPORTS', text: '⚽ Real Madrid 3 - 1 Barcelona (FINISHED)' },
-    { isNews: true, badgeText: 'NEWS', text: '⚡ Wallet top-up via Mobile Money now processed 2x faster!' },
+    { isNews: false, badgeText: 'SPORTS', text: 'Match Result: 2 - 0 (LIVE)' },
+    { isNews: false, badgeText: 'SPORTS', text: 'Upcoming: Nigeria vs Ghana (19:00)' },
+    { isNews: true, badgeText: 'NEWS', text: '50+ New Verified Plumbers joined Fixam this week!' },
+    { isNews: false, badgeText: 'SPORTS', text: 'Real Madrid 3 - 1 Barcelona (FINISHED)' },
+    { isNews: true, badgeText: 'NEWS', text: 'Wallet top-up via Mobile Money now processed 2x faster!' },
   ]);
 
   useEffect(() => {
@@ -1717,21 +1717,20 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
                 return {
                   isNews: false,
                   badgeText: lang === 'fr' ? 'SPORTS' : 'SPORTS',
-                  text: `⚽ ${item.home} ${item.homeScore} - ${item.awayScore} ${item.away}${liveStatus}`
+                  text: `${item.home} ${item.homeScore} - ${item.awayScore} ${item.away}${liveStatus}`
                 };
               } else if (item.type === 'UPCOMING') {
                 const time = new Date(item.time).toLocaleTimeString(lang === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
                 return {
                   isNews: false,
                   badgeText: lang === 'fr' ? 'SPORTS' : 'SPORTS',
-                  text: `📅 ${lang === 'fr' ? 'À venir' : 'Upcoming'}: ${item.home} vs ${item.away} (${time})`
+                  text: `${lang === 'fr' ? 'À venir' : 'Upcoming'}: ${item.home} vs ${item.away} (${time})`
                 };
               } else if (item.type === 'NEWS') {
-                const prefix = item.prefix || '📰';
                 return {
                   isNews: true,
                   badgeText: lang === 'fr' ? 'ACTU' : 'NEWS',
-                  text: `${prefix} ${item.title}`
+                  text: item.title
                 };
               }
               return null;
@@ -2336,11 +2335,11 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
   ];
 
   const proNewsMessages = [
-    '📢 FIXAM UPDATE: Earn 50 bonus coins on your first 3 completed jobs this week!',
-    '⚡ DIRECT CONTRACTS: Low 5% service fee now active for bringing your own clients.',
-    '💡 PRO TIP: Complete 100% of your profile details to rank higher on client search results.',
-    '🎉 NEW FEATURE: Filter jobs instantly by Remote Only or On-Site locations in real time.',
-    '🔒 VERIFICATION: Get verified today to unlock high-budget client projects.'
+    'FIXAM UPDATE: Earn 50 bonus coins on your first 3 completed jobs this week.',
+    'DIRECT CONTRACTS: Low 5% service fee now active for bringing your own clients.',
+    'PRO TIP: Complete 100% of your profile details to rank higher on client search results.',
+    'NEW FEATURE: Filter jobs instantly by Remote Only or On-Site locations in real time.',
+    'VERIFICATION: Get verified today to unlock high-budget client projects.'
   ];
 
   const [proNewsIndex, setProNewsIndex] = useState(0);
@@ -2394,7 +2393,7 @@ function Dashboard({ onNavigate, livePros, userRole, onRoleChange }: { onNavigat
 
           {/* Animated Latest News & Updates Ticker */}
           <div className="header-news-ticker-slider" style={{ flex: 1, margin: '0 0.5rem' }}>
-            <div className="ticker-slider-icon">📢</div>
+            <div className="ticker-slider-icon"><Icon name="bell" /></div>
             <div className="ticker-slider-content">
               <span className="ticker-slider-text" key={proNewsIndex}>
                 {proNewsMessages[proNewsIndex]}
@@ -3022,6 +3021,18 @@ function Logo({ light = false }: { light?: boolean }) {
 }
 
 export function Icon({ name }: { name: IconName }) {
+  const materialNames: Record<IconName, string> = {
+    appliance: 'kitchen', bell: 'notifications', briefcase: 'business_center', calendar: 'calendar_month',
+    chat: 'chat_bubble', check: 'check', cleaning: 'cleaning_services', delivery: 'local_shipping',
+    electrical: 'bolt', filter: 'tune', home: 'home', heart: 'favorite', location: 'location_on',
+    menu: 'menu', message: 'mail', painting: 'format_paint', plumbing: 'plumbing', search: 'search',
+    shield: 'verified_user', x: 'close', star: 'star', user: 'person', wallet: 'account_balance_wallet',
+    wrench: 'handyman', sun: 'light_mode', moon: 'dark_mode', facebook: 'public', twitter: 'public',
+    instagram: 'photo_camera', linkedin: 'business', chart: 'bar_chart', 'chevron-up': 'expand_less',
+    'chevron-down': 'expand_more', phone: 'call', settings: 'settings', logout: 'logout',
+  }
+  return <span aria-hidden="true" className="icon material-symbols-rounded">{materialNames[name]}</span>
+
   const paths: Record<IconName, string> = {
     appliance: 'M7 4h10v16H7z M10 7h4 M10 17h4 M10 11a2 2 0 1 0 4 0a2 2 0 0 0-4 0z',
     bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9z M10 21h4',

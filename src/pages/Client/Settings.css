@@ -5,6 +5,25 @@
   padding: 2rem !important;
 }
 
+.settings-nav-symbol {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-grid;
+  place-items: center;
+  color: var(--teal);
+  background: var(--bg-teal-light);
+  border-radius: 10px;
+  font-size: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.settings-nav-symbol-small {
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 1.05rem;
+  background: transparent;
+}
+
 .settings-form-premium {
   display: flex;
   flex-direction: column;

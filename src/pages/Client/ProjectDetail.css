@@ -591,8 +591,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(8, 27, 58, 0.64);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -601,12 +601,13 @@
 }
 
 .proposal-modal-content {
-  background: #ffffff;
+  background: #fbfcfe;
   width: 100%;
   max-width: 560px;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  padding: 0 28px 28px;
+  border: 1px solid rgba(220, 228, 238, 0.95);
+  box-shadow: 0 28px 90px rgba(8, 27, 58, 0.32);
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -615,35 +616,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  margin: 0 -28px 24px;
+  padding: 22px 28px;
+  border-bottom: 0;
+  border-radius: 23px 23px 0 0;
+  background: #081b3a;
 }
 
 .proposal-modal-header h3 {
   font-size: 20px;
-  font-weight: 800;
-  color: #0f172a;
+  font-weight: 900;
+  color: #ffffff;
   margin: 0;
 }
 
 .modal-close-btn {
-  background: #f1f5f9;
+  background: rgba(255, 255, 255, 0.12);
   border: none;
   font-size: 22px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
   cursor: pointer;
-  color: #64748b;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .proposal-project-banner {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f7f1ee;
+  border: 1px solid #f0d8cf;
   border-radius: 14px;
   padding: 14px 16px;
   margin-bottom: 20px;
@@ -688,13 +691,13 @@
 }
 
 .proposal-radio-box.active {
-  border-color: #14B8A6;
-  background-color: #f0fdfa;
+  border-color: #d95e57;
+  background-color: #fff5f1;
 }
 
 .proposal-radio-box input[type="radio"] {
   margin-top: 3px;
-  accent-color: #14B8A6;
+  accent-color: #d95e57;
   width: 18px;
   height: 18px;
 }
@@ -729,8 +732,8 @@
 .proposal-textarea:focus,
 .proposal-input:focus {
   outline: none;
-  border-color: #14B8A6;
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  border-color: #d95e57;
+  box-shadow: 0 0 0 3px rgba(217, 94, 87, 0.13);
 }
 
 .proposal-two-cols {
@@ -751,7 +754,7 @@
 
 .btn-submit-proposal-modal {
   width: 100%;
-  background: #14B8A6;
+  background: #081b3a;
   color: #ffffff;
   border: none;
   height: 50px;
@@ -760,12 +763,12 @@
   font-weight: 800;
   cursor: pointer;
   margin-top: 10px;
-  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 10px 24px rgba(8, 27, 58, 0.18);
   transition: background-color 0.2s, transform 0.15s;
 }
 
 .btn-submit-proposal-modal:hover {
-  background: #0f9788;
+  background: #102a51;
   transform: translateY(-1px);
 }
 
