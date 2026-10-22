@@ -128,6 +128,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
     isPinned: false,
     forwardToEmail: false,
     hiringEmail: (user as any)?.email || '',
+    applicationQuestions: [] as any[],
   });
 
   const t = {
@@ -259,6 +260,7 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
         isPinned: Boolean(form.isPinned),
         forwardToEmail: Boolean(form.forwardToEmail),
         hiringEmail: form.forwardToEmail && form.hiringEmail ? form.hiringEmail.trim() : undefined,
+        applicationQuestions: form.applicationQuestions,
       };
       if (form.whatNeedsDone) payload.whatNeedsDone = form.whatNeedsDone.trim();
       if (form.importantDetails) payload.importantDetails = form.importantDetails.trim();
@@ -698,6 +700,11 @@ export default function PostJob({ setActiveTab, setClientTasks, clientTasks = []
                   <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap bg-white p-3 rounded-lg border border-gray-200">{form.importantDetails}</p>
                 </div>
               )}
+            </div>
+
+            <div className="bg-white border border-teal-200 rounded-2xl p-5 space-y-3">
+              <div className="flex items-center justify-between gap-3"><div><h4 className="text-sm font-extrabold text-gray-900">{isFr ? 'Questions de candidature' : 'Application Questions'}</h4><p className="text-xs text-gray-500">{isFr ? 'Questions facultatives auxquelles les candidats doivent répondre.' : 'Optional questions applicants must answer.'}</p></div><button type="button" onClick={() => update('applicationQuestions', [...form.applicationQuestions, { id: `q_${Date.now()}`, prompt: '', type: 'YES_NO', required: false, options: [] }])} className="px-3 py-2 rounded-lg bg-teal-600 text-white text-xs font-bold">+ {isFr ? 'Ajouter' : 'Add question'}</button></div>
+              {form.applicationQuestions.map((question: any, index: number) => <div key={question.id} className="border border-gray-200 rounded-xl p-3 space-y-2"><div className="flex gap-2"><input value={question.prompt} onChange={(e) => update('applicationQuestions', form.applicationQuestions.map((q: any, i: number) => i === index ? { ...q, prompt: e.target.value } : q))} placeholder={isFr ? 'Saisissez la question' : 'Enter the question'} className="flex-1 px-3 py-2 text-xs border rounded-lg"/><button type="button" onClick={() => update('applicationQuestions', form.applicationQuestions.filter((_: any, i: number) => i !== index))} className="text-red-600">×</button></div><div className="flex gap-3"><select value={question.type} onChange={(e) => { const type = e.target.value; update('applicationQuestions', form.applicationQuestions.map((q: any, i: number) => i === index ? { ...q, type, options: ['SINGLE_CHOICE','MULTI_CHOICE'].includes(type) ? (q.options.length ? q.options : ['', '']) : [] } : q)); }} className="px-3 py-2 text-xs border rounded-lg">{['YES_NO','CHECKBOX','SHORT_TEXT','LONG_TEXT','NUMBER','DATE','SINGLE_CHOICE','MULTI_CHOICE'].map(type => <option key={type}>{type}</option>)}</select><label className="text-xs font-bold flex items-center gap-2"><input type="checkbox" checked={question.required} onChange={(e) => update('applicationQuestions', form.applicationQuestions.map((q: any, i: number) => i === index ? { ...q, required: e.target.checked } : q))}/>{isFr ? 'Obligatoire' : 'Required'}</label></div>{['SINGLE_CHOICE','MULTI_CHOICE'].includes(question.type) && <div>{question.options.map((option: string, oi: number) => <input key={oi} value={option} onChange={(e) => update('applicationQuestions', form.applicationQuestions.map((q: any, i: number) => i === index ? { ...q, options: q.options.map((o: string, j: number) => j === oi ? e.target.value : o) } : q))} placeholder={`Option ${oi + 1}`} className="w-full mt-2 px-3 py-2 text-xs border rounded-lg"/>)}<button type="button" onClick={() => update('applicationQuestions', form.applicationQuestions.map((q: any, i: number) => i === index ? { ...q, options: [...q.options, ''] } : q))} className="text-xs text-teal-700 font-bold mt-2">+ Option</button></div>}</div>)}
             </div>
 
             {/* Premium Monetization & Delivery Options */}

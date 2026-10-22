@@ -41,6 +41,7 @@ export default function SubmitProposalPage({
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [redirectCount, setRedirectCount] = useState<number>(4);
   const [localAvailable, setLocalAvailable] = useState<boolean>(isAvailable);
+  const [screeningAnswers, setScreeningAnswers] = useState<Record<string, any>>({});
 
   const totalProposalCoins = boostCoins; // Base proposal is 100% FREE
   const currentWalletBalance = walletBalance !== null ? walletBalance : ((user as any)?.wallet?.balance || 0);
@@ -141,6 +142,8 @@ export default function SubmitProposalPage({
       setActiveTab('Wallet');
       return;
     }
+    const missingQuestion = (job.applicationQuestions || []).find((q: any) => q.required && (screeningAnswers[q.id] === undefined || screeningAnswers[q.id] === '' || (Array.isArray(screeningAnswers[q.id]) && screeningAnswers[q.id].length === 0) || (q.type === 'CHECKBOX' && screeningAnswers[q.id] !== true)));
+    if (missingQuestion) { alert(`${isFr ? 'Réponse obligatoire' : 'Answer required'}: ${missingQuestion.prompt}`); return; }
 
     setIsSubmitting(true);
     try {
@@ -149,6 +152,7 @@ export default function SubmitProposalPage({
         coverLetter: coverLetter.trim() || undefined,
         proposedBudget: proposedBudget ? Number(proposedBudget) : undefined,
         proposalMedia: proposalAttachments.length > 0 ? proposalAttachments : undefined,
+        screeningAnswers,
       });
 
       // Refresh wallet balance if boost coins were used
@@ -375,6 +379,8 @@ export default function SubmitProposalPage({
             </div>
           )}
         </div>
+
+        {Array.isArray(job.applicationQuestions) && job.applicationQuestions.length > 0 && <div className="proposal-section-card"><h3 className="proposal-section-title">{isFr ? 'Questions du recruteur' : 'Recruiter Questions'}</h3>{job.applicationQuestions.map((q: any, index: number) => <div key={q.id} style={{ marginTop: '1rem' }}><label style={{ display: 'block', fontWeight: 700, marginBottom: '.5rem' }}>{index + 1}. {q.prompt}{q.required ? ' *' : ''}</label>{['SHORT_TEXT','LONG_TEXT','NUMBER','DATE'].includes(q.type) && (q.type === 'LONG_TEXT' ? <textarea rows={4} className="proposal-textarea" value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })}/> : <input className="proposal-input" type={q.type === 'NUMBER' ? 'number' : q.type === 'DATE' ? 'date' : 'text'} value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })}/>)}{q.type === 'YES_NO' && <div style={{ display: 'flex', gap: '.75rem' }}>{['YES','NO'].map(option => <button type="button" key={option} onClick={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: option })} className="proposal-success-return-btn" style={{ opacity: screeningAnswers[q.id] === option ? 1 : .55 }}>{option === 'YES' ? (isFr ? 'Oui' : 'Yes') : (isFr ? 'Non' : 'No')}</button>)}</div>}{q.type === 'CHECKBOX' && <label><input type="checkbox" checked={screeningAnswers[q.id] === true} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.checked })}/> {isFr ? 'Je confirme' : 'I confirm'}</label>}{['SINGLE_CHOICE','MULTI_CHOICE'].includes(q.type) && <div>{q.options.map((option: string) => { const checked = q.type === 'MULTI_CHOICE' ? (screeningAnswers[q.id] || []).includes(option) : screeningAnswers[q.id] === option; return <label key={option} style={{ display: 'block', margin: '.45rem 0' }}><input type={q.type === 'MULTI_CHOICE' ? 'checkbox' : 'radio'} checked={checked} onChange={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: q.type === 'MULTI_CHOICE' ? (checked ? screeningAnswers[q.id].filter((v: string) => v !== option) : [...(screeningAnswers[q.id] || []), option]) : option })}/> {option}</label>})}</div>}</div>)}</div>}
 
         {/* Section 4: Boost Proposal Rank (Optional) */}
         <div className="proposal-section-card">

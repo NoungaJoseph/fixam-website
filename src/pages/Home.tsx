@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
 import AssistantModal from '../components/AssistantModal';
-import { HeroTechIllustration, DifferenceTechIllustration } from '../components/TechIllustrations';
+import { DifferenceTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
 import { usePlatformStats } from '../hooks/usePlatformStats';
 import './Home.css';
@@ -738,9 +738,15 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             </div>
           </div>
 
-          {/* Right Column: Hero Vector Illustration (Matching Image 3) */}
+          {/* Right Column: Real service professional */}
           <div className="tsi-hero-right">
-            <HeroTechIllustration />
+            <div className="tsi-hero-photo-frame">
+              <img src={images.heroProfessional} alt={currentLang === 'fr' ? 'Professionnel Fixam au travail' : 'Fixam professional at work'} />
+              <div className="tsi-hero-photo-proof">
+                <Icon name="shield" />
+                <span>{currentLang === 'fr' ? 'Prestataires vérifiés' : 'Verified professionals'}</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1100,4 +1106,3 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     </div>
   );
 }
-

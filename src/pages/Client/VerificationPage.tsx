@@ -125,10 +125,10 @@ export default function VerificationPage({ setActiveTab }: VerificationPageProps
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in w-full">
       {/* Header row with Back button */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-10 border-b border-slate-200 pb-5">
         <button 
           onClick={() => setActiveTab('My Profile')} 
-          className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition"
+          className="px-0 py-2 bg-transparent hover:text-teal-700 text-slate-600 rounded-none transition font-semibold"
           aria-label="Go back to profile"
         >
           ← {i18n.language === 'fr' ? 'Retour' : 'Back'}
@@ -138,43 +138,43 @@ export default function VerificationPage({ setActiveTab }: VerificationPageProps
         </h2>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm max-w-2xl mx-auto w-full">
+      <div className="max-w-2xl w-full">
         {user?.providerProfile?.verification === 'VERIFIED' || (user as any)?.isVerified ? (
-          <div className="text-center py-10">
-            <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 font-bold">
+          <div className="py-6">
+            <div className="w-14 h-14 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-2xl mb-6 font-bold">
               ✓
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h3 className="text-2xl font-black text-gray-900 mb-3">
               {i18n.language === 'fr' ? "Votre compte est vérifié !" : "Your Account is Verified!"}
             </h3>
-            <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed mb-6">
+            <p className="text-sm text-gray-500 max-w-lg leading-relaxed mb-7">
               {i18n.language === 'fr' 
                 ? "Merci d'avoir vérifié votre identité. Votre profil affiche désormais le badge de confiance." 
                 : "Thank you for verifying your identity. Your profile now displays the trusted verification badge."}
             </p>
             <button 
               onClick={() => setActiveTab('My Profile')}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-bold px-6 py-2.5 rounded-xl transition"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2.5 rounded-md transition"
             >
               {i18n.language === 'fr' ? "Retour au profil" : "Return to Profile"}
             </button>
           </div>
         ) : user?.providerProfile?.verification === 'PENDING' || wizardStep === 4 ? (
-          <div className="text-center py-10">
-            <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 animate-pulse">
+          <div className="py-6">
+            <div className="w-14 h-14 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center text-2xl mb-6 animate-pulse">
               ⏰
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">
               {i18n.language === 'fr' ? "Vérification en cours d'examen" : "Verification Under Review"}
             </h3>
-            <p className="text-sm text-gray-500 max-w-md mx-auto leading-relaxed mb-6">
+            <p className="text-sm text-gray-500 max-w-lg leading-relaxed mb-7">
               {i18n.language === 'fr' 
                 ? "Vos documents et votre selfie ont été soumis avec succès. Notre équipe les examine dans un délai de 24 à 48 heures." 
                 : "Your verification documents and selfie have been submitted successfully. Our team will review them within 24-48 hours."}
             </p>
             <button 
               onClick={() => setActiveTab('My Profile')}
-              className="bg-teal-500 hover:bg-teal-600 text-white font-bold px-6 py-2.5 rounded-xl transition"
+              className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2.5 rounded-md transition"
             >
               {i18n.language === 'fr' ? "Retour au profil" : "Return to Profile"}
             </button>

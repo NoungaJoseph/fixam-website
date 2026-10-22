@@ -64,6 +64,28 @@ export default function ClientDashboard({
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const isFr = i18n.language === 'fr';
+
+  const heroSlides = useMemo(() => [
+    { id: 'professionals', image: '/client-billboard/find-professionals.jpg', eyebrow: isFr ? 'EXPERTS LOCAUX DE CONFIANCE' : 'TRUSTED LOCAL EXPERTS', title: isFr ? 'Trouvez le bon professionnel' : 'Find the right professional', body: isFr ? 'Découvrez des prestataires qualifiés près de chez vous et choisissez en toute confiance.' : 'Discover skilled providers near you and choose with confidence.', action: isFr ? 'Trouver un professionnel' : 'Find professionals', tab: 'Find Services' },
+    { id: 'postJob', image: '/client-billboard/post-job.jpg', eyebrow: isFr ? 'DITES-NOUS CE QU’IL VOUS FAUT' : 'TELL US WHAT YOU NEED', title: isFr ? 'Publiez une mission en quelques minutes' : 'Post a job in minutes', body: isFr ? 'Décrivez votre besoin, fixez votre budget et recevez des offres de professionnels.' : 'Describe your task, set your budget and receive offers from professionals.', action: isFr ? 'Publier une mission' : 'Post a job', tab: 'Post a Job' },
+    { id: 'booking', image: '/client-billboard/book-service.jpg', eyebrow: isFr ? 'SIMPLE ET DIRECT' : 'SIMPLE AND DIRECT', title: isFr ? 'Réservez un service en confiance' : 'Book a service with confidence', body: isFr ? 'Choisissez un professionnel, convenez des détails et suivez votre réservation.' : 'Choose a professional, agree on the details and track your booking.', action: isFr ? 'Réserver un service' : 'Book a service', tab: 'Find Services' },
+    { id: 'work', image: '/client-billboard/explore-work.jpg', eyebrow: isFr ? 'DES RÉALISATIONS CONCRÈTES' : 'REAL WORK, REAL RESULTS', title: isFr ? 'Découvrez le travail des professionnels' : 'Explore professionals’ work', body: isFr ? 'Consultez les projets réalisés et trouvez la qualité adaptée à vos besoins.' : 'See completed projects and find the quality that matches your needs.', action: isFr ? 'Voir les réalisations' : 'Explore work', tab: 'Browse Projects' },
+    { id: 'satisfaction', image: '/client-billboard/customer-satisfaction.jpg', eyebrow: isFr ? 'UNE QUALITÉ DE CONFIANCE' : 'QUALITY YOU CAN TRUST', title: isFr ? 'Votre satisfaction avant tout' : 'Your satisfaction comes first', body: isFr ? 'Utilisez les notes, les avis et les profils vérifiés pour choisir sereinement.' : 'Use ratings, reviews and verified profiles to make a confident choice.', action: isFr ? 'Voir les meilleurs profils' : 'View top professionals', tab: 'Find Services' },
+  ], [isFr]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setHeroIndex(current => (current + 1) % heroSlides.length), 5500);
+    return () => window.clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const submitSearch = () => {
+    const query = searchQuery.trim();
+    if (query) localStorage.setItem('fixam_search_query', query);
+    setActiveTab('Find Services');
+  };
 
   // Auto-open task creation modal if redirected from the landing page
   useEffect(() => {
@@ -187,8 +209,35 @@ export default function ClientDashboard({
         </button>
       </div>
 
+      {/* App-inspired client hero — intentionally no sports/news ticker on web */}
+      <section className="relative mb-6 overflow-hidden rounded-2xl bg-slate-950 shadow-xl shadow-slate-900/10 min-h-[330px] md:min-h-[430px]">
+        {heroSlides.map((slide, index) => (
+          <img key={slide.id} src={slide.image} alt={slide.title} className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${index === heroIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.03]'}`} />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+        <div className="relative z-10 flex min-h-[330px] md:min-h-[430px] max-w-2xl flex-col justify-end p-6 sm:p-9 md:p-12 text-white">
+          <p className="mb-2 text-[11px] font-black tracking-[0.18em] text-teal-200">{heroSlides[heroIndex].eyebrow}</p>
+          <h2 className="max-w-xl text-3xl font-black leading-tight sm:text-4xl md:text-5xl">{heroSlides[heroIndex].title}</h2>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-slate-200 sm:text-base">{heroSlides[heroIndex].body}</p>
+          <button onClick={() => setActiveTab(heroSlides[heroIndex].tab)} className="mt-5 inline-flex w-fit items-center gap-2 rounded-md bg-white px-5 py-3 text-sm font-black text-slate-900 transition hover:bg-teal-50">
+            {heroSlides[heroIndex].action} <span aria-hidden="true">→</span>
+          </button>
+        </div>
+        <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
+          {heroSlides.map((slide, index) => <button key={slide.id} aria-label={`${isFr ? 'Afficher la diapositive' : 'Show slide'} ${index + 1}`} onClick={() => setHeroIndex(index)} className={`h-2 rounded-full transition-all ${index === heroIndex ? 'w-8 bg-teal-300' : 'w-2 bg-white/55 hover:bg-white'}`} />)}
+        </div>
+        <button aria-label={isFr ? 'Image précédente' : 'Previous slide'} onClick={() => setHeroIndex(current => (current - 1 + heroSlides.length) % heroSlides.length)} className="absolute left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-xl text-white backdrop-blur-sm hover:bg-black/50 sm:flex">‹</button>
+        <button aria-label={isFr ? 'Image suivante' : 'Next slide'} onClick={() => setHeroIndex(current => (current + 1) % heroSlides.length)} className="absolute right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-xl text-white backdrop-blur-sm hover:bg-black/50 sm:flex">›</button>
+      </section>
+
+      <form onSubmit={(event) => { event.preventDefault(); submitSearch(); }} className="mb-8 flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-2 shadow-sm">
+        <span className="ml-3 text-teal-600"><Icon name="search" /></span>
+        <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="min-w-0 flex-1 border-0 bg-transparent px-2 py-3 text-sm text-slate-900 outline-none" placeholder={isFr ? 'Rechercher un professionnel ou un service…' : 'Search for a professional or service…'} />
+        <button type="submit" className="rounded-md bg-teal-600 px-5 py-3 text-sm font-black text-white transition hover:bg-teal-700">{isFr ? 'Rechercher' : 'Search'}</button>
+      </form>
+
       {/* Post Job Hero Section */}
-      <div className="grid md:grid-cols-2 gap-5 mb-8">
+      <div className="hidden">
         <div className="bg-white border border-gray-200 rounded-lg p-5 relative flex flex-col justify-between">
           <div>
             <p className="text-xs font-medium text-gray-400 mb-3">{i18n.language === 'fr' ? 'Publier une mission' : 'Post a Job'}</p>
@@ -250,9 +299,9 @@ export default function ClientDashboard({
       {/* 1. Top Categories Carousel (App-style cards) */}
       <div className="mb-10 relative group">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Popular Categories</h2>
+          <h2 className="text-xl font-bold text-gray-800">{isFr ? 'Catégories populaires' : 'Popular Categories'}</h2>
           <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Find Services')}>
-            View all
+            {isFr ? 'Voir tout' : 'View all'}
           </button>
         </div>
         
@@ -305,11 +354,11 @@ export default function ClientDashboard({
         <div className="mb-10 relative group">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[.14em] text-[#D95E57]">Real work from Fixam professionals</p>
-              <h2 className="mt-1 text-xl font-bold text-gray-800">See experts in action</h2>
+              <p className="text-[10px] font-black uppercase tracking-[.14em] text-[#D95E57]">{isFr ? 'LE TRAVAIL RÉEL DES PROFESSIONNELS FIXAM' : 'REAL WORK FROM FIXAM PROFESSIONALS'}</p>
+              <h2 className="mt-1 text-xl font-bold text-gray-800">{isFr ? 'Découvrez les experts en action' : 'See experts in action'}</h2>
             </div>
             <button className="text-sm font-semibold text-[#14B8A6] hover:text-[#0F9788] transition-colors" onClick={() => setActiveTab('Browse Projects')}>
-              See All
+              {isFr ? 'Tout voir' : 'See All'}
             </button>
           </div>
 
@@ -426,6 +475,16 @@ export default function ClientDashboard({
         </div>
       )}
 
+      <section className="mb-10">
+        <div className="mb-4"><p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-700">{isFr ? 'VOTRE ACTIVITÉ' : 'YOUR ACTIVITY'}</p><h2 className="mt-1 text-xl font-bold text-gray-800">{isFr ? 'Accès rapide' : 'Quick access'}</h2></div>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <button onClick={() => setActiveTab('Post a Job')} className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-teal-700"><Icon name="briefcase" /></span><strong className="block text-sm text-slate-900">{isFr ? 'Publier une mission' : 'Post a job'}</strong><span className="mt-1 block text-xs text-slate-500">{isFr ? 'Recevez des offres' : 'Receive offers'}</span></button>
+          <button onClick={() => setActiveTab('My Tasks')} className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><Icon name="chart" /></span><strong className="block text-sm text-slate-900">{isFr ? 'Mes missions' : 'My tasks'}</strong><span className="mt-1 block text-xs text-slate-500">{clientTasks.length} {isFr ? 'au total' : 'total'}</span></button>
+          <button onClick={() => setActiveTab('My Bookings')} className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700"><Icon name="calendar" /></span><strong className="block text-sm text-slate-900">{isFr ? 'Mes réservations' : 'My bookings'}</strong><span className="mt-1 block text-xs text-slate-500">{clientBookings.length} {isFr ? 'au total' : 'total'}</span></button>
+          <button onClick={() => setActiveTab('Wallet')} className="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700"><Icon name="wallet" /></span><strong className="block text-sm text-slate-900">{isFr ? 'Portefeuille' : 'Wallet'}</strong><span className="mt-1 block text-xs text-slate-500">{walletBalance.toLocaleString()} {isFr ? 'pièces' : 'coins'}</span></button>
+        </div>
+      </section>
+
       {/* 2. Recommended For You (2x2 Grid, Max 4 Pros) */}
       <div className="mb-10">
         <div className="flex items-center justify-between mb-6">
@@ -491,6 +550,23 @@ export default function ClientDashboard({
           })}
         </div>
       </div>
+
+      <section className="mb-10 overflow-hidden rounded-xl bg-slate-950 px-6 py-8 text-white sm:px-9">
+        <div className="mb-7 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="text-[10px] font-black uppercase tracking-[.16em] text-teal-300">{isFr ? 'SIMPLE ET TRANSPARENT' : 'SIMPLE AND TRANSPARENT'}</p><h2 className="mt-1 text-2xl font-black">{isFr ? 'Comment fonctionne Fixam' : 'How Fixam works'}</h2></div><button onClick={() => setActiveTab('Post a Job')} className="w-fit rounded-md bg-teal-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-teal-300">{isFr ? 'Publier une mission' : 'Post a job'}</button></div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            [isFr ? '01 · Publiez' : '01 · Post', isFr ? 'Décrivez votre besoin et votre budget.' : 'Describe your task and budget.'],
+            [isFr ? '02 · Comparez' : '02 · Compare', isFr ? 'Recevez et comparez les offres.' : 'Receive and compare offers.'],
+            [isFr ? '03 · Choisissez' : '03 · Choose', isFr ? 'Consultez les profils, projets et avis.' : 'Review profiles, work and ratings.'],
+            [isFr ? '04 · Réalisez' : '04 · Complete', isFr ? 'Convenez des détails et réalisez la mission.' : 'Agree on details and complete the work.'],
+          ].map(([title, body]) => <div key={title} className="rounded-lg border border-white/10 bg-white/5 p-5"><strong className="text-sm text-teal-200">{title}</strong><p className="mt-2 text-sm leading-6 text-slate-300">{body}</p></div>)}
+        </div>
+      </section>
+
+      <section className="mb-10 flex flex-col items-start justify-between gap-5 rounded-xl border border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 p-7 sm:flex-row sm:items-center">
+        <div><p className="text-[10px] font-black uppercase tracking-[.16em] text-orange-600">{isFr ? 'DÉVELOPPEZ LA COMMUNAUTÉ' : 'GROW THE COMMUNITY'}</p><h2 className="mt-1 text-xl font-black text-slate-900">{isFr ? 'Invitez vos proches sur Fixam' : 'Invite friends to Fixam'}</h2><p className="mt-2 text-sm text-slate-600">{isFr ? 'Aidez-les à trouver des professionnels locaux de confiance.' : 'Help them discover trusted local professionals.'}</p></div>
+        <button onClick={() => setActiveTab('Referrals')} className="rounded-md bg-orange-500 px-5 py-3 text-sm font-black text-white hover:bg-orange-600">{isFr ? 'Inviter maintenant' : 'Invite now'}</button>
+      </section>
 
       {/* 3. Bookings (Full width at bottom) */}
       <div className="mb-6 w-full pb-16">

@@ -17,6 +17,7 @@ export interface ExternalJobData {
   destinationEmail?: string;
   source?: string;
   isExternal?: boolean;
+  applicationQuestions?: any[];
 }
 
 interface ExternalJobApplyModalProps {
@@ -47,6 +48,7 @@ export default function ExternalJobApplyModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [screeningAnswers, setScreeningAnswers] = useState<Record<string, any>>({});
 
   // Pre-fill user data and generate draft cover letter
   useEffect(() => {
@@ -56,6 +58,7 @@ export default function ExternalJobApplyModal({
     setError(null);
     setCvFile(null);
     setIsPriority(false);
+    setScreeningAnswers({});
 
     const name = (user as any)?.fullName || (user as any)?.name || '';
     const email = (user as any)?.email || '';
@@ -100,6 +103,8 @@ export default function ExternalJobApplyModal({
       setError(isFr ? 'Veuillez saisir votre adresse e-mail pour recevoir les réponses des recruteurs.' : 'Please enter your email address so recruiters can reply to you.');
       return;
     }
+    const missingQuestion = (job.applicationQuestions || []).find((q: any) => q.required && (screeningAnswers[q.id] === undefined || screeningAnswers[q.id] === '' || (Array.isArray(screeningAnswers[q.id]) && screeningAnswers[q.id].length === 0) || (q.type === 'CHECKBOX' && screeningAnswers[q.id] !== true)));
+    if (missingQuestion) { setError(`${isFr ? 'Réponse obligatoire' : 'Answer required'}: ${missingQuestion.prompt}`); return; }
 
     try {
       setIsSubmitting(true);
@@ -113,6 +118,7 @@ export default function ExternalJobApplyModal({
       if (cvFile) formData.append('cv', cvFile);
       if (cvLink) formData.append('cvLink', cvLink.trim());
       if (isPriority) formData.append('isPriority', 'true');
+      formData.append('screeningAnswers', JSON.stringify(screeningAnswers));
 
       const response = await api.post(`/external-jobs/${job.id}/apply`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -448,6 +454,8 @@ export default function ExternalJobApplyModal({
                 }}
               />
             </div>
+
+            {Array.isArray(job.applicationQuestions) && job.applicationQuestions.length > 0 && <div style={{ marginBottom: '1rem', borderTop: '1px solid #E2E8F0', paddingTop: '1rem' }}><h4 style={{ margin: '0 0 .75rem', color: '#0F172A' }}>{isFr ? 'Questions du recruteur' : 'Recruiter Questions'}</h4>{job.applicationQuestions.map((q: any, index: number) => <div key={q.id} style={{ marginBottom: '1rem' }}><label style={{ display: 'block', fontSize: '.82rem', fontWeight: 700, marginBottom: '.4rem' }}>{index + 1}. {q.prompt}{q.required ? ' *' : ''}</label>{['SHORT_TEXT','LONG_TEXT','NUMBER','DATE'].includes(q.type) && (q.type === 'LONG_TEXT' ? <textarea rows={3} value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })} style={{ width: '100%', padding: '.65rem', border: '1px solid #CBD5E1', borderRadius: '.5rem', boxSizing: 'border-box' }}/> : <input type={q.type === 'NUMBER' ? 'number' : q.type === 'DATE' ? 'date' : 'text'} value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })} style={{ width: '100%', padding: '.65rem', border: '1px solid #CBD5E1', borderRadius: '.5rem', boxSizing: 'border-box' }}/>) }{q.type === 'YES_NO' && ['YES','NO'].map(option => <label key={option} style={{ marginRight: '1rem' }}><input type="radio" checked={screeningAnswers[q.id] === option} onChange={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: option })}/> {option === 'YES' ? (isFr ? 'Oui' : 'Yes') : (isFr ? 'Non' : 'No')}</label>)}{q.type === 'CHECKBOX' && <label><input type="checkbox" checked={screeningAnswers[q.id] === true} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.checked })}/> {isFr ? 'Je confirme' : 'I confirm'}</label>}{['SINGLE_CHOICE','MULTI_CHOICE'].includes(q.type) && q.options.map((option: string) => { const selected = q.type === 'MULTI_CHOICE' ? (screeningAnswers[q.id] || []).includes(option) : screeningAnswers[q.id] === option; return <label key={option} style={{ display: 'block', margin: '.35rem 0' }}><input type={q.type === 'MULTI_CHOICE' ? 'checkbox' : 'radio'} checked={selected} onChange={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: q.type === 'MULTI_CHOICE' ? (selected ? screeningAnswers[q.id].filter((v: string) => v !== option) : [...(screeningAnswers[q.id] || []), option]) : option })}/> {option}</label>})}</div>)}</div>}
 
             {/* Priority Application Boost Option */}
             <div

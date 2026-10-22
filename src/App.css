@@ -9140,4 +9140,12 @@ p {
 
 
 
+/* Consistent website action geometry. Circular icon controls and explicit
+   accessibility-labelled controls retain their component-specific shape. */
+button:not(.rounded-full):not([aria-label]) {
+  border-radius: 6px !important;
+}
 
+button.rounded-full:not([aria-label]) {
+  border-radius: 6px !important;
+}
