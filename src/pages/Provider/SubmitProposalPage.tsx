@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { Icon } from '../../App';
 import './SubmitProposalPage.css';
+import CoverLetterAssistant from '../../components/CoverLetterAssistant';
 
 interface SubmitProposalPageProps {
   job: any;
@@ -42,6 +43,7 @@ export default function SubmitProposalPage({
   const [redirectCount, setRedirectCount] = useState<number>(4);
   const [localAvailable, setLocalAvailable] = useState<boolean>(isAvailable);
   const [screeningAnswers, setScreeningAnswers] = useState<Record<string, any>>({});
+  const [showCoverLetterAssistant, setShowCoverLetterAssistant] = useState(false);
 
   const totalProposalCoins = boostCoins; // Base proposal is 100% FREE
   const currentWalletBalance = walletBalance !== null ? walletBalance : ((user as any)?.wallet?.balance || 0);
@@ -325,6 +327,10 @@ export default function SubmitProposalPage({
             {isFr ? 'Présentez votre expertise, vos disponibilités et votre approche pour résoudre le problème du client.' : 'Introduce yourself, highlight your past experience with similar tasks, and outline your approach.'}
           </p>
 
+          <button type="button" onClick={() => setShowCoverLetterAssistant(true)} className="mb-3 inline-flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2.5 text-sm font-black text-teal-700 hover:bg-teal-100">
+            <Icon name="wrench" /> {isFr ? 'Rédiger ma lettre de motivation' : 'Write my cover letter'}
+          </button>
+
           <textarea
             className="proposal-textarea"
             rows={5}
@@ -473,6 +479,7 @@ export default function SubmitProposalPage({
           </div>
         </div>
       </form>
+      <CoverLetterAssistant isOpen={showCoverLetterAssistant} onClose={() => setShowCoverLetterAssistant(false)} onGenerated={setCoverLetter} job={job} user={user} isFr={isFr} />
     </div>
   );
 }

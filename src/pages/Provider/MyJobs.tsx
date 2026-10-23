@@ -53,6 +53,10 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
   });
 
   const [btnLoadingId, setBtnLoadingId] = useState<string | null>(null);
+  const [reviseBooking, setReviseBooking] = useState<any | null>(null);
+  const [revisionBudget, setRevisionBudget] = useState('');
+  const [revisionMessage, setRevisionMessage] = useState('');
+  const [revisionSubmitting, setRevisionSubmitting] = useState(false);
 
   const [activeSection, setActiveSection] = useState<'jobs' | 'bookings'>(() => {
     const saved = sessionStorage.getItem('fixam_provider_jobs_tab');
@@ -127,7 +131,29 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
     }
   };
 
-  const activeJobCount = jobs.filter(j => j.status !== 'COMPLETED' && j.status !== 'CANCELLED').length;
+  const submitRevision = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!reviseBooking || revisionMessage.trim().length < 10 || !revisionBudget) return;
+    setRevisionSubmitting(true);
+    try {
+      const response = await api.post(`/bookings/${reviseBooking.id}/revisions`, {
+        reason: 'PRICE',
+        message: revisionMessage.trim(),
+        budget: Number(revisionBudget),
+      });
+      const updated = response.data?.data?.booking || { ...reviseBooking, status: 'REVISED_QUOTE_PENDING', counterBudget: Number(revisionBudget), counterNotes: revisionMessage.trim() };
+      setBookings((current) => current.map((item) => item.id === reviseBooking.id ? updated : item));
+      setReviseBooking(null);
+      setRevisionBudget('');
+      setRevisionMessage('');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Unable to send the revised offer.');
+    } finally {
+      setRevisionSubmitting(false);
+    }
+  };
+
+  const activeJobCount = jobs.filter(j => !['COMPLETED', 'CANCELLED'].includes(String(j.status || '').toUpperCase())).length;
   const pendingBookingsCount = bookings.filter(b => b.status === 'PENDING' || b.status === 'COUNTER_PROPOSED').length;
 
   const [reviewTarget, setReviewTarget] = useState<{ jobId: string; targetUserId: string; targetName: string } | null>(null);
@@ -222,8 +248,9 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
               const clientName = clientObj.fullName || `${clientObj.firstName || ''} ${clientObj.lastName || ''}`.trim() || 'Client';
               const clientUserId = clientObj.id || clientObj.userId || job.clientId || '';
               const initials = clientName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
-              const isCompleted = job.status === 'COMPLETED';
-              const isInProgress = job.status === 'IN_PROGRESS' || job.status === 'ASSIGNED';
+              const normalizedJobStatus = String(job.status || '').toUpperCase();
+              const isCompleted = normalizedJobStatus === 'COMPLETED';
+              const isInProgress = normalizedJobStatus === 'IN_PROGRESS' || normalizedJobStatus === 'ASSIGNED';
               
               return (
                 <div 
@@ -286,7 +313,7 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                           <Icon name="star" /> Review
                         </button>
                       )}
-                      {!isCompleted && job.status !== 'CANCELLED' && (
+                      {!isCompleted && normalizedJobStatus !== 'CANCELLED' && (
                         <button
                           disabled={Boolean(btnLoadingId)}
                           onClick={() => {
@@ -438,6 +465,9 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
                             <><Icon name="check" /> <span>Accept (1 Coin)</span></>
                           )}
                         </button>
+                        <button type="button" disabled={Boolean(btnLoadingId)} onClick={() => { setReviseBooking(booking); setRevisionBudget(String(booking.budget || '')); }} className="border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-bold text-teal-700 rounded-lg hover:bg-teal-100 disabled:opacity-60">
+                          {i18n.language === 'fr' ? 'Réviser l’offre' : 'Revise Offer'}
+                        </button>
                         <button
                           disabled={Boolean(btnLoadingId)}
                           onClick={() => handleBookingAction(booking.id, 'REJECTED')}
@@ -489,6 +519,16 @@ export default function MyJobs({ setActiveTab, setActiveChatUser, setSelectedBoo
           targetUserId={reviewTarget.targetUserId}
           targetName={reviewTarget.targetName}
         />
+      )}
+      {reviseBooking && (
+        <div className="fixed inset-0 z-[1000020] flex items-end justify-center bg-slate-950/50 p-3 sm:items-center" onClick={() => setReviseBooking(null)}>
+          <form onSubmit={submitRevision} onClick={(event) => event.stopPropagation()} className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4"><div><h3 className="text-xl font-black text-slate-900">{i18n.language === 'fr' ? 'Réviser l’offre' : 'Revise Offer'}</h3><p className="mt-1 text-sm text-slate-500">{i18n.language === 'fr' ? 'Le client recevra cette nouvelle proposition pour acceptation ou refus.' : 'The client will receive this revised offer to accept or decline.'}</p></div><button type="button" onClick={() => setReviseBooking(null)} className="text-2xl text-slate-400">×</button></div>
+            <label className="mt-5 block text-sm font-bold text-slate-700">{i18n.language === 'fr' ? 'Nouveau budget' : 'Revised budget'}<input required type="number" min="0" value={revisionBudget} onChange={(event) => setRevisionBudget(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-teal-500" /></label>
+            <label className="mt-4 block text-sm font-bold text-slate-700">{i18n.language === 'fr' ? 'Explication' : 'Explanation'}<textarea required minLength={10} rows={4} value={revisionMessage} onChange={(event) => setRevisionMessage(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3 outline-none focus:border-teal-500" placeholder={i18n.language === 'fr' ? 'Expliquez la modification...' : 'Explain what changed...'} /></label>
+            <button disabled={revisionSubmitting} className="mt-5 w-full rounded-xl bg-teal-600 px-4 py-3 font-black text-white disabled:opacity-60">{revisionSubmitting ? (i18n.language === 'fr' ? 'Envoi...' : 'Sending...') : (i18n.language === 'fr' ? 'Envoyer l’offre révisée' : 'Send Revised Offer')}</button>
+          </form>
+        </div>
       )}
     </div>
   );

@@ -3,19 +3,22 @@ import { useTranslation } from 'react-i18next';
 
 interface ServiceAgreementSectionProps {
   agreement?: any;
+  bookingStatus?: string;
   isClient?: boolean;
   isProvider?: boolean;
   onRefresh?: () => void;
 }
 
 export const ServiceAgreementSection: React.FC<ServiceAgreementSectionProps> = ({
-  agreement
+  agreement,
+  bookingStatus
 }) => {
   const { i18n } = useTranslation();
   const isFr = i18n.language === 'fr';
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  if (!agreement) return null;
+  const normalizedStatus = String(bookingStatus || agreement?.bookingStatus || '').toUpperCase();
+  if (!agreement || !['ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].includes(normalizedStatus)) return null;
 
   const terms = agreement.terms || {};
   const pdfUrl = `https://api.usefixam.com/api/agreements/${agreement.id}/pdf?lang=${i18n.language || 'en'}`;

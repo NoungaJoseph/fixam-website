@@ -58,6 +58,40 @@
   margin: -0.5rem 0 1.25rem 0;
 }
 
+.job-alert-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.job-alert-toggle-row strong,
+.job-alert-toggle-row small {
+  display: block;
+}
+
+.job-alert-toggle-row strong { color: #334155; font-size: 0.9rem; }
+.job-alert-toggle-row small { color: #64748B; font-size: 0.78rem; margin-top: 0.25rem; }
+.job-alert-toggle-row input { width: 1.1rem; height: 1.1rem; accent-color: #14B8A6; }
+.job-alert-toggle-row.compact { border-bottom: 0; margin-bottom: 0.5rem; }
+.job-alert-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.job-alert-chip { border: 1px solid #CBD5E1; border-radius: 999px; background: #F8FAFC; color: #475569; padding: 0.45rem 0.7rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+.job-alert-chip.selected { background: #E0F2FE; border-color: #14B8A6; color: #0D9488; }
+.job-alert-chip button { border: 0; background: transparent; color: inherit; font-weight: 900; cursor: pointer; padding: 0 0 0 0.35rem; }
+.job-alert-search-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.job-alert-search-row input { flex: 1; padding: 0.65rem 0.8rem; border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; }
+.job-alert-search-row button { width: 42px; border: 0; border-radius: 8px; background: #14B8A6; color: white; font-size: 1.3rem; font-weight: 800; cursor: pointer; }
+.job-alert-search-row button:disabled { opacity: 0.45; cursor: not-allowed; }
+.job-alert-suggestions { display: flex; flex-direction: column; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; margin-top: 0.4rem; }
+.job-alert-suggestions button { text-align: left; border: 0; border-bottom: 1px solid #F1F5F9; background: white; color: #334155; padding: 0.65rem 0.8rem; cursor: pointer; }
+.job-alert-suggestions button:last-child { border-bottom: 0; }
+.job-alert-mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.job-alert-mode-grid button { border: 1px solid #CBD5E1; border-radius: 8px; background: #F8FAFC; color: #475569; padding: 0.65rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+.job-alert-mode-grid button.active { background: #ECFDF5; border-color: #14B8A6; color: #0D9488; }
+
 /* Avatar photo panel */
 .avatar-uploader-row {
   display: flex;

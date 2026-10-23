@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
-import AssistantModal from '../components/AssistantModal';
+import SupportContactModal from '../components/SupportContactModal';
 import { DifferenceTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
 import { usePlatformStats } from '../hooks/usePlatformStats';
@@ -10,10 +10,11 @@ import './Home.css';
 const contentLocales = {
   en: {
     hero: {
-      eyebrow: 'Cameroon\'s #1 Verified Marketplace',
-      title1: 'The Leading Tech-Enabled',
-      titleHighlight: 'On-Demand Service',
-      title2: 'Marketplace.',
+      eyebrow: 'Trusted services. Wherever you are.',
+      title1: 'The smarter way to',
+      titleHighlight: 'get work done',
+      rotatingHighlights: ['get work done', 'find trusted experts', 'grow your business'],
+      title2: 'anywhere.',
       desc: 'Powered by verified trade professionals, smart matching algorithms, and direct transparent payments, so you get quality work done faster, safer, and reliably.',
       btnPrimary: 'Get Started Free',
       btnSecondary: 'Explore Services',
@@ -23,9 +24,9 @@ const contentLocales = {
       col1Title: 'Why Choose Fixam?',
       col1Desc: 'The leader in verified, on-demand & trusted trade services',
       col2Title: 'Completed Tasks',
-      col2Desc: 'Trusted by households and businesses across Cameroon',
+      col2Desc: 'Trusted by households and businesses everywhere',
       col3Title: 'Verified Trade Pros',
-      col3Desc: 'Across Douala, Yaoundé, Bafoussam, Buea, and Limbe',
+      col3Desc: 'Serving growing communities and businesses',
       col4Num: '100% Free',
       col4Title: 'Zero Booking Fees',
       col4Desc: 'Direct transparent pricing with cash or Mobile Money'
@@ -33,7 +34,7 @@ const contentLocales = {
     whatWeDo: {
       tag: 'Verified • Fast • 0% Commission',
       title: 'What we do',
-      desc: 'Fixam provides key, technology-enabled and verified solutions for everyday home repairs, construction, plumbing, electrical installations, appliance maintenance, cleaning, and professional artisan services across Cameroon.',
+      desc: 'Fixam provides technology-enabled and verified solutions for repairs, construction, plumbing, electrical installations, maintenance, cleaning, and professional services wherever people need dependable work.',
       highlights: [
         {
           type: 'matching',
@@ -187,7 +188,7 @@ const contentLocales = {
     },
     cta: {
       title: 'Ready to get started with Fixam?',
-      subtitle: 'Join thousands of clients and providers across Cameroon',
+      subtitle: 'Join thousands of clients and providers building better outcomes together',
       btnClient: 'Get Started as Client',
       btnPro: 'Join as Provider'
     }
@@ -207,9 +208,9 @@ const contentLocales = {
       col1Title: 'Pourquoi Choisir Fixam ?',
       col1Desc: 'Le leader des services professionnels vérifiés et à la demande',
       col2Title: 'Missions Réalisées',
-      col2Desc: 'Recommandé par les foyers et entreprises du Cameroun',
+      col2Desc: 'Adopté par des foyers et entreprises partout',
       col3Title: 'Artisans Vérifiés',
-      col3Desc: 'À Douala, Yaoundé, Bafoussam, Buéa et Limbé',
+      col3Desc: 'Au service de communautés et entreprises en croissance',
       col4Num: '100% Gratuit',
       col4Title: 'Zéro Frais de Réservation',
       col4Desc: 'Tarifs directs et transparents en espèces ou Mobile Money'
@@ -217,7 +218,7 @@ const contentLocales = {
     whatWeDo: {
       tag: 'Vérifié • Rapide • 0% Commission',
       title: 'Ce que nous faisons',
-      desc: 'Fixam fournit des solutions technologiques et vérifiées pour les réparations domestiques, la plomberie, l\'électricité, la maintenance, le nettoyage, les chantiers et les services d\'artisanat au Cameroun.',
+      desc: 'Fixam fournit des solutions technologiques et vérifiées pour les réparations, la plomberie, l\'électricité, la maintenance, le nettoyage, les chantiers et les services professionnels partout où vous en avez besoin.',
       highlights: [
         {
           type: 'matching',
@@ -371,7 +372,7 @@ const contentLocales = {
     },
     cta: {
       title: 'Prêt à commencer avec Fixam ?',
-      subtitle: 'Rejoignez des milliers de clients et prestataires à travers le Cameroun',
+      subtitle: 'Rejoignez des milliers de clients et prestataires qui construisent de meilleures opportunités',
       btnClient: 'Commencer comme Client',
       btnPro: 'Devenir Prestataire'
     }
@@ -400,8 +401,8 @@ const faqQuestions = [
     categoryFr: 'Démarrage',
     qEn: 'What areas does Fixam currently serve?',
     qFr: 'Dans quelles zones Fixam est-il disponible ?',
-    aEn: 'Fixam is currently available in multiple cities across Cameroon including Douala, Yaoundé, and Bafoussam. Check the app to find verified providers active in your neighborhood.',
-    aFr: 'Fixam est actuellement disponible dans plusieurs villes du Cameroun, notamment Douala, Yaoundé et Bafoussam. Consultez l\'application pour trouver des prestataires vérifiés dans votre quartier.'
+    aEn: 'Fixam is expanding across cities and communities. Check the app to find verified providers active in your area.',
+    aFr: 'Fixam se développe dans de nombreuses villes et communautés. Consultez l\'application pour trouver des prestataires vérifiés près de chez vous.'
   },
   {
     categoryEn: 'For Clients',
@@ -492,26 +493,18 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   
   const currentLang = i18n.language === 'fr' ? 'fr' : 'en';
   const tContent = contentLocales[currentLang];
+  const rotatingHighlights = currentLang === 'fr'
+    ? ['réaliser vos projets', 'trouver un expert fiable', 'développer votre activité']
+    : (tContent.hero as typeof contentLocales.en.hero).rotatingHighlights;
+  const heroEyebrow = currentLang === 'fr' ? 'Des services fiables, où que vous soyez.' : tContent.hero.eyebrow;
+  const heroTitle1 = currentLang === 'fr' ? 'La manière la plus simple de' : tContent.hero.title1;
+  const heroTitle2 = currentLang === 'fr' ? 'où que vous soyez.' : tContent.hero.title2;
 
-  // Assistant Pop-up Modal State (Only shows once, persists dismissal)
-  const [isAssistantOpen, setIsAssistantOpen] = useState(() => {
-    try {
-      const dismissed = localStorage.getItem('fixam_assistant_modal_dismissed');
-      return dismissed !== 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const handleCloseAssistant = () => {
-    setIsAssistantOpen(false);
-    try {
-      localStorage.setItem('fixam_assistant_modal_dismissed', 'true');
-    } catch {}
-  };
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   // Interactivity States
   const [localSearch, setLocalSearch] = useState('');
+  const [heroHeadlineIndex, setHeroHeadlineIndex] = useState(0);
   const [workToggle, setWorkToggle] = useState<'clients' | 'providers'>('clients');
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
@@ -549,6 +542,13 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setHeroHeadlineIndex((current) => (current + 1) % rotatingHighlights.length);
+    }, 4200);
+    return () => window.clearInterval(interval);
+  }, [currentLang, rotatingHighlights.length]);
   // Show top providers — verified providers first, then sorted by rating & completed jobs, max 6
   const verifiedPros = useMemo(() => {
     const list = Array.isArray(livePros) ? livePros : [];
@@ -570,42 +570,26 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
       case 'matching':
         return (
           <div className="tsi-highlight-icon-wrap theme-teal">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
+            <Icon name="wrench" />
           </div>
         );
       case 'free_booking':
         return (
           <div className="tsi-highlight-icon-wrap theme-emerald">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              <path d="m9 12 2 2 4-4" />
-            </svg>
+            <Icon name="check" />
           </div>
         );
       case 'id_vetted':
         return (
           <div className="tsi-highlight-icon-wrap theme-blue">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="16" rx="3" />
-              <circle cx="9" cy="10" r="2" />
-              <line x1="15" y1="8" x2="17" y2="8" />
-              <line x1="15" y1="12" x2="17" y2="12" />
-              <path d="M6 16c0-1.5 1.5-2 3-2s3 .5 3 2" />
-            </svg>
+            <Icon name="shield" />
           </div>
         );
       case 'payments':
       default:
         return (
           <div className="tsi-highlight-icon-wrap theme-amber">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="5" width="20" height="14" rx="2" />
-              <line x1="2" y1="10" x2="22" y2="10" />
-              <circle cx="6" cy="15" r="1" />
-              <circle cx="10" cy="15" r="1" />
-            </svg>
+            <Icon name="wallet" />
           </div>
         );
     }
@@ -628,35 +612,26 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
 
   useSEO({
     title: currentLang === 'fr' 
-      ? 'Fixam - Services Locaux à la Demande & Artisans Vérifiés au Cameroun' 
-      : 'Fixam - On-Demand Local Services & Verified Trade Professionals in Cameroon',
+      ? 'Fixam - Services à la Demande & Professionnels Vérifiés'
+      : 'Fixam - On-Demand Services & Verified Professionals',
     description: currentLang === 'fr'
-      ? 'Trouvez et réservez des plombiers, électriciens, menuisiers et techniciens vérifiés à Douala, Yaoundé et partout au Cameroun. 0% commission.'
-      : 'Connect with verified local plumbers, electricians, carpenters, and technicians across Douala, Yaoundé, and Cameroon. Post tasks for free with 0% commission.',
+      ? 'Trouvez et réservez des professionnels vérifiés pour vos travaux et projets. 0% de commission.'
+      : 'Connect with verified professionals for home services, projects, and skilled work. Post tasks free with 0% commission.',
     canonical: 'https://usefixam.com/',
     isFr: currentLang === 'fr'
   });
 
   return (
     <div className="landing-page tsi-styled-page">
-      {/* 1. Assistant Pop-up Modal (Only shows once, closes permanently on dismissal) */}
-      <AssistantModal 
-        isOpen={isAssistantOpen} 
-        onClose={handleCloseAssistant} 
-        onNavigate={(page) => {
-          handleCloseAssistant();
-          onNavigate(page);
-        }}
-        isFr={currentLang === 'fr'}
-      />
+      <SupportContactModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} isFr={currentLang === 'fr'} />
 
-      {/* Floating Assistant Trigger ("Need help?" + Chat Bubble from screenshots) */}
+      {/* Direct support contact */}
       <div 
         className="floating-assistant-trigger" 
-        onClick={() => setIsAssistantOpen(true)}
-        title="Need help?"
+        onClick={() => setIsSupportOpen(true)}
+        title={currentLang === 'fr' ? 'Contacter le support' : 'Contact support'}
       >
-        <span className="floating-help-bubble">Need help?</span>
+        <span className="floating-help-bubble">{currentLang === 'fr' ? 'Besoin d’aide ?' : 'Need help?'}</span>
         <div className="floating-chat-circle">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
             <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
@@ -667,7 +642,7 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
       {/* Floating Accessibility Trigger (Bottom Left from screenshots) */}
       <div 
         className="floating-accessibility-icon"
-        onClick={() => setIsAssistantOpen(true)}
+        onClick={() => setIsSupportOpen(true)}
         title="Accessibility & Assistant"
       >
         <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -681,10 +656,14 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
         <div className="tsi-hero-container">
           {/* Left Column: Copy & Actions */}
           <div className="tsi-hero-left">
+            <div className="tsi-hero-eyebrow">
+              <span className="tsi-hero-eyebrow-dot" />
+              {heroEyebrow}
+            </div>
             <h1 className="tsi-hero-headline">
-              {tContent.hero.title1}{' '}
-              <span className="tsi-hero-highlight">{tContent.hero.titleHighlight}</span>{' '}
-              {tContent.hero.title2}
+              {heroTitle1}{' '}
+              <span className="tsi-hero-highlight" key={`${currentLang}-${heroHeadlineIndex}`}>{rotatingHighlights[heroHeadlineIndex]}</span>{' '}
+              {heroTitle2}
             </h1>
 
             <p className="tsi-hero-subtitle">
@@ -741,6 +720,10 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
           {/* Right Column: Real service professional */}
           <div className="tsi-hero-right">
             <div className="tsi-hero-photo-frame">
+              <div className="tsi-hero-proof-card">
+                <span className="tsi-hero-proof-icon"><Icon name="star" /></span>
+                <span><strong>4.9/5</strong><small>{currentLang === 'fr' ? 'Avis clients vérifiés' : 'Verified client reviews'}</small></span>
+              </div>
               <img src={images.heroProfessional} alt={currentLang === 'fr' ? 'Professionnel Fixam au travail' : 'Fixam professional at work'} />
               <div className="tsi-hero-photo-proof">
                 <Icon name="shield" />
@@ -1043,8 +1026,8 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
             </h2>
             <p className="lead-text">
               {i18n.language === 'fr'
-                ? "Fixam connecte les professionnels qualifiés et les clients au Cameroun avec des opportunités concrètes, vérifiées et 100% sans commission."
-                : "Fixam connects skilled trade professionals and clients across Cameroon with concrete, verified job opportunities with 0% platform commission."}
+                ? "Fixam connecte les professionnels qualifiés et les clients avec des opportunités concrètes, vérifiées et 100% sans commission."
+                : "Fixam connects skilled professionals and clients with concrete, verified opportunities and 0% platform commission."}
             </p>
             <div className="features-checklist">
               <div className="checklist-item">

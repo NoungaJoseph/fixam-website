@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { Icon } from '../../App';
+import { useTranslation } from 'react-i18next';
 import './ProfileSettings.css';
 
 type Certificate = {
@@ -11,8 +12,12 @@ type Certificate = {
   imageUrl?: string;
 };
 
+const SUGGESTED_SKILLS = ['Technology', 'Tech Support', 'Software Development', 'Web Development', 'Mobile Development', 'Data Entry', 'Digital Marketing', 'Medicine', 'Nursing', 'Pharmacy', 'Caregiving', 'Farming', 'Livestock', 'Crop Production', 'Food Services', 'Cooking', 'Baking', 'Catering', 'Therapist', 'Psychology', 'Lawyer', 'Legal Services', 'Real Estate Agent', 'Property Management', 'Excel', 'Microsoft Word', 'Accounting', 'Translation', 'Writing', 'Tutoring', 'Carpentry', 'Plumbing', 'Electrical', 'Construction', 'Cleaning', 'Driving', 'Delivery', 'Photography', 'Graphic Design', 'Beauty', 'Tailoring', 'Security'];
+
 export default function ProfileSettings() {
   const { user, refreshUser } = useAuth();
+  const { i18n } = useTranslation();
+  const isFrench = i18n.language?.startsWith('fr');
 
   // Basic Information States
   const [firstName, setFirstName] = useState('');
@@ -43,6 +48,8 @@ export default function ProfileSettings() {
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isUploadingCert, setIsUploadingCert] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [jobSkillSearch, setJobSkillSearch] = useState('');
+  const [jobAlerts, setJobAlerts] = useState({ enabled: true, categories: [] as string[], locations: '', anywhere: true, includeRemote: true, minimumBudget: '', frequency: 'INSTANT', matchMode: 'BEST_MATCHES', dailyLimit: 10 });
 
   useEffect(() => {
     if (user) {
@@ -59,6 +66,8 @@ export default function ProfileSettings() {
         setExperienceLevel(user.providerProfile.experienceLevel || 'Intermediate');
         setSkills(Array.isArray(user.providerProfile.skills) ? user.providerProfile.skills : []);
         setCertificates(Array.isArray(user.providerProfile.certificates) ? user.providerProfile.certificates : []);
+        const savedAlerts = user.providerProfile.jobAlertPreferences || {};
+        setJobAlerts((current) => ({ ...current, ...savedAlerts, categories: Array.from(new Set([...(savedAlerts.categories || []), ...(user.providerProfile.skills || [])])).slice(0, 5), locations: Array.isArray(savedAlerts.locations) ? savedAlerts.locations.join(', ') : (savedAlerts.locations || ''), anywhere: savedAlerts.anywhere !== false && !(savedAlerts.locations || []).length, includeRemote: savedAlerts.includeRemote !== false, minimumBudget: savedAlerts.minimumBudget ? String(savedAlerts.minimumBudget) : '' }));
       }
     }
   }, [user]);
@@ -197,8 +206,9 @@ export default function ProfileSettings() {
 
     try {
       await api.put('/users/profile', payload);
+      await api.put('/providers/job-alert-preferences', { ...jobAlerts, locations: jobAlerts.anywhere ? [] : jobAlerts.locations.split(',').map((item) => item.trim()).filter(Boolean), minimumBudget: jobAlerts.minimumBudget ? Number(jobAlerts.minimumBudget) : null, dailyLimit: Number(jobAlerts.dailyLimit) || 10 });
       await refreshUser();
-      alert('Profile details updated successfully!');
+      alert(isFrench ? 'Profil et alertes mis à jour avec succès !' : 'Profile and job alerts updated successfully!');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to save profile changes');
     } finally {
@@ -356,6 +366,40 @@ export default function ProfileSettings() {
 
         {/* Right Column: Certificates & Documents */}
         <div className="settings-right-col">
+          <div className="settings-panel job-alerts-panel">
+            <h3>{isFrench ? 'Alertes d’emploi intelligentes' : 'Smart job alerts'}</h3>
+            <p className="panel-subtext">{isFrench ? 'Choisissez les missions qui correspondent à vos compétences et préférences.' : 'Choose jobs that match your skills and preferences.'}</p>
+            <label className="job-alert-toggle-row">
+              <span>
+                <strong>{isFrench ? 'Activer les notifications ciblées' : 'Enable targeted notifications'}</strong>
+                <small>{isFrench ? 'Recevoir uniquement les missions pertinentes.' : 'Receive only relevant job opportunities.'}</small>
+              </span>
+              <input type="checkbox" checked={jobAlerts.enabled} onChange={(e) => setJobAlerts({ ...jobAlerts, enabled: e.target.checked })} />
+            </label>
+            <div className="settings-field">
+              <label>{isFrench ? 'Compétences sélectionnées' : 'Selected skills'} ({jobAlerts.categories.length}/5)</label>
+              <div className="job-alert-chips">
+                {jobAlerts.categories.map((category) => <span className="job-alert-chip selected" key={category}>{category}<button type="button" onClick={() => setJobAlerts({ ...jobAlerts, categories: jobAlerts.categories.filter((item) => item !== category) })}>×</button></span>)}
+              </div>
+              <div className="job-alert-search-row"><input value={jobSkillSearch} onChange={(e) => setJobSkillSearch(e.target.value)} placeholder={isFrench ? 'Rechercher une compétence' : 'Search skills'} /><button type="button" onClick={() => { const skill = jobSkillSearch.trim(); if (skill && jobAlerts.categories.length < 5 && !jobAlerts.categories.some((item) => item.toLowerCase() === skill.toLowerCase())) { setJobAlerts({ ...jobAlerts, categories: [...jobAlerts.categories, skill] }); setJobSkillSearch(''); } }} disabled={jobAlerts.categories.length >= 5 || !jobSkillSearch.trim()}>+</button></div>
+              {jobSkillSearch.trim() && <div className="job-alert-suggestions">{SUGGESTED_SKILLS.filter((skill) => skill.toLowerCase().includes(jobSkillSearch.toLowerCase())).slice(0, 8).map((skill) => <button type="button" key={skill} onClick={() => { if (jobAlerts.categories.length < 5) setJobAlerts({ ...jobAlerts, categories: [...jobAlerts.categories, skill] }); setJobSkillSearch(''); }}>{skill}</button>)}</div>}
+            </div>
+            <div className="settings-field">
+              <label>{isFrench ? 'Lieux préférés' : 'Preferred locations'}</label>
+              <input value={jobAlerts.locations} onChange={(e) => setJobAlerts({ ...jobAlerts, locations: e.target.value, anywhere: false })} placeholder={isFrench ? 'Douala, Yaoundé...' : 'Douala, Yaoundé...'} />
+            </div>
+            <div className="form-row-two">
+              <div className="settings-field"><label>{isFrench ? 'Budget minimum (XAF)' : 'Minimum budget (XAF)'}</label><input type="number" value={jobAlerts.minimumBudget} onChange={(e) => setJobAlerts({ ...jobAlerts, minimumBudget: e.target.value })} /></div>
+              <div className="settings-field"><label>{isFrench ? 'Fréquence' : 'Frequency'}</label><select value={jobAlerts.frequency} onChange={(e) => setJobAlerts({ ...jobAlerts, frequency: e.target.value })}><option value="INSTANT">{isFrench ? 'Immédiate' : 'Immediately'}</option><option value="DAILY">{isFrench ? 'Résumé quotidien' : 'Daily summary'}</option></select></div>
+            </div>
+            <label className="job-alert-toggle-row compact"><span>{isFrench ? 'N’importe où' : 'Anywhere'}</span><input type="checkbox" checked={jobAlerts.anywhere} onChange={(e) => setJobAlerts({ ...jobAlerts, anywhere: e.target.checked, locations: e.target.checked ? '' : jobAlerts.locations })} /></label>
+            <label className="job-alert-toggle-row compact"><span>{isFrench ? 'Inclure les missions à distance' : 'Include remote opportunities'}</span><input type="checkbox" checked={jobAlerts.includeRemote} onChange={(e) => setJobAlerts({ ...jobAlerts, includeRemote: e.target.checked })} /></label>
+            <div className="job-alert-mode-grid">
+              <button type="button" className={jobAlerts.matchMode === 'BEST_MATCHES' ? 'active' : ''} onClick={() => setJobAlerts({ ...jobAlerts, matchMode: 'BEST_MATCHES' })}>{isFrench ? 'Meilleures correspondances' : 'Best matches only'}</button>
+              <button type="button" className={jobAlerts.matchMode === 'MORE_OPPORTUNITIES' ? 'active' : ''} onClick={() => setJobAlerts({ ...jobAlerts, matchMode: 'MORE_OPPORTUNITIES' })}>{isFrench ? 'Plus d’opportunités' : 'More opportunities'}</button>
+            </div>
+          </div>
+
           {/* Add Certificate panel */}
           <div className="settings-panel cert-add-panel">
             <h3>Add Certificate / Credentials</h3>

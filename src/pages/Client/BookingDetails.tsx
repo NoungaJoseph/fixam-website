@@ -113,7 +113,7 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-900">{providerName}</h4>
                   <p className="text-xs text-gray-500 mb-2">Service Professional</p>
-                  {booking.status !== 'CANCELLED' && booking.status !== 'Cancelled' && (
+                  {['ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].includes(String(booking.status || '').toUpperCase()) && (
                     <button className="text-xs font-bold text-teal-600 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-full transition cursor-pointer" onClick={() => {
                       const targetId = booking.provider?.userId || booking.provider?.id || booking.providerId;
                       setActiveChatUser({ id: targetId, name: providerName, avatar: avatarUrl });
@@ -148,6 +148,7 @@ export default function BookingDetails({ booking, setActiveTab, setActiveChatUse
           />
           <ServiceAgreementSection
             agreement={booking.serviceAgreement || (booking.serviceAgreements && booking.serviceAgreements[0])}
+            bookingStatus={booking.status}
             isClient={true}
           />
           <DisputeSection

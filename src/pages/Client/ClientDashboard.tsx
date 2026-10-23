@@ -210,12 +210,12 @@ export default function ClientDashboard({
       </div>
 
       {/* App-inspired client hero — intentionally no sports/news ticker on web */}
-      <section className="relative mb-6 overflow-hidden rounded-2xl bg-slate-950 shadow-xl shadow-slate-900/10 min-h-[330px] md:min-h-[430px]">
+      <section className="relative mb-6 w-[calc(100%+2rem)] -ml-4 overflow-hidden rounded-2xl bg-slate-950 shadow-xl shadow-slate-900/10 min-h-[250px] sm:min-h-[280px] md:min-h-[310px] md:w-[calc(100%+4rem)] md:-ml-8">
         {heroSlides.map((slide, index) => (
           <img key={slide.id} src={slide.image} alt={slide.title} className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${index === heroIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.03]'}`} />
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
-        <div className="relative z-10 flex min-h-[330px] md:min-h-[430px] max-w-2xl flex-col justify-end p-6 sm:p-9 md:p-12 text-white">
+        <div className="relative z-10 flex min-h-[250px] sm:min-h-[280px] md:min-h-[310px] max-w-2xl flex-col justify-end p-5 sm:p-8 md:p-10 text-white">
           <p className="mb-2 text-[11px] font-black tracking-[0.18em] text-teal-200">{heroSlides[heroIndex].eyebrow}</p>
           <h2 className="max-w-xl text-3xl font-black leading-tight sm:text-4xl md:text-5xl">{heroSlides[heroIndex].title}</h2>
           <p className="mt-3 max-w-lg text-sm leading-6 text-slate-200 sm:text-base">{heroSlides[heroIndex].body}</p>

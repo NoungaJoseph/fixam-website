@@ -142,7 +142,7 @@ export const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.or
 
 export const images = {
   landingHero: asset('landing-hero-composite.png'),
-  heroProfessional: asset('hero-professional.png'),
+  heroProfessional: asset('carpentry.jpg'),
   appHomeScreen: asset('app-remote-jobs-screen.png'),
   servicePlumber: asset('plumbing.jpg'),
   serviceCleaner: asset('cleaning.jpg'),
@@ -1192,10 +1192,10 @@ function Header({ page, onNavigate, onSearch, setSelectedPathway }: { page: Page
 
           <div className="header-right-actions">
             <div className="header-socials-desktop desktop-only">
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="instagram" /></a>
-              <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="linkedin" /></a>
+              <a href="https://www.facebook.com/UseFixam" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><SocialIcon name="facebook" /></a>
+              <a href="https://x.com/UseFixam" target="_blank" rel="noopener noreferrer" aria-label="X"><SocialIcon name="twitter" /></a>
+              <a href="https://www.instagram.com/usefixam" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><SocialIcon name="instagram" /></a>
+              <a href="https://www.linkedin.com/company/fixam" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><SocialIcon name="linkedin" /></a>
             </div>
 
             <div className="language-dropdown-new desktop-only">
@@ -2674,10 +2674,10 @@ export function Footer({ onNavigate }: { onNavigate?: (page: Page) => void }) {
         <p className="copyright">© 2026 Fixam. All rights reserved.</p>
 
         <div className="footer-socials">
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><Icon name="facebook" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Twitter"><Icon name="twitter" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><Icon name="instagram" /></a>
-          <a href="#" onClick={(e) => e.preventDefault()} aria-label="LinkedIn"><Icon name="linkedin" /></a>
+          <a href="https://www.facebook.com/UseFixam" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><SocialIcon name="facebook" /></a>
+          <a href="https://x.com/UseFixam" target="_blank" rel="noopener noreferrer" aria-label="X"><SocialIcon name="twitter" /></a>
+          <a href="https://www.instagram.com/usefixam" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><SocialIcon name="instagram" /></a>
+          <a href="https://www.linkedin.com/company/fixam" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><SocialIcon name="linkedin" /></a>
         </div>
 
         <div className="footer-legal-links">
@@ -3021,18 +3021,6 @@ function Logo({ light = false }: { light?: boolean }) {
 }
 
 export function Icon({ name }: { name: IconName }) {
-  const materialNames: Record<IconName, string> = {
-    appliance: 'kitchen', bell: 'notifications', briefcase: 'business_center', calendar: 'calendar_month',
-    chat: 'chat_bubble', check: 'check', cleaning: 'cleaning_services', delivery: 'local_shipping',
-    electrical: 'bolt', filter: 'tune', home: 'home', heart: 'favorite', location: 'location_on',
-    menu: 'menu', message: 'mail', painting: 'format_paint', plumbing: 'plumbing', search: 'search',
-    shield: 'verified_user', x: 'close', star: 'star', user: 'person', wallet: 'account_balance_wallet',
-    wrench: 'handyman', sun: 'light_mode', moon: 'dark_mode', facebook: 'public', twitter: 'public',
-    instagram: 'photo_camera', linkedin: 'business', chart: 'bar_chart', 'chevron-up': 'expand_less',
-    'chevron-down': 'expand_more', phone: 'call', settings: 'settings', logout: 'logout',
-  }
-  return <span aria-hidden="true" className="icon material-symbols-rounded">{materialNames[name]}</span>
-
   const paths: Record<IconName, string> = {
     appliance: 'M7 4h10v16H7z M10 7h4 M10 17h4 M10 11a2 2 0 1 0 4 0a2 2 0 0 0-4 0z',
     bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9z M10 21h4',
@@ -3077,6 +3065,20 @@ export function Icon({ name }: { name: IconName }) {
       <path d={paths[name]} />
     </svg>
   )
+}
+
+export function SocialIcon({ name }: { name: 'facebook' | 'twitter' | 'instagram' | 'linkedin' }) {
+  const paths = {
+    facebook: 'M14 8h3V4h-3c-2.8 0-5 2.2-5 5v3H6v4h3v8h4v-8h3.5l.5-4H13V9c0-.6.4-1 1-1z',
+    twitter: 'M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.4L2.8 2h6.4l4.4 5.8L18.9 2zm-1.1 17.5h1.7L8.3 4.4H6.5l11.3 15.1z',
+    instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 12 16.5 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 12 14.5 2.5 2.5 0 0 0 12 9.5zM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z',
+    linkedin: 'M5 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM3 9h4v12H3V9zm6 0h4v1.7c.8-1.2 2.2-2.1 4.3-2.1 4 0 4.7 2.6 4.7 6.1V21h-4v-5.5c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9V9z'
+  };
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="social-icon" fill="currentColor">
+      <path d={paths[name]} />
+    </svg>
+  );
 }
 
 export default App

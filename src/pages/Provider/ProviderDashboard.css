@@ -30,7 +30,7 @@
 /* DARK HERO BANNER */
 .provider-billboard {
   position: relative;
-  min-height: 360px;
+  min-height: 250px;
   overflow: hidden;
   border-radius: 22px;
   background-color: #06213e;
@@ -40,9 +40,9 @@
   transition: background-image .45s ease;
 }
 .provider-billboard-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,20,47,.9) 0%, rgba(3,20,47,.42) 55%, rgba(3,20,47,.15) 100%); }
-.provider-billboard-copy { position: relative; z-index: 1; max-width: 570px; padding: 52px 48px; color: #fff; }
+.provider-billboard-copy { position: relative; z-index: 1; max-width: 570px; padding: 34px 40px; color: #fff; }
 .provider-billboard-tag { display: inline-block; margin-bottom: 14px; color: #99f6e4; font-size: .7rem; line-height: 1; letter-spacing: .14em; font-weight: 900; }
-.provider-billboard h2 { max-width: 540px; margin: 0; color: #fff; font-size: clamp(2rem, 3.3vw, 3.1rem); line-height: 1.04; letter-spacing: -.045em; font-weight: 900; }
+.provider-billboard h2 { max-width: 540px; margin: 0; color: #fff; font-size: clamp(1.7rem, 2.8vw, 2.5rem); line-height: 1.04; letter-spacing: -.045em; font-weight: 900; }
 .provider-billboard p { max-width: 440px; margin: 16px 0 0; color: #dce7f2; font-size: 1rem; line-height: 1.55; }
 .provider-billboard-action { display: inline-flex; align-items: center; gap: 9px; margin-top: 25px; padding: 12px 16px; border: 0; border-radius: 10px; background: #e6fffa; color: #06213e; font-weight: 850; cursor: pointer; transition: transform .2s ease, background .2s ease; }
 .provider-billboard-action:hover { transform: translateY(-2px); background: #fff; }
@@ -130,6 +130,8 @@
   align-items: center;
   gap: 1rem;
 }
+.upwork-alert-banner { flex-wrap: wrap; }
+.alert-actions { flex-basis: 100%; justify-content: flex-end; }
 
 .alert-link-btn {
   background: transparent;
@@ -160,6 +162,16 @@
   gap: .32rem;
 }
 .dashboard-empty-icon { display: block; margin-bottom: .5rem; color: #0d9488; }
+.provider-job-skeleton-list { display: grid; gap: 1rem; }
+.provider-job-skeleton { display: flex; align-items: center; gap: 1rem; min-height: 118px; padding: 1.25rem; border: 1px solid #E2E8F0; border-radius: 16px; background: #fff; }
+.provider-skeleton-line { border-radius: 8px; background: linear-gradient(90deg, #E2E8F0 25%, #F8FAFC 50%, #E2E8F0 75%); background-size: 220% 100%; animation: provider-skeleton-shimmer 1.4s ease-in-out infinite; }
+.provider-skeleton-avatar { width: 52px; height: 52px; border-radius: 14px; flex: 0 0 auto; }
+.provider-skeleton-copy { flex: 1; display: grid; gap: .55rem; }
+.provider-skeleton-short { width: 28%; height: 10px; }
+.provider-skeleton-long { width: 64%; height: 16px; }
+.provider-skeleton-meta { width: 42%; height: 10px; }
+.provider-skeleton-button { width: 92px; height: 34px; }
+@keyframes provider-skeleton-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 .dashboard-empty-icon .icon { width: 2.5rem; height: 2.5rem; font-size: 2.5rem; }
 .dashboard-inline-icon .icon,
 .upwork-alert-banner .alert-icon .icon {
@@ -1618,4 +1630,158 @@
   background: #f0fdf4;
   border-color: #10B981;
   color: #10B981;
+}
+
+.provider-job-detail-page {
+  width: min(1060px, 100%);
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 28px 28px 72px;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.provider-job-detail-back {
+  margin-bottom: 30px;
+}
+
+.provider-job-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 56px;
+  align-items: start;
+}
+
+.provider-job-detail-eyebrow,
+.provider-job-detail-label {
+  margin: 0;
+  color: #0d9488;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.provider-job-detail-title {
+  margin: 12px 0 10px;
+  color: #0f172a;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.08;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+
+.provider-job-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: #64748b;
+  font-size: 14px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.provider-job-detail-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.provider-job-detail-section {
+  padding: 28px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.provider-job-detail-section h2 {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.provider-job-detail-section p {
+  margin: 0;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.provider-job-detail-sidebar {
+  position: sticky;
+  top: 24px;
+  border-top: 2px solid #0d9488;
+  padding-top: 22px;
+  min-width: 0;
+}
+
+.provider-job-detail-pay {
+  display: block;
+  color: #0f172a;
+  font-size: 24px;
+  margin: 7px 0 22px;
+  overflow-wrap: anywhere;
+}
+
+.provider-job-detail-apply {
+  width: 100%;
+  justify-content: center;
+}
+
+.provider-job-detail-note {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 768px) {
+  .provider-job-detail-page {
+    width: 100%;
+    padding: 18px 16px 40px;
+  }
+
+  .provider-job-detail-back {
+    margin-bottom: 22px;
+  }
+
+  .provider-job-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .provider-job-detail-title {
+    font-size: clamp(1.8rem, 9vw, 2.45rem);
+    line-height: 1.12;
+  }
+
+  .provider-job-detail-meta {
+    gap: 10px 16px;
+    padding-bottom: 20px;
+    font-size: 13px;
+  }
+
+  .provider-job-detail-section {
+    padding: 22px 0;
+  }
+
+  .provider-job-detail-section h2 {
+    font-size: 18px;
+  }
+
+  .provider-job-detail-section p {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .provider-job-detail-sidebar {
+    position: static;
+    margin-top: 24px;
+    padding: 20px 0 0;
+  }
+
+  .provider-job-detail-apply {
+    min-height: 48px;
+  }
 }

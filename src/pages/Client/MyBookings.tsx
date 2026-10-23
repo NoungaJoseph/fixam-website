@@ -137,7 +137,7 @@ export default function MyBookings({
                       <Icon name="chat" /> Chat
                     </button>
                   )}
-                  {bk.status === 'COMPLETED' && (
+                  {String(bk.status || '').toUpperCase() === 'COMPLETED' && (
                     <button className="btn-chat-booking" style={{ backgroundColor: '#F59E0B', borderColor: '#F59E0B', color: '#FFFFFF' }} onClick={(e) => {
                       e.stopPropagation();
                       const targetUserId = bk.provider?.id || bk.provider?.userId || bk.providerId;
@@ -146,7 +146,7 @@ export default function MyBookings({
                       <Icon name="star" /> Review
                     </button>
                   )}
-                  {bk.status !== 'COMPLETED' && bk.status !== 'CANCELLED' && (
+                  {!['COMPLETED', 'CANCELLED'].includes(String(bk.status || '').toUpperCase()) && (
                     <>
                       <button className="btn-cancel-booking" onClick={async (e) => {
                         e.stopPropagation();

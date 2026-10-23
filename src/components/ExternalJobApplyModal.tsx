@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import i18n from '../i18n';
+import CoverLetterAssistant from './CoverLetterAssistant';
 
 export interface ExternalJobData {
   id: string;
@@ -49,6 +50,7 @@ export default function ExternalJobApplyModal({
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [screeningAnswers, setScreeningAnswers] = useState<Record<string, any>>({});
+  const [showCoverLetterAssistant, setShowCoverLetterAssistant] = useState(false);
 
   // Pre-fill user data and generate draft cover letter
   useEffect(() => {
@@ -73,13 +75,13 @@ export default function ExternalJobApplyModal({
     setCvLink('');
     setCvMode('file');
 
-    // Auto-generate professional first-person draft
+    // Cover letters are created from verified profile facts and provider answers.
     const skills = (user as any)?.providerProfile?.skills?.join(', ') || (user as any)?.skills?.join(', ') || job.category || 'this field';
     const draft = isFr
       ? `Madame, Monsieur l'équipe de recrutement chez ${job.companyName},\n\nJe vous adresse ma candidature pour le poste de ${job.title}.\n\nFort de mon expérience professionnelle dans le domaine de ${skills}, je suis convaincu(e) de pouvoir apporter une réelle valeur ajoutée à votre équipe.\n\nVous trouverez ci-joint mes coordonnées détaillées ainsi que mon CV pour étude de mon profil. Je reste à votre entière disposition pour tout échange complémentaire.\n\nJe vous remercie pour l'attention portée à ma candidature.\n\nCordialement,\n${name}`
       : `Dear Hiring Team at ${job.companyName},\n\nI am writing to express my strong interest in the ${job.title} position.\n\nWith proven professional experience in ${skills}, I am confident in my ability to deliver quality results and make an immediate positive contribution to your organization.\n\nPlease find my contact details and attached CV for your review. I would welcome the opportunity to discuss how my background aligns with your requirements.\n\nThank you for your time and consideration.\n\nBest regards,\n${name}`;
 
-    setCoverLetter(draft);
+    setCoverLetter('');
   }, [isOpen, job, user, isFr]);
 
   if (!isOpen || !job) return null;
@@ -144,31 +146,27 @@ export default function ExternalJobApplyModal({
         position: 'fixed',
         inset: 0,
         zIndex: 1000020,
-        backgroundColor: 'rgba(15, 23, 42, 0.7)',
-        backdropFilter: 'blur(5px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem',
+        backgroundColor: '#F8FAFC',
+        display: 'block',
+        padding: 0,
         overflowY: 'auto'
       }}
-      onClick={onClose}
     >
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '1rem',
-          maxWidth: '620px',
+          backgroundColor: '#F8FAFC',
+          borderRadius: 0,
+          maxWidth: 'none',
+          minHeight: '100vh',
           width: '100%',
-          overflow: 'hidden',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
-          border: '1px solid #E2E8F0',
+          overflow: 'visible',
+          boxShadow: 'none',
+          border: 'none',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          maxHeight: '92vh'
+          maxHeight: 'none'
         }}
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', backgroundColor: '#F8FAFC' }}>
@@ -435,6 +433,9 @@ export default function ExternalJobApplyModal({
                   {isFr ? 'Modifiable' : 'Editable draft'}
                 </span>
               </div>
+              <button type="button" onClick={() => setShowCoverLetterAssistant(true)} style={{ marginBottom: '0.6rem', border: '1px solid #99F6E4', background: '#F0FDFA', color: '#0F766E', borderRadius: '0.7rem', padding: '0.65rem 0.9rem', fontWeight: 800, cursor: 'pointer' }}>
+                {isFr ? 'Rédiger ma lettre de motivation' : 'Write my cover letter'}
+              </button>
               <textarea
                 rows={6}
                 required
@@ -457,8 +458,7 @@ export default function ExternalJobApplyModal({
 
             {Array.isArray(job.applicationQuestions) && job.applicationQuestions.length > 0 && <div style={{ marginBottom: '1rem', borderTop: '1px solid #E2E8F0', paddingTop: '1rem' }}><h4 style={{ margin: '0 0 .75rem', color: '#0F172A' }}>{isFr ? 'Questions du recruteur' : 'Recruiter Questions'}</h4>{job.applicationQuestions.map((q: any, index: number) => <div key={q.id} style={{ marginBottom: '1rem' }}><label style={{ display: 'block', fontSize: '.82rem', fontWeight: 700, marginBottom: '.4rem' }}>{index + 1}. {q.prompt}{q.required ? ' *' : ''}</label>{['SHORT_TEXT','LONG_TEXT','NUMBER','DATE'].includes(q.type) && (q.type === 'LONG_TEXT' ? <textarea rows={3} value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })} style={{ width: '100%', padding: '.65rem', border: '1px solid #CBD5E1', borderRadius: '.5rem', boxSizing: 'border-box' }}/> : <input type={q.type === 'NUMBER' ? 'number' : q.type === 'DATE' ? 'date' : 'text'} value={screeningAnswers[q.id] || ''} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.value })} style={{ width: '100%', padding: '.65rem', border: '1px solid #CBD5E1', borderRadius: '.5rem', boxSizing: 'border-box' }}/>) }{q.type === 'YES_NO' && ['YES','NO'].map(option => <label key={option} style={{ marginRight: '1rem' }}><input type="radio" checked={screeningAnswers[q.id] === option} onChange={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: option })}/> {option === 'YES' ? (isFr ? 'Oui' : 'Yes') : (isFr ? 'Non' : 'No')}</label>)}{q.type === 'CHECKBOX' && <label><input type="checkbox" checked={screeningAnswers[q.id] === true} onChange={(e) => setScreeningAnswers({ ...screeningAnswers, [q.id]: e.target.checked })}/> {isFr ? 'Je confirme' : 'I confirm'}</label>}{['SINGLE_CHOICE','MULTI_CHOICE'].includes(q.type) && q.options.map((option: string) => { const selected = q.type === 'MULTI_CHOICE' ? (screeningAnswers[q.id] || []).includes(option) : screeningAnswers[q.id] === option; return <label key={option} style={{ display: 'block', margin: '.35rem 0' }}><input type={q.type === 'MULTI_CHOICE' ? 'checkbox' : 'radio'} checked={selected} onChange={() => setScreeningAnswers({ ...screeningAnswers, [q.id]: q.type === 'MULTI_CHOICE' ? (selected ? screeningAnswers[q.id].filter((v: string) => v !== option) : [...(screeningAnswers[q.id] || []), option]) : option })}/> {option}</label>})}</div>)}</div>}
 
-            {/* Priority Application Boost Option */}
-            <div
+            {false && <div
               onClick={() => setIsPriority(!isPriority)}
               style={{
                 marginBottom: '1rem',
@@ -509,7 +509,7 @@ export default function ExternalJobApplyModal({
                   </p>
                 </div>
               </div>
-            </div>
+            </div>}
 
             {/* Live CV Tracking Info */}
             <div style={{ marginBottom: '1rem', padding: '9px 14px', backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE', borderRadius: '8px', fontSize: '0.74rem', color: '#1E40AF', lineHeight: 1.45 }}>
@@ -570,6 +570,7 @@ export default function ExternalJobApplyModal({
             </div>
           </form>
         )}
+        <CoverLetterAssistant isOpen={showCoverLetterAssistant} onClose={() => setShowCoverLetterAssistant(false)} onGenerated={setCoverLetter} job={job} user={user} isFr={isFr} />
       </div>
     </div>
   );

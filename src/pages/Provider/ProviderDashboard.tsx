@@ -45,6 +45,11 @@ type JobLead = {
   myAssignment?: any;
   isPinned?: boolean;
   isExternal?: boolean;
+  budgetType?: string;
+  budgetMode?: string;
+  pricingType?: string;
+  isNegotiable?: boolean;
+  negotiable?: boolean;
   companyName?: string;
   salary?: string;
   details?: Array<{ key: string; label: string; content: string }>;
@@ -59,6 +64,10 @@ const formatBudget = (job: JobLead) => {
     if (max > 0) return `${max.toLocaleString()} XAF`;
     return 'Salary Undisclosed / Negotiable';
   }
+  const budgetType = String(job.budgetType || job.budgetMode || job.pricingType || '').toUpperCase();
+  if (job.isNegotiable === true || job.negotiable === true || ['REQUEST_QUOTE', 'NEGOTIABLE', 'NEGOTIABLE_BUDGET', 'QUOTE'].includes(budgetType)) {
+    return 'Negotiable';
+  }
   const min = Number(job.budgetMin || 0);
   const max = Number(job.budgetMax || job.budget || 0);
   if (min && max && min !== max) return `${min.toLocaleString()} - ${max.toLocaleString()} XAF`;
@@ -68,6 +77,13 @@ const formatBudget = (job: JobLead) => {
 
 // Module-level persistent cache across tab navigation remounts
 let cachedJobs: JobLead[] = [];
+
+const normalizeJobId = (id: unknown) => String(id ?? '').trim();
+const jobIsAppliedByProvider = (job: JobLead, appliedIds: string[]) => {
+  const id = normalizeJobId(job.id);
+  const appliedIdSet = new Set(appliedIds.map(normalizeJobId));
+  return Boolean(job.hasApplied || job.myAssignment || appliedIdSet.has(id));
+};
 
 const PROVIDER_BILLBOARDS = [
   { image: '/provider-billboard/show-work.jpg', tag: ['NEW OPPORTUNITIES', 'NOUVELLES OPPORTUNITÉS'], title: ['Find work that fits your skills', 'Trouvez des missions adaptées à vos compétences'], body: ['Explore verified jobs and grow your client base.', 'Explorez des missions vérifiées et développez votre clientèle.'], action: ['Explore jobs', 'Explorer les missions'], target: 'jobs' },
@@ -129,11 +145,22 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   const [activeFeedTab, setActiveFeedTab] = useState<'best_matches' | 'most_recent' | 'remote_only' | 'saved_jobs' | 'direct_bookings' | 'applied_jobs'>('best_matches');
   const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem(`fixam_applied_jobs_${user?.id}`) || '[]');
+      const stored = JSON.parse(localStorage.getItem(`fixam_applied_jobs_${user?.id}`) || '[]');
+      return Array.isArray(stored) ? stored.map(normalizeJobId).filter(Boolean) : [];
     } catch {
       return [];
     }
   });
+
+  useEffect(() => {
+    if (!user?.id) return;
+    try {
+      const stored = JSON.parse(localStorage.getItem(`fixam_applied_jobs_${user.id}`) || '[]');
+      setAppliedJobIds(Array.isArray(stored) ? stored.map(normalizeJobId).filter(Boolean) : []);
+    } catch {
+      setAppliedJobIds([]);
+    }
+  }, [user?.id]);
   const [isAlertVisible, setIsAlertVisible] = useState(true);
   const [isAvailable, setIsAvailable] = useState(() => user?.providerProfile?.isAvailable ?? user?.isOnline ?? true);
 
@@ -349,7 +376,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         let extPayload = extResponse.status === 'fulfilled' ? (extResponse.value.data?.data || []) : [];
 
         if (Array.isArray(payload) || Array.isArray(extPayload)) {
-          let merged = Array.from(new Map([...(Array.isArray(payload) ? payload : []), ...(Array.isArray(extPayload) ? extPayload : [])].map((job: JobLead) => [job.id, job])).values()) as JobLead[];
+          let merged = Array.from(new Map([...(Array.isArray(payload) ? payload : []), ...(Array.isArray(extPayload) ? extPayload : [])].map((job: JobLead) => [normalizeJobId(job.id), job])).values()) as JobLead[];
+          merged = merged.map((job) => ({
+            ...job,
+            hasApplied: jobIsAppliedByProvider(job, appliedJobIds),
+          }));
           if (appliedVerifiedOnly) {
             merged = merged.filter((j: JobLead) => j.clientVerified || j.isExternal);
           }
@@ -365,7 +396,7 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
       }
     }, search || hasActiveFilters ? 350 : 0);
     return () => window.clearTimeout(timer);
-  }, [search, appliedJobType, appliedBudgetMin, appliedBudgetMax, appliedSort, appliedVerifiedOnly]);
+  }, [search, appliedJobType, appliedBudgetMin, appliedBudgetMax, appliedSort, appliedVerifiedOnly, appliedJobIds]);
 
   const handleApplyFilters = () => {
     setAppliedJobType(pendingJobType);
@@ -482,10 +513,10 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         setWalletBalance((prev) => Math.max(0, (prev || 0) - totalProposalCoins));
       }
 
-      // Keep job in feed list and mark as applied
-      setJobs((current) => current.map((item) => item.id === proposalModalJob.id ? { ...item, hasApplied: true, myBoostCoins: boostCoins } : item));
+      // Keep it available in the Applied jobs tab, but hide it from all public feeds.
+      setJobs((current) => current.map((item) => normalizeJobId(item.id) === normalizeJobId(proposalModalJob.id) ? { ...item, hasApplied: true, myBoostCoins: boostCoins } : item));
       setAppliedJobIds((prev) => {
-        const next = Array.from(new Set([...prev, proposalModalJob.id]));
+        const next = Array.from(new Set([...prev.map(normalizeJobId), normalizeJobId(proposalModalJob.id)]));
         try { localStorage.setItem(`fixam_applied_jobs_${user?.id}`, JSON.stringify(next)); } catch {}
         return next;
       });
@@ -514,20 +545,23 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
   };
 
   const appliedJobsCount = useMemo(() => {
-    return jobs.filter(j => j.hasApplied || appliedJobIds.includes(j.id)).length;
+    return jobs.filter(j => jobIsAppliedByProvider(j, appliedJobIds)).length;
   }, [jobs, appliedJobIds]);
 
   // Filtered jobs according to active feed tab
   const displayedJobs = useMemo(() => {
-    let list = jobs.filter(j => !dislikedJobIds.includes(j.id));
-    if (activeFeedTab === 'remote_only') {
+    let list = jobs.filter(j => !dislikedJobIds.map(normalizeJobId).includes(normalizeJobId(j.id)));
+    if (activeFeedTab === 'applied_jobs') {
+      list = list.filter(j => jobIsAppliedByProvider(j, appliedJobIds));
+    } else {
+      list = list.filter(j => !jobIsAppliedByProvider(j, appliedJobIds));
+      if (activeFeedTab === 'remote_only') {
       list = list.filter(j => j.isRemote);
-    } else if (activeFeedTab === 'saved_jobs') {
+      } else if (activeFeedTab === 'saved_jobs') {
       list = list.filter(j => savedJobIds.includes(j.id));
-    } else if (activeFeedTab === 'applied_jobs') {
-      list = list.filter(j => j.hasApplied || appliedJobIds.includes(j.id));
-    } else if (activeFeedTab === 'most_recent') {
-      list = [...list].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      } else if (activeFeedTab === 'most_recent') {
+        list = [...list].sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+      }
     }
     return list;
   }, [jobs, activeFeedTab, savedJobIds, dislikedJobIds, appliedJobIds]);
@@ -550,11 +584,11 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         onSuccess={(updatedJob) => {
           setJobs((current) =>
             current.map((item) =>
-              item.id === updatedJob.id ? { ...item, hasApplied: true, myBoostCoins: updatedJob.myBoostCoins } : item
+              normalizeJobId(item.id) === normalizeJobId(updatedJob.id) ? { ...item, hasApplied: true, myBoostCoins: updatedJob.myBoostCoins } : item
             )
           );
           setAppliedJobIds((prev) => {
-            const next = Array.from(new Set([...prev, updatedJob.id]));
+            const next = Array.from(new Set([...prev.map(normalizeJobId), normalizeJobId(updatedJob.id)]));
             try { localStorage.setItem(`fixam_applied_jobs_${user?.id}`, JSON.stringify(next)); } catch {}
             return next;
           });
@@ -945,7 +979,9 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
                   })
                 )
               ) : isLoading ? (
-                <div className="feed-status-message">Loading jobs...</div>
+                <div className="provider-job-skeleton-list" aria-label={i18n.language === 'fr' ? 'Chargement des missions' : 'Loading jobs'}>
+                  {[1, 2, 3].map((item) => <div className="provider-job-skeleton" key={item}><div className="provider-skeleton-line provider-skeleton-avatar" /><div className="provider-skeleton-copy"><div className="provider-skeleton-line provider-skeleton-short" /><div className="provider-skeleton-line provider-skeleton-long" /><div className="provider-skeleton-line provider-skeleton-meta" /></div><div className="provider-skeleton-line provider-skeleton-button" /></div>)}
+                </div>
               ) : error ? (
                 <div className="feed-status-message error">{error}</div>
               ) : paginatedJobs.length === 0 ? (
@@ -2049,7 +2085,12 @@ export default function ProviderDashboard({ setActiveTab, onRoleChange, setActiv
         onClose={() => setExternalJobToApply(null)}
         job={externalJobToApply}
         onSuccess={(id) => {
-          setAppliedJobIds(prev => [...prev, id]);
+          setAppliedJobIds(prev => {
+            const next = Array.from(new Set([...prev.map(normalizeJobId), normalizeJobId(id)]));
+            try { localStorage.setItem(`fixam_applied_jobs_${user?.id}`, JSON.stringify(next)); } catch {}
+            return next;
+          });
+          setJobs(current => current.map(job => normalizeJobId(job.id) === normalizeJobId(id) ? { ...job, hasApplied: true } : job));
           setSelectedJob(null);
         }}
       />

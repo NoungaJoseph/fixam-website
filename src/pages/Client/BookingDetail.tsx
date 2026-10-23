@@ -17,6 +17,10 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
   const [bookingData, setBookingData] = useState<any>(selectedBooking);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [activeRevision, setActiveRevision] = useState<any>(null);
+  const [showRevisionForm, setShowRevisionForm] = useState(false);
+  const [revisionBudget, setRevisionBudget] = useState('');
+  const [revisionMessage, setRevisionMessage] = useState('');
+  const [revisionSubmitting, setRevisionSubmitting] = useState(false);
 
   useEffect(() => {
     if (selectedBooking && (selectedBooking.id || selectedBooking._id)) {
@@ -107,6 +111,22 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
     } catch (err: any) {
       alert(err.response?.data?.message || 'Unable to update the revised quote.');
     } finally { setLoadingStatus(null); }
+  };
+
+  const submitRevision = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!revisionBudget || revisionMessage.trim().length < 10 || revisionSubmitting) return;
+    setRevisionSubmitting(true);
+    try {
+      const response = await api.post(`/bookings/${bkId}/revisions`, { reason: 'PRICE', budget: Number(revisionBudget), message: revisionMessage.trim() });
+      const updated = response.data?.data?.booking;
+      setBookingData(updated || { ...bookingData, status: 'REVISED_QUOTE_PENDING', counterBudget: Number(revisionBudget), counterNotes: revisionMessage.trim() });
+      setShowRevisionForm(false);
+      setRevisionBudget('');
+      setRevisionMessage('');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Unable to send the revised offer.');
+    } finally { setRevisionSubmitting(false); }
   };
   
   const getStatusColor = (st: string) => {
@@ -410,6 +430,9 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                         </>
                       )}
                     </button>
+                    <button type="button" disabled={Boolean(loadingStatus)} onClick={() => { setRevisionBudget(String(bookingData.budget || '')); setShowRevisionForm(true); }} className="w-full border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-700 font-bold py-3 px-4 rounded-xl transition text-sm">
+                      Revise Offer
+                    </button>
                   </>
                 ) : (
                   <div className="space-y-2">
@@ -511,7 +534,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
                 </button>
               )}
 
-              {status !== 'CANCELLED' && status !== 'REJECTED' && setActiveChatUser && (
+              {['ACCEPTED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED'].includes(status) && setActiveChatUser && (
                 <button 
                   className="w-full bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 text-sm cursor-pointer"
                   onClick={() => {
@@ -574,6 +597,7 @@ export default function BookingDetail({ selectedBooking, setSelectedBooking, set
         targetUserId={targetUserIdForReview}
         targetName={targetNameForReview}
       />
+      {showRevisionForm && <div className="fixed inset-0 z-[1000030] flex items-end justify-center bg-slate-950/50 p-3 sm:items-center" onClick={() => setShowRevisionForm(false)}><form onSubmit={submitRevision} onClick={(event) => event.stopPropagation()} className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between"><div><h3 className="text-xl font-black text-slate-900">Revise Offer</h3><p className="mt-1 text-sm text-slate-500">The client will receive this revised quote for review.</p></div><button type="button" onClick={() => setShowRevisionForm(false)} className="text-2xl text-slate-400">×</button></div><label className="mt-5 block text-sm font-bold text-slate-700">Revised budget<input required type="number" min="0" value={revisionBudget} onChange={(event) => setRevisionBudget(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3" /></label><label className="mt-4 block text-sm font-bold text-slate-700">Explanation<textarea required minLength={10} rows={4} value={revisionMessage} onChange={(event) => setRevisionMessage(event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 p-3" placeholder="Explain what changed..." /></label><button disabled={revisionSubmitting} className="mt-5 w-full rounded-xl bg-teal-600 px-4 py-3 font-black text-white disabled:opacity-60">{revisionSubmitting ? 'Sending...' : 'Send Revised Offer'}</button></form></div>}
     </div>
   );
 }

@@ -179,18 +179,26 @@ export default function Messages({ activeChatUser, setActiveChatUser }: Messages
 
   useEffect(() => {
     if (activeConv) {
+      const loadActiveMessages = () => {
+        setIsLoadingMessages(true);
+        api.get(`/chat/${activeConv.id}/messages`).then(res => {
+          setMessages(res.data.data || []);
+          setIsLoadingMessages(false);
+        }).catch(err => {
+          console.error(err);
+          setIsLoadingMessages(false);
+        });
+      };
+
+      loadActiveMessages();
+      const messageInterval = setInterval(loadActiveMessages, 5000);
       setIsLoadingMessages(true);
-      api.get(`/chat/${activeConv.id}/messages`).then(res => {
-        setMessages(res.data.data || []);
-        setIsLoadingMessages(false);
-      }).catch(err => {
-        console.error(err);
-        setIsLoadingMessages(false);
-      });
 
       api.get(`/chat/${activeConv.id}/active-task`).then(res => {
         setActiveTask(res.data?.data || null);
       }).catch(() => setActiveTask(null));
+
+      return () => clearInterval(messageInterval);
     } else {
       setMessages([]);
       setActiveTask(null);
