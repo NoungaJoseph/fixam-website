@@ -111,7 +111,7 @@ export default function TaskDetails({ task, setActiveTab, setSelectedTask, setAc
     if (!confirm(isFr ? `Engager ${providerName} pour cette tâche ?` : `Hire ${providerName} for this task?`)) return;
     setHiringAssignmentId(assignmentId);
     try {
-      await api.patch(`/jobs/${taskId}/assign/${assignmentId}`, { status: 'ACCEPTED' });
+      await api.post(`/jobs/${taskId}/applications/${assignmentId}/select`);
       alert(isFr ? 'Prestataire engagé avec succès !' : 'Specialist hired successfully!');
       // Refresh task
       const updated = await api.get(`/jobs/${taskId}`).catch(() => null);

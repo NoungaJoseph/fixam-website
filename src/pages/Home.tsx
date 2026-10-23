@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Page, images, services, pros, Icon, IconName, ProCard, SectionTitle, Footer, serviceCategories } from '../App';
-import SupportContactModal from '../components/SupportContactModal';
 import { DifferenceTechIllustration } from '../components/TechIllustrations';
 import { useSEO } from '../hooks/useSEO';
 import { usePlatformStats } from '../hooks/usePlatformStats';
@@ -500,8 +499,6 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
   const heroTitle1 = currentLang === 'fr' ? 'La manière la plus simple de' : tContent.hero.title1;
   const heroTitle2 = currentLang === 'fr' ? 'où que vous soyez.' : tContent.hero.title2;
 
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
-
   // Interactivity States
   const [localSearch, setLocalSearch] = useState('');
   const [heroHeadlineIndex, setHeroHeadlineIndex] = useState(0);
@@ -623,34 +620,6 @@ export default function Home({ onNavigate, livePros, onSelectSkill, setSearchQue
 
   return (
     <div className="landing-page tsi-styled-page">
-      <SupportContactModal isOpen={isSupportOpen} onClose={() => setIsSupportOpen(false)} isFr={currentLang === 'fr'} />
-
-      {/* Direct support contact */}
-      <div 
-        className="floating-assistant-trigger" 
-        onClick={() => setIsSupportOpen(true)}
-        title={currentLang === 'fr' ? 'Contacter le support' : 'Contact support'}
-      >
-        <span className="floating-help-bubble">{currentLang === 'fr' ? 'Besoin d’aide ?' : 'Need help?'}</span>
-        <div className="floating-chat-circle">
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-          </svg>
-        </div>
-      </div>
-
-      {/* Floating Accessibility Trigger (Bottom Left from screenshots) */}
-      <div 
-        className="floating-accessibility-icon"
-        onClick={() => setIsSupportOpen(true)}
-        title="Accessibility & Assistant"
-      >
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <circle cx="12" cy="4" r="2"/>
-          <path d="M19 13v-2c-1.54.02-3.09-.75-4.07-1.83l-1.29-1.43c-.17-.19-.38-.34-.61-.45-.67-.32-1.47-.23-2.06.22l-1.92 1.48C8.38 9.5 7.7 9.85 7 9.94V13h2v-2.03l1.1-.85 1.9 4.88H7v2h7v-2h-3.13l-1.32-3.4 1.15-.89c.86.95 2.08 1.5 3.3 1.44V13h5z"/>
-        </svg>
-      </div>
-
       {/* 2. Top Hero Section (Matching Image 3) */}
       <section className="tsi-hero-section">
         <div className="tsi-hero-container">

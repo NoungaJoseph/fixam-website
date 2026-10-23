@@ -381,7 +381,7 @@ export default function MyTasks({ clientTasks, setClientTasks, setActiveTab, wal
                             if (confirm(`Hire ${proName} for this task?`)) {
                               setHiringId(assignment.id);
                               try {
-                                await api.post(`/jobs/${viewOffersTask.id}/choose-provider`, { assignmentId: assignment.id });
+                                await api.post(`/jobs/${viewOffersTask.id}/applications/${assignment.id}/select`);
                                 alert(`🎉 ${proName} has been hired for this task!`);
                                 setViewOffersTask(null);
                               } catch (err: any) {

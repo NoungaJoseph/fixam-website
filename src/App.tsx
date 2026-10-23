@@ -72,6 +72,7 @@ import Insights from './pages/Insights'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import CookieBanner from './components/CookieBanner'
+import SupportContactModal from './components/SupportContactModal'
 import { usePageAnalytics } from './hooks/usePageAnalytics'
 import PublicProfileView from './pages/PublicProfileView'
 
@@ -406,6 +407,7 @@ function App() {
   const [livePros, setLivePros] = useState<any[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSlide, setOnboardingSlide] = useState(0);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   const { isLoggedIn, isLoading, user, refreshUser } = useAuth();
   usePageAnalytics(page);
@@ -786,6 +788,27 @@ function App() {
             )}
           </main>
           <MobileStickyAuthBar onNavigate={handleNavigate} />
+
+          <SupportContactModal
+            isOpen={isSupportOpen}
+            onClose={() => setIsSupportOpen(false)}
+            isFr={i18n.language === 'fr'}
+          />
+
+          {/* Floating Need Help Trigger */}
+          <div 
+            className="floating-assistant-trigger" 
+            onClick={() => setIsSupportOpen(true)}
+            title={i18n.language === 'fr' ? 'Contacter le support' : 'Contact support'}
+            aria-label={i18n.language === 'fr' ? 'Besoin d’aide ?' : 'Need help?'}
+          >
+            <span className="floating-help-bubble">{i18n.language === 'fr' ? 'Besoin d’aide ?' : 'Need help?'}</span>
+            <div className="floating-chat-circle">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+              </svg>
+            </div>
+          </div>
         </>
       )}
 

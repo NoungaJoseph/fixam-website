@@ -9149,3 +9149,69 @@ button:not(.rounded-full):not([aria-label]) {
 button.rounded-full:not([aria-label]) {
   border-radius: 6px !important;
 }
+
+/* Floating Need Help Widget */
+.floating-assistant-trigger {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  z-index: 9950;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-assistant-trigger:hover {
+  transform: translateY(-2px);
+}
+
+.floating-help-bubble {
+  background: #F97316;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.floating-chat-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #0B1B3D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px rgba(11, 27, 61, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+}
+
+.floating-assistant-trigger:hover .floating-chat-circle {
+  transform: scale(1.08);
+  background: #14B8A6;
+}
+
+@media (max-width: 768px) {
+  .floating-assistant-trigger {
+    bottom: 5.25rem;
+    right: 1.25rem;
+  }
+  .floating-help-bubble {
+    font-size: 0.7rem;
+    padding: 0.22rem 0.6rem;
+  }
+  .floating-chat-circle {
+    width: 46px;
+    height: 46px;
+  }
+}
+
